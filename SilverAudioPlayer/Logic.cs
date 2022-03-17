@@ -1,5 +1,6 @@
 ﻿using SilverAudioPlayer.NAudio;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.SystemMediaSoundPlayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace SilverAudioPlayer
             {
                 return true;
             }
+            /*if (SystemMediaSoundPlayerwrapper.CanPlayFile(URI))
+            {
+                return true;
+            }*/
             return false;
         }
 
@@ -27,6 +32,12 @@ namespace SilverAudioPlayer
                 wfp.LoadFile(URI);
                 return wfp;
             }
+            /*if (SystemMediaSoundPlayerwrapper.CanPlayFile(URI))
+            {
+                var pain = new SystemMediaSoundPlayerwrapper();
+                pain.LoadFile(URI);
+                return pain;
+            }*/
             return null;
         }
     }

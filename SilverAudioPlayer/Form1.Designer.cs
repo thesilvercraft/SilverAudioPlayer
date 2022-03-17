@@ -58,7 +58,7 @@
             // 
             // PlayButton
             // 
-            this.PlayButton.Location = new System.Drawing.Point(22, 17);
+            this.PlayButton.Location = new System.Drawing.Point(12, 10);
             this.PlayButton.Name = "PlayButton";
             this.PlayButton.Size = new System.Drawing.Size(75, 23);
             this.PlayButton.TabIndex = 0;
@@ -68,7 +68,7 @@
             // 
             // PauseButton
             // 
-            this.PauseButton.Location = new System.Drawing.Point(103, 17);
+            this.PauseButton.Location = new System.Drawing.Point(93, 10);
             this.PauseButton.Name = "PauseButton";
             this.PauseButton.Size = new System.Drawing.Size(75, 23);
             this.PauseButton.TabIndex = 1;
@@ -100,7 +100,7 @@
             // 
             // volumeBar
             // 
-            this.volumeBar.Location = new System.Drawing.Point(186, 10);
+            this.volumeBar.Location = new System.Drawing.Point(174, 10);
             this.volumeBar.Maximum = 100;
             this.volumeBar.Name = "volumeBar";
             this.volumeBar.Size = new System.Drawing.Size(104, 45);

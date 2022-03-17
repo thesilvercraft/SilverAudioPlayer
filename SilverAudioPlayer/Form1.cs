@@ -129,7 +129,11 @@ namespace SilverAudioPlayer
                 token = new();
                 th = new Thread(() => SndThrd(token.Token));
                 Player.TrackEnd += (s, e) => token.Cancel();
-                ProgressBar.Maximum = (ulong)Player.Length()!.Value.TotalMilliseconds;
+                var total = (ulong?)Player?.Length()?.TotalMilliseconds;
+                if (total !=null)
+                {
+                    ProgressBar.Maximum = (ulong)total;
+                }
                 th.Start();
                 //Track theTrack = new(textBox1.Text);
                 /*var img = theTrack.EmbeddedPictures.FirstOrDefault();
