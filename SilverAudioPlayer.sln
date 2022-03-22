@@ -9,30 +9,55 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Shared", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.NAudio", "SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj", "{ADABB162-038F-4391-9794-924DB1B385B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.SystemMediaSoundPlayer", "SilverAudioPlayer.SystemMediaSoundPlayer\SilverAudioPlayer.SystemMediaSoundPlayer.csproj", "{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.SystemMediaSoundPlayer", "SilverAudioPlayer.SystemMediaSoundPlayer\SilverAudioPlayer.SystemMediaSoundPlayer.csproj", "{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudio.Flac", "NAudio.Flac\NAudio.Flac.csproj", "{8E300BBC-DE83-49C4-B8A9-36CF71423E16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Naudio.Flac", "SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj", "{86A77925-4230-41B9-B388-7D5336DA3395}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ClickOnce|Any CPU = ClickOnce|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.ClickOnce|Any CPU.ActiveCfg = Release|Any CPU
+		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.ClickOnce|Any CPU.Build.0 = Release|Any CPU
 		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.ClickOnce|Any CPU.ActiveCfg = Release|Any CPU
+		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.ClickOnce|Any CPU.Build.0 = Release|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADABB162-038F-4391-9794-924DB1B385B1}.ClickOnce|Any CPU.ActiveCfg = Release|Any CPU
+		{ADABB162-038F-4391-9794-924DB1B385B1}.ClickOnce|Any CPU.Build.0 = Release|Any CPU
 		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}.ClickOnce|Any CPU.ActiveCfg = Release|Any CPU
+		{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}.ClickOnce|Any CPU.Build.0 = Release|Any CPU
 		{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B96E79D-8BE1-4AB7-BDDF-29FDB2556EAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.ClickOnce|Any CPU.ActiveCfg = ClickOnce|Any CPU
+		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.ClickOnce|Any CPU.Build.0 = ClickOnce|Any CPU
+		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86A77925-4230-41B9-B388-7D5336DA3395}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A77925-4230-41B9-B388-7D5336DA3395}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{86A77925-4230-41B9-B388-7D5336DA3395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86A77925-4230-41B9-B388-7D5336DA3395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86A77925-4230-41B9-B388-7D5336DA3395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86A77925-4230-41B9-B388-7D5336DA3395}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="SilverFormsUtils" Version="1.0.7" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

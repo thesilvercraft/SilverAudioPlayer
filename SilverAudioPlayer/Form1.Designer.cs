@@ -58,7 +58,9 @@
             // 
             // PlayButton
             // 
-            this.PlayButton.Location = new System.Drawing.Point(12, 10);
+            this.PlayButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.PlayButton.Location = new System.Drawing.Point(12, 17);
             this.PlayButton.Name = "PlayButton";
             this.PlayButton.Size = new System.Drawing.Size(75, 23);
             this.PlayButton.TabIndex = 0;
@@ -68,7 +70,9 @@
             // 
             // PauseButton
             // 
-            this.PauseButton.Location = new System.Drawing.Point(93, 10);
+            this.PauseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.PauseButton.Location = new System.Drawing.Point(93, 17);
             this.PauseButton.Name = "PauseButton";
             this.PauseButton.Size = new System.Drawing.Size(75, 23);
             this.PauseButton.TabIndex = 1;
@@ -100,7 +104,9 @@
             // 
             // volumeBar
             // 
-            this.volumeBar.Location = new System.Drawing.Point(174, 10);
+            this.volumeBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.volumeBar.Location = new System.Drawing.Point(174, 17);
             this.volumeBar.Maximum = 100;
             this.volumeBar.Name = "volumeBar";
             this.volumeBar.Size = new System.Drawing.Size(104, 45);
