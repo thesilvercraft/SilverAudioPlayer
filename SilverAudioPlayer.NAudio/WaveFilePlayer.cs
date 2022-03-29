@@ -11,10 +11,9 @@ namespace SilverAudioPlayer.NAudio
     {
         public static bool CanPlayFile(string file)
         {
-            return new NaudioWaveStreamWrapperTypes().HasWrapper(file);
+            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(file);
         }
 
-        private NaudioWaveStreamWrapperTypes a;
         private WaveOutEvent? outputDevice;
         public IWaveProvider? audioFile;
         public byte Volume { get; set; } = 70;
@@ -22,7 +21,6 @@ namespace SilverAudioPlayer.NAudio
 
         public WaveFilePlayer()
         {
-            a = new();
             outputDevice = new();
             outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
         }
@@ -45,8 +43,7 @@ namespace SilverAudioPlayer.NAudio
             {
                 throw new ArgumentException("The name of the file must not be null or empty", nameof(file));
             }
-
-            var wrapper = a.GetWrapper(file);
+            var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(file);
             if (wrapper != null)
             {
                 Decoder = wrapper.GetType().FullName + " (" + Path.GetExtension(file)[0..].ToUpperInvariant() + ")";

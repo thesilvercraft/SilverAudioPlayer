@@ -1,4 +1,5 @@
 ﻿using NAudio.Wave;
+using SilverAudioPlayer.Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -11,23 +12,6 @@ using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.NAudio
 {
-    /*public class NaudioWaveStreamWrapper
-    {
-        public Type waveType;
-        public string[] FileTypes;
-
-        public NaudioWaveStreamWrapper(Type wavetp)
-        {
-            waveType = wavetp;
-        }
-
-        public WaveStream WaveStream(string param)
-        {
-            ConstructorInfo ctor = waveType.GetConstructor(new[] { typeof(string) });
-            return (WaveStream)ctor.Invoke(new object[] { param });
-        }
-    }*/
-
     public interface INaudioWaveStreamWrapper
     {
         bool CanPlay(string file);
@@ -100,6 +84,42 @@ namespace SilverAudioPlayer.NAudio
         public WaveStream GetStream(string file)
         {
             return new Mp3FileReader(file);
+        }
+    }
+
+    public static class NaudioWaveStreamWrapperTypeHolder
+    {
+        private static readonly NaudioWaveStreamWrapperTypes instnc = new();
+
+        public static NaudioWaveStreamWrapperTypes Get()
+        {
+            return instnc;
+        }
+    }
+
+    [Export(typeof(IPlayProvider))]
+    public class NaudioWaveStreamWrapper : IPlayProvider
+    {
+        public bool CanPlayFile(string filename)
+        {
+            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(filename);
+        }
+
+        public bool CanPlayStream(Stream stream)
+        {
+            //NAUDIOWAVESTREAMWRAPPER DOES NOT SUPPORT STREAMS FOR NOW
+            return false;
+        }
+
+        public IPlay? GetPlayer(string filename)
+        {
+            if (CanPlayFile(filename))
+            {
+                var player = new WaveFilePlayer();
+                player.LoadFile(filename);
+                return player;
+            }
+            return null;
         }
     }
 

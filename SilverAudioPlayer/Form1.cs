@@ -1,6 +1,7 @@
 using SilverAudioPlayer.Shared;
 using SilverFormsUtils;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SilverAudioPlayer
@@ -15,10 +16,118 @@ namespace SilverAudioPlayer
                 this.UseDarkModeBar(true);
                 this.UseDarkModeForThingsInsideOfForm(true, true);
             }
+            ProcessMessages = !File.Exists(Path.Combine(AppContext.BaseDirectory, ".nohotkeys"));
+            if (ProcessMessages)
+            {
+                RegisterHotKey(Handle, 1, 0, (int)Keys.Play);
+                RegisterHotKey(Handle, 2, 0, (int)Keys.Pause);
+                RegisterHotKey(Handle, 3, 0, (int)Keys.MediaPlayPause);
+            }
+        }
+
+        public Form1(params string[] files) : this()
+        {
+            treeView1.Nodes[0].Nodes.AddRange(files.Select(x => new TreeNode(x) { Tag = new Song(x, x, Guid.NewGuid()) }).ToArray());
+        }
+
+        private const int WM_APPCOMMAND = 0x0319;
+        private const int APPCOMMAND_MEDIA_PLAY_PAUSE = 14;
+
+        [DllImport("user32.dll")]
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
+
+        [DllImport("user32.dll")]
+        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        public const int HWND_BROADCAST = 0xffff;
+        public static readonly int WM_SHOWME = RegisterWindowMessage("WM_SHOWME_AUDIOPLAYERZ");
+
+        [DllImport("user32")]
+        public static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam);
+
+        [DllImport("user32", CharSet = CharSet.Unicode)]
+        public static extern int RegisterWindowMessage(string message);
+
+        private void ShowMe()
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                WindowState = FormWindowState.Normal;
+            }
+            // make our form jump to the top of everything
+            TopMost = true;
+            Activate();
+            // set it back to whatever it was
+            TopMost = false;
+        }
+
+        private bool ProcessMessages = true;
+
+        protected override void WndProc(ref Message m)
+        {
+            if (ProcessMessages)
+            {
+                if (m.Msg == WM_SHOWME)
+                {
+                    ShowMe();
+                }
+                void Toggle()
+                {
+                    if (Player?.GetPlaybackState() == PlaybackState.Playing)
+                    {
+                        Player?.Pause();
+                    }
+                    else if (Player?.GetPlaybackState() == PlaybackState.Paused)
+                    {
+                        Player?.Play();
+                    }
+                    else
+                    {
+                        StartPlaying(true);
+                    }
+                }
+                switch (m.Msg)
+                {
+                    case WM_APPCOMMAND:
+                        int cmd = (int)m.LParam >> 16 & 0xFF;
+                        switch (cmd)
+                        {
+                            case APPCOMMAND_MEDIA_PLAY_PAUSE:
+                                Toggle();
+                                break;
+
+                            default:
+                                break;
+                        }
+                        m.Result = (IntPtr)1;
+                        break;
+
+                    case 0x0312:
+                        switch (m.WParam.ToInt32())
+                        {
+                            case 1:
+                                Player?.Play();
+                                break;
+
+                            case 2:
+                                Player?.Pause();
+                                break;
+
+                            case 3:
+                                Toggle();
+                                break;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            base.WndProc(ref m);
         }
 
         private byte stateofdoingstuff = 0;
-        private string? CurrentURI => CurrentSong.URI;
+        private string? CurrentURI => CurrentSong?.URI;
         private bool StopAutoLoading = false;
         private Song? CurrentSong = null;
         public IPlay? Player { get; private set; }
@@ -26,13 +135,15 @@ namespace SilverAudioPlayer
 
         private bool ShouldPlayAfterSelect() => true;
 
+        public Logic logic { get; set; } = new();
+
         public void StartPlaying(bool play = true, bool resetsal = false)
         {
             if (CurrentURI == null && CurrentSong == null)
             {
                 CurrentSong = (Song)treeView1.Nodes[0].Nodes[0].Tag;
             }
-            Player = Logic.GetPlayerFromURI(CurrentURI);
+            Player = logic.GetPlayerFromURI(CurrentURI);
             if (Player == null)
             {
                 MessageBox.Show("I do not know how to play " + CurrentURI);
@@ -125,14 +236,14 @@ namespace SilverAudioPlayer
                 tracktime.Text = Player.Length()?.ToString("g");
                 */
                 Player?.SetVolume((byte)volumeBar.Value);
-                ProgressBar.Value = 0;
+                ProgressBar.Pos = TimeSpan.FromMilliseconds(0);
                 token = new();
                 th = new Thread(() => SndThrd(token.Token));
                 Player.TrackEnd += (s, e) => token.Cancel();
-                var total = (ulong?)Player?.Length()?.TotalMilliseconds;
-                if (total !=null)
+                var total = Player?.Length();
+                if (total != null)
                 {
-                    ProgressBar.Maximum = (ulong)total;
+                    ProgressBar.Max = (TimeSpan)total;
                 }
                 th.Start();
                 //Track theTrack = new(textBox1.Text);
@@ -158,9 +269,8 @@ namespace SilverAudioPlayer
 
         private void SndThrd(CancellationToken e)
         {
-            MethodInvoker m = new(() => ProgressBar.Value = ((ulong?)Player?.GetPosition().TotalMilliseconds ?? 2));
-            // MethodInvoker m2 = new(() => elapsedtime.Text = Player?.GetPosition().ToString("g"));
-            while (ProgressBar.Value < ProgressBar.Maximum)
+            MethodInvoker m = new(() => ProgressBar.Pos = (Player?.GetPosition() ?? TimeSpan.FromMilliseconds(2)));
+            while (ProgressBar.Pos < ProgressBar.Max)
             {
                 if (Player?.GetPlaybackState() == PlaybackState.Playing)
                 {
@@ -169,8 +279,7 @@ namespace SilverAudioPlayer
                         return;
                     }
                     ProgressBar.Invoke(m);
-                    //elapsedtime.Invoke(m2);
-                    Thread.Sleep(100);
+                    Thread.Sleep(70);
                 }
                 else if (Player?.GetPlaybackState() == PlaybackState.Paused)
                 {
@@ -606,9 +715,10 @@ namespace SilverAudioPlayer
 
         private void ProgressBar_MouseClick(object sender, MouseEventArgs e)
         {
-            Point cp = ProgressBar.PointToClient(Cursor.Position);
-            ProgressBar.Value = ProgressBar.Minimum + ((ProgressBar.Maximum - ProgressBar.Minimum) * ((ulong)cp.X) / ((ulong)ProgressBar.Width));
-            Player?.SetPosition(TimeSpan.FromMilliseconds(ProgressBar.Value));
+            Point cp = ProgressBar.ProgressBar.PointToClient(Cursor.Position);
+            var a = ProgressBar.Min + ((ProgressBar.Max - ProgressBar.Min) * ((ulong)cp.X) / ((ulong)ProgressBar.ProgressBar.Width));
+            ProgressBar.Pos = a;
+            Player?.SetPosition(a);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

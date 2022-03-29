@@ -1,10 +1,6 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-namespace SilverAudioPlayer
+﻿namespace SilverAudioPlayer
 {
-    public partial class EpicProgresBar : UserControl
+    public partial class EpicProgressBar : UserControl
     {
         public ulong Minimum { get => _Minimum; set => SetMin(value); }
         private ulong _Minimum = 0;
@@ -17,6 +13,7 @@ namespace SilverAudioPlayer
         public Color Color { get; set; } = Color.Red;
         public bool Rainbow { get; set; } = true;
         public int CacheRainbowDecimals { get; set; } = 3;
+        public byte ShiftRainbow = 0;
 
         private void SetMax(ulong v)
         {
@@ -45,17 +42,96 @@ namespace SilverAudioPlayer
             }
         }
 
-        public EpicProgresBar()
+        public EpicProgressBar()
         {
             InitializeComponent();
         }
 
-        public static Color RainbowC(double progress)
+        public Color RainbowC(double progress)
         {
             float div = ((float)(Math.Abs(progress % 1) * 6));
+
+            if (ShiftRainbow != 0)
+            {
+                int lol = (int)div;
+                if (ShiftRainbow == 2)
+                {
+                    switch (lol)
+                    {
+                        case 5:
+                            div -= 5;
+                            break;
+
+                        default:
+                            div++;
+                            break;
+                    }
+                }
+                else if (ShiftRainbow == 3)
+                {
+                    switch (lol)
+                    {
+                        case 4:
+                        case 5:
+                            div -= 4;
+                            break;
+
+                        default:
+                            div += 2;
+                            break;
+                    }
+                }
+                else if (ShiftRainbow == 4)
+                {
+                    switch (lol)
+                    {
+                        case 3:
+                        case 4:
+                        case 5:
+                            div -= 3;
+                            break;
+
+                        default:
+                            div += 3;
+                            break;
+                    }
+                }
+                else if (ShiftRainbow == 5)
+                {
+                    switch (lol)
+                    {
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                            div -= 2;
+                            break;
+
+                        default:
+                            div += 4;
+                            break;
+                    }
+                }
+                else if (ShiftRainbow == 6)
+                {
+                    switch (lol)
+                    {
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                            div -= 1;
+                            break;
+
+                        default:
+                            div += 5;
+                            break;
+                    }
+                }
+            }
             int ascending = (int)((div % 1) * 255);
             int descending = 255 - ascending;
-
             return (int)div switch
             {
                 0 => Color.FromArgb(255, 255, ascending, 0),
@@ -85,6 +161,17 @@ namespace SilverAudioPlayer
                 {
                     Color? prevcol = null;
                     double prevprog = 0;
+                    if (ShiftRainbow != 0)
+                    {
+                        if (ShiftRainbow == 7)
+                        {
+                            ShiftRainbow = 1;
+                        }
+                        else
+                        {
+                            ShiftRainbow++;
+                        }
+                    }
                     for (var a = 1; a < (int)(Width / progress); a++)
                     {
                         double prog = (double)a / Width;

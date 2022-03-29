@@ -1,6 +1,6 @@
-using SilverAudioPlayer;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics;
 
 namespace SilverAudioPlayer
 {
@@ -10,10 +10,10 @@ namespace SilverAudioPlayer
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        private static void Main()
+        private static void Main(string?[]? args)
         {
             App a = new();
-            a.Run();
+            a.Run(args);
         }
     }
 
@@ -50,12 +50,20 @@ namespace SilverAudioPlayer
         }
 
         [STAThread]
-        public void Run()
+        public void Run(string?[]? args)
         {
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            if (args != null && args.Any(x => string.IsNullOrEmpty(x)))
+            {
+            }
+            var frm1 = new Form1();
+            _container.SatisfyImportsOnce(frm1);
+            _container.SatisfyImportsOnce(frm1.logic);
+            //ACCESS THE DANG THINGS HERE FOR IT TO WORK
+            Debug.WriteLine(String.Concat(frm1.logic.Providers.Select(x => x.Value.ToString())));
+            Application.Run(frm1);
         }
     }
 }

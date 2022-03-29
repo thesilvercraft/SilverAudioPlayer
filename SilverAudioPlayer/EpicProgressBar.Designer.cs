@@ -1,6 +1,6 @@
 ﻿namespace SilverAudioPlayer
 {
-    partial class EpicProgresBar
+    partial class EpicProgressBar
     {
         /// <summary> 
         /// Required designer variable.

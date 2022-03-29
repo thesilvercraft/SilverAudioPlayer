@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace SilverAudioPlayer.SystemMediaSoundPlayer
 {
     // PLEASE PLEASE PLEASE IN THE NAME OF ANYTHING DONT USE THIS PLAYER AS SOMETHING THAT IS NOT JUST A DEMO OF HOW TO MAKE A PLAYER PLEASE OK THANKS
-    public class SystemMediaSoundPlayerwrapper : IPlay, IDisposable
+    public class SystemMediaSoundPlayerwrapper : IPlay, IDisposable, ICanTellIfICanPlayAFile
     {
         private System.Media.SoundPlayer player;
 
@@ -63,8 +63,10 @@ namespace SilverAudioPlayer.SystemMediaSoundPlayer
 
         public void LoadFile(string file)
         {
-            player = new System.Media.SoundPlayer();
-            player.Stream = File.OpenRead(file);
+            player = new System.Media.SoundPlayer
+            {
+                Stream = File.OpenRead(file)
+            };
         }
 
         public void Pause()

@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Playlist");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Playlist");
             this.PlayButton = new System.Windows.Forms.Button();
             this.PauseButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.volumeBar = new System.Windows.Forms.TrackBar();
-            this.ProgressBar = new SilverAudioPlayer.EpicProgresBar();
+            this.ProgressBar = new SilverAudioPlayer.TimedProgressBar();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playNowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,7 +62,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.PlayButton.Location = new System.Drawing.Point(12, 17);
             this.PlayButton.Name = "PlayButton";
-            this.PlayButton.Size = new System.Drawing.Size(75, 23);
+            this.PlayButton.Size = new System.Drawing.Size(75, 47);
             this.PlayButton.TabIndex = 0;
             this.PlayButton.Text = "Play";
             this.PlayButton.UseVisualStyleBackColor = true;
@@ -74,7 +74,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.PauseButton.Location = new System.Drawing.Point(93, 17);
             this.PauseButton.Name = "PauseButton";
-            this.PauseButton.Size = new System.Drawing.Size(75, 23);
+            this.PauseButton.Size = new System.Drawing.Size(75, 47);
             this.PauseButton.TabIndex = 1;
             this.PauseButton.Text = "Pause";
             this.PauseButton.UseVisualStyleBackColor = true;
@@ -99,7 +99,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.treeView1);
             this.splitContainer1.Size = new System.Drawing.Size(800, 450);
-            this.splitContainer1.SplitterDistance = 58;
+            this.splitContainer1.SplitterDistance = 78;
             this.splitContainer1.TabIndex = 2;
             // 
             // volumeBar
@@ -119,17 +119,11 @@
             // 
             this.ProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ProgressBar.CacheRainbowDecimals = 3;
-            this.ProgressBar.Color = System.Drawing.Color.Red;
-            this.ProgressBar.Location = new System.Drawing.Point(296, 17);
-            this.ProgressBar.Maximum = ((ulong)(100ul));
-            this.ProgressBar.Minimum = ((ulong)(0ul));
+            this.ProgressBar.Location = new System.Drawing.Point(296, 3);
             this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Rainbow = false;
-            this.ProgressBar.Size = new System.Drawing.Size(492, 23);
+            this.ProgressBar.Size = new System.Drawing.Size(492, 73);
             this.ProgressBar.TabIndex = 2;
-            this.ProgressBar.Value = ((ulong)(0ul));
-            this.ProgressBar.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProgressBar_MouseClick);
+            this.ProgressBar.ProgressBar.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProgressBar_MouseClick);
             // 
             // treeView1
             // 
@@ -137,11 +131,11 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "PlaylistRoot";
-            treeNode1.Text = "Playlist";
+            treeNode2.Name = "PlaylistRoot";
+            treeNode2.Text = "Playlist";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
-            this.treeView1.Size = new System.Drawing.Size(800, 388);
+            treeNode2});
+            this.treeView1.Size = new System.Drawing.Size(800, 368);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
@@ -264,7 +258,7 @@
         private Button PauseButton;
         private SplitContainer splitContainer1;
         private TreeView treeView1;
-        private EpicProgresBar ProgressBar;
+        private TimedProgressBar ProgressBar;
         private TrackBar volumeBar;
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem playNowToolStripMenuItem;
