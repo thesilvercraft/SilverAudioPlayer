@@ -7,7 +7,7 @@ using PlaybackState = NAudio.Wave.PlaybackState;
 namespace SilverAudioPlayer.NAudio
 {
     [Export(typeof(IPlay))]
-    public class WaveFilePlayer : IPlay, ICanTellIfICanPlayAFile
+    public class WaveFilePlayer : IPlay, ICanTellIfICanPlayAFile, IDisposable
     {
         public static bool CanPlayFile(string file)
         {
@@ -166,6 +166,15 @@ namespace SilverAudioPlayer.NAudio
             }
 
             return null;
+        }
+
+        public void Dispose()
+        {
+            if (outputDevice != null)
+            {
+                outputDevice.Dispose();
+                outputDevice = null;
+            }
         }
 
         public event EventHandler<object> TrackEnd;

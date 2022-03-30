@@ -83,7 +83,7 @@ namespace SilverAudioPlayer.NAudio
 
         public WaveStream GetStream(string file)
         {
-            return new Mp3FileReader(file);
+            return new AiffFileReader(file);
         }
     }
 

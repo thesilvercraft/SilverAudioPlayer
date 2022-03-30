@@ -239,7 +239,7 @@ namespace SilverAudioPlayer
                 ProgressBar.Pos = TimeSpan.FromMilliseconds(0);
                 token = new();
                 th = new Thread(() => SndThrd(token.Token));
-                Player.TrackEnd += (s, e) => token.Cancel();
+
                 var total = Player?.Length();
                 if (total != null)
                 {
@@ -365,6 +365,11 @@ namespace SilverAudioPlayer
             }*/
         }
 
+        private IEnumerable<string> FilterFiles(IEnumerable<string> files)
+        {
+            return files.Where(x => !x.EndsWith(".png") && !x.EndsWith(".txt") && !x.EndsWith(".pdf") && !x.EndsWith(".jpg") && !x.EndsWith(".lnk") && !x.EndsWith(".md") && !x.EndsWith(".zip") && !x.EndsWith(".7z") && !x.EndsWith(".rar") && !x.EndsWith(".exe") && !x.EndsWith(".dll") && !x.EndsWith(".json") && !x.EndsWith(".toml") && !x.EndsWith(".yaml") && !x.EndsWith(".xml") && !x.EndsWith(".nfo") && !x.EndsWith(".html") && !x.EndsWith(".m3u") && !x.EndsWith(".xmp") && !x.EndsWith(".log") && !x.EndsWith(".gif") && !x.EndsWith(".cue"));
+        }
+
         private void DragDropOp(object sender, DragEventArgs e)
         {
             if (stateofdoingstuff != 0)
@@ -374,10 +379,11 @@ namespace SilverAudioPlayer
             string[]? files = (string[])e.Data.GetData(DataFormats.FileDrop);
             if (files.Length == 1 && Directory.Exists(files[0]))
             {
-                files = Directory.GetFiles(files[0]).Where(x => !x.EndsWith(".png") && !x.EndsWith(".txt") && !x.EndsWith(".pdf") && !x.EndsWith(".jpg") && !x.EndsWith(".lnk") && !x.EndsWith(".md") && !x.EndsWith(".zip") && !x.EndsWith(".7z") && !x.EndsWith(".rar") && !x.EndsWith(".exe") && !x.EndsWith(".dll") && !x.EndsWith(".json") && !x.EndsWith(".toml") && !x.EndsWith(".yaml") && !x.EndsWith(".xml") && !x.EndsWith(".nfo") && !x.EndsWith(".html") && !x.EndsWith(".m3u") && !x.EndsWith(".xmp") && !x.EndsWith(".log") && !x.EndsWith(".gif")).ToArray();
+                files = FilterFiles(Directory.GetFiles(files[0])).ToArray();
             }
             if ((files.Length > 1) || files.Length == 1 && File.Exists(files[0]))
             {
+                files = FilterFiles(files).ToArray();
                 int a = treeView1.Nodes[0].Nodes.Count;
                 treeView1.Nodes[0].Nodes.AddRange(files.Select(x => new TreeNode(x) { Tag = new Song(x, x, Guid.NewGuid()) }).ToArray());
                 treeView1.ExpandAll();
@@ -723,6 +729,7 @@ namespace SilverAudioPlayer
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Player?.Stop();
             token.Cancel();
         }
     }
