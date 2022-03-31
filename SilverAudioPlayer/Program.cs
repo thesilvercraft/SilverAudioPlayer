@@ -62,6 +62,7 @@ namespace SilverAudioPlayer
             _container.SatisfyImportsOnce(frm1);
             _container.SatisfyImportsOnce(frm1.logic);
             //ACCESS THE DANG THINGS HERE FOR IT TO WORK
+            Debug.WriteLine(String.Concat(frm1.logic.MetadataProviders.Select(x => x.Value.ToString())));
             Debug.WriteLine(String.Concat(frm1.logic.Providers.Select(x => x.Value.ToString())));
             Application.Run(frm1);
         }

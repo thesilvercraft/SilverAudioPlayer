@@ -11,6 +11,8 @@ namespace SilverAudioPlayer
         public Form1()
         {
             InitializeComponent();
+            ProgressBar.ProgressBar.MouseClick += ProgressBar_MouseClick;
+            //ProgressBar.ProgressBar.ShiftRainbow = 1;
             if (GetDarkModePreference.ShouldIUseDarkMode())
             {
                 this.UseDarkModeBar(true);
@@ -137,6 +139,8 @@ namespace SilverAudioPlayer
 
         public Logic logic { get; set; } = new();
 
+        private bool CheckForMetadataInSP = true;
+
         public void StartPlaying(bool play = true, bool resetsal = false)
         {
             if (CurrentURI == null && CurrentSong == null)
@@ -144,6 +148,15 @@ namespace SilverAudioPlayer
                 CurrentSong = (Song)treeView1.Nodes[0].Nodes[0].Tag;
             }
             Player = logic.GetPlayerFromURI(CurrentURI);
+            if (CurrentSong != null && CurrentSong?.Metadata == null && CheckForMetadataInSP)
+            {
+                var a = logic.GetMetadataFromURI(CurrentURI);
+                if (a != null)
+                {
+                    Debug.WriteLine("Getting metadata");
+                    CurrentSong.Metadata = a.GetAwaiter().GetResult();
+                }
+            }
             if (Player == null)
             {
                 MessageBox.Show("I do not know how to play " + CurrentURI);
@@ -246,6 +259,26 @@ namespace SilverAudioPlayer
                     ProgressBar.Max = (TimeSpan)total;
                 }
                 th.Start();
+                if (CurrentSong?.Metadata != null)
+                {
+                    /* if (CurrentSong.Metadata.Title != null)
+                     {
+                         TitleLabel.Text = CurrentSong.Metadata.Title;
+                     }*/
+                    /*if (CurrentSong.Metadata.Artist != null)
+                    {
+                        ArtistLabel.Text = CurrentSong.Metadata.Artist;
+                    }*/
+                    /*if (CurrentSong.Metadata.Album != null)
+                    {
+                        AlbumLabel.Text = CurrentSong.Metadata.Album;
+                    }*/
+                    if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+                    {
+                        using var memstream = new MemoryStream(CurrentSong.Metadata.Pictures.First().Data);
+                        pictureBox1.Image = Image.FromStream(memstream);
+                    }
+                }
                 //Track theTrack = new(textBox1.Text);
                 /*var img = theTrack.EmbeddedPictures.FirstOrDefault();
                 if (img != null)
@@ -367,7 +400,7 @@ namespace SilverAudioPlayer
 
         private IEnumerable<string> FilterFiles(IEnumerable<string> files)
         {
-            return files.Where(x => !x.EndsWith(".png") && !x.EndsWith(".txt") && !x.EndsWith(".pdf") && !x.EndsWith(".jpg") && !x.EndsWith(".lnk") && !x.EndsWith(".md") && !x.EndsWith(".zip") && !x.EndsWith(".7z") && !x.EndsWith(".rar") && !x.EndsWith(".exe") && !x.EndsWith(".dll") && !x.EndsWith(".json") && !x.EndsWith(".toml") && !x.EndsWith(".yaml") && !x.EndsWith(".xml") && !x.EndsWith(".nfo") && !x.EndsWith(".html") && !x.EndsWith(".m3u") && !x.EndsWith(".xmp") && !x.EndsWith(".log") && !x.EndsWith(".gif") && !x.EndsWith(".cue"));
+            return files.Where(x => !x.EndsWith(".png") && !x.EndsWith(".txt") && !x.EndsWith(".pdf") && !x.EndsWith(".jpg") && !x.EndsWith(".lnk") && !x.EndsWith(".md") && !x.EndsWith(".zip") && !x.EndsWith(".7z") && !x.EndsWith(".rar") && !x.EndsWith(".exe") && !x.EndsWith(".dll") && !x.EndsWith(".json") && !x.EndsWith(".toml") && !x.EndsWith(".yaml") && !x.EndsWith(".xml") && !x.EndsWith(".nfo") && !x.EndsWith(".html") && !x.EndsWith(".m3u") && !x.EndsWith(".xmp") && !x.EndsWith(".log") && !x.EndsWith(".gif") && !x.EndsWith(".cue") && !x.EndsWith(".db"));
         }
 
         private void DragDropOp(object sender, DragEventArgs e)

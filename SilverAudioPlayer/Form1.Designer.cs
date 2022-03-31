@@ -29,10 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Playlist");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Playlist");
             this.PlayButton = new System.Windows.Forms.Button();
             this.PauseButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.volumeBar = new System.Windows.Forms.TrackBar();
             this.ProgressBar = new SilverAudioPlayer.TimedProgressBar();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -47,10 +48,13 @@
             this.clearQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importFromClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToClipboardnewLineSeperatedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeBar)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.contextMenuStrip2.SuspendLayout();
@@ -58,11 +62,10 @@
             // 
             // PlayButton
             // 
-            this.PlayButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.PlayButton.Location = new System.Drawing.Point(12, 17);
+            this.PlayButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.PlayButton.Location = new System.Drawing.Point(169, 96);
             this.PlayButton.Name = "PlayButton";
-            this.PlayButton.Size = new System.Drawing.Size(75, 47);
+            this.PlayButton.Size = new System.Drawing.Size(96, 44);
             this.PlayButton.TabIndex = 0;
             this.PlayButton.Text = "Play";
             this.PlayButton.UseVisualStyleBackColor = true;
@@ -70,11 +73,10 @@
             // 
             // PauseButton
             // 
-            this.PauseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.PauseButton.Location = new System.Drawing.Point(93, 17);
+            this.PauseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.PauseButton.Location = new System.Drawing.Point(271, 97);
             this.PauseButton.Name = "PauseButton";
-            this.PauseButton.Size = new System.Drawing.Size(75, 47);
+            this.PauseButton.Size = new System.Drawing.Size(96, 44);
             this.PauseButton.TabIndex = 1;
             this.PauseButton.Text = "Pause";
             this.PauseButton.UseVisualStyleBackColor = true;
@@ -90,6 +92,9 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.button2);
+            this.splitContainer1.Panel1.Controls.Add(this.button1);
+            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.volumeBar);
             this.splitContainer1.Panel1.Controls.Add(this.ProgressBar);
             this.splitContainer1.Panel1.Controls.Add(this.PlayButton);
@@ -99,19 +104,31 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.treeView1);
             this.splitContainer1.Size = new System.Drawing.Size(800, 450);
-            this.splitContainer1.SplitterDistance = 78;
+            this.splitContainer1.SplitterDistance = 146;
             this.splitContainer1.TabIndex = 2;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.pictureBox1.Location = new System.Drawing.Point(12, 3);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(140, 140);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
             // 
             // volumeBar
             // 
-            this.volumeBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.volumeBar.Location = new System.Drawing.Point(174, 17);
+            this.volumeBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.volumeBar.Location = new System.Drawing.Point(499, 95);
             this.volumeBar.Maximum = 100;
             this.volumeBar.Name = "volumeBar";
-            this.volumeBar.Size = new System.Drawing.Size(104, 45);
+            this.volumeBar.Size = new System.Drawing.Size(187, 45);
             this.volumeBar.TabIndex = 3;
-            this.volumeBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.volumeBar.TickFrequency = 5;
+            this.volumeBar.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.volumeBar.Value = 75;
             this.volumeBar.Scroll += new System.EventHandler(this.volumeBar_Scroll);
             // 
@@ -119,11 +136,15 @@
             // 
             this.ProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ProgressBar.Location = new System.Drawing.Point(296, 3);
+            this.ProgressBar.LabelsVisible = true;
+            this.ProgressBar.LabelTimeFormat = "g";
+            this.ProgressBar.Location = new System.Drawing.Point(158, 3);
+            this.ProgressBar.Max = System.TimeSpan.Parse("00:00:00.0000002");
+            this.ProgressBar.Min = System.TimeSpan.Parse("00:00:00");
             this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Size = new System.Drawing.Size(492, 73);
+            this.ProgressBar.Pos = System.TimeSpan.Parse("00:00:00");
+            this.ProgressBar.Size = new System.Drawing.Size(639, 73);
             this.ProgressBar.TabIndex = 2;
-            this.ProgressBar.ProgressBar.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ProgressBar_MouseClick);
             // 
             // treeView1
             // 
@@ -131,11 +152,11 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode2.Name = "PlaylistRoot";
-            treeNode2.Text = "Playlist";
+            treeNode1.Name = "PlaylistRoot";
+            treeNode1.Text = "Playlist";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode2});
-            this.treeView1.Size = new System.Drawing.Size(800, 368);
+            treeNode1});
+            this.treeView1.Size = new System.Drawing.Size(800, 300);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
@@ -229,6 +250,26 @@
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Text = "Export to clipboard (new line seperated)";
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Click += new System.EventHandler(this.exportToClipboardnewLineSeperatedToolStripMenuItem_Click);
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(692, 95);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(96, 44);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Settings";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button2.Location = new System.Drawing.Point(373, 97);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(96, 44);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Pause";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -245,6 +286,7 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.volumeBar)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.contextMenuStrip2.ResumeLayout(false);
@@ -271,5 +313,8 @@
         private ToolStripMenuItem clearQueueToolStripMenuItem;
         private ToolStripMenuItem importFromClipboardToolStripMenuItem;
         private ToolStripMenuItem exportToClipboardnewLineSeperatedToolStripMenuItem;
+        private PictureBox pictureBox1;
+        private Button button2;
+        private Button button1;
     }
 }

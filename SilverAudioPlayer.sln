@@ -15,11 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudio.Flac", "NAudio.Flac\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Naudio.Flac", "SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj", "{86A77925-4230-41B9-B388-7D5336DA3395}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.SystemMediaSoundPlayerTests", "SilverAudioPlayer.SystemMediaSoundPlayerTests\SilverAudioPlayer.SystemMediaSoundPlayerTests.csproj", "{5CC7420D-9F68-454D-9641-A52B3D871AB6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Naudio.FlacTests", "SilverAudioPlayer.Naudio.FlacTests\SilverAudioPlayer.Naudio.FlacTests.csproj", "{E68160D1-56DD-4A81-87DA-EDB0BB07377E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.NAudioTests", "SilverAudioPlayer.NAudioTests\SilverAudioPlayer.NAudioTests.csproj", "{5E41D132-AE51-47B8-8351-BFEA12FFE02C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.MetadataSource.Z440AtlCore", "SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.MetadataSource.Z440AtlCore.csproj", "{F2421D96-C459-4F38-97ED-7185C51FD184}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,24 +60,12 @@ Global
 		{86A77925-4230-41B9-B388-7D5336DA3395}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86A77925-4230-41B9-B388-7D5336DA3395}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86A77925-4230-41B9-B388-7D5336DA3395}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CC7420D-9F68-454D-9641-A52B3D871AB6}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CC7420D-9F68-454D-9641-A52B3D871AB6}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
-		{5CC7420D-9F68-454D-9641-A52B3D871AB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CC7420D-9F68-454D-9641-A52B3D871AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CC7420D-9F68-454D-9641-A52B3D871AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CC7420D-9F68-454D-9641-A52B3D871AB6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E68160D1-56DD-4A81-87DA-EDB0BB07377E}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
-		{E68160D1-56DD-4A81-87DA-EDB0BB07377E}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
-		{E68160D1-56DD-4A81-87DA-EDB0BB07377E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E68160D1-56DD-4A81-87DA-EDB0BB07377E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E68160D1-56DD-4A81-87DA-EDB0BB07377E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E68160D1-56DD-4A81-87DA-EDB0BB07377E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E41D132-AE51-47B8-8351-BFEA12FFE02C}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E41D132-AE51-47B8-8351-BFEA12FFE02C}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
-		{5E41D132-AE51-47B8-8351-BFEA12FFE02C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E41D132-AE51-47B8-8351-BFEA12FFE02C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E41D132-AE51-47B8-8351-BFEA12FFE02C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E41D132-AE51-47B8-8351-BFEA12FFE02C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2421D96-C459-4F38-97ED-7185C51FD184}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2421D96-C459-4F38-97ED-7185C51FD184}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{F2421D96-C459-4F38-97ED-7185C51FD184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2421D96-C459-4F38-97ED-7185C51FD184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2421D96-C459-4F38-97ED-7185C51FD184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2421D96-C459-4F38-97ED-7185C51FD184}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
