@@ -18,6 +18,7 @@
     <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+    <ProjectReference Include="..\SilverConfig\SilverConfig.csproj" />
   </ItemGroup>
 
   <ItemGroup>

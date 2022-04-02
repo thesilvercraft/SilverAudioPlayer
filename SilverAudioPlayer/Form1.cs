@@ -1,30 +1,156 @@
 using SilverAudioPlayer.Shared;
+using SilverConfig;
 using SilverFormsUtils;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Timers;
 
 namespace SilverAudioPlayer
 {
     public partial class Form1 : Form
     {
+        private IConfigReader<Preferences> ConfigReader;
+        private const string ConfigFileName = "preferences.xml";
+        private Preferences Config;
+        private bool WatchForConfigChanges = true;
+        private ConfigFileWatcher cfw;
+        private string ConfigLoc;
+
         public Form1()
         {
             InitializeComponent();
+            ConfigLoc = Path.Combine(AppContext.BaseDirectory, ConfigFileName);
+            ConfigReader = new CommentXmlConfigReader<Preferences>();
+            if (File.Exists(Path.Combine(AppContext.BaseDirectory, ConfigFileName)))
+            {
+                Config = ConfigReader.Read(ConfigLoc);
+            }
+            else
+            {
+                Config = new Preferences();
+                ConfigReader.Write(Config, ConfigLoc);
+            }
+
             ProgressBar.ProgressBar.MouseClick += ProgressBar_MouseClick;
-            //ProgressBar.ProgressBar.ShiftRainbow = 1;
+            OnConfigChange(true);
+            AutosaveConfig.Elapsed += AutosaveConfig_Elapsed;
+            AutosaveConfig.Start();
+            if (WatchForConfigChanges)
+            {
+                cfw = new(ConfigLoc);
+                cfw.OnChangedE += Cfw_OnChangedE;
+            }
             if (GetDarkModePreference.ShouldIUseDarkMode())
             {
                 this.UseDarkModeBar(true);
                 this.UseDarkModeForThingsInsideOfForm(true, true);
             }
-            ProcessMessages = !File.Exists(Path.Combine(AppContext.BaseDirectory, ".nohotkeys"));
-            if (ProcessMessages)
+        }
+
+        private void AutosaveConfig_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            AutoSaveConfig();
+        }
+
+        private System.Timers.Timer AutosaveConfig = new();
+
+        private void Cfw_OnChangedE(object? sender, string e)
+        {
+            if (savednow)
             {
-                RegisterHotKey(Handle, 1, 0, (int)Keys.Play);
-                RegisterHotKey(Handle, 2, 0, (int)Keys.Pause);
-                RegisterHotKey(Handle, 3, 0, (int)Keys.MediaPlayPause);
+                savednow = false;
             }
+            else
+            {
+                Config = ConfigReader.Read(ConfigLoc);
+                OnConfigChange();
+            }
+        }
+
+        private bool HotKeyRegistered = false;
+        private bool savednow = false;
+
+        private void AutoSaveConfig()
+        {
+            savednow = true;
+            Debug.WriteLine("Saving config");
+            volumeBar.Invoke(() => { Config.Volume = (byte)volumeBar.Value; });
+            Config.ProgressBarRainbow = ProgressBar.ProgressBar.Rainbow;
+            Config.ProgressBarRainbowShift = ProgressBar.ProgressBar.ShiftRainbow;
+            Config.ProgressBarRainbowCaching = (byte)ProgressBar.ProgressBar.CacheRainbowDecimals;
+            Config.ProcessMessages = HotKeyRegistered;
+            Config.ProgressBarColour = ProgressBar.ProgressBar.Color.ToArgb();
+            Config.MillisecondIntervalOfAutoSave = (ulong)AutosaveConfig.Interval;
+            ConfigReader.Write(Config, ConfigLoc);
+            Debug.WriteLine("Config saved");
+        }
+
+        private void OnConfigChange(bool fromstartup = false)
+        {
+            ProgressBar.ProgressBar.ShiftRainbow = Config.ProgressBarRainbowShift;
+            ProgressBar.ProgressBar.CacheRainbowDecimals = Config.ProgressBarRainbowCaching;
+            ProgressBar.ProgressBar.Rainbow = Config.ProgressBarRainbow;
+            ProgressBar.ProgressBar.Color = Color.FromArgb(Config.ProgressBarColour);
+            if (fromstartup)
+            {
+                volumeBar.Value = Config.Volume > 100 ? 100 : Config.Volume;
+                if (Config.Volume > 100)
+                {
+                    Config.Volume = 100;
+                }
+                Player?.SetVolume(Config.Volume);
+            }
+            else
+            {
+                volumeBar.Invoke(() => { volumeBar.Value = Config.Volume > 100 ? 100 : Config.Volume; });
+                if (Config.Volume > 100)
+                {
+                    Config.Volume = 100;
+                }
+                Player?.SetVolume(Config.Volume);
+            }
+            if (Config!.ProcessMessages && !HotKeyRegistered)
+            {
+                if (fromstartup)
+                {
+                    RegisterHotKey(Handle, 1, 0, (int)Keys.Play);
+                    RegisterHotKey(Handle, 2, 0, (int)Keys.Pause);
+                    RegisterHotKey(Handle, 3, 0, (int)Keys.MediaPlayPause);
+                }
+                else
+                {
+                    Invoke(() =>
+                    {
+                        RegisterHotKey(Handle, 1, 0, (int)Keys.Play);
+                        RegisterHotKey(Handle, 2, 0, (int)Keys.Pause);
+                        RegisterHotKey(Handle, 3, 0, (int)Keys.MediaPlayPause);
+                    });
+                }
+
+                HotKeyRegistered = true;
+            }
+            else if ((!Config!.ProcessMessages) && HotKeyRegistered)
+            {
+                if (fromstartup)
+                {
+                    UnregisterHotKey(Handle, 1);
+                    UnregisterHotKey(Handle, 2);
+                    UnregisterHotKey(Handle, 3);
+                }
+                else
+                {
+                    Invoke(() =>
+                    {
+                        UnregisterHotKey(Handle, 1);
+                        UnregisterHotKey(Handle, 2);
+                        UnregisterHotKey(Handle, 3);
+                    });
+                }
+
+                HotKeyRegistered = false;
+            }
+            AutosaveConfig.Interval = Config.MillisecondIntervalOfAutoSave;
         }
 
         public Form1(params string[] files) : this()
@@ -36,19 +162,19 @@ namespace SilverAudioPlayer
         private const int APPCOMMAND_MEDIA_PLAY_PAUSE = 14;
 
         [DllImport("user32.dll")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
 
         [DllImport("user32.dll")]
-        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         public const int HWND_BROADCAST = 0xffff;
         public static readonly int WM_SHOWME = RegisterWindowMessage("WM_SHOWME_AUDIOPLAYERZ");
 
         [DllImport("user32")]
-        public static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam);
+        private static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam);
 
         [DllImport("user32", CharSet = CharSet.Unicode)]
-        public static extern int RegisterWindowMessage(string message);
+        private static extern int RegisterWindowMessage(string message);
 
         private void ShowMe()
         {
@@ -63,11 +189,9 @@ namespace SilverAudioPlayer
             TopMost = false;
         }
 
-        private bool ProcessMessages = true;
-
         protected override void WndProc(ref Message m)
         {
-            if (ProcessMessages)
+            if (Config!.ProcessMessages)
             {
                 if (m.Msg == WM_SHOWME)
                 {
@@ -135,11 +259,7 @@ namespace SilverAudioPlayer
         public IPlay? Player { get; private set; }
         private Thread? th;
 
-        private bool ShouldPlayAfterSelect() => true;
-
-        public Logic logic { get; set; } = new();
-
-        private bool CheckForMetadataInSP = true;
+        public Logic Logic { get; set; } = new();
 
         public void StartPlaying(bool play = true, bool resetsal = false)
         {
@@ -147,10 +267,10 @@ namespace SilverAudioPlayer
             {
                 CurrentSong = (Song)treeView1.Nodes[0].Nodes[0].Tag;
             }
-            Player = logic.GetPlayerFromURI(CurrentURI);
-            if (CurrentSong != null && CurrentSong?.Metadata == null && CheckForMetadataInSP)
+            Player = Logic.GetPlayerFromURI(CurrentURI);
+            if (CurrentSong != null && CurrentSong?.Metadata == null && Config.CheckForMetadataInSP)
             {
-                var a = logic.GetMetadataFromURI(CurrentURI);
+                var a = Logic.GetMetadataFromURI(CurrentURI);
                 if (a != null)
                 {
                     Debug.WriteLine("Getting metadata");
@@ -162,82 +282,6 @@ namespace SilverAudioPlayer
                 MessageBox.Show("I do not know how to play " + CurrentURI);
                 return;
             }
-            /*
-            if (textBox1.Text[0..4].ToLowerInvariant() == ("http"))
-            {
-                if (YtbR.IsMatch(textBox1.Text))
-                {
-                    MessageBox.Show("http streams support mp3 only for now and YOUTUBE NO LONGER PROVIDES MP3's through their android player api", "Error");
-                    return;
-                }
-                if (MessageBox.Show("http streams support mp3 only for now and are really broken, do you want to continue", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                {
-                    Player = new StreamWavePlayer();
-                    Player.LoadFile(textBox1.Text);
-                    Player.Play();
-                    decoderLabel.Text = "Decoder: StreamWavePlayer (MP3 STREAM PLAYER)";
-                    ChannelsLabel.Text = $"Channels: {Player.ChannelCount()}";
-                    BPSLabel.Text = $"Bits per sample: {Player.GetBitsPerSample()}";
-                    SampleRateLabel.Text = $"Sample rate: {Player.GetSampleRate()}Hz";
-                    Player.TrackEnd += OutputDevice_PlaybackStopped;
-                    return;
-                }
-                else
-                {
-                    return;
-                }
-            }
-
-            string? fileExt = Path.GetExtension(textBox1.Text).ToLowerInvariant();
-            bool usingcustom = false;
-            if (keyValuePairs.ContainsKey(fileExt[1..]))
-            {
-                (string decoderfile, string nameofdecoder) = keyValuePairs[fileExt[1..]];
-                Assembly dll = Assembly.LoadFile(Path.GetFullPath(decoderfile, System.AppContext.BaseDirectory));
-                if (dll != null)
-                {
-                    Type? type = dll.GetType(nameofdecoder);
-                    if (type != null)
-                    {
-                        if (type.GetInterface(nameof(IPlay)) != null)
-                        {
-                            Player = (IPlay?)Activator.CreateInstance(type, textBox1.Text);
-                        }
-                        else if (type.GetInterface(nameof(IWaveProvider)) != null)
-                        {
-                            Player = new WaveFilePlayer();
-                            ((WaveFilePlayer)Player).LoadFromProvider((IWaveProvider?)Activator.CreateInstance(type, textBox1.Text));
-                        }
-                    }
-                }
-                usingcustom = Player != null;
-                decoderLabel.Text = $"Decoder: {dll?.GetType(nameofdecoder)?.FullName} ({fileExt}) (Custom)";
-            }
-            switch (fileExt)
-            {
-                case ".mid":
-                case ".midi":
-                    {
-                        Player = new MidiPlayer(selectedmidiout);
-                        Player.LoadFile(textBox1.Text);
-                        decoderLabel.Text = "Decoder: MidiPlayer";
-                        usingcustom = true;
-                        break;
-                    }
-                case "opus":
-                    {
-                        MessageBox.Show("Opus is not supported", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        break;
-                    }
-            }
-
-            if (!usingcustom)
-            {
-                Player = new WaveFilePlayer();
-                Player.LoadFile(textBox1.Text);
-                //decoderLabel.Text = "Decoder: " + ((WaveFilePlayer)Player).Decoder;
-            }
-            */
             if (play)
             {
                 Player.Play();
@@ -245,8 +289,6 @@ namespace SilverAudioPlayer
                 /*ChannelsLabel.Text = $"Channels: {Player.ChannelCount()}";
                 BPSLabel.Text = $"Bits per sample: {Player.GetBitsPerSample()}";
                 SampleRateLabel.Text = $"Sample rate: {Player.GetSampleRate()}Hz";
-
-                tracktime.Text = Player.Length()?.ToString("g");
                 */
                 Player?.SetVolume((byte)volumeBar.Value);
                 ProgressBar.Pos = TimeSpan.FromMilliseconds(0);
@@ -279,18 +321,6 @@ namespace SilverAudioPlayer
                         pictureBox1.Image = Image.FromStream(memstream);
                     }
                 }
-                //Track theTrack = new(textBox1.Text);
-                /*var img = theTrack.EmbeddedPictures.FirstOrDefault();
-                if (img != null)
-                {
-                    metadataImage.Image = Image.FromStream(new MemoryStream(img.PictureData));
-                }
-                else
-                {
-                    metadataImage.Image = null;
-                }
-                preventstoppedstatus = true;*/
-                // TrackLmao(TrackEvent.ChangeSong);
             }
             if (resetsal)
             {
@@ -334,23 +364,22 @@ namespace SilverAudioPlayer
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
             Debug.WriteLine("Output device playback stopped");
-            //Debug.WriteLine("Loop single checked: " + ls.Checked);
+            Debug.WriteLine("Loop single checked: " + Config.LoopSong);
             Debug.WriteLine("StopAutoLoading: " + StopAutoLoading);
             Debug.WriteLine("Current song: " + CurrentSong);
-            /*if (ls.Checked && !StopAutoLoading)
+            if (Config.LoopSong && !StopAutoLoading)
             {
                 RemoveTrack();
                 StartPlaying();
             }
-            else*/
-            if (CurrentSong == null && !StopAutoLoading)
+            else if (CurrentSong != null && !StopAutoLoading)
             {
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
                 int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
                 if (index + 1 < aa.Length)
                 {
-                    HandleSongChanging((Guid)aa[index + 1].Tag);
+                    HandleSongChanging(((Song)aa[index + 1].Tag));
                 }
             }
             /*else if (preventstoppedstatus)
@@ -364,14 +393,14 @@ namespace SilverAudioPlayer
             StopAutoLoading = false;
         }
 
-        private void HandleSongChanging(Guid NextSong)
+        private void HandleSongChanging(Song NextSong)
         {
             TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
             treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
             Debug.WriteLine("StopAutoLoading set to true in HandleSongChanging");
             StopAutoLoading = true;
             int index = aa.FirstOrDefault(x => (Song)x.Tag == CurrentSong)?.Index ?? 0;
-            var nxt = aa.First(x => ((Song)x.Tag).Guid == NextSong);
+            var nxt = aa.First(x => ((Song)x.Tag) == NextSong);
             int indexNext = nxt.Index;
             CurrentSong = (Song)nxt.Tag;
             aa[index].ForeColor = aa[indexNext].ForeColor;
@@ -386,16 +415,6 @@ namespace SilverAudioPlayer
             {
                 e.Effect = DragDropEffects.Copy;
             }
-            //var data = (TreeNode?)e.Data?.GetData("System.Windows.Forms.TreeNode");
-            /*if (SourceNode != null)
-            {
-                e.Effect = DragDropEffects.Move;
-            }
-            else if (data != null)
-            {
-                SourceNode = data;
-                e.Effect = DragDropEffects.Move;
-            }*/
         }
 
         private IEnumerable<string> FilterFiles(IEnumerable<string> files)
@@ -420,7 +439,7 @@ namespace SilverAudioPlayer
                 int a = treeView1.Nodes[0].Nodes.Count;
                 treeView1.Nodes[0].Nodes.AddRange(files.Select(x => new TreeNode(x) { Tag = new Song(x, x, Guid.NewGuid()) }).ToArray());
                 treeView1.ExpandAll();
-                if (ShouldPlayAfterSelect() && (a == 0 || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes))
+                if (Config!.PlayAfterSelect && (a == 0 || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes))
                 {
                     CurrentSong = (Song)treeView1.Nodes[0].Nodes[a].Tag;
                     Debug.WriteLine("StopAutoLoading set to true in form1dragdrop");
@@ -545,7 +564,6 @@ namespace SilverAudioPlayer
                             DestinationNode.Nodes.Insert(0, SourceNode);
                         }
                         else
-
                         {
                             int i = DestinationNode.LastNode.Index;
                             SourceNode.Remove();
@@ -648,7 +666,7 @@ namespace SilverAudioPlayer
             {
                 Debug.WriteLine("StopAutoLoading set to true in treeView1_NodeMouseDoubleClick");
                 StopAutoLoading = true;
-                HandleSongChanging(((Song)e.Node.Tag).Guid);
+                HandleSongChanging(((Song)e.Node.Tag));
             }
         }
 
@@ -658,7 +676,7 @@ namespace SilverAudioPlayer
             {
                 Debug.WriteLine("StopAutoLoading set to true in playNowToolStripMenuItem_Click");
                 StopAutoLoading = true;
-                HandleSongChanging(((Song)SelectedItem.Tag).Guid);
+                HandleSongChanging(((Song)SelectedItem.Tag));
             }
         }
 
@@ -728,7 +746,7 @@ namespace SilverAudioPlayer
                     int a = treeView1.Nodes[0].Nodes.Count;
                     treeView1.Nodes[0].Nodes.AddRange(lines.Select(x => new TreeNode(x) { Tag = Guid.NewGuid() }).ToArray());
                     treeView1.ExpandAll();
-                    if (ShouldPlayAfterSelect() && (a == 0 || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes))
+                    if (Config!.PlayAfterSelect && (a == 0 || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes))
                     {
                         CurrentSong = (Song)treeView1.Nodes[0].Nodes[a].Tag;
                         if (Player != null)
@@ -762,8 +780,18 @@ namespace SilverAudioPlayer
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            AutoSaveConfig();
+            AutosaveConfig.Stop();
+            AutosaveConfig.Dispose();
+            Player.TrackEnd -= OutputDevice_PlaybackStopped;
             Player?.Stop();
             token.Cancel();
+            cfw.Dispose();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Process.Start("notepad.exe", ConfigLoc);
         }
     }
 }

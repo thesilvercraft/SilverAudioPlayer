@@ -33,6 +33,8 @@
             this.PlayButton = new System.Windows.Forms.Button();
             this.PauseButton = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.volumeBar = new System.Windows.Forms.TrackBar();
             this.ProgressBar = new SilverAudioPlayer.TimedProgressBar();
@@ -48,8 +50,6 @@
             this.clearQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importFromClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToClipboardnewLineSeperatedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -106,6 +106,27 @@
             this.splitContainer1.Size = new System.Drawing.Size(800, 450);
             this.splitContainer1.SplitterDistance = 146;
             this.splitContainer1.TabIndex = 2;
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button2.Location = new System.Drawing.Point(373, 97);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(96, 44);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Pause";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(692, 95);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(96, 44);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Settings";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // pictureBox1
             // 
@@ -249,26 +270,6 @@
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Text = "Export to clipboard (new line seperated)";
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Click += new System.EventHandler(this.exportToClipboardnewLineSeperatedToolStripMenuItem_Click);
-            // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(692, 95);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(96, 44);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Settings";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(373, 97);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(96, 44);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Pause";
-            this.button2.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

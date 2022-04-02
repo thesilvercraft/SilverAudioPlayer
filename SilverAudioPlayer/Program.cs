@@ -59,11 +59,16 @@ namespace SilverAudioPlayer
             {
             }
             var frm1 = new Form1();
-            _container.SatisfyImportsOnce(frm1);
-            _container.SatisfyImportsOnce(frm1.logic);
+            _container.SatisfyImportsOnce(frm1.Logic);
             //ACCESS THE DANG THINGS HERE FOR IT TO WORK
-            Debug.WriteLine(String.Concat(frm1.logic.MetadataProviders.Select(x => x.Value.ToString())));
-            Debug.WriteLine(String.Concat(frm1.logic.Providers.Select(x => x.Value.ToString())));
+            foreach (var provider in frm1.Logic.Providers)
+            {
+                Debug.WriteLine(provider.Value.GetType().Name);
+            }
+            foreach (var provider in frm1.Logic.MetadataProviders)
+            {
+                Debug.WriteLine(provider.Value.GetType().Name);
+            }
             Application.Run(frm1);
         }
     }
