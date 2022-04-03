@@ -42,5 +42,7 @@ namespace SilverAudioPlayer
 
         [Comment("Volume")]
         public byte Volume { get; set; } = 70;
+
+        public bool FillMetadataOfLoadedFilesOnLoad { get; set; }
     }
 }

@@ -55,19 +55,32 @@ namespace SilverAudioPlayer
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            if (args != null && args.Any(x => string.IsNullOrEmpty(x)))
-            {
-            }
+            Debug.WriteLine("AAA");
             var frm1 = new Form1();
             _container.SatisfyImportsOnce(frm1.Logic);
             //ACCESS THE DANG THINGS HERE FOR IT TO WORK
             foreach (var provider in frm1.Logic.Providers)
             {
-                Debug.WriteLine(provider.Value.GetType().Name);
+                var name = provider.Value.GetType().Name;
+                Debug.WriteLine(name);
+
             }
             foreach (var provider in frm1.Logic.MetadataProviders)
             {
-                Debug.WriteLine(provider.Value.GetType().Name);
+                var name = provider.Value.GetType().Name;
+                Debug.WriteLine(name);
+            }
+            if (args != null && !args.Any(x => string.IsNullOrEmpty(x)))
+            {
+                if (args.Length == 1 && args[0] == "--reg")
+                {
+                    frm1.RegisterInReg();
+                }
+                else
+                {
+                frm1.ProcessFiles(true, args);
+
+                }
             }
             Application.Run(frm1);
         }
