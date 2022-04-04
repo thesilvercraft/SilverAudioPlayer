@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.MetadataSource.Z440AtlCore.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj" />

@@ -42,7 +42,7 @@ namespace SilverAudioPlayer
 
         [Comment("Volume")]
         public byte Volume { get; set; } = 70;
-
+        [Comment("Should the player read the metadata of files when they are added to the queue? also enables sorting by track number")]
         public bool FillMetadataOfLoadedFilesOnLoad { get; set; }
     }
 }
