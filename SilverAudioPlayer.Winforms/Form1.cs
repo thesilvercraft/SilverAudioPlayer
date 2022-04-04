@@ -785,18 +785,6 @@ namespace SilverAudioPlayer
             treeView1.Nodes[0].Nodes.Insert(what.Index + howmuch, what);
         }
 
-        private void Move(short howmuch, Song song)
-        {
-            Move(howmuch, FindById(song.Guid));
-        }
-
-        private TreeNode[] GetFromPlaylist()
-        {
-            TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-            treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-            return aa;
-        }
-
         private void playNextToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
