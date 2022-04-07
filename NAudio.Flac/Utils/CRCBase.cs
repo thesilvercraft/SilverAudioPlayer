@@ -35,7 +35,7 @@ namespace NAudio.Flac.Utils
                     }
                     else
                     {
-                        crc = crc << 1;
+                        crc <<= 1;
                     }
                 }
                 crc_table[i] = (ushort)(crc & bitmask);

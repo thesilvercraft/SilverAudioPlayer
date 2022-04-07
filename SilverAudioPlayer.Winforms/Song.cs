@@ -26,5 +26,15 @@ namespace SilverAudioPlayer
         {
             return Guid.Equals(other);
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Song);
+        }
+
+        public override int GetHashCode()
+        {
+            return Guid.GetHashCode();
+        }
     }
 }

@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.MetadataS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverConfig", "SilverConfig\SilverConfig.csproj", "{1E3DDBAE-B029-4A0E-930A-85971F3D6509}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Core", "SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj", "{481CFB9D-3220-49F3-90DA-3E201E1C36C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Core", "SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj", "{481CFB9D-3220-49F3-90DA-3E201E1C36C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.DryWetMidi", "SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.DryWetMidi.csproj", "{F79F6739-CDB9-4CF8-8658-085053151C9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,12 @@ Global
 		{481CFB9D-3220-49F3-90DA-3E201E1C36C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{481CFB9D-3220-49F3-90DA-3E201E1C36C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{481CFB9D-3220-49F3-90DA-3E201E1C36C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F79F6739-CDB9-4CF8-8658-085053151C9F}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{F79F6739-CDB9-4CF8-8658-085053151C9F}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{F79F6739-CDB9-4CF8-8658-085053151C9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F79F6739-CDB9-4CF8-8658-085053151C9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F79F6739-CDB9-4CF8-8658-085053151C9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F79F6739-CDB9-4CF8-8658-085053151C9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

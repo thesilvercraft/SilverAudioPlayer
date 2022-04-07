@@ -180,6 +180,16 @@ namespace SilverAudioPlayer
 
         private void ShowMe()
         {
+            if (Config.AutoMagicallyLoadFromArgstxt || MessageBox.Show("Would you like to load the files you tried to load in a different instance?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                var path = Path.Combine(AppContext.BaseDirectory, "args.txt");
+
+                if (File.Exists(path))
+                {
+                    var lines = File.ReadAllLines(path);
+                    ProcessFiles(false, lines);
+                }
+            }
             if (WindowState == FormWindowState.Minimized)
             {
                 WindowState = FormWindowState.Normal;
@@ -303,7 +313,15 @@ namespace SilverAudioPlayer
         {
             if (CurrentURI == null && CurrentSong == null)
             {
-                CurrentSong = (Song)treeView1.Nodes[0].Nodes[0].Tag;
+                if (treeView1.Nodes[0].Nodes.Count > 0)
+                {
+                    CurrentSong = (Song)treeView1.Nodes[0].Nodes[0].Tag;
+                }
+                else
+                {
+                    Debug.WriteLine("Avoiding fatal crash");
+                    return;
+                }
             }
             Player = Logic.GetPlayerFromURI(CurrentURI);
             if (CurrentSong != null && CurrentSong?.Metadata == null && Config.CheckForMetadataInSP)
@@ -862,7 +880,10 @@ namespace SilverAudioPlayer
 
         private void button1_Click(object sender, EventArgs e)
         {
+            AutoSaveConfig();
+#if DEBUG
             Process.Start("notepad.exe", ConfigLoc);
+#endif
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -875,5 +896,8 @@ namespace SilverAudioPlayer
         {
             DoDragDrop(e.Item, DragDropEffects.Move);
         }
+
+        //todo use mutex for one instance only
+        //todo use file to transfer instance data from new to old instance
     }
 }

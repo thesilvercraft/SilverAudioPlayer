@@ -100,9 +100,9 @@ namespace SilverAudioPlayer.NAudio
     [Export(typeof(IPlayProvider))]
     public class NaudioWaveStreamWrapper : IPlayProvider
     {
-        public bool CanPlayFile(string filename)
+        public bool CanPlayFile(string URI)
         {
-            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(filename);
+            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(URI);
         }
 
         public bool CanPlayStream(Stream stream)
@@ -111,12 +111,12 @@ namespace SilverAudioPlayer.NAudio
             return false;
         }
 
-        public IPlay? GetPlayer(string filename)
+        public IPlay? GetPlayer(string URI)
         {
-            if (CanPlayFile(filename))
+            if (CanPlayFile(URI))
             {
                 var player = new WaveFilePlayer();
-                player.LoadFile(filename);
+                player.LoadFile(URI);
                 return player;
             }
             return null;

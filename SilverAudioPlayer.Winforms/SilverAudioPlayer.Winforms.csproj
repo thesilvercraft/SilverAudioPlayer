@@ -7,6 +7,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Version>1.0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,12 +15,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.0" />
     <PackageReference Include="SilverFormsUtils" Version="1.0.7" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
+    <ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.DryWetMidi.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.MetadataSource.Z440AtlCore.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj" />

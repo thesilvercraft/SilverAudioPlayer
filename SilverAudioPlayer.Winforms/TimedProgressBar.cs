@@ -26,12 +26,12 @@ namespace SilverAudioPlayer
         }
 
         public string LabelTimeFormat { get; set; } = "g";
-        private TimeSpan _max { get; set; } = new TimeSpan(2);
+        private TimeSpan _max { get; set; } = new TimeSpan(1);
         public TimeSpan Max { get => _max; set => SetMax(value); }
         private TimeSpan _min { get; set; } = TimeSpan.FromSeconds(0);
         public TimeSpan Min { get => _min; set => SetMin(value); }
         private TimeSpan _pos { get; set; } = TimeSpan.FromSeconds(0);
-        public TimeSpan Pos { get => _min; set => SetPos(value); }
+        public TimeSpan Pos { get => _pos; set => SetPos(value); }
 
         private void SetMax(TimeSpan max)
         {

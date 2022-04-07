@@ -27,37 +27,31 @@ namespace SilverAudioPlayer.SystemMediaSoundPlayer
 
         public uint? ChannelCount()
         {
-            //throw new NotImplementedException();
             return null;
         }
 
         public uint? GetBitsPerSample()
         {
-            //throw new NotImplementedException();
             return null;
         }
 
         public PlaybackState? GetPlaybackState()
         {
-            //throw new NotImplementedException();
             return null;
         }
 
         public TimeSpan GetPosition()
         {
-            //throw new NotImplementedException();
             return TimeSpan.Zero;
         }
 
         public long? GetSampleRate()
         {
-            //throw new NotImplementedException();
             return null;
         }
 
         public TimeSpan? Length()
         {
-            //throw new NotImplementedException();
             return null;
         }
 
@@ -89,12 +83,12 @@ namespace SilverAudioPlayer.SystemMediaSoundPlayer
 
         public void SetPosition(TimeSpan position)
         {
-            //throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void SetVolume(byte volume)
         {
-            //throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public void Stop()
@@ -109,6 +103,7 @@ namespace SilverAudioPlayer.SystemMediaSoundPlayer
             player.Stream.Close();
             player.Stream.Dispose();
             player?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
