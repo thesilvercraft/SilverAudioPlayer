@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.CAD.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.DryWetMidi.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.MetadataSource.Z440AtlCore.csproj" />

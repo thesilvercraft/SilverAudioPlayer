@@ -1,4 +1,5 @@
 using Microsoft.Win32;
+using SilverAudioPlayer.CAD;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
@@ -18,6 +19,139 @@ namespace SilverAudioPlayer
         private bool WatchForConfigChanges = true;
         private ConfigFileWatcher cfw;
         private string ConfigLoc;
+        private IMusicStatusInterface? musicStatusInterface;
+
+        private void AddMSI(IMusicStatusInterface e)
+        {
+            if (musicStatusInterface != null)
+            {
+                RemoveMSI(musicStatusInterface);
+            }
+            musicStatusInterface = e;
+            musicStatusInterface.Play += MusicStatusInterface_Play;
+            musicStatusInterface.Pause += MusicStatusInterface_Pause;
+            musicStatusInterface.Stop += MusicStatusInterface_Stop;
+            musicStatusInterface.PlayPause += MusicStatusInterface_PlayPause;
+            musicStatusInterface.Next += MusicStatusInterface_Next;
+            musicStatusInterface.Previous += MusicStatusInterface_Previous;
+            musicStatusInterface.GetCurrentTrack += MusicStatusInterface_GetCurrentTrack;
+            musicStatusInterface.GetDuration += MusicStatusInterface_GetDuration;
+            musicStatusInterface.GetState += MusicStatusInterface_GetState;
+            musicStatusInterface.GetVolume += MusicStatusInterface_GetVolume;
+            musicStatusInterface.GetRepeat += MusicStatusInterface_GetRepeat;
+            musicStatusInterface.StartIPC();
+        }
+
+        private RepeatState MusicStatusInterface_GetRepeat()
+        {
+            return Config.LoopSong ? RepeatState.One : RepeatState.None;
+        }
+
+        private byte MusicStatusInterface_GetVolume()
+        {
+            return (byte)volumeBar.Value;
+        }
+
+        private PlaybackState MusicStatusInterface_GetState()
+        {
+            return Player?.GetPlaybackState() ?? PlaybackState.Stopped;
+        }
+
+        private void RemoveMSI(IMusicStatusInterface e)
+        {
+            e.Play -= MusicStatusInterface_Play;
+            e.Pause -= MusicStatusInterface_Pause;
+            e.Stop -= MusicStatusInterface_Stop;
+            e.Next -= MusicStatusInterface_Next;
+            e.Previous -= MusicStatusInterface_Previous;
+            e.GetCurrentTrack -= MusicStatusInterface_GetCurrentTrack;
+            e.GetDuration -= MusicStatusInterface_GetDuration;
+            e.GetState -= MusicStatusInterface_GetState;
+            e.GetVolume -= MusicStatusInterface_GetVolume;
+            e.GetRepeat -= MusicStatusInterface_GetRepeat;
+
+            e.StopIPC();
+        }
+
+        private ulong MusicStatusInterface_GetDuration()
+        {
+            return (ulong?)(CurrentSong.Metadata.Duration / 1000) ?? 69;
+        }
+
+        private Song MusicStatusInterface_GetCurrentTrack()
+        {
+            return CurrentSong;
+        }
+
+        private void MusicStatusInterface_Previous(object? sender, EventArgs e)
+        {
+            TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
+            treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
+            int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
+            if (index - 1 > 0)
+            {
+                HandleSongChanging((Song)aa[index - 1].Tag, true);
+            }
+        }
+
+        private void MusicStatusInterface_Next(object? sender, EventArgs e)
+        {
+            TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
+            treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
+            int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
+            if (index + 1 < aa.Length)
+            {
+                HandleSongChanging((Song)aa[index + 1].Tag, true);
+            }
+        }
+
+        private void Play()
+        {
+            Player?.Play();
+            //
+        }
+
+        private void Pause()
+        {
+            Player?.Pause();
+        }
+
+        private void PlayPause(bool allowstart)
+        {
+            if (Player?.GetPlaybackState() == PlaybackState.Playing)
+            {
+                Pause();
+            }
+            else if (Player?.GetPlaybackState() == PlaybackState.Paused)
+            {
+                Play();
+            }
+            else if (allowstart)
+            {
+                StartPlaying(true);
+            }
+        }
+
+        private void MusicStatusInterface_PlayPause(object? sender, object e)
+        {
+            PlayPause(false);
+        }
+
+        private void MusicStatusInterface_Stop(object? sender, object e)
+        {
+            StopAutoLoading = true;
+            Player?.Stop();
+        }
+
+        private void MusicStatusInterface_Pause(object? sender, object e)
+        {
+            Player?.Pause();
+        }
+
+        private void MusicStatusInterface_Play(object? sender, object e)
+        {
+            Player?.Play();
+        }
 
         public Form1()
         {
@@ -209,21 +343,7 @@ namespace SilverAudioPlayer
                 {
                     ShowMe();
                 }
-                void Toggle()
-                {
-                    if (Player?.GetPlaybackState() == PlaybackState.Playing)
-                    {
-                        Player?.Pause();
-                    }
-                    else if (Player?.GetPlaybackState() == PlaybackState.Paused)
-                    {
-                        Player?.Play();
-                    }
-                    else
-                    {
-                        StartPlaying(true);
-                    }
-                }
+
                 switch (m.Msg)
                 {
                     case WM_APPCOMMAND:
@@ -231,7 +351,7 @@ namespace SilverAudioPlayer
                         switch (cmd)
                         {
                             case APPCOMMAND_MEDIA_PLAY_PAUSE:
-                                Toggle();
+                                PlayPause(true);
                                 break;
 
                             default:
@@ -244,15 +364,15 @@ namespace SilverAudioPlayer
                         switch (m.WParam.ToInt32())
                         {
                             case 1:
-                                Player?.Play();
+                                Play();
                                 break;
 
                             case 2:
-                                Player?.Pause();
+                                Pause();
                                 break;
 
                             case 3:
-                                Toggle();
+                                PlayPause(true);
                                 break;
                         }
                         break;
@@ -716,7 +836,7 @@ namespace SilverAudioPlayer
         {
             if (Player != null)
             {
-                Player.Play();
+                Play();
             }
             else
             {
@@ -726,7 +846,7 @@ namespace SilverAudioPlayer
 
         private void PauseButton_Click(object sender, EventArgs e)
         {
-            Player?.Pause();
+            Pause();
         }
 
         private TreeNode SelectedItem;
@@ -880,9 +1000,10 @@ namespace SilverAudioPlayer
 
         private void button1_Click(object sender, EventArgs e)
         {
+            AddMSI(new CADMusicStatusInterface());
             AutoSaveConfig();
 #if DEBUG
-            Process.Start("notepad.exe", ConfigLoc);
+             Process.Start("notepad.exe", ConfigLoc);
 #endif
         }
 
@@ -896,8 +1017,5 @@ namespace SilverAudioPlayer
         {
             DoDragDrop(e.Item, DragDropEffects.Move);
         }
-
-        //todo use mutex for one instance only
-        //todo use file to transfer instance data from new to old instance
     }
 }

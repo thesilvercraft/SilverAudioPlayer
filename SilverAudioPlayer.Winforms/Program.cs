@@ -92,15 +92,19 @@ namespace SilverAudioPlayer
                 return true;
             };
             ApplicationConfiguration.Initialize();
-            AppCenter.Start("e18445b9-ac9c-4d5a-af60-318e0cba754b",
-                   typeof(Analytics), typeof(Crashes));
             if (mutex.WaitOne(TimeSpan.Zero, true))
             {
                 Debug.WriteLine("AAA");
                 frm1 = new Form1();
                 DoContainerShit();
+                bool ms = true;
                 if (args != null && !args.Any(x => string.IsNullOrEmpty(x)))
                 {
+                    if (args.Contains("--noms"))
+                    {
+                        args = args.Where(val => val != "--noms").ToArray();
+                        ms = false;
+                    }
                     if (args.Length == 1 && args[0] == "--reg")
                     {
                         frm1.RegisterInReg();
@@ -109,6 +113,11 @@ namespace SilverAudioPlayer
                     {
                         frm1.ProcessFiles(true, args);
                     }
+                }
+                if (ms)
+                {
+                    AppCenter.Start("e18445b9-ac9c-4d5a-af60-318e0cba754b",
+                  typeof(Analytics), typeof(Crashes));
                 }
                 Application.Run(frm1);
                 mutex.ReleaseMutex();
@@ -124,7 +133,9 @@ namespace SilverAudioPlayer
                 w.WriteAsync(string.Join('\n', args));
                 w.Close();
                 w.Dispose();
+#if DEBUG
                 Process.Start("notepad.exe", path);
+#endif
                 // send our Win32 message to make the currently running instance
                 // jump on top of all the other windows
                 NativeMethods.PostMessage(

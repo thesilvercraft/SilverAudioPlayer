@@ -1,6 +1,4 @@
-﻿using SilverAudioPlayer.Shared;
-
-namespace SilverAudioPlayer
+﻿namespace SilverAudioPlayer.Shared
 {
     public class Song : IEquatable<Song>, IEquatable<Guid>
     {
