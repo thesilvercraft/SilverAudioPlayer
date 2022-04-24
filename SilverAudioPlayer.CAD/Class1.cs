@@ -8,6 +8,11 @@ namespace SilverAudioPlayer.CAD
 {
     public class CADMusicStatusInterface : Form, IMusicStatusInterface
     {
+        public CADMusicStatusInterface()
+        {
+            InitializeComponent();
+        }
+
         private bool disposedValue;
 
         [DllImport("KERNEL32", EntryPoint = "RtlMoveMemory")]
@@ -47,7 +52,7 @@ namespace SilverAudioPlayer.CAD
             ThWnd = FindWindow(null, "CD Art Display 1.x Class");
             Debug.WriteLine(ThWnd);
 
-            strTemp = "1" + "\t" + "\t" + "SilverAudioPlayerIPC" + "\t" + AppContext.BaseDirectory + @"\SilverAudioPlayer.Winforms.exe" + "\t";
+            strTemp = "1" + "\t" + "\t" + "SilverAudioPlayerIPC" + "\t" + AppContext.BaseDirectory + @"SilverAudioPlayer.Winforms.exe" + "\t";
             COPYDATASTRUCT copyData = new COPYDATASTRUCT();
             copyData.lpData = Marshal.StringToHGlobalUni(strTemp);
             if (copyData.lpData != IntPtr.Zero)
@@ -67,6 +72,14 @@ namespace SilverAudioPlayer.CAD
         }
 
         private IntPtr PrevProc;
+        private Label label1;
+        private Label label2;
+        private Label label3;
+        private Label label4;
+        private Label label5;
+        private Label label6;
+        private Label label7;
+        private Label label11;
         private const int GWL_WNDPROC = -4;
 
         private delegate IntPtr WndProcDelegate(IntPtr hWnd, int message, IntPtr wParam, IntPtr lParam);
@@ -87,15 +100,13 @@ namespace SilverAudioPlayer.CAD
         public void HookMsg(IntPtr hwnd)
         {
             WndProcDelegate handler = CallbackMsgs;
+            Handles.Add(GCHandle.Alloc(handler));
+
             PrevProc = SetWindowProc(hwnd, handler);
+            Handles.Add(GCHandle.Alloc(PrevProc));
         }
 
         private const int WM_USER = 0x400;
-        public bool isTrackTwo;
-        public long lPos;
-        public long lVol = 100;
-        public long lRepeat;
-        public long lShuffle;
 
         public void cadSendSongInfo()
         {
@@ -110,7 +121,7 @@ namespace SilverAudioPlayer.CAD
             }
             if (song.Metadata != null)
             {
-                strTemp = song.Metadata.Title + "\t" + song.Metadata.Artist + "\t" + song.Metadata.Album + "\t" + song.Metadata.Genre + "\t" + song.Metadata.Year + "\t" + string.Join(',', song.Metadata.Comments) + "\t" + song.Metadata.TrackNumber + "\t" + (ulong)(song.Metadata.Duration / 1000) ?? 60 + "\t" + song.URI + "\t" + "0" + "\t" + AppContext.BaseDirectory + @"\cover.jpg" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t" + "\t";
+                strTemp = $"{song.Metadata.Title}\t{song.Metadata.Artist}\t{song.Metadata.Album}\t{song.Metadata.Genre}\t{song.Metadata.Year}\t\t{(song.Metadata.TrackNumber ?? 0)}\t{0}\t{song.Metadata.Duration / 1000 ?? 60}\t{song.URI}\t0\t \t\t\t\t\t\t\t";
             }
             else
             {
@@ -311,6 +322,8 @@ namespace SilverAudioPlayer.CAD
             return new IntPtr(CallbackMsgsRet);
         }
 
+        private List<GCHandle> Handles = new();
+
         private const int WM_COPYDATA = 0x4A;
 
         public event EventHandler Play;
@@ -327,39 +340,13 @@ namespace SilverAudioPlayer.CAD
 
         public event EventHandler<byte> SetVolume;
 
-        public event EventHandler<byte> VolumeChangedNotification;
-
         public event EventHandler<ulong> SetPosition;
-
-        public event EventHandler<IMusicStatusInterface> TrackChangedNotification;
-
-        public event EventHandler<IMusicStatusInterface> ShowWindow;
-
-        public event EventHandler<IMusicStatusInterface> StateChangedNotification;
-
-        public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
 
         public event EventHandler<RepeatState> SetRepeat;
 
-        public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
-
-        public event EventHandler<IMusicStatusInterface> Close;
-
-        public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
-
         public event EventHandler<bool> SetShuffle;
 
-        public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
-
         public event EventHandler<byte> SetRating;
-
-        public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
-
-        public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
-
-        public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
-
-        public event EventHandler<IMusicStatusInterface> NewCoverNotification;
 
         public event Func<byte> GetVolume;
 
@@ -377,16 +364,37 @@ namespace SilverAudioPlayer.CAD
 
         public event Func<string> GetLyrics;
 
+        public event EventHandler<IMusicStatusInterface> StateChangedNotification;
+
+        public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
+
+        public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
+
+        public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
+
+        public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
+
+        public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
+
+        public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
+
+        public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
+
+        public event EventHandler<IMusicStatusInterface> NewCoverNotification;
+
         public void StartIPC()
         {
             Text = "SilverAudioPlayerIPC";
-            Show();
+            //Show();
             ///window.Visible = false;
             //window.WindowState = FormWindowState.Minimized;
             //window.ShowInTaskbar = false;
             //window.Hide();
             HookMsg(Handle);
             cadRegister();
+            //Visible = false;
+            WindowState = FormWindowState.Minimized;
+            ShowInTaskbar = false;
         }
 
         public void StopIPC()
@@ -405,6 +413,10 @@ namespace SilverAudioPlayer.CAD
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
+                foreach (var handle in Handles)
+                {
+                    handle.Free();
+                }
                 disposedValue = true;
             }
         }
@@ -422,5 +434,168 @@ namespace SilverAudioPlayer.CAD
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        private void InitializeComponent()
+        {
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            //
+            // label1
+            //
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(22, 24);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(222, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Hey there, your not supposed to be here.";
+            //
+            // label2
+            //
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(22, 48);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(222, 15);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Hey there, your not supposed to be here.";
+            //
+            // label3
+            //
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(22, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(222, 15);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Hey there, your not supposed to be here.";
+            //
+            // label4
+            //
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(22, 98);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(222, 15);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Hey there, your not supposed to be here.";
+            //
+            // label5
+            //
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(22, 126);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(222, 15);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Hey there, your not supposed to be here.";
+            //
+            // label6
+            //
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(22, 151);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(222, 15);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Hey there, your not supposed to be here.";
+            //
+            // label7
+            //
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(22, 175);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(222, 15);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Hey there, your not supposed to be here.";
+            //
+            // label8
+            //
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(22, 200);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(222, 15);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "Hey there, your not supposed to be here.";
+            //
+            // label9
+            //
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(22, 224);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(246, 15);
+            this.label9.TabIndex = 8;
+            this.label9.Text = "BTW this is how we windows applications talk\r\n";
+            //
+            // label10
+            //
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(22, 248);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(164, 15);
+            this.label10.TabIndex = 9;
+            this.label10.Text = "by spawning hidden windows\r\n";
+            //
+            // label11
+            //
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(22, 263);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(97, 15);
+            this.label11.TabIndex = 10;
+            this.label11.Text = "Pretty cool right?";
+            //
+            // CADMusicStatusInterface
+            //
+            this.ClientSize = new System.Drawing.Size(284, 287);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Name = "CADMusicStatusInterface";
+            this.Load += new System.EventHandler(this.CADMusicStatusInterface_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+
+        private void CADMusicStatusInterface_Load(object sender, EventArgs e)
+        {
+            //Visible = false;
+            WindowState = FormWindowState.Minimized;
+            ShowInTaskbar = false;
+        }
+
+        public void TrackChangedNotification(Song newtrack)
+        {
+            long ThWnd;
+            ThWnd = FindWindow(null, "CD Art Display 1.x Class");
+            Debug.WriteLine(ThWnd);
+            var e = PostMessage(ThWnd, WM_USER, 0, 123);
+            Debug.WriteLine(e);
+        }
+
+        public void PlayerStateChanged(PlaybackState newstate)
+        {
+            long ThWnd;
+            ThWnd = FindWindow(null, "CD Art Display 1.x Class");
+            Debug.WriteLine(ThWnd);
+            var e = PostMessage(ThWnd, WM_USER, 0, 125);
+            Debug.WriteLine(e);
+        }
+
+        private Label label8;
+        private Label label9;
+        private Label label10;
     }
 }

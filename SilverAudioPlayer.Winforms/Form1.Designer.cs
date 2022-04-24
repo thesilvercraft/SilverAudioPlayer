@@ -284,6 +284,7 @@
             this.Name = "Form1";
             this.Text = "SilverAudioPlayer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DragDropOp);
             this.DragOver += new System.Windows.Forms.DragEventHandler(this.DragOverM);
             this.splitContainer1.Panel1.ResumeLayout(false);

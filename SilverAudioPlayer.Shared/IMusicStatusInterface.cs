@@ -28,8 +28,6 @@ namespace SilverAudioPlayer.Shared
 
         event Func<byte> GetVolume;
 
-        event EventHandler<byte> VolumeChangedNotification;
-
         event Func<Song> GetCurrentTrack;
 
         event Func<ulong> GetDuration;
@@ -38,9 +36,9 @@ namespace SilverAudioPlayer.Shared
 
         event Func<ulong> GetPosition;
 
-        event EventHandler<IMusicStatusInterface> TrackChangedNotification;
+        void TrackChangedNotification(Song newtrack);
 
-        event EventHandler<IMusicStatusInterface> ShowWindow;
+        void PlayerStateChanged(PlaybackState newstate);
 
         event Func<PlaybackState> GetState;
 
@@ -53,8 +51,6 @@ namespace SilverAudioPlayer.Shared
         event EventHandler<RepeatState> SetRepeat;
 
         event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
-
-        event EventHandler<IMusicStatusInterface> Close;
 
         event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
 
