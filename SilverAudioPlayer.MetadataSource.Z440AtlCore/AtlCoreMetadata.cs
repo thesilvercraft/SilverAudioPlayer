@@ -25,6 +25,7 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
             FileName = Path.GetFileName(theTrack.Path);
             FileExtension = Path.GetExtension(theTrack.Path);
             Pictures = theTrack.EmbeddedPictures.Select(x => new ATLCOREPicture(x)).ToList();
+            Lyrics = theTrack.Lyrics.UnsynchronizedLyrics;
         }
     }
 }

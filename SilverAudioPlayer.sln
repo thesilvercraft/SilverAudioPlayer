@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Core", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.DryWetMidi", "SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.DryWetMidi.csproj", "{F79F6739-CDB9-4CF8-8658-085053151C9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.CAD", "SilverAudioPlayer.CAD\SilverAudioPlayer.CAD.csproj", "{7F0A00DD-CDB5-436D-85EE-84289E14F6A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.CAD", "SilverAudioPlayer.CAD\SilverAudioPlayer.CAD.csproj", "{7F0A00DD-CDB5-436D-85EE-84289E14F6A8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.WPF", "SilverAudioPlayer.WPF\SilverAudioPlayer.WPF.csproj", "{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.WinConsole", "SilverAudioPlayer.WinConsole\SilverAudioPlayer.WinConsole.csproj", "{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +102,18 @@ Global
 		{7F0A00DD-CDB5-436D-85EE-84289E14F6A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F0A00DD-CDB5-436D-85EE-84289E14F6A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F0A00DD-CDB5-436D-85EE-84289E14F6A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

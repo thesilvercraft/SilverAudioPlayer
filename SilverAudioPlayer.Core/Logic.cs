@@ -11,6 +11,9 @@ namespace SilverAudioPlayer.Core
         [ImportMany(typeof(IMetadataProvider))]
         public IEnumerable<Lazy<IMetadataProvider>>? MetadataProviders;
 
+        [ImportMany(typeof(IMusicStatusInterface))]
+        public IEnumerable<Lazy<IMusicStatusInterface>>? MusicStatusInterfaces;
+
         public bool CanGetPlayerFromURI(string URI)
         {
             return Providers?.Any(x => x.IsValueCreated && x.Value.CanPlayFile(URI)) == true;

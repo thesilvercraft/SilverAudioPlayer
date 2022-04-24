@@ -7,14 +7,22 @@ using System.Threading.Tasks;
 
 namespace SilverConfig
 {
-    public class ConfigFileWatcher :IDisposable
+    public class ConfigFileWatcher : IDisposable
     {
         private bool disposedValue;
 
         public ConfigFileWatcher(string filePath)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException($"'{nameof(filePath)}' cannot be null or whitespace.", nameof(filePath));
+            }
+            if (!File.Exists(filePath))
+            {
+                throw new ArgumentException($"'{nameof(filePath)}' does not exist.", nameof(filePath));
+            }
             FilePath = filePath;
-            Watcher = new(new FileInfo(FilePath).Directory.FullName, "*.xml");
+            Watcher = new(new FileInfo(FilePath)!.Directory!.FullName, "*.xml");
             Watcher.NotifyFilter = NotifyFilters.Attributes
                                  | NotifyFilters.CreationTime
                                  | NotifyFilters.DirectoryName
@@ -91,8 +99,6 @@ namespace SilverConfig
                 disposedValue = true;
             }
         }
-
-
 
         public void Dispose()
         {

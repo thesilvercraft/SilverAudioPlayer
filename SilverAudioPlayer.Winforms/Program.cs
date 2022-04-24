@@ -5,12 +5,29 @@ using SilverAudioPlayer.Winforms;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;   //GuidAttribute
-using System.Threading;                 //Mutex
 
 namespace SilverAudioPlayer
 {
+    [Serializable]
+    public class ProvidersReturnedNullException : Exception
+    {
+        public ProvidersReturnedNullException()
+        { }
+
+        public ProvidersReturnedNullException(string message) : base(message)
+        {
+        }
+
+        public ProvidersReturnedNullException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected ProvidersReturnedNullException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+
     internal class Program
     {
         /// <summary>
@@ -43,10 +60,8 @@ namespace SilverAudioPlayer
                 {
                     catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "Extensions")));
                 }
-                else
-                {
-                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory));
-                }
+
+                catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory));
 
                 // Create the CompositionContainer with the parts in the catalog.
                 _container = new CompositionContainer(catalog);
@@ -58,12 +73,30 @@ namespace SilverAudioPlayer
             }
             _container.SatisfyImportsOnce(frm1.Logic);
             //ACCESS THE DANG THINGS HERE FOR IT TO WORK
+            if (frm1.Logic.Providers == null)
+            {
+                throw new ProvidersReturnedNullException("The 'frm1.Logic.Providers' returned null.");
+            }
+
             foreach (var provider in frm1.Logic.Providers)
             {
                 var name = provider.Value.GetType().Name;
                 Debug.WriteLine(name);
             }
+            if (frm1.Logic.MetadataProviders == null)
+            {
+                throw new ProvidersReturnedNullException("The 'frm1.Logic.MetadataProviders' returned null.");
+            }
             foreach (var provider in frm1.Logic.MetadataProviders)
+            {
+                var name = provider.Value.GetType().Name;
+                Debug.WriteLine(name);
+            }
+            if (frm1.Logic.MusicStatusInterfaces == null)
+            {
+                throw new ProvidersReturnedNullException("The 'frm1.Logic.MusicStatusInterfaces' returned null.");
+            }
+            foreach (var provider in frm1.Logic.MusicStatusInterfaces)
             {
                 var name = provider.Value.GetType().Name;
                 Debug.WriteLine(name);
@@ -111,7 +144,7 @@ namespace SilverAudioPlayer
                     }
                     else
                     {
-                        frm1.ProcessFiles(true, args);
+                        frm1.ProcessFiles(true, args!);
                     }
                 }
                 if (ms)
@@ -122,7 +155,7 @@ namespace SilverAudioPlayer
                 Application.Run(frm1);
                 mutex.ReleaseMutex();
             }
-            else
+            else if (args != null)
             {
                 var path = Path.Combine(AppContext.BaseDirectory, "args.txt");
                 if (File.Exists(path))
@@ -147,7 +180,7 @@ namespace SilverAudioPlayer
         }
     }
 
-    internal class NativeMethods
+    internal static class NativeMethods
     {
         public const int HWND_BROADCAST = 0xffff;
         public static readonly int WM_SHOWME = RegisterWindowMessage("WM_SHOWME_AUDIOPLAYERZ");

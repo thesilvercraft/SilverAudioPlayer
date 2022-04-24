@@ -37,11 +37,22 @@ namespace SilverAudioPlayer
             e.GetCurrentTrack += MusicStatusInterface_GetCurrentTrack;
             e.GetDuration += MusicStatusInterface_GetDuration;
             e.GetPosition += MusicStatusInterface_GetPosition;
-
+            e.GetShuffle += E_GetShuffle;
             e.GetState += MusicStatusInterface_GetState;
             e.GetVolume += MusicStatusInterface_GetVolume;
             e.GetRepeat += MusicStatusInterface_GetRepeat;
+            e.SetRating += E_SetRating;
             e.StartIPC();
+        }
+
+        private void E_SetRating(object? sender, byte e)
+        {
+            //TODO eventually
+        }
+
+        private bool E_GetShuffle()
+        {
+            return false;
         }
 
         private ulong MusicStatusInterface_GetPosition()
@@ -78,8 +89,11 @@ namespace SilverAudioPlayer
             e.GetVolume -= MusicStatusInterface_GetVolume;
             e.GetRepeat -= MusicStatusInterface_GetRepeat;
             e.GetPosition -= MusicStatusInterface_GetPosition;
+            e.GetShuffle -= E_GetShuffle;
+            e.SetRating -= E_SetRating;
 
             e.StopIPC();
+            e.Dispose();
             musicStatusInterfaces.Remove(e);
         }
 
@@ -100,7 +114,7 @@ namespace SilverAudioPlayer
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
                 int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
-                if (index - 1 > 0)
+                if (index - 1 >= 0)
                 {
                     StopAutoLoading = true;
                     HandleSongChanging((Song)aa[index - 1].Tag);
@@ -127,14 +141,12 @@ namespace SilverAudioPlayer
         {
             Player?.Play();
             SendIfStateIsNotNull();
-
         }
 
         private void Pause()
         {
             Player?.Pause();
             SendIfStateIsNotNull();
-            
         }
 
         private void PlayPause(bool allowstart)
@@ -184,7 +196,6 @@ namespace SilverAudioPlayer
         {
             Player?.Play();
             SendIfStateIsNotNull();
-            
         }
 
         public Form1()
@@ -607,7 +618,6 @@ namespace SilverAudioPlayer
 
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
-
             Debug.WriteLine("Output device playback stopped");
             Debug.WriteLine("Loop single checked: " + Config.LoopSong);
             Debug.WriteLine("StopAutoLoading: " + StopAutoLoading);
@@ -641,7 +651,6 @@ namespace SilverAudioPlayer
             }*/
             StopAutoLoading = false;
             SendIfStateIsNotNull();
-            
         }
 
         private void HandleSongChanging(Song NextSong, bool resetsal = false)
@@ -758,7 +767,7 @@ namespace SilverAudioPlayer
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
                 treeView1.Nodes[0].Nodes.Clear();
-                foreach (var song in aa.OrderBy(x => ((Song)x.Tag).Metadata.TrackNumber ?? 0))
+                foreach (var song in aa.OrderBy(x => ((Song?)x?.Tag)?.Metadata?.TrackNumber ?? 0))
                 {
                     Debug.WriteLine("Adding song " + ((Song)song.Tag).Guid + " to treeview");
                     treeView1.Nodes[0].Nodes.Add(song);
@@ -970,10 +979,10 @@ namespace SilverAudioPlayer
 
         private void MoveSel(short where)
         {
-            Move(where, SelectedItem);
+            MoveTrack(where, SelectedItem);
         }
 
-        private void Move(short howmuch, TreeNode what)
+        private void MoveTrack(short howmuch, TreeNode what)
         {
             treeView1.Nodes[0].Nodes.RemoveAt(what.Index);
             treeView1.Nodes[0].Nodes.Insert(what.Index + howmuch, what);
@@ -1042,9 +1051,14 @@ namespace SilverAudioPlayer
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            cfw.Dispose();
             AutoSaveConfig();
             AutosaveConfig.Stop();
             AutosaveConfig.Dispose();
+            while (musicStatusInterfaces.Count != 0)
+            {
+                RemoveMSI(musicStatusInterfaces[0]);
+            }
             if (Player != null)
             {
                 Player.TrackEnd -= OutputDevice_PlaybackStopped;
@@ -1056,14 +1070,6 @@ namespace SilverAudioPlayer
 
         private void button1_Click(object sender, EventArgs e)
         {
-            new Thread(() =>
-            {
-                var a = new CADMusicStatusInterface();
-                GC.KeepAlive(a);
-                AddMSI(a);
-                Application.Run(a);
-            }).Start();
-
             AutoSaveConfig();
 #if DEBUG
             Process.Start("notepad.exe", ConfigLoc);
@@ -1083,6 +1089,22 @@ namespace SilverAudioPlayer
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            if (Logic.MusicStatusInterfaces?.Any() == true)
+            {
+                foreach (var dangthing in Logic.MusicStatusInterfaces.Where(x => x.Value != null).Select(x => x.Value))
+                {
+                    new Thread(() =>
+                    {
+                        var a = dangthing;
+                        GC.KeepAlive(a);
+                        AddMSI(a);
+                        if (a is CADMusicStatusInterface e)
+                        {
+                            Application.Run(e);
+                        }
+                    }).Start();
+                }
+            }
         }
     }
 }

@@ -13,6 +13,8 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
             Data = i.PictureData;
             Description = i.Description;
             MimeType = i.MimeType;
+            PicType = (PictureType?)i.PicType;
+            Hash = i.PictureHash.ToString();
         }
     }
 }
