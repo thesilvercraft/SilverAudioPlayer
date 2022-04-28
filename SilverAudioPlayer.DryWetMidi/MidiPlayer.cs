@@ -51,20 +51,6 @@ namespace SilverAudioPlayer.DryWetMidi
             return player.GetDuration<MetricTimeSpan>();
         }
 
-        public void LoadFile(string file)
-        {
-            if (string.IsNullOrEmpty(file))
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-            midiOut ??= OutputDevice.GetByIndex(0);
-            mf = MidiFile.Read(file);
-            player = mf.GetPlayback();
-            player.Finished += (a, b) => { ps = PlaybackState.Stopped; TrackEnd?.Invoke(a, b); };
-            player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
-            player.OutputDevice = midiOut;
-        }
-
         public void Pause()
         {
             ps = PlaybackState.Paused;
@@ -159,6 +145,36 @@ namespace SilverAudioPlayer.DryWetMidi
         public IPlay? GetPlayer(string URI)
         {
             LoadFile(URI);
+            return this;
+        }
+
+        public void LoadFile(string file)
+        {
+            if (string.IsNullOrEmpty(file))
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+            midiOut ??= OutputDevice.GetByIndex(0);
+            mf = MidiFile.Read(file);
+            player = mf.GetPlayback();
+            player.Finished += (a, b) => { ps = PlaybackState.Stopped; TrackEnd?.Invoke(a, b); };
+            player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
+            player.OutputDevice = midiOut;
+        }
+
+        public bool CanPlayFile(WrappedStream stream)
+        {
+            return stream.MimeType == "audio/mid" || stream.MimeType == "audio/midi";
+        }
+
+        public IPlay? GetPlayer(WrappedStream stream)
+        {
+            midiOut ??= OutputDevice.GetByIndex(0);
+            mf = MidiFile.Read(stream.RegenStream());
+            player = mf.GetPlayback();
+            player.Finished += (a, b) => { ps = PlaybackState.Stopped; TrackEnd?.Invoke(a, b); };
+            player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
+            player.OutputDevice = midiOut;
             return this;
         }
     }

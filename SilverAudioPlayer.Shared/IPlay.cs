@@ -1,13 +1,25 @@
 ﻿namespace SilverAudioPlayer.Shared
 {
-    public interface IPlay
+    public interface IPlayStreamsToo : IPlay
+    {
+        /// <summary>
+        /// Loads a new stream to be played using the player
+        /// </summary>
+        /// <param name="stream">The stream to be loaded</param>
+        void LoadStream(WrappedStream stream);
+    }
+
+    public interface IPlayFilesToo : IPlay
     {
         /// <summary>
         /// Loads a new file to be played using the player
         /// </summary>
         /// <param name="file">The file to be loaded</param>
         void LoadFile(string file);
+    }
 
+    public interface IPlay
+    {
         /// <summary>
         /// Starts playing the loaded file.
         /// </summary>

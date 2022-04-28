@@ -7,13 +7,8 @@ using PlaybackState = NAudio.Wave.PlaybackState;
 namespace SilverAudioPlayer.NAudio
 {
     [Export(typeof(IPlay))]
-    public class WaveFilePlayer : IPlay, ICanTellIfICanPlayAFile, IDisposable
+    public class WaveFilePlayer : IPlay, IDisposable, IPlayStreamsToo
     {
-        public static bool CanPlayFile(string file)
-        {
-            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(file);
-        }
-
         private WaveOutEvent? outputDevice;
         public IWaveProvider? audioFile;
         public byte Volume { get; set; } = 70;
@@ -37,25 +32,47 @@ namespace SilverAudioPlayer.NAudio
             DoStuffAfterFile();
         }
 
-        public virtual void LoadFile(string file)
+        public void LoadStream(WrappedStream stream)
         {
-            if (string.IsNullOrWhiteSpace(file))
+            if (stream is null)
             {
-                throw new ArgumentException("The name of the file must not be null or empty", nameof(file));
+                throw new ArgumentNullException(nameof(stream));
             }
-            var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(file);
+
+            var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(stream);
             if (wrapper != null)
             {
-                Decoder = wrapper.GetType().FullName + " (" + Path.GetExtension(file)[0..].ToUpperInvariant() + ")";
-                audioFile = wrapper.GetStream(file);
+                Decoder = wrapper.GetType().FullName + " (" + stream.MimeType + ")";
+                audioFile = wrapper.GetStream(stream);
             }
-            else
+            else if (stream is WrappedFileStream wf)
             {
                 Decoder = "NAudio.Wave.AudioFileReader";
-                audioFile = new AudioFileReader(file);
+                audioFile = new AudioFileReader(wf.URL);
             }
             DoStuffAfterFile();
         }
+
+        /* public virtual void LoadFile(string file)
+         {
+             if (string.IsNullOrWhiteSpace(file))
+             {
+                 throw new ArgumentException("The name of the file must not be null or empty", nameof(file));
+             }
+             var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(file);
+             if (wrapper != null)
+             {
+                 Decoder = wrapper.GetType().FullName + " (" + Path.GetExtension(file)[0..].ToUpperInvariant() + ")";
+                 audioFile = wrapper.GetStream(file);
+             }
+             else
+             {
+                 Decoder = "NAudio.Wave.AudioFileReader";
+                 audioFile = new AudioFileReader(file);
+             }
+             DoStuffAfterFile();
+         }
+        */
 
         internal void DoStuffAfterFile()
         {

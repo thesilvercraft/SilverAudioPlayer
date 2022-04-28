@@ -20,10 +20,6 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
             Bitrate = (ulong?)theTrack.Bitrate;
             SampleRate = (ulong?)theTrack.SampleRate;
             Channels = (uint?)theTrack.ChannelsArrangement.NbChannels;
-            FileSize = (ulong?)new FileInfo(theTrack.Path).Length;
-            FilePath = theTrack.Path;
-            FileName = Path.GetFileName(theTrack.Path);
-            FileExtension = Path.GetExtension(theTrack.Path);
             Pictures = theTrack.EmbeddedPictures.Select(x => new ATLCOREPicture(x)).ToList();
             Lyrics = theTrack.Lyrics.UnsynchronizedLyrics;
         }

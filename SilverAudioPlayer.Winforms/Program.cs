@@ -73,12 +73,12 @@ namespace SilverAudioPlayer
             }
             _container.SatisfyImportsOnce(frm1.Logic);
             //ACCESS THE DANG THINGS HERE FOR IT TO WORK
-            if (frm1.Logic.Providers == null)
+            if (frm1.Logic.PlayProviders == null)
             {
                 throw new ProvidersReturnedNullException("The 'frm1.Logic.Providers' returned null.");
             }
 
-            foreach (var provider in frm1.Logic.Providers)
+            foreach (var provider in frm1.Logic.PlayProviders)
             {
                 var name = provider.Value.GetType().Name;
                 Debug.WriteLine(name);

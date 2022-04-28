@@ -27,7 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.CAD", "Si
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.WPF", "SilverAudioPlayer.WPF\SilverAudioPlayer.WPF.csproj", "{53491C38-B7B0-4C88-9EC8-89BEB8F7A290}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.WinConsole", "SilverAudioPlayer.WinConsole\SilverAudioPlayer.WinConsole.csproj", "{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.WinConsole", "SilverAudioPlayer.WinConsole\SilverAudioPlayer.WinConsole.csproj", "{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverMagicBytes", "SilverMagicBytes\SilverMagicBytes.csproj", "{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.DiscordRP", "SilverAudioPlayer.DiscordRP\SilverAudioPlayer.DiscordRP.csproj", "{C0A625DB-98BD-4CBC-91B7-076B0312E540}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -114,6 +118,18 @@ Global
 		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F3493F8-46F6-4EB2-BC8B-F59D623B7AE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0A625DB-98BD-4CBC-91B7-076B0312E540}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A625DB-98BD-4CBC-91B7-076B0312E540}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{C0A625DB-98BD-4CBC-91B7-076B0312E540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0A625DB-98BD-4CBC-91B7-076B0312E540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0A625DB-98BD-4CBC-91B7-076B0312E540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0A625DB-98BD-4CBC-91B7-076B0312E540}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

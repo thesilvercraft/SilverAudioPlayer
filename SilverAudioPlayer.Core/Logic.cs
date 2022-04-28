@@ -6,7 +6,7 @@ namespace SilverAudioPlayer.Core
     public class Logic
     {
         [ImportMany(typeof(IPlayProvider))]
-        public IEnumerable<Lazy<IPlayProvider>>? Providers;
+        public IEnumerable<Lazy<IPlayProvider>>? PlayProviders;
 
         [ImportMany(typeof(IMetadataProvider))]
         public IEnumerable<Lazy<IMetadataProvider>>? MetadataProviders;
@@ -14,30 +14,20 @@ namespace SilverAudioPlayer.Core
         [ImportMany(typeof(IMusicStatusInterface))]
         public IEnumerable<Lazy<IMusicStatusInterface>>? MusicStatusInterfaces;
 
-        public bool CanGetPlayerFromURI(string URI)
+        public IPlay? GetPlayerFromStream(WrappedStream stream)
         {
-            return Providers?.Any(x => x.IsValueCreated && x.Value.CanPlayFile(URI)) == true;
+            var provider = PlayProviders?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanPlayFile(stream));
+            return provider?.Value?.GetPlayer(stream);
         }
 
-        public bool CanGetMetadataFromURI(string URI)
+        public IMetadataProvider? GetMetadataProviderFromStream(WrappedStream stream)
         {
-            return MetadataProviders?.Any(x => x.IsValueCreated && x.Value.CanGetMetadata(URI)) == true;
+            return MetadataProviders?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanGetMetadata(stream))?.Value;
         }
 
-        public IPlay? GetPlayerFromURI(string URI)
+        public Task<Metadata?>? GetMetadataFromStream(WrappedStream stream)
         {
-            var provider = Providers?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanPlayFile(URI));
-            return provider?.Value?.GetPlayer(URI);
-        }
-
-        public IMetadataProvider? GetMetadataProviderFromURI(string URI)
-        {
-            return MetadataProviders?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanGetMetadata(URI))?.Value;
-        }
-
-        public Task<Metadata?>? GetMetadataFromURI(string URI)
-        {
-            return GetMetadataProviderFromURI(URI)?.GetMetadata(URI);
+            return GetMetadataProviderFromStream(stream)?.GetMetadata(stream);
         }
 
         public IEnumerable<string> FilterFiles(IEnumerable<string> files)

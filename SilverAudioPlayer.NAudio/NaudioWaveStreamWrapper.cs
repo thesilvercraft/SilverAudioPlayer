@@ -14,77 +14,9 @@ namespace SilverAudioPlayer.NAudio
 {
     public interface INaudioWaveStreamWrapper
     {
-        bool CanPlay(string file);
+        bool CanPlay(WrappedStream stream);
 
-        WaveStream GetStream(string file);
-    }
-
-    [Export(typeof(INaudioWaveStreamWrapper))]
-    public class WaveFileReaderWrapper : INaudioWaveStreamWrapper
-    {
-        public bool CanPlay(string file)
-        {
-            if (File.Exists(file))
-            {
-                using var bytes = File.OpenRead(file);
-                byte[] vs = new byte[4];
-                return bytes.Read(vs, 0, 4) == 4 && vs[0] == 0x52 && vs[1] == 0x49 && vs[2] == 0x46 && vs[3] == 0x46 && bytes.Read(vs, 0, 4) == 4 && bytes.Read(vs, 0, 4) == 4 && vs[0] == 0x57 && vs[1] == 0x41 && vs[2] == 0x56 && vs[3] == 0x45;
-            }
-            return false;
-        }
-
-        public WaveStream GetStream(string file)
-        {
-            return new WaveFileReader(file);
-        }
-    }
-
-    [Export(typeof(INaudioWaveStreamWrapper))]
-    public class Mp3FileReaderReaderWrapper : INaudioWaveStreamWrapper
-    {
-        public bool CanPlay(string file)
-        {
-            if (File.Exists(file))
-            {
-                using var bytes = File.OpenRead(file);
-                byte[] vs = new byte[2];
-                return bytes.Read(vs, 0, 2) == 2
-                    && ((vs[0] == 0xFF && vs[1] == 0xFB)
-                    || (vs[0] == 0xFF && vs[1] == 0xF3)
-                    || (vs[0] == 0xFF && vs[1] == 0xF2))
-                    || (vs[0] == 0x49 && vs[1] == 0x44 && (bytes.Read(vs, 0, 1) == 1) && vs[0] == 0x33);
-            }
-            return false;
-        }
-
-        public WaveStream GetStream(string file)
-        {
-            return new Mp3FileReader(file);
-        }
-    }
-
-    [Export(typeof(INaudioWaveStreamWrapper))]
-    public class AiffFileReaderWrapper : INaudioWaveStreamWrapper
-    {
-        public bool CanPlay(string file)
-        {
-            if (File.Exists(file))
-            {
-                using var bytes = File.OpenRead(file);
-                byte[] vs = new byte[4];
-                return bytes.Read(vs, 0, 4) == 4
-                    && vs[0] == 0x46 && vs[1] == 0x4F && vs[2] == 0x52 && vs[3] == 0x4D
-                    && bytes.Read(vs, 0, 4) == 4
-                    && bytes.Read(vs, 0, 4) == 4
-                    && vs[0] == 0x41 && vs[1] == 0x49 && vs[2] == 0x46 && vs[3] == 0x46;
-            }
-            return false;
-        }
-
-        public WaveStream GetStream(string file)
-        {
-            return new AiffFileReader(file);
-        }
+        WaveStream GetStream(WrappedStream stream);
     }
 
     public static class NaudioWaveStreamWrapperTypeHolder
@@ -100,23 +32,17 @@ namespace SilverAudioPlayer.NAudio
     [Export(typeof(IPlayProvider))]
     public class NaudioWaveStreamWrapper : IPlayProvider
     {
-        public bool CanPlayFile(string URI)
+        public bool CanPlayFile(WrappedStream stream)
         {
-            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(URI);
+            return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(stream);
         }
 
-        public bool CanPlayStream(Stream stream)
+        public IPlay? GetPlayer(WrappedStream stream)
         {
-            //NAUDIOWAVESTREAMWRAPPER DOES NOT SUPPORT STREAMS FOR NOW
-            return false;
-        }
-
-        public IPlay? GetPlayer(string URI)
-        {
-            if (CanPlayFile(URI))
+            if (CanPlayFile(stream))
             {
                 var player = new WaveFilePlayer();
-                player.LoadFile(URI);
+                player.LoadFromProvider(NaudioWaveStreamWrapperTypeHolder.Get().GetStream(stream));
                 return player;
             }
             return null;
@@ -171,14 +97,25 @@ namespace SilverAudioPlayer.NAudio
             return wrapper;
         }
 
-        public bool HasWrapper(string file)
+        public INaudioWaveStreamWrapper? GetWrapper(WrappedStream stream)
         {
-            return GetWrapper().Any(x => { Debug.WriteLine(x.GetType().FullName); Debug.WriteLine(x.CanPlay(file)); return x.CanPlay(file); });
+            return GetWrapper().FirstOrDefault(x => x.CanPlay(stream));
         }
 
-        public INaudioWaveStreamWrapper? GetWrapper(string file)
+        public bool HasWrapper(WrappedStream stream)
         {
-            return GetWrapper().FirstOrDefault(x => x.CanPlay(file));
+            return GetWrapper().Any(x =>
+            {
+                Debug.WriteLine(x.GetType().FullName);
+                var e = x.CanPlay(stream);
+                Debug.WriteLine(e);
+                return e;
+            });
+        }
+
+        internal IWaveProvider? GetStream(WrappedStream stream)
+        {
+            return GetWrapper().FirstOrDefault(x => x.CanPlay(stream))?.GetStream(stream);
         }
     }
 }

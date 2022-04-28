@@ -5,16 +5,16 @@ using System.ComponentModel.Composition;
 namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
 {
     [Export(typeof(IMetadataProvider))]
-    public class AtlCoreMetadataProvider : IMetadataProvider
+    public class AtlCoreFileMetadataProvider : IMetadataProvider
     {
-        public bool CanGetMetadata(string path)
+        public bool CanGetMetadata(WrappedStream stream)
         {
-            return new Track(path).AudioFormat != null;
+            return new Track(stream.RegenStream(), stream.MimeType).AudioFormat != null;
         }
 
-        public Task<Metadata?> GetMetadata(string path)
+        public Task<Metadata?> GetMetadata(WrappedStream stream)
         {
-            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(path)));
+            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(stream.RegenStream(), stream.MimeType)));
         }
     }
 }

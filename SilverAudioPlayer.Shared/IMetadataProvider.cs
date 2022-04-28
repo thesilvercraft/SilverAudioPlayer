@@ -8,9 +8,9 @@ namespace SilverAudioPlayer.Shared
 {
     public interface IMetadataProvider
     {
-        public Task<Metadata?> GetMetadata(string path);
+        public Task<Metadata?> GetMetadata(WrappedStream stream);
 
-        public bool CanGetMetadata(string path);
+        public bool CanGetMetadata(WrappedStream stream);
     }
 
     public abstract class Metadata
@@ -23,10 +23,6 @@ namespace SilverAudioPlayer.Shared
         public ulong? Bitrate { get; init; }
         public ulong? SampleRate { get; init; }
         public uint? Channels { get; init; }
-        public ulong? FileSize { get; init; }
-        public string? FilePath { get; init; }
-        public string? FileName { get; init; }
-        public string? FileExtension { get; init; }
 
         public int? TrackNumber { get; init; }
         public string[]? Comments { get; init; }
@@ -136,11 +132,6 @@ namespace SilverAudioPlayer.Shared
         // Summary:
         //     Movie/video screen capture
         MovieCapture = 0x10,
-
-        //
-        // Summary:
-        //     A bright, coloured fish
-        Fishie = 17,
 
         //
         // Summary:

@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverMagicBytes\SilverMagicBytes.csproj" />
-  </ItemGroup>
-
 </Project>

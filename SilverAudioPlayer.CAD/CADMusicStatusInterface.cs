@@ -22,10 +22,10 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     private static extern void CopyMemory(object hpvDest, object hpvSource, long cbCopy);
 
     [DllImport("user32", EntryPoint = "FindWindowA")]
-    private static extern long FindWindow(string lpClassName, string lpWindowName);
+    private static extern long FindWindow(string? lpClassName, string lpWindowName);
 
     [DllImport("user32", EntryPoint = "SendMessageA")]
-    private static extern long SendMessage(long hwnd, long wMsg, long wParam, COPYDATASTRUCT lParam);
+    private static extern long SendMessage(long hwnd, long wMsg, long wParam, CopyDataStruct lParam);
 
     [DllImport("user32", EntryPoint = "SendMessageA")]
     private static extern long SendMessage(long hwnd, long wMsg, long wParam, long lParam);
@@ -46,7 +46,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     private static extern unsafe void MoveMemory(void* dest, void* src, int size);
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct COPYDATASTRUCT
+    private struct CopyDataStruct
     {
         public IntPtr dwData;
         public int cbData;
@@ -57,17 +57,16 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     {
         long ThWnd;
         string strTemp;
-        byte[] byteBuffer;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
         Debug.WriteLine(ThWnd);
 
         strTemp = "1" + "\t" + "\t" + "SilverAudioPlayerIPC" + "\t" + AppContext.BaseDirectory + @"SilverAudioPlayer.Winforms.exe" + "\t";
-        COPYDATASTRUCT copyData = new();
+        CopyDataStruct copyData = new();
         copyData.lpData = Marshal.StringToHGlobalUni(strTemp);
         if (copyData.lpData != IntPtr.Zero)
         {
             copyData.dwData = new IntPtr(700);
-            copyData.cbData = (strTemp.Length + 1) * 2;
+            copyData.cbData = System.Text.Encoding.Unicode.GetByteCount(strTemp);
             IntPtr copyDataBuff = Marshal.AllocHGlobal(Marshal.SizeOf(copyData));
             if (copyDataBuff != IntPtr.Zero)
             {
@@ -109,13 +108,21 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     private const int WM_USER = 0x400;
 
+    private string ReplaceNullWithEmptyAndTabsWithSpace(string? input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return "";
+        }
+        return input.Replace('\t', ' ');
+    }
+
     public void cadSendSongInfo()
     {
-        COPYDATASTRUCT cdCopyData;
+        CopyDataStruct cdCopyData;
         string strTemp;
-        byte[] byteBuffer;
         string arglpWindowName = "CD Art Display 1.x Class";
-        var song = GetCurrentTrack();
+        Song? song = GetCurrentTrack != null ? GetCurrentTrack() : null;
         if (song == null)
         {
             return;
@@ -125,7 +132,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         if (song.Metadata != null)
         {
             string art = song.URI;
-            if (song.Metadata.Pictures.Any())
+            if (song.Metadata.Pictures != null && song.Metadata.Pictures.Any())
             {
                 Picture SelectBest(IReadOnlyList<Picture> pictures)
                 {
@@ -143,7 +150,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                 }
                 art = Path.Combine(AppContext.BaseDirectory, "Art", bestart.Hash + ".jpg");
             }
-            strTemp = $"{song.Metadata.Title.Replace('\t', ' ')}\t{song.Metadata.Artist.Replace('\t', ' ')}\t{song.Metadata.Album.Replace('\t', ' ')}\t{song.Metadata.Genre.Replace('\t', ' ')}\t{song.Metadata.Year}\t\t{(song.Metadata.TrackNumber ?? 0)}\t{((int)(song.Metadata.Duration / 1000 ?? 60))}\t{song.URI.Replace("\t", "\\t")}\t0\t{art.Replace("\t", "\\t")}\t\t\t\t\t\t\t";
+            strTemp = $"{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Title)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Artist)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Album)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Genre)}\t{song.Metadata.Year}\t\t{(song.Metadata.TrackNumber ?? 0)}\t{((int)(song.Metadata.Duration / 1000 ?? 60))}\t{song.URI.Replace("\t", "\\t")}\t0\t{art.Replace("\t", "\\t")}\t\t\t\t\t\t\t";
             Debug.WriteLine(strTemp);
         }
         else
@@ -152,13 +159,9 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             strTemp = song.Name + vbTab + "Song Artist" + vbTab + "Song Album" + vbTab + "Song Genre" + vbTab + "Year" + vbTab + "Comments" + vbTab + "1" + vbTab + "240" + vbTab + song.URI + vbTab + "5" + vbTab + song.URI + vbTab + "Composer" + vbTab + "128";
         }
 
-        // UPGRADE_TODO: Code was upgraded to use System.Text.UnicodeEncoding.Unicode.GetBytes() which may not have the same behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="93DD716C-10E3-41BE-A4A8-3BA40157905B"'
-        byteBuffer = System.Text.Encoding.Unicode.GetBytes(strTemp);
         cdCopyData.dwData = new IntPtr(701);
-        cdCopyData.cbData = byteBuffer.GetUpperBound(0) + 1;
-        // UPGRADE_ISSUE: VarPtr function is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="367764E5-F3F8-4E43-AC3E-7FE0B5E074E2"'
+        cdCopyData.cbData = System.Text.Encoding.Unicode.GetByteCount(strTemp);
         cdCopyData.lpData = Marshal.StringToHGlobalUni(strTemp);
-        // UPGRADE_WARNING: Couldn't resolve default property of object cdCopyData. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         SendMessage(ThWnd, WM_COPYDATA, 701, cdCopyData);
     }
 
@@ -175,27 +178,32 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                 {
                     if (lp_id == 128)
                     {
-                        SetRepeat.Invoke(this, wp_id == 1 ? RepeatState.One : RepeatState.None);
+                        SetRepeat?.Invoke(this, wp_id == 1 ? RepeatState.One : RepeatState.None);
                         Debug.WriteLine("Repeat: " + wp_id);
                     }
 
                     if (lp_id == 141)
                     {
                         Debug.WriteLine("Shuffle: " + wp_id);
-                        SetShuffle.Invoke(this, wp_id == 1);
+                        SetShuffle?.Invoke(this, wp_id == 1);
                     }
-
+                    if (lp_id == 114)
+                    {
+                        Debug.WriteLine("setting song position?");
+                        SetPosition?.Invoke(this, (ulong)wp_id);
+                        return new IntPtr(CallbackMsgsRet);
+                    }
                     if (lp_id == 108)
                     {
                         Debug.WriteLine("Volume " + wp_id);
-                        SetVolume.Invoke(this, (byte)wp_id);
+                        SetVolume?.Invoke(this, (byte)wp_id);
                     }
                     if (lp_id == 639)
                     {
                         void SetRatingI(byte val)
                         {
                             Debug.WriteLine("Rating set in CAD: " + val);
-                            SetRating.Invoke(this, val);
+                            SetRating?.Invoke(this, val);
                         }
                         switch (wp_id)
                         {
@@ -246,38 +254,50 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                     case 101:
                                         {
                                             Debug.WriteLine("Play/Pause");
-                                            PlayPause.Invoke(this, EventArgs.Empty);
+                                            PlayPause?.Invoke(this, EventArgs.Empty);
                                             break;
                                         }
 
                                     case 103:
                                         {
                                             Debug.WriteLine("Stop");
-                                            Stop.Invoke(this, EventArgs.Empty);
-
+                                            Stop?.Invoke(this, EventArgs.Empty);
                                             break;
                                         }
 
                                     case 104:
                                         {
                                             Debug.WriteLine("Next");
-                                            Next.Invoke(this, EventArgs.Empty);
-                                            TrackChangedNotification(GetCurrentTrack());
+                                            Next?.Invoke(this, EventArgs.Empty);
+                                            if (GetCurrentTrack != null && TrackChangedNotification != null)
+                                            {
+                                                TrackChangedNotification(GetCurrentTrack());
+                                            }
                                             break;
                                         }
 
                                     case 105:
                                         {
                                             Debug.WriteLine("Prev");
-                                            Previous.Invoke(this, EventArgs.Empty);
-                                            TrackChangedNotification(GetCurrentTrack());
+                                            Previous?.Invoke(this, EventArgs.Empty);
+                                            if (GetCurrentTrack != null && TrackChangedNotification != null)
+                                            {
+                                                TrackChangedNotification(GetCurrentTrack());
+                                            }
                                             break;
                                         }
 
                                     case 109:
                                         {
                                             Debug.WriteLine("returning volume?");
-                                            CallbackMsgsRet = GetVolume();
+                                            if (GetVolume != null)
+                                            {
+                                                CallbackMsgsRet = GetVolume();
+                                            }
+                                            else
+                                            {
+                                                CallbackMsgsRet = 70;
+                                            }
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
@@ -292,28 +312,47 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                     case 113:
                                         {
                                             Debug.WriteLine("returning song duration?");
-                                            CallbackMsgsRet = (long)GetDuration();
+                                            if (GetDuration != null)
+                                            {
+                                                CallbackMsgsRet = (long)GetDuration();
+                                            }
+                                            else
+                                            {
+                                                CallbackMsgsRet = 0;
+                                            }
                                             return new(CallbackMsgsRet);
                                         }
 
                                     case 122:
                                         {
                                             Debug.WriteLine("returning song position?");
-                                            //in seconds
-                                            CallbackMsgsRet = (long)GetPosition();
+                                            if (GetPosition != null)
+                                            {
+                                                CallbackMsgsRet = (long)GetPosition();
+                                            }
+                                            else
+                                            {
+                                                CallbackMsgsRet = 0;
+                                            }
                                             return new IntPtr(CallbackMsgsRet);
                                         }
-                                    // TODO SET POSITION
                                     case 125:
                                         {
                                             Debug.WriteLine("returning PLAYER_STATE (code 125)");
-                                            CallbackMsgsRet = GetState() switch
+                                            if (GetState != null)
                                             {
-                                                PlaybackState.Playing => 2,
-                                                PlaybackState.Paused => 1,
-                                                PlaybackState.Stopped => 0,
-                                                _ => 0
-                                            };
+                                                CallbackMsgsRet = GetState() switch
+                                                {
+                                                    PlaybackState.Playing => 2,
+                                                    PlaybackState.Paused => 1,
+                                                    PlaybackState.Stopped => 0,
+                                                    _ => 0
+                                                };
+                                            }
+                                            else
+                                            {
+                                                CallbackMsgsRet = 0;
+                                            }
                                             Debug.WriteLine("state is " + CallbackMsgsRet);
                                             return new IntPtr(CallbackMsgsRet);
                                         }
@@ -321,20 +360,35 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                     case 130:
                                         {
                                             Debug.WriteLine("returning repeat status? (code 130)");
-                                            CallbackMsgsRet = GetRepeat() switch
+                                            if (GetRepeat != null)
                                             {
-                                                RepeatState.None => 0,
-                                                RepeatState.One => 1,
-                                                RepeatState.Queue => 1,
-                                                _ => 0
-                                            };
+                                                CallbackMsgsRet = GetRepeat() switch
+                                                {
+                                                    RepeatState.None => 0,
+                                                    RepeatState.One => 1,
+                                                    RepeatState.Queue => 1,
+                                                    _ => 0
+                                                };
+                                            }
+                                            else
+                                            {
+                                                CallbackMsgsRet = 0;
+                                            }
+
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
                                     case 140:
                                         {
                                             Debug.WriteLine("returning shuffle status? (code 140)");
-                                            CallbackMsgsRet = GetShuffle() ? 1 : 0;
+                                            if (GetShuffle != null)
+                                            {
+                                                CallbackMsgsRet = GetShuffle() ? 1 : 0;
+                                            }
+                                            else
+                                            {
+                                                CallbackMsgsRet = 0;
+                                            }
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
@@ -342,7 +396,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                         {
                                             Debug.WriteLine("returning lytics status? (code 801)");
                                             cadSendLyrics();
-                                            CallbackMsgsRet = 0L;
+                                            CallbackMsgsRet = 0;
                                             return new IntPtr(CallbackMsgsRet);
                                         }
                                 }
@@ -367,30 +421,24 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void cadSendLyrics()
     {
-        COPYDATASTRUCT cdCopyData;
+        CopyDataStruct cdCopyData;
         string strTemp = "";
-        byte[] byteBuffer;
         string arglpWindowName = "CD Art Display 1.x Class";
         var ThWnd = FindWindow(null, arglpWindowName);
-        var ct = GetCurrentTrack();
+        var ct = GetCurrentTrack != null ? GetCurrentTrack() : null;
         if (ct != null && ct.Metadata != null && !string.IsNullOrEmpty(ct.Metadata.Lyrics))
         {
             strTemp = ct.Metadata.Lyrics;
         }
-
-        // UPGRADE_TODO: Code was upgraded to use System.Text.UnicodeEncoding.Unicode.GetBytes() which may not have the same behavior. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="93DD716C-10E3-41BE-A4A8-3BA40157905B"'
-        byteBuffer = System.Text.Encoding.Unicode.GetBytes(strTemp);
         cdCopyData.dwData = new IntPtr(702);
-        cdCopyData.cbData = byteBuffer.GetUpperBound(0) + 1;
-        // UPGRADE_ISSUE: VarPtr function is not supported. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="367764E5-F3F8-4E43-AC3E-7FE0B5E074E2"'
+        cdCopyData.cbData = System.Text.Encoding.Unicode.GetByteCount(strTemp);
         cdCopyData.lpData = Marshal.StringToHGlobalUni(strTemp);
-        // UPGRADE_WARNING: Couldn't resolve default property of object cdCopyData. Click for more: 'ms-help://MS.VSCC.v90/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         SendMessage(ThWnd, WM_COPYDATA, 702, cdCopyData);
     }
 
     private void InterProcessComms(IntPtr lParam)
     {
-        var cdCopyData = new COPYDATASTRUCT();
+        var cdCopyData = new CopyDataStruct();
         var bytebuffer = new byte[50000];
         string strTemp;
         string[] sInfo;
@@ -419,61 +467,61 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     private const int WM_COPYDATA = 0x4A;
 
-    public event EventHandler Play;
+    public event EventHandler? Play;
 
-    public event EventHandler Pause;
+    public event EventHandler? Pause;
 
-    public event EventHandler PlayPause;
+    public event EventHandler? PlayPause;
 
-    public event EventHandler Stop;
+    public event EventHandler? Stop;
 
-    public event EventHandler Next;
+    public event EventHandler? Next;
 
-    public event EventHandler Previous;
+    public event EventHandler? Previous;
 
-    public event EventHandler<byte> SetVolume;
+    public event EventHandler<byte>? SetVolume;
 
-    public event EventHandler<ulong> SetPosition;
+    public event EventHandler<ulong>? SetPosition;
 
-    public event EventHandler<RepeatState> SetRepeat;
+    public event EventHandler<RepeatState>? SetRepeat;
 
-    public event EventHandler<bool> SetShuffle;
+    public event EventHandler<bool>? SetShuffle;
 
-    public event EventHandler<byte> SetRating;
+    public event EventHandler<byte>? SetRating;
 
-    public event Func<byte> GetVolume;
+    public event Func<byte>? GetVolume;
 
-    public event Func<Song> GetCurrentTrack;
+    public event Func<Song>? GetCurrentTrack;
 
-    public event Func<ulong> GetDuration;
+    public event Func<ulong>? GetDuration;
 
-    public event Func<ulong> GetPosition;
+    public event Func<ulong>? GetPosition;
 
-    public event Func<PlaybackState> GetState;
+    public event Func<PlaybackState>? GetState;
 
-    public event Func<RepeatState> GetRepeat;
+    public event Func<RepeatState>? GetRepeat;
 
-    public event Func<bool> GetShuffle;
+    public event Func<bool>? GetShuffle;
 
-    public event Func<string> GetLyrics;
+    public event Func<string>? GetLyrics;
 
-    public event EventHandler<IMusicStatusInterface> StateChangedNotification;
+    public event EventHandler<IMusicStatusInterface>? StateChangedNotification;
 
-    public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
+    public event EventHandler<IMusicStatusInterface>? RepeatChangedNotification;
 
-    public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
+    public event EventHandler<IMusicStatusInterface>? ShutdownNotiifcation;
 
-    public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
+    public event EventHandler<IMusicStatusInterface>? ShuffleChangedNotification;
 
-    public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
+    public event EventHandler<IMusicStatusInterface>? RatingChangedNotification;
 
-    public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
+    public event EventHandler<IMusicStatusInterface>? CurrentTrackNotification;
 
-    public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
+    public event EventHandler<IMusicStatusInterface>? CurrentLyricsNotification;
 
-    public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
+    public event EventHandler<IMusicStatusInterface>? NewLyricsNotification;
 
-    public event EventHandler<IMusicStatusInterface> NewCoverNotification;
+    public event EventHandler<IMusicStatusInterface>? NewCoverNotification;
 
     public void StartIPC()
     {
@@ -486,7 +534,11 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     public void StopIPC()
     {
         cadShutdown();
-        Dispose();
+        label1.Invoke(() =>
+        {
+            Close();
+            Dispose();
+        });
     }
 
     protected override void Dispose(bool disposing)
@@ -506,6 +558,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             }
             disposedValue = true;
         }
+
         base.Dispose(disposing);
     }
 
@@ -542,7 +595,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         this.ClientSize = new System.Drawing.Size(162, 30);
         this.Controls.Add(this.label1);
         this.Name = "CADMusicStatusInterface";
-        this.Load += new System.EventHandler(this.CADMusicStatusInterface_Load);
+        this.Load += new System.EventHandler(CADMusicStatusInterface_Load);
         this.ResumeLayout(false);
         this.PerformLayout();
     }
@@ -554,7 +607,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         //ShowInTaskbar = false;
     }
 
-    public void TrackChangedNotification(Song newtrack)
+    public void TrackChangedNotification(Song? newtrack)
     {
         long ThWnd;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");

@@ -23,10 +23,6 @@ namespace SilverAudioPlayer
 
         private void AddMSI(IMusicStatusInterface e)
         {
-            /*if (musicStatusInterface != null)
-            {
-                RemoveMSI(musicStatusInterface);
-            }*/
             musicStatusInterfaces.Add(e);
             e.Play += MusicStatusInterface_Play;
             e.Pause += MusicStatusInterface_Pause;
@@ -37,20 +33,37 @@ namespace SilverAudioPlayer
             e.GetCurrentTrack += MusicStatusInterface_GetCurrentTrack;
             e.GetDuration += MusicStatusInterface_GetDuration;
             e.GetPosition += MusicStatusInterface_GetPosition;
-            e.GetShuffle += E_GetShuffle;
+            e.SetPosition += MusicStatusInterface_SetPosition;
+
+            e.GetShuffle += MusicStatusInterface_GetShuffle;
             e.GetState += MusicStatusInterface_GetState;
             e.GetVolume += MusicStatusInterface_GetVolume;
+            e.SetVolume += MusicStatusInterface_SetVolume;
             e.GetRepeat += MusicStatusInterface_GetRepeat;
-            e.SetRating += E_SetRating;
+            e.SetRating += MusicStatusInterface_SetRating;
             e.StartIPC();
         }
 
-        private void E_SetRating(object? sender, byte e)
+        private void MusicStatusInterface_SetVolume(object? sender, byte e)
+        {
+            if (e <= 100)
+            {
+                Invoke(() => { volumeBar.Value = e; });
+                Player?.SetVolume(e);
+            }
+        }
+
+        private void MusicStatusInterface_SetPosition(object? sender, ulong e)
+        {
+            Player?.SetPosition(TimeSpan.FromSeconds(e));
+        }
+
+        private void MusicStatusInterface_SetRating(object? sender, byte e)
         {
             //TODO eventually
         }
 
-        private bool E_GetShuffle()
+        private bool MusicStatusInterface_GetShuffle()
         {
             return false;
         }
@@ -67,8 +80,7 @@ namespace SilverAudioPlayer
 
         private byte MusicStatusInterface_GetVolume()
         {
-            Invoke(() => { return (byte)volumeBar.Value; });
-            return 70;
+            return Invoke(() => { return (byte)volumeBar.Value; });
         }
 
         private PlaybackState MusicStatusInterface_GetState()
@@ -89,8 +101,10 @@ namespace SilverAudioPlayer
             e.GetVolume -= MusicStatusInterface_GetVolume;
             e.GetRepeat -= MusicStatusInterface_GetRepeat;
             e.GetPosition -= MusicStatusInterface_GetPosition;
-            e.GetShuffle -= E_GetShuffle;
-            e.SetRating -= E_SetRating;
+            e.GetShuffle -= MusicStatusInterface_GetShuffle;
+            e.SetRating -= MusicStatusInterface_SetRating;
+            e.SetPosition -= MusicStatusInterface_SetPosition;
+            e.SetVolume -= MusicStatusInterface_SetVolume;
 
             e.StopIPC();
             e.Dispose();
@@ -99,7 +113,7 @@ namespace SilverAudioPlayer
 
         private ulong MusicStatusInterface_GetDuration()
         {
-            return (ulong?)(CurrentSong.Metadata.Duration / 1000) ?? 69;
+            return (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 69;
         }
 
         private Song MusicStatusInterface_GetCurrentTrack()
@@ -488,10 +502,10 @@ namespace SilverAudioPlayer
                     return;
                 }
             }
-            Player = Logic.GetPlayerFromURI(CurrentURI);
+            Player = Logic.GetPlayerFromStream(CurrentSong.Stream);
             if (CurrentSong != null && CurrentSong?.Metadata == null && Config.CheckForMetadataInSP)
             {
-                var a = Logic.GetMetadataFromURI(CurrentURI);
+                var a = Logic.GetMetadataFromStream(CurrentSong.Stream);
                 if (a != null)
                 {
                     Debug.WriteLine("Getting metadata in SP");
@@ -631,10 +645,20 @@ namespace SilverAudioPlayer
             {
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-                int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
-                if (index + 1 < aa.Length)
+                var a = aa.FirstOrDefault(x => (Song)x.Tag == CurrentSong);
+
+                if (a != null)
                 {
-                    HandleSongChanging((Song)aa[index + 1].Tag, true);
+                    int index = a.Index;
+                    if (index + 1 < aa.Length)
+                    {
+                        HandleSongChanging((Song)aa[index + 1].Tag, true);
+                    }
+                }
+                else if(NextSong!=null)
+                {
+                    HandleSongChanging(NextSong, true);
+                    NextSong = null;
                 }
             }
             else if (StopAutoLoading)
@@ -717,7 +741,7 @@ namespace SilverAudioPlayer
             {
                 files = FilterFiles(Directory.GetFiles(files[0])).ToArray();
             }
-            if ((files.Length > 1) || files.Length == 1 && File.Exists(files[0]))
+            if ((files.Length > 0) && files.All(x => File.Exists(x)))
             {
                 files = FilterFiles(files).ToArray();
                 var a = treeView1.Nodes[0].Nodes.Count;
@@ -752,12 +776,14 @@ namespace SilverAudioPlayer
             {
                 if (treeView1.Nodes[0].Nodes[i].Tag is Song song && song.Metadata == null)
                 {
-                    var a = Logic.GetMetadataFromURI(song.URI);
+                    var a = Logic.GetMetadataFromStream(song.Stream);
                     Debug.WriteLine("Getting metadata in FMOLF about song " + song.Guid);
                     if (a != null)
                     {
                         Debug.WriteLine("a wasn't null");
                         song.Metadata = a.GetAwaiter().GetResult();
+                        Debug.WriteLine("ayo");
+                        Debug.WriteLine(song.Metadata.Title);
                     }
                 }
             }
@@ -780,6 +806,7 @@ namespace SilverAudioPlayer
 
         private void treeView1_DragOver(object sender, DragEventArgs e)
         {
+            Debug.WriteLine(string.Join(" ", e.Data.GetFormats()));
             if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
             {
                 e.Effect = DragDropEffects.Copy;
@@ -1003,11 +1030,22 @@ namespace SilverAudioPlayer
             treeView1.Nodes[0].Nodes.Insert(indexa + 1, aa[indexb]);
             treeView1.SelectedNode = aa[indexb];
         }
-
+        Song? NextSong = null;
         private void removeFromQueueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedItem != null)
             {
+                if (SelectedItem.Tag == CurrentSong)
+                {
+                    if(treeView1.Nodes[0].Nodes.Count > SelectedItem.Index + 1)
+                    {
+                        NextSong = treeView1.Nodes[0].Nodes[SelectedItem.Index + 1].Tag as Song;
+                    }
+                   else
+                    {
+                        NextSong = null;
+                    }
+                }
                 treeView1.Nodes[0].Nodes.Remove(SelectedItem);
             }
         }
