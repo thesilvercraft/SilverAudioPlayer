@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer.Shared
+﻿using System.Diagnostics;
+
+namespace SilverAudioPlayer.Shared
 {
     public class WrappedFileStream : WrappedStream, IDisposable
     {
@@ -7,19 +9,16 @@
         public WrappedFileStream(string url)
         {
             URL = url;
-            Stream = File.Open(URL, FileMode.Open);
+            RegenStream();
         }
 
         public string URL { get; set; }
+        public List<Stream> Streams { get; set; } = new();
 
         public override Stream RegenStream()
         {
-            if (Stream != null && Stream.CanSeek && Stream.CanRead)
-            {
-                Stream.Close();
-            }
-
-            Stream = File.Open(URL, FileMode.Open);
+            Stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
+            Streams.Add(Stream);
             return Stream;
         }
 
@@ -29,6 +28,10 @@
             {
                 if (disposing)
                 {
+                    foreach (var stream in Streams.Where(x => x.CanRead))
+                    {
+                        stream.Dispose();
+                    }
                     // Stream.Dispose();
                 }
                 disposedValue = true;

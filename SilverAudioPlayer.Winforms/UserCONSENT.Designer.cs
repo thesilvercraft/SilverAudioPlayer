@@ -67,7 +67,7 @@
             // 
             // noneverbutton
             // 
-            this.noneverbutton.Location = new System.Drawing.Point(630, 145);
+            this.noneverbutton.Location = new System.Drawing.Point(639, 137);
             this.noneverbutton.Name = "noneverbutton";
             this.noneverbutton.Size = new System.Drawing.Size(149, 23);
             this.noneverbutton.TabIndex = 3;
@@ -89,7 +89,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 180);
+            this.ClientSize = new System.Drawing.Size(800, 169);
             this.Controls.Add(this.yassnowbutton);
             this.Controls.Add(this.noneverbutton);
             this.Controls.Add(this.yesalways);

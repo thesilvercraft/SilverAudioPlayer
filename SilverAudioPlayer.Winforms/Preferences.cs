@@ -26,7 +26,7 @@ namespace SilverAudioPlayer
         public int ProgressBarColour { get; set; } = Color.Cyan.ToArgb();
 
         [Comment("Does the progress bar look like a rainbow")]
-        public bool ProgressBarRainbow { get; set; } = true;
+        public bool ProgressBarRainbow { get; set; } = false;
 
         [Comment("Should the rainbow be cached and to what extent")]
         public byte ProgressBarRainbowCaching { get; set; } = 0;
@@ -44,8 +44,8 @@ namespace SilverAudioPlayer
         public byte Volume { get; set; } = 70;
 
         [Comment("Should the player read the metadata of files when they are added to the queue? also enables sorting by track number")]
-        public bool FillMetadataOfLoadedFilesOnLoad { get; set; }
+        public bool FillMetadataOfLoadedFilesOnLoad { get; set; } = true;
 
-        public bool AutoMagicallyLoadFromArgstxt { get; set; }
+        public bool AutoMagicallyLoadFromArgstxt { get; set; } = true;
     }
 }

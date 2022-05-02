@@ -1,50 +1,85 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Version>1.0.0.5</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<Version>1.0.0.6</Version>
+		<Configurations>Debug;Release;SUP;MSRelease</Configurations>
+	</PropertyGroup>
+	
+    <!--Normal debug-->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+	</PropertyGroup>
+	<!--Normal release-->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+	</PropertyGroup>
+	<!--Silver.Update release (no microsoft)-->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SUP|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE;SUP</DefineConstants>
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='SUP|AnyCPU'">
+		<ProjectReference Include="..\..\Silver.Update\Silver.Update\Silver.Update.csproj" />
+	</ItemGroup>
+	<!--Microsoft release (no silver.update)-->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MSRelease|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE;MS</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='MSRelease|AnyCPU'">
+		<ProjectReference Include="..\Silver.Serilog.MSAppCenterSink\Silver.Serilog.MSAppCenterSink.csproj" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.1" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="icon.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="icon.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.1" />
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.1" />
-    <PackageReference Include="SilverFormsUtils" Version="1.0.7" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
-  </ItemGroup>
+	<ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.CAD.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.DryWetMidi.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.MetadataSource.Z440AtlCore.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-    <ProjectReference Include="..\SilverConfig\SilverConfig.csproj" />
-  </ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.1-dev-00313" />
+		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
+		<PackageReference Include="SilverFormsUtils" Version="1.0.7" />
+		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.CAD.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.DryWetMidi.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.MetadataSource.Z440AtlCore.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+		<ProjectReference Include="..\SilverConfig\SilverConfig.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

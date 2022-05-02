@@ -14,6 +14,8 @@ namespace SilverAudioPlayer.Core
         [ImportMany(typeof(IMusicStatusInterface))]
         public IEnumerable<Lazy<IMusicStatusInterface>>? MusicStatusInterfaces;
 
+        public Serilog.Core.Logger log { get; set; }
+
         public IPlay? GetPlayerFromStream(WrappedStream stream)
         {
             var provider = PlayProviders?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanPlayFile(stream));

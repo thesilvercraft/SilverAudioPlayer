@@ -47,7 +47,7 @@ namespace SilverConfig
                 return;
             }
             Debug.WriteLine($"Changed: {e.FullPath}");
-            if (e.FullPath == FilePath)
+            if (FilePath == null || e.FullPath == FilePath)
             {
                 OnChangedE.Invoke(this, e.FullPath);
             }
@@ -55,20 +55,41 @@ namespace SilverConfig
 
         public event EventHandler<string> OnChangedE;
 
+        public event EventHandler<string> OnCreatedE;
+
+        public event EventHandler<string> OnDeletedE;
+
+        public event EventHandler<Tuple<string, string>> OnRenamedE;
+
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
             string value = $"Created: {e.FullPath}";
             Debug.WriteLine(value);
+            if (FilePath == null || e.FullPath == FilePath)
+            {
+                OnCreatedE.Invoke(this, e.FullPath);
+            }
         }
 
-        private void OnDeleted(object sender, FileSystemEventArgs e) =>
-            Debug.WriteLine($"Deleted: {e.FullPath}");
+        private void OnDeleted(object sender, FileSystemEventArgs e)
+        {
+            string value = $"Deleted: {e.FullPath}";
+            Debug.WriteLine(value);
+            if (FilePath == null || e.FullPath == FilePath)
+            {
+                OnDeletedE.Invoke(this, e.FullPath);
+            }
+        }
 
-        private static void OnRenamed(object sender, RenamedEventArgs e)
+        private void OnRenamed(object sender, RenamedEventArgs e)
         {
             Debug.WriteLine($"Renamed:");
             Debug.WriteLine($"    Old: {e.OldFullPath}");
             Debug.WriteLine($"    New: {e.FullPath}");
+            if (FilePath == null || e.OldFullPath == FilePath || e.FullPath == FilePath)
+            {
+                OnRenamedE.Invoke(this, new(e.OldFullPath, e.FullPath));
+            }
         }
 
         private void OnError(object sender, ErrorEventArgs e) =>

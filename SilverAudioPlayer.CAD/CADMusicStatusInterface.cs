@@ -1,4 +1,5 @@
-﻿using SilverAudioPlayer.Shared;
+﻿using Serilog;
+using SilverAudioPlayer.Shared;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -13,8 +14,10 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         InitializeComponent();
         WindowState = FormWindowState.Minimized;
         ShowInTaskbar = false;
+        logger = Logger.GetLogger(typeof(CADMusicStatusInterface));
     }
 
+    public ILogger? logger { get; set; }
     private Label label1;
     private bool disposedValue;
 
@@ -58,9 +61,9 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         long ThWnd;
         string strTemp;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
-        Debug.WriteLine(ThWnd);
-
+        logger?.Information("Registering for CAD, found window: {ThWnd}", ThWnd);
         strTemp = "1" + "\t" + "\t" + "SilverAudioPlayerIPC" + "\t" + AppContext.BaseDirectory + @"SilverAudioPlayer.Winforms.exe" + "\t";
+        logger?.Debug("Registering for CAD, will send: {strTemp}", strTemp);
         CopyDataStruct copyData = new();
         copyData.lpData = Marshal.StringToHGlobalUni(strTemp);
         if (copyData.lpData != IntPtr.Zero)
@@ -72,7 +75,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             {
                 Marshal.StructureToPtr(copyData, copyDataBuff, false);
                 var e = SendMessage(ThWnd, WM_COPYDATA, 700, copyData);
-                Debug.WriteLine(e);
+                logger?.Information("Registering for CAD, got response: {e}", e);
                 Marshal.FreeHGlobal(copyDataBuff);
             }
             Marshal.FreeHGlobal(copyData.lpData);
@@ -122,6 +125,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         CopyDataStruct cdCopyData;
         string strTemp;
         string arglpWindowName = "CD Art Display 1.x Class";
+
         Song? song = GetCurrentTrack != null ? GetCurrentTrack() : null;
         if (song == null)
         {
@@ -129,6 +133,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         }
         const string vbTab = "\t";
         var ThWnd = FindWindow(null, arglpWindowName);
+        logger?.Information("Sending CAD the song info, CAD's window should be {ThWnd}", ThWnd);
+
         if (song.Metadata != null)
         {
             string art = song.URI;
@@ -151,18 +157,19 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                 art = Path.Combine(AppContext.BaseDirectory, "Art", bestart.Hash + ".jpg");
             }
             strTemp = $"{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Title)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Artist)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Album)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Genre)}\t{song.Metadata.Year}\t\t{(song.Metadata.TrackNumber ?? 0)}\t{((int)(song.Metadata.Duration / 1000 ?? 60))}\t{song.URI.Replace("\t", "\\t")}\t0\t{art.Replace("\t", "\\t")}\t\t\t\t\t\t\t";
-            Debug.WriteLine(strTemp);
+            logger?.Debug("Sending CAD the song info, will send {strTemp}", strTemp);
         }
         else
-
         {
             strTemp = song.Name + vbTab + "Song Artist" + vbTab + "Song Album" + vbTab + "Song Genre" + vbTab + "Year" + vbTab + "Comments" + vbTab + "1" + vbTab + "240" + vbTab + song.URI + vbTab + "5" + vbTab + song.URI + vbTab + "Composer" + vbTab + "128";
+            logger?.Debug("Sending CAD the song info, will send {strTemp} (DEFAULT INFO WITH SONG NAME CHANGED)", strTemp);
         }
 
         cdCopyData.dwData = new IntPtr(701);
         cdCopyData.cbData = System.Text.Encoding.Unicode.GetByteCount(strTemp);
         cdCopyData.lpData = Marshal.StringToHGlobalUni(strTemp);
-        SendMessage(ThWnd, WM_COPYDATA, 701, cdCopyData);
+        var response = SendMessage(ThWnd, WM_COPYDATA, 701, cdCopyData);
+        logger?.Information("Sending CAD the song info, got response: {response}", response);
     }
 
     public IntPtr CallbackMsgs(IntPtr Hwnd, int wMsg, IntPtr wparam, IntPtr lparam)
@@ -171,7 +178,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         long lp_id = lparam.ToInt64();
         //long wHwnd = Hwnd.ToInt64();
         long CallbackMsgsRet = default;
-        Debug.WriteLine("wp " + wp_id + " lp " + lp_id);
+        logger?.Debug("WP: {wp_id} LP: {lp_id}", wp_id, lp_id);
+
         switch (wMsg)
         {
             case WM_USER:
@@ -179,31 +187,31 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                     if (lp_id == 128)
                     {
                         SetRepeat?.Invoke(this, wp_id == 1 ? RepeatState.One : RepeatState.None);
-                        Debug.WriteLine("Repeat: " + wp_id);
+                        logger?.Debug("SET Repeat: {wp_id}", wp_id);
                     }
-
                     if (lp_id == 141)
                     {
-                        Debug.WriteLine("Shuffle: " + wp_id);
                         SetShuffle?.Invoke(this, wp_id == 1);
+                        logger?.Debug("SET Shuffle: {wp_id}", wp_id);
                     }
                     if (lp_id == 114)
                     {
-                        Debug.WriteLine("setting song position?");
                         SetPosition?.Invoke(this, (ulong)wp_id);
+                        logger?.Debug("SET Song position: {wp_id}", wp_id);
+
                         return new IntPtr(CallbackMsgsRet);
                     }
                     if (lp_id == 108)
                     {
-                        Debug.WriteLine("Volume " + wp_id);
                         SetVolume?.Invoke(this, (byte)wp_id);
+                        logger?.Debug("SET Volume: {wp_id}", wp_id);
                     }
                     if (lp_id == 639)
                     {
                         void SetRatingI(byte val)
                         {
-                            Debug.WriteLine("Rating set in CAD: " + val);
                             SetRating?.Invoke(this, val);
+                            logger?.Debug("SET RATING: {val}", val);
                         }
                         switch (wp_id)
                         {
@@ -253,21 +261,21 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                 {
                                     case 101:
                                         {
-                                            Debug.WriteLine("Play/Pause");
+                                            logger?.Debug("TOGGLE: PLAY/PAUSE");
                                             PlayPause?.Invoke(this, EventArgs.Empty);
                                             break;
                                         }
 
                                     case 103:
                                         {
-                                            Debug.WriteLine("Stop");
+                                            logger?.Debug("TOGGLE: Stop");
                                             Stop?.Invoke(this, EventArgs.Empty);
                                             break;
                                         }
 
                                     case 104:
                                         {
-                                            Debug.WriteLine("Next");
+                                            logger?.Debug("TOGGLE: NEXT");
                                             Next?.Invoke(this, EventArgs.Empty);
                                             if (GetCurrentTrack != null && TrackChangedNotification != null)
                                             {
@@ -278,7 +286,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                                     case 105:
                                         {
-                                            Debug.WriteLine("Prev");
+                                            logger?.Debug("TOGGLE: PREVIOUS");
                                             Previous?.Invoke(this, EventArgs.Empty);
                                             if (GetCurrentTrack != null && TrackChangedNotification != null)
                                             {
@@ -289,7 +297,6 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                                     case 109:
                                         {
-                                            Debug.WriteLine("returning volume?");
                                             if (GetVolume != null)
                                             {
                                                 CallbackMsgsRet = GetVolume();
@@ -298,12 +305,13 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                             {
                                                 CallbackMsgsRet = 70;
                                             }
+                                            logger?.Debug("GET: VOLUME, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
                                     case 110:
                                         {
-                                            Debug.WriteLine("returning song?");
+                                            logger?.Debug("GET: SONGINF");
                                             cadSendSongInfo();
                                             CallbackMsgsRet = 1;
                                             return new(CallbackMsgsRet);
@@ -311,7 +319,6 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                                     case 113:
                                         {
-                                            Debug.WriteLine("returning song duration?");
                                             if (GetDuration != null)
                                             {
                                                 CallbackMsgsRet = (long)GetDuration();
@@ -320,12 +327,12 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                             {
                                                 CallbackMsgsRet = 0;
                                             }
+                                            logger?.Debug("GET: SONGDUR, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
                                             return new(CallbackMsgsRet);
                                         }
 
                                     case 122:
                                         {
-                                            Debug.WriteLine("returning song position?");
                                             if (GetPosition != null)
                                             {
                                                 CallbackMsgsRet = (long)GetPosition();
@@ -334,11 +341,11 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                             {
                                                 CallbackMsgsRet = 0;
                                             }
+                                            logger?.Debug("GET: SONGPOS, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
                                             return new IntPtr(CallbackMsgsRet);
                                         }
                                     case 125:
                                         {
-                                            Debug.WriteLine("returning PLAYER_STATE (code 125)");
                                             if (GetState != null)
                                             {
                                                 CallbackMsgsRet = GetState() switch
@@ -353,13 +360,12 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                             {
                                                 CallbackMsgsRet = 0;
                                             }
-                                            Debug.WriteLine("state is " + CallbackMsgsRet);
+                                            logger?.Debug("GET: PLAYER_STATE, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
                                     case 130:
                                         {
-                                            Debug.WriteLine("returning repeat status? (code 130)");
                                             if (GetRepeat != null)
                                             {
                                                 CallbackMsgsRet = GetRepeat() switch
@@ -374,13 +380,12 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                             {
                                                 CallbackMsgsRet = 0;
                                             }
-
+                                            logger?.Debug("GET: REPEATSTATUS, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
                                     case 140:
                                         {
-                                            Debug.WriteLine("returning shuffle status? (code 140)");
                                             if (GetShuffle != null)
                                             {
                                                 CallbackMsgsRet = GetShuffle() ? 1 : 0;
@@ -389,12 +394,13 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                                             {
                                                 CallbackMsgsRet = 0;
                                             }
+                                            logger?.Debug("GET: SHUFFLESTATUS, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
                                             return new IntPtr(CallbackMsgsRet);
                                         }
 
                                     case 801:
                                         {
-                                            Debug.WriteLine("returning lytics status? (code 801)");
+                                            logger?.Debug("GET: LYRICS");
                                             cadSendLyrics();
                                             CallbackMsgsRet = 0;
                                             return new IntPtr(CallbackMsgsRet);
@@ -611,26 +617,26 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     {
         long ThWnd;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
-        Debug.WriteLine(ThWnd);
+        logger?.Debug("TrackChangedNotification, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 123);
-        Debug.WriteLine(e);
+        logger?.Debug("TrackChangedNotification, return of 123 {e}", e);
     }
 
     public void PlayerStateChanged(PlaybackState newstate)
     {
         long ThWnd;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
-        Debug.WriteLine(ThWnd);
+        logger?.Debug("PlayerStateChanged, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 126);
-        Debug.WriteLine(e);
+        logger?.Debug("PlayerStateChanged, return of 126 {e}", e);
     }
 
     public void cadShutdown()
     {
         long ThWnd;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
-        Debug.WriteLine(ThWnd);
+        logger?.Debug("cadShutdown, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 129);
-        Debug.WriteLine(e);
+        logger?.Debug("cadShutdown, return of 129 {e}", e);
     }
 }

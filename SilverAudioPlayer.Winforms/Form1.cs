@@ -14,7 +14,7 @@ namespace SilverAudioPlayer
     public partial class Form1 : Form
     {
         private IConfigReader<Preferences> ConfigReader;
-        private const string ConfigFileName = "preferences.xml";
+        private const string ConfigFileName = "settings\\silveraudioplayer.winforms.preferences.xml";
         private Preferences Config;
         private bool WatchForConfigChanges = true;
         private ConfigFileWatcher cfw;
@@ -274,7 +274,7 @@ namespace SilverAudioPlayer
         private void AutoSaveConfig()
         {
             savednow = true;
-            Debug.WriteLine("Saving config");
+            Logic.log.Information("Saving config");
             volumeBar.Invoke(() => { Config.Volume = (byte)volumeBar.Value; });
             Config.ProgressBarRainbow = ProgressBar.ProgressBar.Rainbow;
             Config.ProgressBarRainbowShift = ProgressBar.ProgressBar.ShiftRainbow;
@@ -283,7 +283,7 @@ namespace SilverAudioPlayer
             Config.ProgressBarColour = ProgressBar.ProgressBar.Color.ToArgb();
             Config.MillisecondIntervalOfAutoSave = (ulong)AutosaveConfig.Interval;
             ConfigReader.Write(Config, ConfigLoc);
-            Debug.WriteLine("Config saved");
+            Logic.log.Information("Config saved");
         }
 
         private void OnConfigChange(bool fromstartup = false)
@@ -446,7 +446,7 @@ namespace SilverAudioPlayer
         [DllImport("Shell32.dll")]
         private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
 
-        private readonly string[] AssociatedFileTypes = new[] { ".mp3", ".aif", ".aiff", ".flac", ".wav", ".ogg" };
+        private readonly string[] AssociatedFileTypes = new[] { ".mp3", ".aif", ".aiff", ".flac", ".wav", ".ogg", ".midi", ".mid" };
 
         public void RegisterInReg()
         {
@@ -478,6 +478,42 @@ namespace SilverAudioPlayer
             }
         }
 
+        public static void DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)
+        {
+            using (var baseKey = RegistryKey.OpenBaseKey(registryHive, RegistryView.Default))
+            {
+                baseKey.DeleteSubKeyTree(fullPathKeyToDelete);
+            }
+        }
+
+        public void RemoveFromReg()
+        {
+            if (!string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayer", string.Empty, string.Empty)))
+            {
+                DeleteRegistryFolder(RegistryHive.ClassesRoot, "SilverAudioPlayer");
+
+                //  DeleteRegistryFolder(RegistryHive.CurrentUser, "Software\\Classes\\SilverAudioPlayer");
+
+                foreach (string? type in AssociatedFileTypes)
+                {
+                    string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
+
+                    string? val = (string?)Registry.GetValue(a, "", "");
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        string? val2 = (string?)Registry.GetValue(a, "SAP.BAK", "");
+                        if (!string.IsNullOrEmpty(val2))
+                        {
+                            MessageBox.Show(a + " " + val2);
+                            Registry.SetValue(a, "", val2);
+                        }
+                    }
+                }
+                //this call notifies Windows that it needs to redo the file associations and icons
+                _ = SHChangeNotify(0x08000000, 0x2000, IntPtr.Zero, IntPtr.Zero);
+            }
+        }
+
         private CancellationTokenSource? token = new();
         private byte stateofdoingstuff = 0;
         private string? CurrentURI => CurrentSong?.URI;
@@ -498,7 +534,7 @@ namespace SilverAudioPlayer
                 }
                 else
                 {
-                    Debug.WriteLine("Avoiding fatal crash");
+                    Logic.log.Information("Avoiding fatal crash");
                     return;
                 }
             }
@@ -508,7 +544,7 @@ namespace SilverAudioPlayer
                 var a = Logic.GetMetadataFromStream(CurrentSong.Stream);
                 if (a != null)
                 {
-                    Debug.WriteLine("Getting metadata in SP");
+                    Logic.log.Information("Getting metadata in SP");
                     CurrentSong.Metadata = a.GetAwaiter().GetResult();
                 }
             }
@@ -607,7 +643,7 @@ namespace SilverAudioPlayer
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine(ex.Message);
+                        Logic.log.Error(ex.Message);
                         return;
                     }
                     Thread.Sleep(70);
@@ -632,10 +668,7 @@ namespace SilverAudioPlayer
 
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
-            Debug.WriteLine("Output device playback stopped");
-            Debug.WriteLine("Loop single checked: " + Config.LoopSong);
-            Debug.WriteLine("StopAutoLoading: " + StopAutoLoading);
-            Debug.WriteLine("Current song: " + CurrentSong);
+            Logic.log.Information("Output device playback stopped\nLoop single checked: {Config.LoopSong}\nStopAutoLoading: {StopAutoLoading}\nCurrent song: {CurrentSong}", Config.LoopSong, StopAutoLoading, CurrentSong);
             if (Config.LoopSong && !StopAutoLoading)
             {
                 RemoveTrack();
@@ -655,7 +688,7 @@ namespace SilverAudioPlayer
                         HandleSongChanging((Song)aa[index + 1].Tag, true);
                     }
                 }
-                else if(NextSong!=null)
+                else if (NextSong != null)
                 {
                     HandleSongChanging(NextSong, true);
                     NextSong = null;
@@ -679,17 +712,13 @@ namespace SilverAudioPlayer
 
         private void HandleSongChanging(Song NextSong, bool resetsal = false)
         {
-            Debug.WriteLine("StopAutoLoading set to true in HandleSongChanging");
+            Logic.log.Information("StopAutoLoading set to true in HandleSongChanging");
             StopAutoLoading = true;
             var curr = FindById(CurrentSong?.Guid);
             var next = FindById(NextSong.Guid);
             if (next == null)
             {
-                Debug.WriteLine("!!!!!!! NEXT is NULL in HSC !!!!!!!!");
-                Debug.WriteLine("NextSong.Guid is " + NextSong.Guid);
-                Debug.WriteLine("NextSong.URI is " + NextSong.URI);
-                Debug.WriteLine("CurrentSong.Guid is " + CurrentSong.Guid);
-                Debug.WriteLine("CurrentSong.URI is " + CurrentSong.URI);
+                Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
             }
             else
             {
@@ -704,11 +733,7 @@ namespace SilverAudioPlayer
             }
             if (curr == null)
             {
-                Debug.WriteLine("!!!!!!! CURR is NULL in HSC !!!!!!!!");
-                Debug.WriteLine("CurrentSong.Guid is " + CurrentSong.Guid);
-                Debug.WriteLine("CurrentSong.URI is " + CurrentSong.URI);
-                Debug.WriteLine("NextSong.Guid is " + NextSong.Guid);
-                Debug.WriteLine("NextSong.URI is " + NextSong.URI);
+                Logic.log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
             }
         }
 
@@ -751,7 +776,7 @@ namespace SilverAudioPlayer
                 {
                     FillMetadataOfLoadedFiles(true);
                 }
-                if (Config!.PlayAfterSelect && ((a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped)) || fromProgram || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes))
+                if (treeView1.Nodes[0].Nodes.Count != 0 && (Config!.PlayAfterSelect && ((a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped)) || fromProgram || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes)))
                 {
                     if (fromProgram)
                     {
@@ -777,25 +802,25 @@ namespace SilverAudioPlayer
                 if (treeView1.Nodes[0].Nodes[i].Tag is Song song && song.Metadata == null)
                 {
                     var a = Logic.GetMetadataFromStream(song.Stream);
-                    Debug.WriteLine("Getting metadata in FMOLF about song " + song.Guid);
+                    Logic.log.Information("Getting metadata in FMOLF about song " + song.Guid);
                     if (a != null)
                     {
-                        Debug.WriteLine("a wasn't null");
+                        Logic.log.Verbose("a wasn't null");
                         song.Metadata = a.GetAwaiter().GetResult();
-                        Debug.WriteLine("ayo");
-                        Debug.WriteLine(song.Metadata.Title);
                     }
                 }
             }
             if (sortafterwards)
             {
-                Debug.WriteLine("Sorting after filling metadata");
+                Logic.log.Information("Sorting after filling metadata");
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
                 treeView1.Nodes[0].Nodes.Clear();
                 foreach (var song in aa.OrderBy(x => ((Song?)x?.Tag)?.Metadata?.TrackNumber ?? 0))
                 {
-                    Debug.WriteLine("Adding song " + ((Song)song.Tag).Guid + " to treeview");
+                    Debug.WriteLine(((Song?)song?.Tag)?.Metadata?.TrackNumber);
+
+                    Logic.log.Information("Adding song " + ((Song)song.Tag).Guid + " to treeview");
                     treeView1.Nodes[0].Nodes.Add(song);
                 }
             }
@@ -842,7 +867,7 @@ namespace SilverAudioPlayer
                 var lstnod = tree.Nodes[0].Nodes[^1];
                 if (lstnod != null)
                 {
-                    Debug.WriteLine(lstnod.Bounds.X + " " + lstnod.Bounds.Y);
+                    Logic.log.Debug(lstnod.Bounds.X + " " + lstnod.Bounds.Y);
                     if (pt.Y > lstnod.Bounds.Y && pt.X > lstnod.Bounds.X && pt.X < (lstnod.Bounds.X + lstnod.Bounds.Right))
                     {
                         DestinationNode = lstnod;
@@ -870,7 +895,7 @@ namespace SilverAudioPlayer
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(ex.Message);
+                    Logic.log.Error(ex.Message);
                 }
                 SourceNode = null;
             }
@@ -1030,18 +1055,20 @@ namespace SilverAudioPlayer
             treeView1.Nodes[0].Nodes.Insert(indexa + 1, aa[indexb]);
             treeView1.SelectedNode = aa[indexb];
         }
-        Song? NextSong = null;
+
+        private Song? NextSong = null;
+
         private void removeFromQueueToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedItem != null)
             {
                 if (SelectedItem.Tag == CurrentSong)
                 {
-                    if(treeView1.Nodes[0].Nodes.Count > SelectedItem.Index + 1)
+                    if (treeView1.Nodes[0].Nodes.Count > SelectedItem.Index + 1)
                     {
                         NextSong = treeView1.Nodes[0].Nodes[SelectedItem.Index + 1].Tag as Song;
                     }
-                   else
+                    else
                     {
                         NextSong = null;
                     }
@@ -1109,9 +1136,7 @@ namespace SilverAudioPlayer
         private void button1_Click(object sender, EventArgs e)
         {
             AutoSaveConfig();
-#if DEBUG
             Process.Start("notepad.exe", ConfigLoc);
-#endif
         }
 
         private void button2_Click(object sender, EventArgs e)

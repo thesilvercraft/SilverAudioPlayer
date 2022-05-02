@@ -1,14 +1,9 @@
-﻿using Microsoft.AppCenter.Crashes;
-using SilverFormsUtils;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#if MS
+using Microsoft.AppCenter.Crashes;
 using System.Windows.Forms;
+#endif
+
+using SilverFormsUtils;
 
 namespace SilverAudioPlayer.Winforms
 {
@@ -26,23 +21,26 @@ namespace SilverAudioPlayer.Winforms
 
         private void yesalways_Click(object sender, EventArgs e)
         {
+#if MS
             Crashes.NotifyUserConfirmation(UserConfirmation.AlwaysSend);
             Close();
-
+#endif
         }
 
         private void yassnowbutton_Click(object sender, EventArgs e)
         {
+#if MS
             Crashes.NotifyUserConfirmation(UserConfirmation.Send);
             Close();
-
+#endif
         }
 
         private void noneverbutton_Click(object sender, EventArgs e)
         {
+#if MS
             Crashes.NotifyUserConfirmation(UserConfirmation.DontSend);
             Close();
-
+#endif
         }
     }
 }
