@@ -5,8 +5,6 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
 {
     public class AtlCoreMetadata : Metadata
     {
-        public readonly Track OGInfo;
-
         public AtlCoreMetadata(Track theTrack)
         {
             OGInfo = theTrack;
@@ -23,5 +21,7 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
             Pictures = theTrack.EmbeddedPictures.Select(x => new ATLCOREPicture(x)).ToList();
             Lyrics = theTrack.Lyrics.UnsynchronizedLyrics;
         }
+
+        public Track OGInfo { get; init; }
     }
 }

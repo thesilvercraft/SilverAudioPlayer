@@ -148,6 +148,7 @@ namespace SilverAudioPlayer
         [STAThread]
         public void Run(string?[]? args)
         {
+            Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory, "settings\\")))

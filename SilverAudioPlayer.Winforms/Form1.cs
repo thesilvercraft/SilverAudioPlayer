@@ -2,6 +2,7 @@ using Microsoft.Win32;
 using SilverAudioPlayer.CAD;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Winforms;
 using SilverConfig;
 using SilverFormsUtils;
 using System.Diagnostics;
@@ -1167,6 +1168,15 @@ namespace SilverAudioPlayer
                         }
                     }).Start();
                 }
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            if (CurrentSong != null)
+            {
+                MetadataForm mf = new(ref CurrentSong);
+                mf.Show();
             }
         }
     }
