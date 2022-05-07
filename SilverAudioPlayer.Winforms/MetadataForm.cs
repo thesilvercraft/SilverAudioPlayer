@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,6 +20,9 @@ namespace SilverAudioPlayer.Winforms
         private LinkLabel nometadatafoundlinklabel = new() { Text = "Try to reload it?", Location = new Point(10, 20), AutoSize = true };
         private Song Song;
         private readonly Color DefaultColor = Color.White;
+        private readonly Color Meta1 = Color.Red;
+        private readonly Color Meta2 = Color.Blue;
+        private readonly Color Meta1B = Color.Orange;
 
         private void AddLabel(string? text, int pos, int x, Color? color = null)
         {
@@ -28,9 +32,9 @@ namespace SilverAudioPlayer.Winforms
 
         private int poscount = 1;
 
-        private void AddLabel(string? text, int x, bool? b = null)
+        private void AddLabel(string? text, int x, Color? color = null)
         {
-            AddLabel(text, poscount++, x, b == null ? DefaultBackColor : (b == true ? Color.Blue : Color.Red));
+            AddLabel(text, poscount++, x, color);
         }
 
         public MetadataForm(ref Song song)
@@ -82,13 +86,20 @@ namespace SilverAudioPlayer.Winforms
             }
             var typeofmetadata = thing.GetType();
             var properties = typeofmetadata.GetProperties();
-            foreach (var property in properties.Where(x => x.CanRead && x.GetGetMethod()?.GetParameters().Length == 0))
+            var typeofmetadataref = typeof(Metadata);
+            var typeofmetadatapropsref = typeofmetadataref.GetProperties();
+
+            bool IsPartOfImplementation(PropertyInfo x)
+            {
+                return typeofmetadata.IsSubclassOf(typeofmetadataref) && typeofmetadatapropsref.Any(m => x.Name == m.Name);
+            }
+            foreach (var property in properties.Where(x => x.CanRead && x.GetGetMethod()?.GetParameters().Length == 0).OrderByDescending(x => IsPartOfImplementation(x)))
             {
                 try
                 {
                     var v = property.GetValue(thing);
-                    AddLabel(property.Name + ":", meta1, false);
-                    AddLabel(v?.ToString(), meta2, true);
+                    AddLabel(property.Name + ":", meta1, color: IsPartOfImplementation(property) ? Meta1 : Meta1B);
+                    AddLabel(v?.ToString(), meta2, Meta2);
                     if (v != null && overflow != 0)
                     {
                         processproperties(v, meta1 + graduality, meta2 + graduality, graduality, overflow - 1);

@@ -7,7 +7,9 @@ using Silver.Serilog.MSAppCenterSink;
 
 #endif
 #if SUP
+
 using Silver.Update;
+
 #endif
 
 using Microsoft.Extensions.Configuration;
@@ -57,7 +59,7 @@ namespace SilverAudioPlayer
             {
                 Task.Run(async () =>
                 {
-                    Updater a = new("https://silverdiamond.cf/silveraudioplayer", Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "unknown");
+                    Updater a = new("https://silverdiamond.cf/sup/sap", Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "unknown");
                     Updater.UpdateState? updateav = await a.CheckForUpdates();
                     if (updateav is not null && updateav is not Updater.UpToDate && updateav is not Updater.UpToDateButFilesModified && updateav is Updater.NotUpToDate)
                     {

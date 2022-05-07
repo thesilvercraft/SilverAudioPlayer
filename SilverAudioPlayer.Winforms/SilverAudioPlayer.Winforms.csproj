@@ -7,11 +7,11 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<Version>1.0.0.6</Version>
-		<Configurations>Debug;Release;SUP;MSRelease</Configurations>
+		<Version>1.0.0.7</Version>
+		<Configurations>Debug;Release;SUP;MSRelease;SUPMS</Configurations>
 	</PropertyGroup>
-	
-    <!--Normal debug-->
+
+	<!--Normal debug-->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>$(DefineConstants)TRACE</DefineConstants>
 	</PropertyGroup>
@@ -25,16 +25,36 @@
 		<Optimize>True</Optimize>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='SUP|AnyCPU'">
-		<ProjectReference Include="..\..\Silver.Update\Silver.Update\Silver.Update.csproj" />
 	</ItemGroup>
 	<!--Microsoft release (no silver.update)-->
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MSRelease|AnyCPU'">
 		<DefineConstants>$(DefineConstants)TRACE;MS</DefineConstants>
 	</PropertyGroup>
-	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='MSRelease|AnyCPU'">
+
+	<!--Silver.Update release with microsoft-->
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SUPMS|AnyCPU'">
+		<DefineConstants>$(DefineConstants)TRACE;SUP;MS</DefineConstants>
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<!--Add microsoft if requested-->
+	<ItemGroup Condition="$(DefineConstants.Contains('MS'))">
 		<ProjectReference Include="..\Silver.Serilog.MSAppCenterSink\Silver.Serilog.MSAppCenterSink.csproj" />
 		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.1" />
 		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.1" />
+	</ItemGroup>
+	<!--Add silver.update if requested-->
+
+	<ItemGroup Condition="$(DefineConstants.Contains('SUP'))">
+		<ProjectReference Include="..\..\Silver.Update\Silver.Update\Silver.Update.csproj" />
+	</ItemGroup>
+	<Target Condition="$(DefineConstants.Contains('SUP'))" Name="PostBuild" AfterTargets="Publish">
+		<Exec Command="echo {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}} > D:\tmp.rtf &amp;echo {\colortbl ;\red255\green0\blue0;} >> D:\tmp.rtf &amp;echo {\*\generator Riched20 10.0.19041}\viewkind4\uc1 >> D:\tmp.rtf &amp;echo \pard\sa200\sl276\slmult1\f0\fs22\lang9 Hey!\par  >> D:\tmp.rtf &amp;echo This file will contain the next release notes of SilverAudioPlayer!!!\par >> D:\tmp.rtf &amp;echo \cf1 PLEASE consider filling it out but if you don't want to then delete all of this text lmao\cf0\par >> D:\tmp.rtf &amp;echo } >>  D:\tmp.rtf" />
+		<Exec Command="&quot;C:\Program Files\Windows NT\Accessories\wordpad.exe&quot; D:\tmp.rtf" />
+		<Exec Command="cmd /c &quot;D: &amp; cd $(ProjectDir) &amp;cd .. &amp; cd .. &amp; cd Silver.Update\Silver.Update.Packer\bin\debug\net6.0-windows &amp;dir &amp; Silver.Update.Packer.exe $(ProjectDir)$(OutDir) D:\sup\sap $(AssemblyVersion) SilverAudioPlayer SilverDiamond https://silverdiamond.cf/sup/sap D:\tmp.rtf zrh&quot;" />
+	</Target>
+	<ItemGroup>
+		<Content Include="icon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
