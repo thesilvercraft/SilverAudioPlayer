@@ -2,13 +2,14 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<Version>1.0.0.7</Version>
+		<Version>1.0.0.9</Version>
 		<Configurations>Debug;Release;SUP;MSRelease;SUPMS</Configurations>
+		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
 	<!--Normal debug-->
@@ -40,8 +41,6 @@
 	<!--Add microsoft if requested-->
 	<ItemGroup Condition="$(DefineConstants.Contains('MS'))">
 		<ProjectReference Include="..\Silver.Serilog.MSAppCenterSink\Silver.Serilog.MSAppCenterSink.csproj" />
-		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.5.1" />
-		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.5.1" />
 	</ItemGroup>
 	<!--Add silver.update if requested-->
 
@@ -49,20 +48,30 @@
 		<ProjectReference Include="..\..\Silver.Update\Silver.Update\Silver.Update.csproj" />
 	</ItemGroup>
 	<Target Condition="$(DefineConstants.Contains('SUP'))" Name="PostBuild" AfterTargets="Publish">
-		<Exec Command="echo {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}} > D:\tmp.rtf &amp;echo {\colortbl ;\red255\green0\blue0;} >> D:\tmp.rtf &amp;echo {\*\generator Riched20 10.0.19041}\viewkind4\uc1 >> D:\tmp.rtf &amp;echo \pard\sa200\sl276\slmult1\f0\fs22\lang9 Hey!\par  >> D:\tmp.rtf &amp;echo This file will contain the next release notes of SilverAudioPlayer!!!\par >> D:\tmp.rtf &amp;echo \cf1 PLEASE consider filling it out but if you don't want to then delete all of this text lmao\cf0\par >> D:\tmp.rtf &amp;echo } >>  D:\tmp.rtf" />
+		<Exec Command="echo {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}} &gt; D:\tmp.rtf &amp;echo {\colortbl ;\red255\green0\blue0;} &gt;&gt; D:\tmp.rtf &amp;echo {\*\generator Riched20 10.0.19041}\viewkind4\uc1 &gt;&gt; D:\tmp.rtf &amp;echo \pard\sa200\sl276\slmult1\f0\fs22\lang9 Hey!\par  &gt;&gt; D:\tmp.rtf &amp;echo This file will contain the next release notes of SilverAudioPlayer!!!\par &gt;&gt; D:\tmp.rtf &amp;echo \cf1 PLEASE consider filling it out but if you don't want to then delete all of this text lmao\cf0\par &gt;&gt; D:\tmp.rtf &amp;echo } &gt;&gt;  D:\tmp.rtf" />
 		<Exec Command="&quot;C:\Program Files\Windows NT\Accessories\wordpad.exe&quot; D:\tmp.rtf" />
 		<Exec Command="cmd /c &quot;D: &amp; cd $(ProjectDir) &amp;cd .. &amp; cd .. &amp; cd Silver.Update\Silver.Update.Packer\bin\debug\net6.0-windows &amp;dir &amp; Silver.Update.Packer.exe $(ProjectDir)$(OutDir) D:\sup\sap $(AssemblyVersion) SilverAudioPlayer SilverDiamond https://silverdiamond.cf/sup/sap D:\tmp.rtf zrh&quot;" />
 	</Target>
 	<ItemGroup>
-		<Content Include="icon.ico" />
+	  <COMReference Include="IWshRuntimeLibrary">
+	    <WrapperTool>tlbimp</WrapperTool>
+	    <VersionMinor>0</VersionMinor>
+	    <VersionMajor>1</VersionMajor>
+	    <Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
+	    <Lcid>0</Lcid>
+	    <Isolated>false</Isolated>
+	    <EmbedInteropTypes>true</EmbedInteropTypes>
+	  </COMReference>
 	</ItemGroup>
-
 	<ItemGroup>
 		<Content Include="icon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="icon.ico" />
+	</ItemGroup>
 
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.1-dev-00313" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
@@ -79,6 +88,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Naudio.Flac.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.NAudio.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.SMTC.csproj" />
 		<ProjectReference Include="..\SilverConfig\SilverConfig.csproj" />
 	</ItemGroup>
 
@@ -100,6 +110,12 @@
 	<ItemGroup>
 		<None Update="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="RUNMEBEFOREDELETION.BAT">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="RUNMEPOSTINSTALL.BAT">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 </Project>

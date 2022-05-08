@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Serilog.MSAppCenterS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Update", "..\Silver.Update\Silver.Update\Silver.Update.csproj", "{DA220C86-5064-47B1-86DF-719BBCDDF7B6}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SilverAudioPlayer.Setup.Legacy", "SilverAudioPlayer.Setup.Legacy\SilverAudioPlayer.Setup.Legacy.vdproj", "{DC363D61-B849-4434-A5D2-FD430E773CD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.SMTC", "SilverAudioPlayer.SMTC\SilverAudioPlayer.SMTC.csproj", "{61B29DC7-83D0-4E06-BEB7-8117BBACE920}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -253,12 +253,18 @@ Global
 		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.SUP|Any CPU.Build.0 = Release|Any CPU
 		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.SUPMS|Any CPU.ActiveCfg = Release|Any CPU
 		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.SUPMS|Any CPU.Build.0 = Release|Any CPU
-		{DC363D61-B849-4434-A5D2-FD430E773CD4}.ClickOnce|Any CPU.ActiveCfg = Debug
-		{DC363D61-B849-4434-A5D2-FD430E773CD4}.Debug|Any CPU.ActiveCfg = Debug
-		{DC363D61-B849-4434-A5D2-FD430E773CD4}.MSRelease|Any CPU.ActiveCfg = Release
-		{DC363D61-B849-4434-A5D2-FD430E773CD4}.Release|Any CPU.ActiveCfg = Release
-		{DC363D61-B849-4434-A5D2-FD430E773CD4}.SUP|Any CPU.ActiveCfg = Debug
-		{DC363D61-B849-4434-A5D2-FD430E773CD4}.SUPMS|Any CPU.ActiveCfg = Release
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.ClickOnce|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.ClickOnce|Any CPU.Build.0 = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.MSRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.MSRelease|Any CPU.Build.0 = Release|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.SUP|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.SUP|Any CPU.Build.0 = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.SUPMS|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.SUPMS|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

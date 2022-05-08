@@ -21,6 +21,8 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Runtime.InteropServices;   //GuidAttribute
 using System.Reflection;
+using System.Security.Permissions;
+using System.Security.Principal;
 
 namespace SilverAudioPlayer
 {
@@ -85,6 +87,15 @@ namespace SilverAudioPlayer
 
     public class App
     {
+        private static bool IsElevated
+        {
+            get
+            {
+                return WindowsIdentity.GetCurrent().Owner
+                  .IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid);
+            }
+        }
+
         private static readonly Mutex mutex = new(true, "8501d027-384f-4a8f-9cf0-4c35936360fa");
 
         private CompositionContainer _container;
@@ -103,7 +114,7 @@ namespace SilverAudioPlayer
                     catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "Extensions")));
                 }
 
-                catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory));
+                catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.*.dll"));
 
                 // Create the CompositionContainer with the parts in the catalog.
                 _container = new CompositionContainer(catalog);
@@ -193,7 +204,7 @@ namespace SilverAudioPlayer
             };
 #endif
             ApplicationConfiguration.Initialize();
-            if (mutex.WaitOne(TimeSpan.Zero, true))
+            if (mutex.WaitOne(TimeSpan.FromSeconds(2), true))
             {
                 Debug.WriteLine("AAA");
                 frm1 = new Form1();
@@ -209,6 +220,26 @@ namespace SilverAudioPlayer
                     else if (args.Length == 1 && args[0] == "--removereg")
                     {
                         frm1.RemoveFromReg();
+                        return;
+                    }
+                    else if (args.Length == 1 && args[0] == "--shortcuts")
+                    {
+                        bool isBuiltInAdmin = IsElevated;
+                        if (!isBuiltInAdmin)
+                        {
+                            Process proc = new();
+                            proc.StartInfo.Arguments = "--shortcuts";
+                            proc.StartInfo.FileName = Application.ExecutablePath;
+                            proc.StartInfo.UseShellExecute = true;
+                            proc.StartInfo.Verb = "runas";
+                            proc.Start();
+                            return;
+                        }
+                        var wsh = new IWshRuntimeLibrary.WshShell();
+                        IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
+                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft\\Windows\\SendTo\\SilverAudioPlayer (Play).lnk")) as IWshRuntimeLibrary.IWshShortcut;
+                        shortcut.TargetPath = Application.ExecutablePath;
+                        shortcut.Save();
                         return;
                     }
                     else

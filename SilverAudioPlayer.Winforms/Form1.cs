@@ -280,7 +280,6 @@ namespace SilverAudioPlayer
             Config.ProgressBarRainbow = ProgressBar.ProgressBar.Rainbow;
             Config.ProgressBarRainbowShift = ProgressBar.ProgressBar.ShiftRainbow;
             Config.ProgressBarRainbowCaching = (byte)ProgressBar.ProgressBar.CacheRainbowDecimals;
-            Config.ProcessMessages = HotKeyRegistered;
             Config.ProgressBarColour = ProgressBar.ProgressBar.Color.ToArgb();
             Config.MillisecondIntervalOfAutoSave = (ulong)AutosaveConfig.Interval;
             ConfigReader.Write(Config, ConfigLoc);
@@ -311,7 +310,7 @@ namespace SilverAudioPlayer
                 }
                 Player?.SetVolume(Config.Volume);
             }
-            if (Config!.ProcessMessages && !HotKeyRegistered)
+            if (Config!.ProcessMessages && !HotKeyRegistered && Config.HandleMediaControls)
             {
                 if (fromstartup)
                 {
@@ -331,7 +330,7 @@ namespace SilverAudioPlayer
 
                 HotKeyRegistered = true;
             }
-            else if ((!Config!.ProcessMessages) && HotKeyRegistered)
+            else if (((!Config!.ProcessMessages) || !Config.HandleMediaControls) && HotKeyRegistered)
             {
                 if (fromstartup)
                 {
@@ -403,42 +402,44 @@ namespace SilverAudioPlayer
                 {
                     ShowMe();
                 }
-
-                switch (m.Msg)
+                if (Config.HandleMediaControls)
                 {
-                    case WM_APPCOMMAND:
-                        int cmd = (int)m.LParam >> 16 & 0xFF;
-                        switch (cmd)
-                        {
-                            case APPCOMMAND_MEDIA_PLAY_PAUSE:
-                                PlayPause(true);
-                                break;
+                    switch (m.Msg)
+                    {
+                        case WM_APPCOMMAND:
+                            int cmd = (int)m.LParam >> 16 & 0xFF;
+                            switch (cmd)
+                            {
+                                case APPCOMMAND_MEDIA_PLAY_PAUSE:
+                                    PlayPause(true);
+                                    break;
 
-                            default:
-                                break;
-                        }
-                        m.Result = (IntPtr)1;
-                        break;
+                                default:
+                                    break;
+                            }
+                            m.Result = (IntPtr)1;
+                            break;
 
-                    case 0x0312:
-                        switch (m.WParam.ToInt32())
-                        {
-                            case 1:
-                                Play();
-                                break;
+                        case 0x0312:
+                            switch (m.WParam.ToInt32())
+                            {
+                                case 1:
+                                    Play();
+                                    break;
 
-                            case 2:
-                                Pause();
-                                break;
+                                case 2:
+                                    Pause();
+                                    break;
 
-                            case 3:
-                                PlayPause(true);
-                                break;
-                        }
-                        break;
+                                case 3:
+                                    PlayPause(true);
+                                    break;
+                            }
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
             base.WndProc(ref m);
@@ -1157,16 +1158,13 @@ namespace SilverAudioPlayer
             {
                 foreach (var dangthing in Logic.MusicStatusInterfaces.Where(x => x.Value != null).Select(x => x.Value))
                 {
-                    new Thread(() =>
+                    var a = dangthing;
+                    GC.KeepAlive(a);
+                    AddMSI(a);
+                    if (a is CADMusicStatusInterface ee)
                     {
-                        var a = dangthing;
-                        GC.KeepAlive(a);
-                        AddMSI(a);
-                        if (a is CADMusicStatusInterface e)
-                        {
-                            Application.Run(e);
-                        }
-                    }).Start();
+                        ee.Show();
+                    }
                 }
             }
         }

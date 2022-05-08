@@ -544,6 +544,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         {
             Close();
             Dispose();
+            base.Dispose();
         });
     }
 

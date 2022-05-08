@@ -47,5 +47,8 @@ namespace SilverAudioPlayer
         public bool FillMetadataOfLoadedFilesOnLoad { get; set; } = true;
 
         public bool AutoMagicallyLoadFromArgstxt { get; set; } = true;
+
+        [Comment("Should the player react to media controls")]
+        public bool HandleMediaControls { get; set; } = Environment.OSVersion.Version.Major <= 6 && Environment.OSVersion.Version.Minor <= 1;
     }
 }
