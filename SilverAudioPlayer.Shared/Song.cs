@@ -6,10 +6,17 @@ namespace SilverAudioPlayer.Shared
     {
         public Song(string uri, string name, Guid guid, Metadata? metadata = null)
         {
-            URI = uri;
-            //TODO CHANGE INTO DIFFERENT STREAMS
-            Stream = new WrappedFileStream(uri);
-            Stream.MimeType = MagicByteCombos.Match(Stream.Stream, 0)?.MimeType ?? "audio/" + new FileInfo(uri).Extension[1..];
+            URI = uri.TrimEnd('\0');
+            bool isfile = !uri.ToLowerInvariant().StartsWith("http");
+            if (!isfile)
+            {
+                Stream = new WrappedHttpStream(uri);
+            }
+            else
+            {
+                Stream = new WrappedFileStream(uri);
+            }
+            Stream.MimeType = MagicByteCombos.Match(Stream.Stream, 0)?.MimeType ?? (isfile ? new FileInfo(uri).Extension[1..] : ".wav");
             Name = name;
             Guid = guid;
             Metadata = metadata;
@@ -39,6 +46,11 @@ namespace SilverAudioPlayer.Shared
         public override int GetHashCode()
         {
             return Guid.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return Metadata?.Title ?? Name;
         }
     }
 }

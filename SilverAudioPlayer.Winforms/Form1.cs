@@ -35,7 +35,6 @@ namespace SilverAudioPlayer
             e.GetDuration += MusicStatusInterface_GetDuration;
             e.GetPosition += MusicStatusInterface_GetPosition;
             e.SetPosition += MusicStatusInterface_SetPosition;
-
             e.GetShuffle += MusicStatusInterface_GetShuffle;
             e.GetState += MusicStatusInterface_GetState;
             e.GetVolume += MusicStatusInterface_GetVolume;
@@ -445,77 +444,6 @@ namespace SilverAudioPlayer
             base.WndProc(ref m);
         }
 
-        [DllImport("Shell32.dll")]
-        private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
-
-        private readonly string[] AssociatedFileTypes = new[] { ".mp3", ".aif", ".aiff", ".flac", ".wav", ".ogg", ".midi", ".mid" };
-
-        public void RegisterInReg()
-        {
-            if (string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayer", string.Empty, string.Empty)))
-            {
-                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayer", "", "Audio File");
-                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayer", "FriendlyTypeName", "AudioPlayerZ Audio File");
-                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayer\\shell\\open\\command", "",
-                    $"{Environment.ProcessPath} \"%1\"");
-                foreach (string? type in AssociatedFileTypes)
-                {
-                    string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
-                    string? val = (string?)Registry.GetValue(a, "", "");
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        StringBuilder name = new("SAP.BAK");
-                        string? val2 = (string?)Registry.GetValue(a, name.ToString(), "");
-                        while (!string.IsNullOrEmpty(val2))
-                        {
-                            name.Append(".BAK");
-                            val2 = (string?)Registry.GetValue(a, name.ToString(), "");
-                        }
-                        Registry.SetValue(a, name.ToString(), val);
-                    }
-                    Registry.SetValue(a, "", "SilverAudioPlayer");
-                }
-                //this call notifies Windows that it needs to redo the file associations and icons
-                _ = SHChangeNotify(0x08000000, 0x2000, IntPtr.Zero, IntPtr.Zero);
-            }
-        }
-
-        public static void DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)
-        {
-            using (var baseKey = RegistryKey.OpenBaseKey(registryHive, RegistryView.Default))
-            {
-                baseKey.DeleteSubKeyTree(fullPathKeyToDelete);
-            }
-        }
-
-        public void RemoveFromReg()
-        {
-            if (!string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayer", string.Empty, string.Empty)))
-            {
-                DeleteRegistryFolder(RegistryHive.ClassesRoot, "SilverAudioPlayer");
-
-                //  DeleteRegistryFolder(RegistryHive.CurrentUser, "Software\\Classes\\SilverAudioPlayer");
-
-                foreach (string? type in AssociatedFileTypes)
-                {
-                    string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
-
-                    string? val = (string?)Registry.GetValue(a, "", "");
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        string? val2 = (string?)Registry.GetValue(a, "SAP.BAK", "");
-                        if (!string.IsNullOrEmpty(val2))
-                        {
-                            MessageBox.Show(a + " " + val2);
-                            Registry.SetValue(a, "", val2);
-                        }
-                    }
-                }
-                //this call notifies Windows that it needs to redo the file associations and icons
-                _ = SHChangeNotify(0x08000000, 0x2000, IntPtr.Zero, IntPtr.Zero);
-            }
-        }
-
         private CancellationTokenSource? token = new();
         private byte stateofdoingstuff = 0;
         private string? CurrentURI => CurrentSong?.URI;
@@ -670,7 +598,7 @@ namespace SilverAudioPlayer
 
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
-            Logic.log.Information("Output device playback stopped\nLoop single checked: {Config.LoopSong}\nStopAutoLoading: {StopAutoLoading}\nCurrent song: {CurrentSong}", Config.LoopSong, StopAutoLoading, CurrentSong);
+            Logic.log.Information("Output device playback stopped\nLoop single checked: {ConfigLoopSong}\nStopAutoLoading: {StopAutoLoading}\nCurrent song: {CurrentSong}", Config.LoopSong, StopAutoLoading, CurrentSong);
             if (Config.LoopSong && !StopAutoLoading)
             {
                 RemoveTrack();
@@ -758,7 +686,15 @@ namespace SilverAudioPlayer
             {
                 return;
             }
-            string[]? files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            string[]? files = null;
+            if (e.Data?.GetDataPresent("UniformResourceLocatorW") == true)
+            {
+                files = new string[] { System.Text.Encoding.Unicode.GetString(((MemoryStream)e.Data.GetData("UniformResourceLocatorW")).ToArray()) };
+            }
+            else if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
+            {
+                files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            }
             ProcessFiles(false, files);
         }
 
@@ -768,7 +704,7 @@ namespace SilverAudioPlayer
             {
                 files = FilterFiles(Directory.GetFiles(files[0])).ToArray();
             }
-            if ((files.Length > 0) && files.All(x => File.Exists(x)))
+            if ((files.Length > 0))
             {
                 files = FilterFiles(files).ToArray();
                 var a = treeView1.Nodes[0].Nodes.Count;
@@ -799,19 +735,25 @@ namespace SilverAudioPlayer
 
         private void FillMetadataOfLoadedFiles(bool sortafterwards = false)
         {
-            for (int i = 0; i < treeView1.Nodes[0].Nodes.Count; i++)
+            TreeNode[]? pf = new TreeNode[treeView1.Nodes[0].Nodes.Count];
+            treeView1.Nodes[0].Nodes.CopyTo(pf, 0);
+            Parallel.ForEach(pf, (TreeNode ayo) =>
             {
-                if (treeView1.Nodes[0].Nodes[i].Tag is Song song && song.Metadata == null)
+                if (ayo.Tag is Song song && song.Metadata == null)
                 {
                     var a = Logic.GetMetadataFromStream(song.Stream);
                     Logic.log.Information("Getting metadata in FMOLF about song " + song.Guid);
                     if (a != null)
                     {
                         Logic.log.Verbose("a wasn't null");
-                        song.Metadata = a.GetAwaiter().GetResult();
+                        Task.Run(async () =>
+                        {
+                            song.Metadata = await a;
+                        });
                     }
                 }
-            }
+            });
+
             if (sortafterwards)
             {
                 Logic.log.Information("Sorting after filling metadata");
@@ -833,28 +775,36 @@ namespace SilverAudioPlayer
 
         private void treeView1_DragOver(object sender, DragEventArgs e)
         {
+            if (e.Data.GetDataPresent("UniformResourceLocatorW"))
+            {
+                e.Effect = DragDropEffects.Link;
+                return;
+            }
             Debug.WriteLine(string.Join(" ", e.Data.GetFormats()));
             if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true)
             {
                 e.Effect = DragDropEffects.Copy;
                 return;
             }
+
             var data = (TreeNode?)e.Data?.GetData("System.Windows.Forms.TreeNode");
             if (SourceNode != null)
             {
                 e.Effect = DragDropEffects.Move;
+                return;
             }
             else if (data != null)
             {
                 SourceNode = data;
                 e.Effect = DragDropEffects.Move;
+                return;
             }
         }
 
         private void TreeViewDragDrop(object sender, DragEventArgs e)
         {
             stateofdoingstuff = 1;
-            if (e.Data?.GetDataPresent(DataFormats.FileDrop) == true && SourceNode == null)
+            if ((e.Data?.GetDataPresent(DataFormats.FileDrop) == true || e.Data?.GetDataPresent("UniformResourceLocatorW") == true) && SourceNode == null)
             {
                 stateofdoingstuff = 0;
                 DragDropOp(sender, e);
@@ -1169,11 +1119,18 @@ namespace SilverAudioPlayer
             }
         }
 
+        private MetadataForm mf;
+
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             if (CurrentSong != null)
             {
-                MetadataForm mf = new(ref CurrentSong);
+                if (mf != null)
+                {
+                    mf.Close();
+                    mf.Dispose();
+                }
+                mf = new(ref CurrentSong);
                 mf.Show();
             }
         }

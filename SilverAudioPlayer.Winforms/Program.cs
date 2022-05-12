@@ -23,6 +23,8 @@ using System.Runtime.InteropServices;   //GuidAttribute
 using System.Reflection;
 using System.Security.Permissions;
 using System.Security.Principal;
+using Microsoft.Win32;
+using System.Text;
 
 namespace SilverAudioPlayer
 {
@@ -53,33 +55,6 @@ namespace SilverAudioPlayer
         [STAThread]
         private static void Main(string?[]? args)
         {
-#if SUP
-            var assembly = typeof(Program).Assembly;
-            var attribute = (GuidAttribute)assembly.GetCustomAttributes(typeof(GuidAttribute), true)[0];
-            var id = attribute.Value;
-            try
-            {
-                Task.Run(async () =>
-                {
-                    Updater a = new("https://silverdiamond.cf/sup/sap", Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "unknown");
-                    Updater.UpdateState? updateav = await a.CheckForUpdates();
-                    if (updateav is not null && updateav is not Updater.UpToDate && updateav is not Updater.UpToDateButFilesModified && updateav is Updater.NotUpToDate)
-                    {
-                        Tuple<string, string>? stuff = await a.ShowUpdateQuestionDialog("SilverAudioPlayer");
-                        if (stuff != null)
-                        {
-                            Process.Start(stuff.Item1, stuff.Item2);
-                            await Task.Delay(1000);
-                            Application.Exit();
-                        }
-                    }
-                }).Wait();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-            }
-#endif
             App a = new();
             a.Run(args);
         }
@@ -136,6 +111,16 @@ namespace SilverAudioPlayer
                 var name = provider.Value.GetType().Name;
                 Debug.WriteLine(name);
             }
+            Task.Run(async () =>
+            {
+                foreach (var playprovider in frm1.Logic.PlayProviders)
+                {
+                    if (playprovider != null && playprovider.Value != null)
+                    {
+                        await playprovider.Value.OnStartup();
+                    }
+                }
+            });
             if (frm1.Logic.MetadataProviders == null)
             {
                 throw new ProvidersReturnedNullException("The 'frm1.Logic.MetadataProviders' returned null.");
@@ -156,6 +141,114 @@ namespace SilverAudioPlayer
             }
         }
 
+        public static bool ShortCuts()
+        {
+            bool isBuiltInAdmin = IsElevated;
+            if (!isBuiltInAdmin)
+            {
+                Process proc = new();
+                proc.StartInfo.Arguments = "--shortcuts";
+                proc.StartInfo.FileName = Application.ExecutablePath;
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Verb = "runas";
+                proc.Start();
+                return true;
+            }
+            var wsh = new IWshRuntimeLibrary.WshShell();
+            IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft\\Windows\\SendTo\\SilverAudioPlayer (Play).lnk")) as IWshRuntimeLibrary.IWshShortcut;
+            shortcut.TargetPath = Application.ExecutablePath;
+            shortcut.Save();
+            return false;
+        }
+
+        public static bool RemoveShortCuts()
+        {
+            bool isBuiltInAdmin = IsElevated;
+            if (!isBuiltInAdmin)
+            {
+                Process proc = new();
+                proc.StartInfo.Arguments = "--rshortcuts";
+                proc.StartInfo.FileName = Application.ExecutablePath;
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Verb = "runas";
+                proc.Start();
+                return true;
+            }
+            var f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft\\Windows\\SendTo\\SilverAudioPlayer (Play).lnk");
+            if (File.Exists(f))
+            {
+                File.Delete(f);
+            }
+            return false;
+        }
+
+        [DllImport("Shell32.dll")]
+        private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
+
+        private static readonly string[] AssociatedFileTypes = new[] { ".mp3", ".aif", ".aiff", ".flac", ".wav", ".ogg", ".midi", ".mid" };
+
+        public static void RegisterInReg()
+        {
+            if (string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayer", string.Empty, string.Empty)))
+            {
+                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayer", "", "Audio File");
+                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayer", "FriendlyTypeName", "AudioPlayerZ Audio File");
+                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayer\\shell\\open\\command", "",
+                    $"{Environment.ProcessPath} \"%1\"");
+                foreach (string? type in AssociatedFileTypes)
+                {
+                    string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
+                    string? val = (string?)Registry.GetValue(a, "", "");
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        StringBuilder name = new("SAP.BAK");
+                        string? val2 = (string?)Registry.GetValue(a, name.ToString(), "");
+                        while (!string.IsNullOrEmpty(val2))
+                        {
+                            name.Append(".BAK");
+                            val2 = (string?)Registry.GetValue(a, name.ToString(), "");
+                        }
+                        Registry.SetValue(a, name.ToString(), val);
+                    }
+                    Registry.SetValue(a, "", "SilverAudioPlayer");
+                }
+                //this call notifies Windows that it needs to redo the file associations and icons
+                _ = SHChangeNotify(0x08000000, 0x2000, IntPtr.Zero, IntPtr.Zero);
+            }
+        }
+
+        public static void DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)
+        {
+            using (var baseKey = RegistryKey.OpenBaseKey(registryHive, RegistryView.Default))
+            {
+                baseKey.DeleteSubKeyTree(fullPathKeyToDelete);
+            }
+        }
+
+        public static void RemoveFromReg()
+        {
+            if (!string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayer", string.Empty, string.Empty)))
+            {
+                DeleteRegistryFolder(RegistryHive.ClassesRoot, "SilverAudioPlayer");
+                foreach (string? type in AssociatedFileTypes)
+                {
+                    string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
+                    string? val = (string?)Registry.GetValue(a, "", "");
+                    if (!string.IsNullOrEmpty(val))
+                    {
+                        string? val2 = (string?)Registry.GetValue(a, "SAP.BAK", "");
+                        if (!string.IsNullOrEmpty(val2))
+                        {
+                            Registry.SetValue(a, "", val2);
+                        }
+                    }
+                }
+                //this call notifies Windows that it needs to redo the file associations and icons
+                _ = SHChangeNotify(0x08000000, 0x2000, IntPtr.Zero, IntPtr.Zero);
+            }
+        }
+
         private Form1 frm1;
 
         [STAThread]
@@ -172,12 +265,10 @@ namespace SilverAudioPlayer
             {
                 File.Move(Path.Combine(AppContext.BaseDirectory, "preferences.xml"), Path.Combine(AppContext.BaseDirectory, "settings\\", "silveraudioplayer.winforms.preferences.xml"));
             }
-
             var configuration = new ConfigurationBuilder()
-       .SetBasePath(Directory.GetCurrentDirectory())
-       .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
-       .Build();
-
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
+            .Build();
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .WriteTo.Debug(Serilog.Events.LogEventLevel.Verbose)
@@ -203,9 +294,15 @@ namespace SilverAudioPlayer
                 return true;
             };
 #endif
+            AutoUpdate au = new("https://silverwebsiterepo.pages.dev/silveraudioplayer/releases", "SilverAudioPlayer", AppContext.BaseDirectory);
+            au.OnRun();
             ApplicationConfiguration.Initialize();
             if (mutex.WaitOne(TimeSpan.FromSeconds(2), true))
             {
+                Task.Run(async () =>
+                {
+                    await au.CheckForUpdates();
+                }).Wait();
                 Debug.WriteLine("AAA");
                 frm1 = new Form1();
                 frm1.Logic.log = logger;
@@ -214,32 +311,22 @@ namespace SilverAudioPlayer
                 {
                     if (args.Length == 1 && args[0] == "--reg")
                     {
-                        frm1.RegisterInReg();
+                        RegisterInReg();
                         return;
                     }
                     else if (args.Length == 1 && args[0] == "--removereg")
                     {
-                        frm1.RemoveFromReg();
+                        RemoveFromReg();
                         return;
                     }
                     else if (args.Length == 1 && args[0] == "--shortcuts")
                     {
-                        bool isBuiltInAdmin = IsElevated;
-                        if (!isBuiltInAdmin)
-                        {
-                            Process proc = new();
-                            proc.StartInfo.Arguments = "--shortcuts";
-                            proc.StartInfo.FileName = Application.ExecutablePath;
-                            proc.StartInfo.UseShellExecute = true;
-                            proc.StartInfo.Verb = "runas";
-                            proc.Start();
-                            return;
-                        }
-                        var wsh = new IWshRuntimeLibrary.WshShell();
-                        IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
-                            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Microsoft\\Windows\\SendTo\\SilverAudioPlayer (Play).lnk")) as IWshRuntimeLibrary.IWshShortcut;
-                        shortcut.TargetPath = Application.ExecutablePath;
-                        shortcut.Save();
+                        ShortCuts();
+                        return;
+                    }
+                    else if (args.Length == 1 && args[0] == "--rshortcuts")
+                    {
+                        RemoveShortCuts();
                         return;
                     }
                     else

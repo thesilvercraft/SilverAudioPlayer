@@ -17,5 +17,7 @@
         /// <param name="URI">the file</param>
         /// <returns>a player or null if the provider is unable to find a player suited for the job</returns>
         IPlay? GetPlayer(WrappedStream stream);
+
+        Task OnStartup();
     }
 }

@@ -47,6 +47,12 @@ namespace SilverAudioPlayer.NAudio
             }
             return null;
         }
+
+        public Task OnStartup()
+        {
+            NaudioWaveStreamWrapperTypeHolder.Get();
+            return Task.CompletedTask;
+        }
     }
 
     public class NaudioWaveStreamWrapperTypes

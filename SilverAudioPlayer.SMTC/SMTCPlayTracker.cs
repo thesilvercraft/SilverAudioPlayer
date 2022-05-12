@@ -14,15 +14,14 @@ namespace SilverAudioPlayer.SMTC
     public class SMTCPlayTracker : IMusicStatusInterface
     {
         private bool DISABLE = false;
+        private System.Timers.Timer TimeLineTimer;
 
         public SMTCPlayTracker()
         {
-            Debug.WriteLine(Environment.OSVersion.Version.Build);
             if (Environment.OSVersion.Version.Major < 10 || Environment.OSVersion.Version.Build < 17763)
             {
                 DISABLE = true;
             }
-            Debug.WriteLine(DISABLE);
         }
 
         private MediaPlayer? _mediaPlayer;
@@ -97,22 +96,20 @@ namespace SilverAudioPlayer.SMTC
                 {
                     case PlaybackState.Stopped:
                         _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Stopped;
-
                         break;
 
                     case PlaybackState.Playing:
                         _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Playing;
-
+                        TimeLineTimer.Start();
                         break;
 
                     case PlaybackState.Paused:
                         _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Paused;
-
                         break;
 
                     case PlaybackState.Buffering:
                         _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Changing;
-
+                        TimeLineTimer.Start();
                         break;
                 }
             }
@@ -141,6 +138,45 @@ namespace SilverAudioPlayer.SMTC
             _systemMediaTransportControls.ShuffleEnabledChangeRequested += SystemControls_ShuffleEnabledChangeRequested;
             _systemMediaTransportControls.AutoRepeatModeChangeRequested += SystemControls_AutoRepeatModeChangeRequested;
             _systemMediaTransportControls.PlaybackPositionChangeRequested += SystemControls_PlaybackPositionChangeRequested;
+            TimeLineTimer = new(interval: 1000);
+            TimeLineTimer.Elapsed += (s, e) =>
+            {
+                if (GetState != null && GetCurrentTrack != null && GetPosition != null)
+                {
+                    var state = GetState();
+                    var track = GetCurrentTrack();
+                    var pos = GetPosition();
+                    UpdateTimeline(state, track, pos);
+                    if (state != PlaybackState.Playing && state != PlaybackState.Buffering)
+                    {
+                        TimeLineTimer.Stop();
+                    }
+                }
+                else
+                {
+                    TimeLineTimer.Stop();
+                }
+            };
+            TimeLineTimer.Start();
+        }
+
+        private void UpdateTimeline(PlaybackState state, Song track, ulong pos)
+        {
+            if (DISABLE)
+            {
+                return;
+            }
+            var timelineProperties = new SystemMediaTransportControlsTimelineProperties();
+            if (track != null && GetDuration != null)
+            {
+                var dur = GetDuration();
+                timelineProperties.StartTime = TimeSpan.FromSeconds(0);
+                timelineProperties.MinSeekTime = TimeSpan.FromSeconds(0);
+                timelineProperties.EndTime = TimeSpan.FromSeconds(dur);
+                timelineProperties.Position = TimeSpan.FromSeconds(pos);
+                timelineProperties.MaxSeekTime = TimeSpan.FromSeconds(dur);
+            }
+            _systemMediaTransportControls.UpdateTimelineProperties(timelineProperties);
         }
 
         private void SystemControls_PlaybackPositionChangeRequested(SystemMediaTransportControls sender, PlaybackPositionChangeRequestedEventArgs args)
@@ -149,7 +185,7 @@ namespace SilverAudioPlayer.SMTC
             {
                 return;
             }
-            SetPosition(this, (ulong)args.RequestedPlaybackPosition.TotalSeconds);
+            SetPosition?.Invoke(this, (ulong)args.RequestedPlaybackPosition.TotalSeconds);
         }
 
         private void SystemControls_AutoRepeatModeChangeRequested(SystemMediaTransportControls sender, AutoRepeatModeChangeRequestedEventArgs args)
@@ -165,7 +201,7 @@ namespace SilverAudioPlayer.SMTC
                 MediaPlaybackAutoRepeatMode.List => RepeatState.Queue,
                 _ => RepeatState.None,
             };
-            SetRepeat(this, a);
+            SetRepeat?.Invoke(this, a);
         }
 
         private void SystemControls_ShuffleEnabledChangeRequested(SystemMediaTransportControls sender, ShuffleEnabledChangeRequestedEventArgs args)
@@ -246,8 +282,16 @@ namespace SilverAudioPlayer.SMTC
             }
             _mediaPlayer?.Dispose();
             _systemMediaTransportControls = null;
+            TimeLineTimer.Dispose();
+            foreach(var file in TempFiles)
+            {
+                if(File.Exists(file))
+                {
+                    File.Delete(file);
+                }
+            }    
         }
-
+        List<string> TempFiles = new();
         public async void TrackChangedNotification(Song newtrack)
         {
             if (DISABLE)
@@ -267,23 +311,23 @@ namespace SilverAudioPlayer.SMTC
                 updater.MusicProperties.TrackNumber = (uint)(newtrack?.Metadata?.TrackNumber ?? 0);
                 string s = newtrack.URI.ToLower();
                 bool isWeb = s.StartsWith("http://") || s.StartsWith("https://");
-                if (!isWeb)
+
+                if (newtrack?.Metadata?.Pictures?.Count >= 1)
                 {
-                    await updater.CopyFromFileAsync(MediaPlaybackType.Music, await StorageFile.GetFileFromPathAsync(newtrack.URI));
-                }
-                else
-                {
-                    if (newtrack?.Metadata?.Pictures?.Count >= 1)
+                    var first = newtrack?.Metadata?.Pictures?[0];
+                    if (first != null)
                     {
-                        var first = newtrack?.Metadata?.Pictures?[0];
-                        if (first != null)
-                        {
-                            Debug.WriteLine("ayo");
-                            updater.Thumbnail = RandomAccessStreamReference.CreateFromStream(ConvertTo(first.Data));
-                        }
+                        Debug.WriteLine("a");
+                        var fullPath = Path.GetTempFileName();
+                        FileStream fs = new(fullPath,FileMode.OpenOrCreate);
+                        fs.Write(first.Data);
+                        fs.Flush();
+                        fs.Close();
+                        fs.Dispose();
+                        TempFiles.Add(fullPath);
+                        updater.Thumbnail = RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(fullPath));
                     }
                 }
-
                 updater.Update();
             }
             else if (_systemMediaTransportControls != null)
@@ -295,6 +339,7 @@ namespace SilverAudioPlayer.SMTC
         internal static IRandomAccessStream ConvertTo(byte[] arr)
         {
             MemoryStream stream = new(arr);
+            stream.Position = 0;
             return stream.AsRandomAccessStream();
         }
 

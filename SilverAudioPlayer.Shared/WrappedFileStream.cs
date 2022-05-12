@@ -45,4 +45,48 @@ namespace SilverAudioPlayer.Shared
             GC.SuppressFinalize(this);
         }
     }
+
+    public class WrappedHttpStream : WrappedStream, IDisposable
+    {
+        private bool disposedValue;
+
+        public WrappedHttpStream(string url)
+        {
+            URL = url;
+            RegenStream();
+        }
+
+        public string URL { get; set; }
+        public List<Stream> Streams { get; set; } = new();
+
+        public override Stream RegenStream()
+        {
+            Stream = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult().Content.ReadAsStream();
+            Streams.Add(Stream);
+            return Stream;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    foreach (var stream in Streams.Where(x => x.CanRead))
+                    {
+                        stream.Dispose();
+                    }
+                    // Stream.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
 }

@@ -177,5 +177,10 @@ namespace SilverAudioPlayer.DryWetMidi
             player.OutputDevice = midiOut;
             return this;
         }
+
+        public Task OnStartup()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -279,7 +279,6 @@ public interface IRememberRichPresenceURLs
 public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPresenceURLs
 {
     public bool Uploadit;
-    private HttpClient httpClient;
 
     public string? GetURL(Song track)
     {
@@ -317,11 +316,8 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
     {
         var client = new ApiClient("d169c9264561822", "ce1616d067cb1493bc1df67b53e03660c5c02cc2");
         Debug.WriteLine("uploading " + bits.Length);
-        if (httpClient == null)
-        {
-            httpClient = new HttpClient();
-        }
-        var imageEndpoint = new ImageEndpoint(client, httpClient);
+
+        var imageEndpoint = new ImageEndpoint(client, Shared.HttpClient.Client);
 
         var imageUpload = imageEndpoint.UploadImageAsync(new MemoryStream(bits));
         var res = imageUpload.GetAwaiter().GetResult();

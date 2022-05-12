@@ -1,10 +1,4 @@
 ﻿using SilverConfig;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace SilverAudioPlayer
 {
@@ -40,12 +34,13 @@ namespace SilverAudioPlayer
         [Comment("How often should the config be automatically saved with current settings?")]
         public ulong MillisecondIntervalOfAutoSave { get; set; } = 300000;
 
-        [Comment("Volume")]
+        [Comment("Volume, 0-100% (linearity not guaranteed)")]
         public byte Volume { get; set; } = 70;
 
         [Comment("Should the player read the metadata of files when they are added to the queue? also enables sorting by track number")]
         public bool FillMetadataOfLoadedFilesOnLoad { get; set; } = true;
 
+        [Comment("Should the player read args.txt so that it can load files from other instances? (like vlc does but worse)")]
         public bool AutoMagicallyLoadFromArgstxt { get; set; } = true;
 
         [Comment("Should the player react to media controls")]
