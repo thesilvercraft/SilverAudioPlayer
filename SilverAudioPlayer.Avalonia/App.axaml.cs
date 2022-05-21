@@ -49,6 +49,7 @@ namespace SilverAudioPlayer.Avalonia
                 var mw = new MainWindow();
                 Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
                 desktop.MainWindow = mw;
+
                 Catalog = new();
                 try
                 {
@@ -135,6 +136,7 @@ namespace SilverAudioPlayer.Avalonia
                 .CreateLogger();
                 Shared.Logger.GetLoggerFunc += (e) => { return logger.ForContext(e); };
                 mw.Logic.log = logger;
+                mw.ProcessFiles(desktop.Args);
             }
 
             base.OnFrameworkInitializationCompleted();

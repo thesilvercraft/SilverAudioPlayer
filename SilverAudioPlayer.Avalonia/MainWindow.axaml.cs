@@ -253,8 +253,14 @@ namespace SilverAudioPlayer.Avalonia
             TreeView.DoubleTapped += TreeView_DoubleTapped;
             Closing += MainWindow_Closing;
             Opened += MainWindow_Opened;
-
+            Settings.Click += Settings_Click;
             //SetupDnd("Main", (s) => s.Set(DataFormats.FileNames, GetFromIList(TreeView.SelectedItems)), DragDropEffects.Copy | DragDropEffects.Link);
+        }
+
+        private void Settings_Click(object? sender, RoutedEventArgs e)
+        {
+            var s = new Settings();
+            s.Show();
         }
 
         private void MainWindow_Opened(object? sender, EventArgs e)
@@ -618,16 +624,19 @@ namespace SilverAudioPlayer.Avalonia
             }
         }
 
-        private void ProcessFiles(IEnumerable<string> files)
+        public void ProcessFiles(IEnumerable<string> files)
         {
-            foreach (var file in files)
+            if (files != null && files.Any())
             {
-                AddSong(new Song(file, file, Guid.NewGuid()));
+                foreach (var file in files)
+                {
+                    AddSong(new Song(file, file, Guid.NewGuid()));
+                }
+                TreeView.Items = Songs;
+                TreeView.InvalidateVisual();
+                Debug.WriteLine(Songs.Count);
+                FillMetadataOfLoadedFiles(true);
             }
-            TreeView.Items = Songs;
-            TreeView.InvalidateVisual();
-            Debug.WriteLine(Songs.Count);
-            FillMetadataOfLoadedFiles(true);
         }
 
         public void ClearAll(object sender, RoutedEventArgs e)
