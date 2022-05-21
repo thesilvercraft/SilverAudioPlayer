@@ -9,14 +9,21 @@ namespace SilverAudioPlayer.NAudio
     [Export(typeof(IPlay))]
     public class WaveFilePlayer : IPlay, IDisposable, IPlayStreamsToo
     {
-        private WaveOutEvent? outputDevice;
-        public IWaveProvider? audioFile;
+        private IWavePlayer? outputDevice;
+        public WaveStream? audioFile;
         public byte Volume { get; set; } = 70;
         public string? Decoder { get; private set; } = null;
 
         public WaveFilePlayer()
         {
-            outputDevice = new();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                outputDevice = new WaveOutEvent();
+            }
+            else
+            {
+                outputDevice = new Unix.PlayProviderExtension.Naudio.ASound.AlsaOutput();
+            }
             outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
         }
 
@@ -25,7 +32,7 @@ namespace SilverAudioPlayer.NAudio
             TrackEnd?.Invoke(sender, e);
         }
 
-        public void LoadFromProvider(IWaveProvider? provider)
+        public void LoadFromProvider(WaveStream? provider)
         {
             audioFile = provider;
             Decoder = provider?.GetType()?.FullName;

@@ -105,6 +105,7 @@ namespace SilverAudioPlayer
             e.SetRating -= MusicStatusInterface_SetRating;
             e.SetPosition -= MusicStatusInterface_SetPosition;
             e.SetVolume -= MusicStatusInterface_SetVolume;
+            e.PlayPause -= MusicStatusInterface_PlayPause;
 
             e.StopIPC();
             e.Dispose();

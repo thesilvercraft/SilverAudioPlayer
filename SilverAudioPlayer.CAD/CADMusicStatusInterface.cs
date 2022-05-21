@@ -532,9 +532,9 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     public void StartIPC()
     {
         Text = "SilverAudioPlayerIPC";
-        Show();
         HookMsg(Handle);
         cadRegister();
+        Show();
     }
 
     public void StopIPC()

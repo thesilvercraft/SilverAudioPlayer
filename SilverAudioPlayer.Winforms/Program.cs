@@ -276,9 +276,9 @@ namespace SilverAudioPlayer
                 .WriteTo.MSAppCenter()
 #endif
                 .CreateLogger();
+            Logger.GetLoggerFunc += (e) => { return logger.ForContext(e); };
 #if MS
 
-            Logger.GetLoggerFunc += (e) => { return logger.ForContext(e); };
             Application.ThreadException += (sender, args) =>
             {
                 Crashes.TrackError(args.Exception);

@@ -1,14 +1,9 @@
 ﻿using NAudio.Wave;
 using SilverAudioPlayer.Shared;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace SilverAudioPlayer.NAudio
 {
@@ -67,21 +62,31 @@ namespace SilverAudioPlayer.NAudio
         {
             try
             {
-                // An aggregate catalog that combines multiple catalogs.
                 var catalog = new AggregateCatalog();
-                // Adds all the parts found in the same assembly as the Program class.
                 catalog.Catalogs.Add(new AssemblyCatalog(typeof(INaudioWaveStreamWrapper).Assembly));
-
-                if (Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Extensions")))
+                if (Directory.Exists(Path.Combine(AppContext.BaseDirectory, "NExtensions")))
                 {
-                    catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "Extensions")));
+                    catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "NExtensions")));
                 }
-                else
+                catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Any.*.dll"));
+                switch (Environment.OSVersion.Platform)
                 {
-                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory));
-                }
+                    case PlatformID.Win32NT:
+                        catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Windows.*.dll"));
+                        break;
 
-                // Create the CompositionContainer with the parts in the catalog.
+                    case PlatformID.Xbox:
+                        catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Xbox360.*.dll"));
+                        break;
+                }
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Sheep.*.dll"));
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Unix.*.dll"));
+                }
                 _container = new CompositionContainer(catalog);
                 _container.ComposeParts(this);
             }
@@ -119,7 +124,7 @@ namespace SilverAudioPlayer.NAudio
             });
         }
 
-        internal IWaveProvider? GetStream(WrappedStream stream)
+        internal WaveStream? GetStream(WrappedStream stream)
         {
             return GetWrapper().FirstOrDefault(x => x.CanPlay(stream))?.GetStream(stream);
         }

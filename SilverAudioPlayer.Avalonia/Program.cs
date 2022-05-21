@@ -1,6 +1,5 @@
 using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Dialogs;
 using System;
 
 namespace SilverAudioPlayer.Avalonia
@@ -11,8 +10,15 @@ namespace SilverAudioPlayer.Avalonia
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         [STAThread]
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        public static void Main(string[] args)
+        {
+            var a = BuildAvaloniaApp();
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+            {
+                a = a.UseManagedSystemDialogs();
+            }
+            a.StartWithClassicDesktopLifetime(args);
+        }
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()

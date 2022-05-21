@@ -25,6 +25,7 @@ namespace SilverAudioPlayer.Shared
         public uint? Channels { get; init; }
 
         public int? TrackNumber { get; init; }
+        public int? DiscNumber { get; init; }
         public string[]? Comments { get; init; }
 
         /// <summary>

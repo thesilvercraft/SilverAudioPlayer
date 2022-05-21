@@ -1,6 +1,7 @@
 ﻿using NAudio.Wave;
 using SilverAudioPlayer.Shared;
 using System.ComponentModel.Composition;
+using NLayer.NAudioSupport;
 
 namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
 {
@@ -14,7 +15,8 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
 
         public WaveStream GetStream(WrappedStream stream)
         {
-            return new Mp3FileReader(stream.RegenStream());
+            var builder = new Mp3FileReaderBase.FrameDecompressorBuilder(wf => new Mp3FrameDecompressor(wf));
+            return new Mp3FileReaderBase(stream.RegenStream(), builder);
         }
     }
 }
