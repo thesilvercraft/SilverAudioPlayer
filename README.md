@@ -23,4 +23,4 @@ Aims to be modular and ill only give it that because it does not succeed at it
 - Where do I report bugs?
   - Here on github, or anywhere else you can find me on social media
 - Do you plan to add support for x platform/ui framework/file format?
-  - Maybe, well it all depends. I WILL NOT PROVIDE ANY KIND OF SUPPORT TO ANY PLATFORM MADE BY APPLE INC. (I don't plan on supporting a stupid company) You may contribute support for any platform/ui framework/file format and those contributions will most likely be accepted and gladly appreciated. 
+  - Maybe, well it all depends.
