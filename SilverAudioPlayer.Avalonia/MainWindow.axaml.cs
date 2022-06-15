@@ -4,28 +4,149 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using ReactiveUI;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Avalonia
 {
-    public partial class MainWindow : Window
+    internal class MainWindowContext
     {
-        private ObservableCollection<Song> Songs;
+        public Action<byte> VolumeChanged;
+        public Func<byte> GetVolume;
+        public byte V { get => GetVolume(); set => VolumeChanged(value); }
+    }
+
+    internal class ExtendedSong : ReactiveObject
+    {
+        public ExtendedSong(Song s)
+        {
+            Value = s;
+        }
+
+        public Song? Value { get; set; }
+
+        public static implicit operator Song(ExtendedSong s) => s.Value;
+
+        public static explicit operator ExtendedSong(Song? s) => new(s);
+
+        private bool _Playing = false;
+
+        public bool Playing
+        {
+            get => _Playing; set
+            {
+                this.RaiseAndSetIfChanged(ref _Playing, value);
+            }
+        }
+
+        public override string ToString() => Value.ToString();
+    }
+
+    public partial class MainWindow : Window
+
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+#if DEBUG
+            this.AttachDevTools();
+#endif
+            Songs = new();
+            TreeView.Items = Songs;
+            AddHandler(DragDrop.DropEvent, Drop);
+            AddHandler(DragDrop.DragOverEvent, DragOver);
+            Closing += (s, e) =>
+            {
+                if (Player != null)
+                {
+                    Player.Stop();
+                }
+            };
+            PlayButton.Click += PlayButton_Click;
+            PauseButton.Click += PauseButton_Click;
+            StopButton.Click += StopButton_Click;
+            PB.PointerReleased += PB_PointerReleased;
+            TreeView.DoubleTapped += TreeView_DoubleTapped;
+            Closing += MainWindow_Closing;
+            Opened += MainWindow_Opened;
+            Settings.Click += Settings_Click;
+            TreeView.PointerMoved += TreeView_PointerMoved;
+            TreeView.PointerReleased += TreeView_PointerReleased;
+            TreeView.PointerPressed += TreeView_PointerPressed1;
+
+            var dc = new MainWindowContext
+            {
+                VolumeChanged = (byte vol) =>
+                {
+                    if (Player != null)
+                    {
+                        Player.SetVolume(vol);
+                    }
+                    Volume = vol;
+                },
+                GetVolume = () => Volume
+            };
+            DataContext = dc;
+            //SetupDnd("Main", (s) => s.Set(DataFormats.FileNames, GetFromIList(TreeView.SelectedItems)), DragDropEffects.Copy | DragDropEffects.Link);
+        }
+
+        private void TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)
+        {
+            en = true;
+            en2 = true;
+        }
+
+        private byte Volume = 70;
+
+        private void TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (en2)
+            {
+                en = false;
+                en2 = false;
+            }
+        }
+
+        private void TreeView_PointerMoved(object? sender, PointerEventArgs e)
+        {
+            var pos = e.GetPosition(TreeView);
+            var size = TreeView.Bounds.Size;
+            if (pos.X < 0 || pos.Y < 0 || pos.X > size.Width || pos.Y > size.Height)
+            {
+                if (en)
+                {
+                    var dragData = new DataObject();
+                    var q = from i in TreeView.SelectedItems.OfType<Song>()
+                            select i;
+                    dragData.Set(DataFormats.FileNames, q.Select(x => x.URI));
+                    DragDrop.DoDragDrop(e, dragData, DragDropEffects.Copy | DragDropEffects.Link);
+                    en = false;
+                    en2 = false;
+                }
+            }
+        }
+
+        private bool en = false;
+        private bool en2 = false;
+
+        private ObservableCollection<ExtendedSong> Songs;
         public Logic Logic { get; set; } = new();
         public IPlay? Player { get; private set; }
-        private Song? CurrentSong = null;
-        private string? CurrentURI => CurrentSong?.URI;
+        private ExtendedSong? CurrentSong = null;
+        private string? CurrentURI => CurrentSong?.Value.URI;
         private bool StopAutoLoading = false;
-        private Song? NextSong = null;
+        private ExtendedSong? NextSong = null;
         private Thread? th;
         private CancellationTokenSource? token = new();
         private byte stateofdoingstuff = 0;
@@ -88,7 +209,7 @@ namespace SilverAudioPlayer.Avalonia
 
         private byte MusicStatusInterface_GetVolume()
         {
-            return 100;
+            return Volume;
         }
 
         private PlaybackState MusicStatusInterface_GetState()
@@ -158,7 +279,6 @@ namespace SilverAudioPlayer.Avalonia
             e.SetPosition -= MusicStatusInterface_SetPosition;
             e.SetVolume -= MusicStatusInterface_SetVolume;
             e.PlayPause -= MusicStatusInterface_PlayPause;
-
             e.StopIPC();
             e.Dispose();
             musicStatusInterfaces.Remove(e);
@@ -187,7 +307,7 @@ namespace SilverAudioPlayer.Avalonia
 
         private ulong MusicStatusInterface_GetDuration()
         {
-            return (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 69;
+            return (ulong?)(CurrentSong?.Value.Metadata?.Duration / 1000) ?? 69;
         }
 
         private Song MusicStatusInterface_GetCurrentTrack()
@@ -229,34 +349,6 @@ namespace SilverAudioPlayer.Avalonia
             }
         }
 
-        public MainWindow()
-        {
-            InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            Songs = new();
-            TreeView.Items = Songs;
-            AddHandler(DragDrop.DropEvent, Drop);
-            AddHandler(DragDrop.DragOverEvent, DragOver);
-            Closing += (s, e) =>
-            {
-                if (Player != null)
-                {
-                    Player.Stop();
-                }
-            };
-            PlayButton.Click += PlayButton_Click;
-            PauseButton.Click += PauseButton_Click;
-            StopButton.Click += StopButton_Click;
-            PB.PointerReleased += PB_PointerReleased;
-            TreeView.DoubleTapped += TreeView_DoubleTapped;
-            Closing += MainWindow_Closing;
-            Opened += MainWindow_Opened;
-            Settings.Click += Settings_Click;
-            //SetupDnd("Main", (s) => s.Set(DataFormats.FileNames, GetFromIList(TreeView.SelectedItems)), DragDropEffects.Copy | DragDropEffects.Link);
-        }
-
         private void Settings_Click(object? sender, RoutedEventArgs e)
         {
             var s = new Settings();
@@ -291,7 +383,7 @@ namespace SilverAudioPlayer.Avalonia
 
         private void TreeView_DoubleTapped(object? sender, RoutedEventArgs e)
         {
-            if (TreeView.SelectedItem is Song song)
+            if (TreeView.SelectedItem is ExtendedSong song)
             {
                 HandleSongChanging(song, CurrentSong == null);
             }
@@ -362,14 +454,14 @@ namespace SilverAudioPlayer.Avalonia
                     return;
                 }
             }
-            Player = Logic.GetPlayerFromStream(CurrentSong.Stream);
-            if (CurrentSong != null && CurrentSong?.Metadata == null && true)
+            Player = Logic.GetPlayerFromStream(CurrentSong.Value.Stream);
+            if (CurrentSong != null && CurrentSong?.Value.Metadata == null && true)
             {
-                var a = Logic.GetMetadataFromStream(CurrentSong.Stream);
+                var a = Logic.GetMetadataFromStream(CurrentSong.Value.Stream);
                 if (a != null)
                 {
                     Logic.log.Information("Getting metadata in SP");
-                    CurrentSong.Metadata = a.GetAwaiter().GetResult();
+                    CurrentSong.Value.Metadata = a.GetAwaiter().GetResult();
                 }
             }
             if (Player == null)
@@ -381,7 +473,10 @@ namespace SilverAudioPlayer.Avalonia
             TrackChangedNotification(CurrentSong);
             if (play)
             {
+                Player.SetVolume(Volume);
                 Player.Play();
+                CurrentSong.Playing = true;
+
                 SendIfStateIsNotNull();
 
                 Player.TrackEnd += OutputDevice_PlaybackStopped;
@@ -403,11 +498,11 @@ namespace SilverAudioPlayer.Avalonia
                     RT.Text = ((TimeSpan)total).ToString();
                 }
                 th.Start();
-                if (CurrentSong?.Metadata != null)
+                if (CurrentSong?.Value.Metadata != null)
                 {
-                    if (CurrentSong.Metadata.Title != null)
+                    if (CurrentSong.Value.Metadata.Title != null)
                     {
-                        Title = CurrentSong.GetTitleOrFileName() + " - SilverAudioPlayer";
+                        Title = CurrentSong.Value.GetTitleOrFileName() + " - SilverAudioPlayer";
                     }
                     /*if (CurrentSong.Metadata.Artist != null)
                     {
@@ -417,9 +512,9 @@ namespace SilverAudioPlayer.Avalonia
                     {
                         AlbumLabel.Text = CurrentSong.Metadata.Album;
                     }*/
-                    if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+                    if (CurrentSong?.Value.Metadata?.Pictures?.Any() == true)
                     {
-                        var buffer = CurrentSong.Metadata.Pictures[0].Data;
+                        var buffer = CurrentSong.Value.Metadata.Pictures[0].Data;
                         if (buffer != null)
                         {
                             var memstream = new MemoryStream(buffer);
@@ -521,7 +616,7 @@ namespace SilverAudioPlayer.Avalonia
             // SendIfStateIsNotNull();
         }
 
-        private void HandleSongChanging(Song NextSong, bool resetsal = false)
+        private void HandleSongChanging(ExtendedSong NextSong, bool resetsal = false)
         {
             Logic.log.Information("StopAutoLoading set to true in HandleSongChanging");
             StopAutoLoading = true;
@@ -529,23 +624,23 @@ namespace SilverAudioPlayer.Avalonia
             var next = Songs.IndexOf(NextSong);
             if (next == -1)
             {
-                Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
+                Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Value.Guid, NextSong.Value.URI, CurrentSong.Value.Guid, CurrentSong.Value.URI);
             }
             else
             {
-                CurrentSong = NextSong;
-                RemoveTrack();
                 if (curr != -1)
                 {
-                    TreeView.SelectedItem = next;
-                    //curr.ForeColor = next.ForeColor;
+                    CurrentSong.Playing = false;
                 }
+                CurrentSong = NextSong;
+                RemoveTrack();
+
                 //next.ForeColor = Color.LightGreen;
                 StartPlaying(resetsal: resetsal);
             }
             if (curr == -1)
             {
-                Logic.log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
+                Logic.log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Value.Guid, NextSong.Value.URI, CurrentSong.Value.Guid, CurrentSong.Value.URI);
             }
         }
 
@@ -554,7 +649,7 @@ namespace SilverAudioPlayer.Avalonia
             List<string> a = new();
             foreach (var item in list)
             {
-                a.Add(((Song)item).URI);
+                a.Add(((ExtendedSong)item).Value.URI);
             }
             return a.ToArray();
         }
@@ -592,18 +687,18 @@ namespace SilverAudioPlayer.Avalonia
 
         private void FillMetadataOfLoadedFiles(bool sortafterwards = false)
         {
-            Parallel.ForEach(Songs, (Song ayo) =>
+            Parallel.ForEach(Songs, (ExtendedSong ayo) =>
             {
-                if (ayo is Song song && song.Metadata == null)
+                if (ayo is ExtendedSong song && song.Value.Metadata == null)
                 {
-                    var a = Logic.GetMetadataFromStream(song.Stream);
-                    Logic.log.Information("Getting metadata in FMOLF about song " + song.Guid);
+                    var a = Logic.GetMetadataFromStream(song.Value.Stream);
+                    Logic.log.Information("Getting metadata in FMOLF about song " + song.Value.Guid);
                     if (a != null)
                     {
                         Logic.log.Verbose("a wasn't null");
                         Task.Run(async () =>
                         {
-                            song.Metadata = await a;
+                            song.Value.Metadata = await a;
                         });
                     }
                 }
@@ -612,13 +707,13 @@ namespace SilverAudioPlayer.Avalonia
             if (sortafterwards)
             {
                 Logic.log.Information("Sorting after filling metadata");
-                List<Song> songs = new();
-                var groups = Songs.GroupBy(a => a?.Metadata?.DiscNumber ?? 0).OrderBy(a => a.Key);
+                List<ExtendedSong> songs = new();
+                var groups = Songs.GroupBy(a => a?.Value.Metadata?.DiscNumber ?? 0).OrderBy(a => a.Key);
                 foreach (var group in groups)
                 {
-                    songs.AddRange(group.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
+                    songs.AddRange(group.OrderBy(a => a?.Value.Metadata?.TrackNumber ?? int.MaxValue));
                 }
-                Songs = new ObservableCollection<Song>(songs);
+                Songs = new ObservableCollection<ExtendedSong>(songs);
                 TreeView.Items = Songs;
                 TreeView.InvalidateVisual();
             }
@@ -630,7 +725,7 @@ namespace SilverAudioPlayer.Avalonia
             {
                 foreach (var file in files)
                 {
-                    AddSong(new Song(file, file, Guid.NewGuid()));
+                    AddSong(new(new Song(file, file, Guid.NewGuid())));
                 }
                 TreeView.Items = Songs;
                 TreeView.InvalidateVisual();
@@ -666,7 +761,7 @@ namespace SilverAudioPlayer.Avalonia
 
         public void RemoveSelected(object sender, RoutedEventArgs e)
         {
-            foreach (Song selected in TreeView.SelectedItems)
+            foreach (ExtendedSong selected in TreeView.SelectedItems)
             {
                 if (selected == NextSong)
                 {
@@ -684,7 +779,7 @@ namespace SilverAudioPlayer.Avalonia
             }
         }
 
-        private void AddSong(Song s)
+        private void AddSong(ExtendedSong s)
         {
             Songs.Add(s);
         }

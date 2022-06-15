@@ -2,12 +2,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using SilverAudioPlayer.Shared;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -16,9 +18,23 @@ namespace SilverAudioPlayer.Avalonia
 {
     public partial class MetadataView : Window
     {
+        private Song s;
+
         public MetadataView(Song s) : this()
         {
+            this.s = s;
             processproperties(s.Metadata);
+            Opened += MetadataView_Opened;
+        }
+
+        private void MetadataView_Opened(object? sender, EventArgs e)
+        {
+            if (s != null && s?.Metadata?.Pictures?.Count > 0)
+            {
+                var memstream = new MemoryStream(s.Metadata.Pictures[0].Data);
+                dc.Bitmaps[0] = new Bitmap(memstream);
+            }
+            Debug.WriteLine("dab");
         }
 
         private DC dc = new();
@@ -88,5 +104,8 @@ namespace SilverAudioPlayer.Avalonia
     {
         public ObservableCollection<KeyValuePair<string, string>> ValuePairs { get; }
     = new ObservableCollection<KeyValuePair<string, string>>();
+
+        public ObservableCollection<Bitmap> Bitmaps { get; }
+= new ObservableCollection<Bitmap>() { null };
     }
 }

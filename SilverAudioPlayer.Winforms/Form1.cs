@@ -236,12 +236,29 @@ namespace SilverAudioPlayer
             {
                 cfw = new(ConfigLoc);
                 cfw.OnChangedE += Cfw_OnChangedE;
+                cfw.OnDeletedE += Cfw_OnDeletedE;
+                cfw.OnCreatedE += Cfw_OnCreatedE;
+                cfw.OnRenamedE += Cfw_OnRenamedE;
             }
             if (GetDarkModePreference.ShouldIUseDarkMode())
             {
                 this.UseDarkModeBar(true);
                 this.UseDarkModeForThingsInsideOfForm(true, true);
             }
+        }
+
+        private void Cfw_OnRenamedE(object? sender, Tuple<string, string> e)
+        {
+        }
+
+        private void Cfw_OnCreatedE(object? sender, string e)
+        {
+        }
+
+        private void Cfw_OnDeletedE(object? sender, string e)
+        {
+            Config = new Preferences();
+            ConfigReader.Write(Config, ConfigLoc);
         }
 
         public Form1(params string[] files) : this()
@@ -264,7 +281,15 @@ namespace SilverAudioPlayer
             }
             else
             {
-                Config = ConfigReader.Read(ConfigLoc);
+                if (File.Exists(Path.Combine(AppContext.BaseDirectory, ConfigFileName)))
+                {
+                    Config = ConfigReader.Read(ConfigLoc);
+                }
+                else
+                {
+                    Config = new Preferences();
+                    ConfigReader.Write(Config, ConfigLoc);
+                }
                 OnConfigChange();
             }
         }
@@ -750,6 +775,7 @@ namespace SilverAudioPlayer
                         Task.Run(async () =>
                         {
                             song.Metadata = await a;
+                            ayo.Text = song.ToString();
                         });
                     }
                 }

@@ -14,6 +14,15 @@
 			<Setter Property="Height" Value="70" />
 			<Setter Property="Margin" Value="2,0,2,0" />
 		</Style>
+		<Style Selector="TextBlock.Playing">
+			<Setter Property="Foreground" Value="#D000FF" />
+		</Style>
+		<Style Selector="TreeViewItem:selected">
+			<Setter Property="Background" Value="#3A2595" />
+		</Style>
+		<Style Selector="TreeViewItem">
+			<Setter Property="FontSize" Value="20" />
+		</Style>
 	</Window.Styles>
 	<Grid RowDefinitions="260,*">
 		<Border Grid.Row="0">
@@ -33,10 +42,11 @@
 						<Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
 						<Button Name="Settings" Grid.Column="3">Settings</Button>
 					</Grid>
+					<Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding V, Mode=TwoWay}" Padding="20,0,20,0" />
 				</StackPanel>
 			</Grid>
 		</Border>
-		<TreeView Grid.Row="1" Name="TreeView" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible">
+		<TreeView Grid.Row="1" Name="TreeView" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple">
 			<TreeView.ContextMenu>
 				<ContextMenu>
 					<MenuItem Header="Clear Queue" Click="ClearAll" />
@@ -44,6 +54,13 @@
 					<MenuItem Header="Browse From Dialog" Click="AddFilee" />
 				</ContextMenu>
 			</TreeView.ContextMenu>
+			<TreeView.ItemTemplate>
+				<TreeDataTemplate>
+					<Grid PointerPressed="TreeView_PointerPressed1">
+						<TextBlock Text="{Binding .}" Classes.Playing="{Binding Playing}" Classes.NotPlaying="{Binding !Playing}"></TextBlock>
+					</Grid>
+				</TreeDataTemplate>
+			</TreeView.ItemTemplate>
 		</TreeView>
 	</Grid>
 </Window>

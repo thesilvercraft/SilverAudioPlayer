@@ -34,12 +34,14 @@
 		<PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="ReactiveUI" Version="18.0.10" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProvider.DryWetMidi.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" />

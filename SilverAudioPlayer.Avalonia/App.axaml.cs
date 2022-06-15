@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Themes.Fluent;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
@@ -9,6 +10,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Avalonia
@@ -42,6 +44,17 @@ namespace SilverAudioPlayer.Avalonia
             AvaloniaXamlLoader.Load(this);
         }
 
+        [SupportedOSPlatform("windows10.1709")]
+        public bool GetThemePreference(bool fallback = false)
+        {
+            var reg = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            if (reg != null)
+            {
+                return reg.GetValue("AppsUseLightTheme") is int theme && theme == 0;
+            }
+            return fallback;
+        }
+
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -49,7 +62,14 @@ namespace SilverAudioPlayer.Avalonia
                 var mw = new MainWindow();
                 Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
                 desktop.MainWindow = mw;
-
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 10)
+                {
+                    ChangeTheme(GetThemePreference(true));
+                }
+                else
+                {
+                    ChangeTheme(Environment.GetEnvironmentVariable("LIGHTTHEME") != "1");
+                }
                 Catalog = new();
                 try
                 {
@@ -141,5 +161,7 @@ namespace SilverAudioPlayer.Avalonia
 
             base.OnFrameworkInitializationCompleted();
         }
+
+        private static void ChangeTheme(bool dark) => Current.Styles.Add(new FluentTheme(new Uri("avares://Avalonia.Themes.Default/DefaultTheme.xaml")) { Mode = dark ? FluentThemeMode.Dark : FluentThemeMode.Light });
     }
 }

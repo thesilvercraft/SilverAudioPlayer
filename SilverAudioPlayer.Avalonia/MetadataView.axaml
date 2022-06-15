@@ -14,16 +14,19 @@
 	<Grid>
 
 		<ScrollViewer  ScrollViewer.VerticalScrollBarVisibility="Visible">
-			<ItemsRepeater Items="{Binding ValuePairs}">
-				<ItemsRepeater.ItemTemplate>
-					<DataTemplate>
-						<StackPanel Orientation="Horizontal">
-							<TextBlock Text="{Binding Key}" />
-							<TextBlock Text="{Binding Value}" />
-						</StackPanel>
-					</DataTemplate>
-				</ItemsRepeater.ItemTemplate>
-			</ItemsRepeater>
+			<Grid>
+				<Image Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top" Source="{Binding Bitmaps[0]}" Width="256" Height="256" />
+				<ItemsRepeater Items="{Binding ValuePairs}">
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<StackPanel Orientation="Horizontal">
+								<TextBlock Text="{Binding Key}" />
+								<TextBlock Text="{Binding Value}" />
+							</StackPanel>
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
+			</Grid>
 		</ScrollViewer>
 	</Grid>
 </Window>

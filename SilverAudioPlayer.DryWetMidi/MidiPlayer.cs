@@ -116,26 +116,7 @@ namespace SilverAudioPlayer.DryWetMidi
             return null;
         }
 
-        public bool CanPlayFile(string URI)
-        {
-            if (File.Exists(URI))
-            {
-                using var bytes = File.OpenRead(URI);
-                byte[] vs = new byte[4];
-                return (bytes.Read(vs, 0, 4) == 4
-                        && vs[0] == 0x4D
-                        && vs[1] == 0x54
-                        && vs[2] == 0x68
-                        && vs[3] == 0x64)
-                        || (vs[0] == 0x52 && vs[1] == 0x49 && vs[2] == 0x46 && vs[3] == 0x46
-                        && bytes.Read(vs, 0, 4) == 4
-                        && bytes.Read(vs, 0, 4) == 4
-                        && vs[0] == 0x52 && vs[1] == 0x4D && vs[2] == 0x49 && vs[3] == 0x44
-                        && bytes.Read(vs, 0, 4) == 4
-                        && vs[0] == 0x64 && vs[1] == 0x61 && vs[2] == 0x73 && vs[3] == 0x61);
-            }
-            return false;
-        }
+       
 
         public bool CanPlayStream(Stream stream)
         {
@@ -164,7 +145,7 @@ namespace SilverAudioPlayer.DryWetMidi
 
         public bool CanPlayFile(WrappedStream stream)
         {
-            return stream.MimeType == "audio/mid" || stream.MimeType == "audio/midi";
+            return stream.MimeType == "audio/mid" || stream.MimeType == "audio/midi" || stream.MimeType == ".midi" || stream.MimeType == ".mid" || stream.MimeType == "mid" || stream.MimeType == "midi";
         }
 
         public IPlay? GetPlayer(WrappedStream stream)

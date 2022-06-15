@@ -47,43 +47,49 @@ namespace SilverAudioPlayer.Shared
         {
             return Guid.GetHashCode();
         }
-        string TrackNo()
+
+        private string TrackNo()
         {
-            if(Metadata?.DiscNumber!=null)
+            if (Metadata?.DiscNumber != null)
             {
                 return $"CD{Metadata.DiscNumber}/{Metadata.TrackNumber}";
-               
             }
             return Metadata?.TrackNumber.ToString() ?? "";
         }
-        string ArtistAlbumOptional()
+
+        private string ArtistAlbumOptional(bool thingyatstart = false,bool thingyatend = false)
         {
             if (Metadata?.Artist != null && Metadata?.Album != null)
             {
-                return $"{Metadata.Artist} - {Metadata.Album}";
+                return $"{(thingyatstart ? "-" : "")} {Metadata.Artist} - {Metadata.Album} {(thingyatend ? "-" : "")}";
             }
             else if (Metadata?.Artist != null)
             {
-                return Metadata.Artist;
+                return $"{(thingyatstart ? "-" : "")} {Metadata.Artist} {(thingyatend ? "-" : "")}";
             }
             else if (Metadata?.Album != null)
             {
-                return Metadata.Album;
+                return $"{(thingyatstart ? "-" : "")} {Metadata.Album} {(thingyatend ? "-" : "")}";
             }
             return "";
         }
+
         public string GetTitleOrFileName()
         {
-            if(string.IsNullOrEmpty(Metadata?.Title))
+            if (string.IsNullOrEmpty(Metadata?.Title))
             {
                 return URI;
             }
             return Metadata.Title;
         }
-            
+
         public override string ToString()
         {
-            return !string.IsNullOrEmpty(Metadata?.Title)? $"{TrackNo()} {ArtistAlbumOptional()} {Metadata?.Title}" : Name;
+            if (Metadata != null)
+            {
+                return !string.IsNullOrEmpty(Metadata?.Title) ? $"{TrackNo()} {Metadata?.Title} {ArtistAlbumOptional(true)}" : Name;
+            }
+            return Name;
         }
     }
 }
