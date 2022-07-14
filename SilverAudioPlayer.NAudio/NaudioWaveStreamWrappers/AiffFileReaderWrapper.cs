@@ -14,7 +14,7 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
 
         public WaveStream GetStream(WrappedStream stream)
         {
-            return new AiffFileReader(stream.RegenStream());
+            return new AiffFileReader(stream.GetStream());
         }
     }
 }

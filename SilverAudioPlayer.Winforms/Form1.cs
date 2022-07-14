@@ -18,7 +18,7 @@ namespace SilverAudioPlayer
         private const string ConfigFileName = "settings\\silveraudioplayer.winforms.preferences.xml";
         private Preferences Config;
         private bool WatchForConfigChanges = true;
-        private ConfigFileWatcher cfw;
+        private FileSystemWatcher cfw;
         private string ConfigLoc;
         private List<IMusicStatusInterface> musicStatusInterfaces = new();
 
@@ -235,10 +235,10 @@ namespace SilverAudioPlayer
             if (WatchForConfigChanges)
             {
                 cfw = new(ConfigLoc);
-                cfw.OnChangedE += Cfw_OnChangedE;
-                cfw.OnDeletedE += Cfw_OnDeletedE;
-                cfw.OnCreatedE += Cfw_OnCreatedE;
-                cfw.OnRenamedE += Cfw_OnRenamedE;
+                cfw.Changed += Cfw_OnChangedE;
+                cfw.Deleted += Cfw_OnDeletedE;
+                cfw.Created += Cfw_OnCreatedE;
+                cfw.Renamed += Cfw_OnRenamedE;
             }
             if (GetDarkModePreference.ShouldIUseDarkMode())
             {
@@ -247,15 +247,15 @@ namespace SilverAudioPlayer
             }
         }
 
-        private void Cfw_OnRenamedE(object? sender, Tuple<string, string> e)
+        private void Cfw_OnRenamedE(object? sender, RenamedEventArgs e)
         {
         }
 
-        private void Cfw_OnCreatedE(object? sender, string e)
+        private void Cfw_OnCreatedE(object? sender, FileSystemEventArgs e)
         {
         }
 
-        private void Cfw_OnDeletedE(object? sender, string e)
+        private void Cfw_OnDeletedE(object? sender, FileSystemEventArgs e)
         {
             Config = new Preferences();
             ConfigReader.Write(Config, ConfigLoc);
@@ -273,7 +273,7 @@ namespace SilverAudioPlayer
 
         private System.Timers.Timer AutosaveConfig = new();
 
-        private void Cfw_OnChangedE(object? sender, string e)
+        private void Cfw_OnChangedE(object? sender, FileSystemEventArgs e)
         {
             if (savednow)
             {

@@ -9,12 +9,14 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
     {
         public bool CanGetMetadata(WrappedStream stream)
         {
-            return new Track(stream.RegenStream(), stream.MimeType).AudioFormat != null;
+            using var s = stream.GetStream();
+            return new Track(s, stream.MimeType).AudioFormat != null;
         }
 
         public Task<Metadata?> GetMetadata(WrappedStream stream)
         {
-            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(stream.RegenStream(), stream.MimeType)));
+            using var s = stream.GetStream();
+            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(s, stream.MimeType)));
         }
     }
 }

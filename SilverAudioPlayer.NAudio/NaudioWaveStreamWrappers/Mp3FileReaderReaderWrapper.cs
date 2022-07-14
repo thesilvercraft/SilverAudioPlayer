@@ -16,7 +16,7 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
         public WaveStream GetStream(WrappedStream stream)
         {
             var builder = new Mp3FileReaderBase.FrameDecompressorBuilder(wf => new Mp3FrameDecompressor(wf));
-            return new Mp3FileReaderBase(stream.RegenStream(), builder);
+            return new Mp3FileReaderBase(stream.GetStream(), builder);
         }
     }
 }

@@ -116,8 +116,6 @@ namespace SilverAudioPlayer.DryWetMidi
             return null;
         }
 
-       
-
         public bool CanPlayStream(Stream stream)
         {
             return false;
@@ -151,7 +149,7 @@ namespace SilverAudioPlayer.DryWetMidi
         public IPlay? GetPlayer(WrappedStream stream)
         {
             midiOut ??= OutputDevice.GetByIndex(0);
-            mf = MidiFile.Read(stream.RegenStream());
+            mf = MidiFile.Read(stream.GetStream());
             player = mf.GetPlayback();
             player.Finished += (a, b) => { ps = PlaybackState.Stopped; TrackEnd?.Invoke(a, b); };
             player.Stopped += (a, b) => TrackPause?.Invoke(a, b);

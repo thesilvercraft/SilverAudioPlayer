@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using ReactiveUI;
+using SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using System;
@@ -98,8 +99,12 @@ namespace SilverAudioPlayer.Avalonia
                 GetVolume = () => Volume
             };
             DataContext = dc;
+            jfsp = new();
+            jfsp.ProviderListner = new SAPAvaloniaListner(this);
             //SetupDnd("Main", (s) => s.Set(DataFormats.FileNames, GetFromIList(TreeView.SelectedItems)), DragDropEffects.Copy | DragDropEffects.Link);
         }
+
+        private JellyFinPlayStreamProvider jfsp = null;
 
         private void TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)
         {
@@ -355,6 +360,11 @@ namespace SilverAudioPlayer.Avalonia
             s.Show();
         }
 
+        private void LoadFromProviders_Click(object? sender, RoutedEventArgs e)
+        {
+            jfsp.ShowGui();
+        }
+
         private void MainWindow_Opened(object? sender, EventArgs e)
         {
             if (Logic.MusicStatusInterfaces?.Any() == true)
@@ -517,8 +527,14 @@ namespace SilverAudioPlayer.Avalonia
                         var buffer = CurrentSong.Value.Metadata.Pictures[0].Data;
                         if (buffer != null)
                         {
-                            var memstream = new MemoryStream(buffer);
-                            Image.Source = new Bitmap(memstream);
+                            try
+                            {
+                                var memstream = new MemoryStream(buffer);
+                                Image.Source = new Bitmap(memstream);
+                            }
+                            catch
+                            {
+                            }
                         }
                     }
                     else
@@ -723,10 +739,41 @@ namespace SilverAudioPlayer.Avalonia
         {
             if (files != null && files.Any())
             {
+                if (files.Count() == 1 && Directory.Exists(files.First()))
+                {
+                    files = Directory.GetFiles(files.First());
+                }
                 foreach (var file in files)
                 {
                     AddSong(new(new Song(file, file, Guid.NewGuid())));
                 }
+                TreeView.Items = Songs;
+                TreeView.InvalidateVisual();
+                Debug.WriteLine(Songs.Count);
+                FillMetadataOfLoadedFiles(true);
+            }
+        }
+
+        public void ProcessStreams(IEnumerable<WrappedStream> files)
+        {
+            if (files != null && files.Any())
+            {
+                foreach (var file in files)
+                {
+                    AddSong(new(new Song(file, "unknown", Guid.NewGuid())));
+                }
+                TreeView.Items = Songs;
+                TreeView.InvalidateVisual();
+                Debug.WriteLine(Songs.Count);
+                FillMetadataOfLoadedFiles(true);
+            }
+        }
+
+        public void ProcessStream(WrappedStream file)
+        {
+            if (file != null)
+            {
+                AddSong(new(new Song(file, "unknown", Guid.NewGuid())));
                 TreeView.Items = Songs;
                 TreeView.InvalidateVisual();
                 Debug.WriteLine(Songs.Count);

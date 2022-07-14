@@ -1,10 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
-        x:Class="SilverAudioPlayer.Avalonia.MainWindow"
-        Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico">
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:Class="SilverAudioPlayer.Avalonia.MainWindow"
+		Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico">
 	<Window.Styles>
 		<Style Selector="Button">
 			<Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -36,11 +36,12 @@
 						<TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"></TextBlock>
 						<TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"></TextBlock>
 					</Grid>
-					<Grid ColumnDefinitions="*,*,*,*" Margin="0,10,10,10">
+					<Grid ColumnDefinitions="*,*,*,*,*" Margin="0,10,10,10">
 						<Button Name="PlayButton" Grid.Column="0">Play</Button>
 						<Button Name="PauseButton" Grid.Column="1">Pause</Button>
 						<Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
-						<Button Name="Settings" Grid.Column="3">Settings</Button>
+						<Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>
+						<Button Name="Settings" Grid.Column="4">Settings</Button>
 					</Grid>
 					<Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding V, Mode=TwoWay}" Padding="20,0,20,0" />
 				</StackPanel>

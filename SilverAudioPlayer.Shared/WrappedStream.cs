@@ -2,13 +2,8 @@
 {
     public abstract class WrappedStream
     {
-        public Stream Stream { get; set; }
-        public string MimeType { get; set; }
+        public abstract string MimeType { get; }
 
-        public virtual Stream RegenStream()
-        {
-            Stream.Position = 0;
-            return Stream;
-        }
+        public abstract Stream GetStream();
     }
 }

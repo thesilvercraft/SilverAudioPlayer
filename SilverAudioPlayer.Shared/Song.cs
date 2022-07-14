@@ -16,7 +16,17 @@ namespace SilverAudioPlayer.Shared
             {
                 Stream = new WrappedFileStream(uri);
             }
-            Stream.MimeType = MagicByteCombos.Match(Stream.Stream, 0)?.MimeType ?? (isfile ? new FileInfo(uri).Extension[1..] : ".wav");
+            //Stream.MimeType = MagicByteCombos.Match(Stream.Stream, 0)?.MimeType ?? (isfile ? new FileInfo(uri).Extension[1..] : ".wav");
+            Name = name;
+            Guid = guid;
+            Metadata = metadata;
+        }
+
+        public Song(WrappedStream data, string name, Guid guid, Metadata? metadata = null)
+        {
+            URI = "";
+            Stream = data;
+            //Stream.MimeType = data.MimeType.RealMimeTypeToFakeMimeType() ??  ?? ".flac";
             Name = name;
             Guid = guid;
             Metadata = metadata;
@@ -57,7 +67,7 @@ namespace SilverAudioPlayer.Shared
             return Metadata?.TrackNumber.ToString() ?? "";
         }
 
-        private string ArtistAlbumOptional(bool thingyatstart = false,bool thingyatend = false)
+        private string ArtistAlbumOptional(bool thingyatstart = false, bool thingyatend = false)
         {
             if (Metadata?.Artist != null && Metadata?.Album != null)
             {
@@ -91,5 +101,19 @@ namespace SilverAudioPlayer.Shared
             }
             return Name;
         }
+    }
+}
+
+public static class MimeTypeExtensions
+{
+    public static string RealMimeTypeToFakeMimeType(this string realmime)
+    {
+        return realmime switch
+        {
+            "audio/flac" => ".flac",
+            "audio/mpeg" => ".mp3",
+            "audio/aac" => ".aac",
+            _ => realmime,
+        };
     }
 }

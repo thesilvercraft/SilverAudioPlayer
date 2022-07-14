@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using SilverMagicBytes;
+using System.Diagnostics;
 
 namespace SilverAudioPlayer.Shared
 {
@@ -9,16 +10,43 @@ namespace SilverAudioPlayer.Shared
         public WrappedFileStream(string url)
         {
             URL = url;
-            RegenStream();
         }
 
         public string URL { get; set; }
         public List<Stream> Streams { get; set; } = new();
 
-        public override Stream RegenStream()
+        public override string MimeType { get => _MimeType; }
+        private string _MimeType { get; set; } = "application/octet-stream";
+
+        private Stream InternalGetStream()
         {
-            Stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var Stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
             Streams.Add(Stream);
+            return Stream;
+        }
+
+        public override Stream GetStream()
+        {
+            var Stream = InternalGetStream();
+            string? mt = null;
+            if (mt == null)
+            {
+                var stream2 = InternalGetStream();
+                try
+                {
+                    mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+                }
+                finally
+                {
+                    stream2.Dispose();
+                    Streams.Remove(stream2);
+                }
+            }
+            if (mt == null)
+            {
+                mt = new FileInfo(URL).Extension;
+            }
+            _MimeType = mt.RealMimeTypeToFakeMimeType();
             return Stream;
         }
 
@@ -53,16 +81,45 @@ namespace SilverAudioPlayer.Shared
         public WrappedHttpStream(string url)
         {
             URL = url;
-            RegenStream();
         }
 
         public string URL { get; set; }
         public List<Stream> Streams { get; set; } = new();
+        public override string MimeType { get => _MimeType; }
+        private string _MimeType { get; set; } = "application/octet-stream";
 
-        public override Stream RegenStream()
+        private Stream InternalGetStream()
         {
-            Stream = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult().Content.ReadAsStream();
+            var content = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult();
+            var Stream = content.Content.ReadAsStream();
             Streams.Add(Stream);
+            return Stream;
+        }
+
+        public override Stream GetStream()
+        {
+            var content = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult();
+            var Stream = content.Content.ReadAsStream();
+            Streams.Add(Stream);
+            var mt = content.Content.Headers.ContentType?.MediaType;
+            if (mt == null)
+            {
+                var stream2 = InternalGetStream();
+                try
+                {
+                    mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+                }
+                finally
+                {
+                    stream2.Dispose();
+                    Streams.Remove(stream2);
+                }
+            }
+            if (mt == null)
+            {
+                mt = "application/octet-stream";
+            }
+            _MimeType = mt.RealMimeTypeToFakeMimeType();
             return Stream;
         }
 
@@ -76,7 +133,6 @@ namespace SilverAudioPlayer.Shared
                     {
                         stream.Dispose();
                     }
-                    // Stream.Dispose();
                 }
                 disposedValue = true;
             }
