@@ -28,10 +28,10 @@ namespace SilverAudioPlayer.Avalonia
         {
             mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
         }
-        MainWindow mainWindow;
+
+        readonly MainWindow mainWindow;
         public Action<byte> VolumeChanged;
         public Func<byte> GetVolume;
-        public Func<string> GetTitle;
      
         private string _Title;
         private IBrush _pbForeGround=new SolidColorBrush(WindowExtensions.ReadColor("SAPPBColor"));
@@ -158,7 +158,7 @@ namespace SilverAudioPlayer.Avalonia
         private Song? NextSong = null;
         private Thread? th;
         private CancellationTokenSource? token = new();
-        private List<IMusicStatusInterface> musicStatusInterfaces = new();
+        private readonly List<IMusicStatusInterface> musicStatusInterfaces = new();
 
         private void AddMSI(IMusicStatusInterface e)
         {
@@ -360,8 +360,10 @@ namespace SilverAudioPlayer.Avalonia
 
         private void Settings_Click(object? sender, RoutedEventArgs e)
         {
-            var s = new Settings();
-            s.mainWindow = this;
+            var s = new Settings
+            {
+                mainWindow = this
+            };
             s.Show();
         }
 

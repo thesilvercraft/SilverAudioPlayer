@@ -176,7 +176,7 @@ namespace SilverAudioPlayer.SMTC
                 timelineProperties.Position = TimeSpan.FromSeconds(pos);
                 timelineProperties.MaxSeekTime = TimeSpan.FromSeconds(dur);
             }
-            _systemMediaTransportControls.UpdateTimelineProperties(timelineProperties);
+            _systemMediaTransportControls?.UpdateTimelineProperties(timelineProperties);
         }
 
         private void SystemControls_PlaybackPositionChangeRequested(SystemMediaTransportControls sender, PlaybackPositionChangeRequestedEventArgs args)

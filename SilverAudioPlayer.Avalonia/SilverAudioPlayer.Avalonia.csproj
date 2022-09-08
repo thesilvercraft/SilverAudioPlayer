@@ -61,7 +61,7 @@
 
     <!--CD Art Display - windows 7+-->
 
-    <!--<DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
+    <DefineConstants>$(DefineConstants)CAD</DefineConstants>
 
   </PropertyGroup>
   <PropertyGroup>
