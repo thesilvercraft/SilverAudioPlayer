@@ -20,6 +20,7 @@ namespace SilverAudioPlayer.SMTC
         {
             if (Environment.OSVersion.Version.Major < 10 || Environment.OSVersion.Version.Build < 17763)
             {
+                Debug.WriteLine("!!!!!!!!!! SMTC DISABLED !!!!!!!!!!");
                 DISABLE = true;
             }
         }

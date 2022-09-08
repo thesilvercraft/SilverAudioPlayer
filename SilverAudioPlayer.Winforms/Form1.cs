@@ -1,5 +1,4 @@
 using Microsoft.Win32;
-using SilverAudioPlayer.CAD;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
@@ -1124,10 +1123,6 @@ namespace SilverAudioPlayer
                     var a = dangthing;
                     GC.KeepAlive(a);
                     AddMSI(a);
-                    if (a is CADMusicStatusInterface ee)
-                    {
-                        ee.Show();
-                    }
                 }
             }
         }
