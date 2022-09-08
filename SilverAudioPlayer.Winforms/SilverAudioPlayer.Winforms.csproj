@@ -117,9 +117,8 @@
 
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net6.0-windows7</TargetFramework>
-    <TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net6.0-windows10.0.18362.0</TargetFramework>
+    <!-- REQUIRED FOR SILVERFORMSUTILS DARK MODE HANDLES, WILL RUN ON WINDOWS 7 AND ABOVE-->
+    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
   </PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
