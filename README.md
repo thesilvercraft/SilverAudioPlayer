@@ -1,4 +1,20 @@
-﻿# SilverAudioPlayer  
-A *simple* (well a lot simpler then audioplayerz) audio player.  
-Aims to run on everything from windows 7 to windows 10, fails at that, is commonly tested on windows 10 and windows 7 but everything in between has not been tested so please do test if possible.  
-Aims to be modular and I'll only give it that because it does not succeed at it, it does use the Managed Extensibility Framework (https://docs.microsoft.com/en-us/dotnet/framework/mef/) and has some intefraces you can implement to add support for other wave(pcm) like file formats or you could implement a different player entirely (the possibility is basically endless as long as you can do it in c# or at least from c# you could probably play the file)
+# Images
+## SilverAudioPlayer.Avalonia  
+![image](https://user-images.githubusercontent.com/46320280/189100812-4a1a86e2-7efe-422f-9674-f3926300cb9b.png)
+### Settings  
+Most settings are saved in the user's enviroment variables (on windows) while on linux none are saved and the user must save it themselves.   
+![image](https://user-images.githubusercontent.com/46320280/189104057-287c8033-768a-48e1-bb67-7bc333c73b44.png)
+### Metadata  
+![image](https://user-images.githubusercontent.com/46320280/189103991-614f4b75-36c1-4df2-a1f4-e20ec9d9dce8.png)
+### About  
+![image](https://user-images.githubusercontent.com/46320280/189104317-d6563926-8fa5-432b-a891-8f94e26edbb8.png)
+## SilverAudioPlayer.Winforms  
+![image](https://user-images.githubusercontent.com/46320280/189101415-62d44e32-6f51-4ac3-98d7-1a90966aae75.png)
+### Settings  
+Most settings are saved in an xml file  
+![image](https://user-images.githubusercontent.com/46320280/189101685-a2bb6afb-6f8a-48fd-88de-d1de7d105ea3.png)
+### Metadata  
+![image](https://user-images.githubusercontent.com/46320280/189102217-a662d35c-eb84-4141-9a6d-d5b40bcd3dff.png)
+
+### About
+![image](https://user-images.githubusercontent.com/46320280/189101528-de1839ef-4767-4b89-9729-3531d4fa5a7e.png)
