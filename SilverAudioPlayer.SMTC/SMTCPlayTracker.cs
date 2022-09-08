@@ -292,6 +292,19 @@ namespace SilverAudioPlayer.SMTC
             }    
         }
         List<string> TempFiles = new();
+
+        public string Name => "SystemMediaTransportControls";
+
+        public string Description => "Windows 10 integration";
+
+        public WrappedStream? Icon => null;
+
+        public Version? Version => typeof(SMTCPlayTracker).Assembly.GetName().Version;
+
+        public string Licenses => "SilverAudioPlayer.SMTC\nGPLV3";
+
+        public List<Tuple<Uri, URLType>>? Links => new() { new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.SMTC"),URLType.Code), new(new("https://docs.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols?view=winrt-22621"),URLType.LibraryDocumentation) };
+
         public async void TrackChangedNotification(Song newtrack)
         {
             if (DISABLE)
@@ -309,15 +322,13 @@ namespace SilverAudioPlayer.SMTC
                 updater.MusicProperties.AlbumTitle = newtrack?.Metadata?.Album;
                 updater.MusicProperties.Title = newtrack?.Metadata?.Title ?? newtrack?.Name;
                 updater.MusicProperties.TrackNumber = (uint)(newtrack?.Metadata?.TrackNumber ?? 0);
-                string s = newtrack.URI.ToLower();
-                bool isWeb = s.StartsWith("http://") || s.StartsWith("https://");
-
+                //string s = newtrack.URI.ToLower();
+               // bool isWeb = s.StartsWith("http://") || s.StartsWith("https://");
                 if (newtrack?.Metadata?.Pictures?.Count >= 1)
                 {
                     var first = newtrack?.Metadata?.Pictures?[0];
                     if (first != null)
                     {
-                        Debug.WriteLine("a");
                         var fullPath = Path.GetTempFileName();
                         FileStream fs = new(fullPath,FileMode.OpenOrCreate);
                         fs.Write(first.Data);
@@ -338,8 +349,10 @@ namespace SilverAudioPlayer.SMTC
 
         internal static IRandomAccessStream ConvertTo(byte[] arr)
         {
-            MemoryStream stream = new(arr);
-            stream.Position = 0;
+            MemoryStream stream = new(arr)
+            {
+                Position = 0
+            };
             return stream.AsRandomAccessStream();
         }
 

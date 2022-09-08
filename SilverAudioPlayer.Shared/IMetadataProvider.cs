@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Shared
 {
-    public interface IMetadataProvider
+    public interface IMetadataProvider:ICodeInformation
     {
         public Task<Metadata?> GetMetadata(WrappedStream stream);
 

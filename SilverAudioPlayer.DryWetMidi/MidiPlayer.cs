@@ -3,6 +3,7 @@ using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using SilverAudioPlayer.Shared;
 using System.ComponentModel.Composition;
+using System.Reflection;
 
 namespace SilverAudioPlayer.DryWetMidi
 {
@@ -17,6 +18,56 @@ namespace SilverAudioPlayer.DryWetMidi
         private MidiFile? mf;
         private PlaybackState? ps;
         private Playback player;
+
+        public IPlayProviderListner ProviderListner { set => _=value; }
+
+        public string Name => "DryWetMidi MidiPlayer";
+
+        public string Description => "A player that plays MIDIs implemented with DryWetMidi (https://github.com/melanchall/drywetmidi)";
+
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly,"SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+
+        public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
+        public List<Tuple<Uri, URLType>>? Links => new() {
+            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"), URLType.Code),
+            new(new($"https://www.nuget.org/packages/Melanchall.DryWetMidi/{typeof(OutputDevice).Assembly.GetName().Version}"), URLType.PackageManager),
+            new(new("https://github.com/melanchall/drywetmidi"),URLType.LibraryCode)
+        };
+        public string Licenses => @"DryWetMidi (https://github.com/melanchall/drywetmidi)
+MIT License
+
+Copyright (c) 2018 Maxim Dobroselsky
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the ""Software""), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+SilverAudioPlayer.Any.PlayProvider.DryWetMidi
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.";
 
         public MidiPlayer(int deviceNo)
         {

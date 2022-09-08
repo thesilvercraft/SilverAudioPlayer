@@ -7,7 +7,7 @@ using PlaybackState = NAudio.Wave.PlaybackState;
 namespace SilverAudioPlayer.NAudio
 {
     [Export(typeof(IPlay))]
-    public class WaveFilePlayer : IPlay, IDisposable, IPlayStreamsToo
+    public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     {
         private IWavePlayer? outputDevice;
         public WaveStream? audioFile;

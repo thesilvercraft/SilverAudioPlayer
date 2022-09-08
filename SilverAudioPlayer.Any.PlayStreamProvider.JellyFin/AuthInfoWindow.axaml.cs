@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using SilverAudioPlayer.Avalonia;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
 {
@@ -15,6 +16,8 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
 #if DEBUG
             this.AttachDevTools();
 #endif
+            this.DoAfterInitTasks(true);
+
         }
 
         public string ServerURL;

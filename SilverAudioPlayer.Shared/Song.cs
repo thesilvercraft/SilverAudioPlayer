@@ -57,8 +57,8 @@ namespace SilverAudioPlayer.Shared
         {
             return Guid.GetHashCode();
         }
-
-        private string TrackNo()
+        public string TrackNoF => TrackNo();
+        public string TrackNo()
         {
             if (Metadata?.DiscNumber != null)
             {
@@ -67,7 +67,8 @@ namespace SilverAudioPlayer.Shared
             return Metadata?.TrackNumber.ToString() ?? "";
         }
 
-        private string ArtistAlbumOptional(bool thingyatstart = false, bool thingyatend = false)
+
+        public string ArtistAlbumOptional(bool thingyatstart = false, bool thingyatend = false)
         {
             if (Metadata?.Artist != null && Metadata?.Album != null)
             {
@@ -111,6 +112,8 @@ public static class MimeTypeExtensions
         return realmime switch
         {
             "audio/flac" => ".flac",
+            "audio/x-flac" => ".flac",
+
             "audio/mpeg" => ".mp3",
             "audio/aac" => ".aac",
             _ => realmime,

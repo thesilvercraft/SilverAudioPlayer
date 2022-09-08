@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Themes.Fluent;
@@ -45,7 +46,7 @@ namespace SilverAudioPlayer.Avalonia
         }
 
         [SupportedOSPlatform("windows10.1709")]
-        public bool GetThemePreference(bool fallback = false)
+        public static bool GetThemePreference(bool fallback = false)
         {
             var reg = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
             if (reg != null)
@@ -62,13 +63,16 @@ namespace SilverAudioPlayer.Avalonia
                 var mw = new MainWindow();
                 Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
                 desktop.MainWindow = mw;
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 10)
+                if (WindowExtensions.GetEnv("DisableSAPTransparency") == "true")
                 {
-                    ChangeTheme(GetThemePreference(true));
-                }
-                else
-                {
-                    ChangeTheme(Environment.GetEnvironmentVariable("LIGHTTHEME") != "1");
+                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 10)
+                    {
+                        ChangeTheme(GetThemePreference(true));
+                    }
+                    else
+                    {
+                        ChangeTheme(WindowExtensions.GetEnv("LIGHTTHEME") != "1");
+                    }
                 }
                 Catalog = new();
                 try
@@ -147,9 +151,9 @@ namespace SilverAudioPlayer.Avalonia
                     Debug.WriteLine($"Music status interface {name} loaded.");
                 }
                 var configuration = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
-           .Build();
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
+                .Build();
                 var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .WriteTo.Debug(Serilog.Events.LogEventLevel.Verbose)

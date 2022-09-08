@@ -27,6 +27,7 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             userClient = new UserClient(settings, HttpClient.Client);
             itemsClient = new ItemsClient(settings, HttpClient.Client);
             audioClient = new UniversalAudioClient(settings, HttpClient.Client);
+            imageClient=new ImageClient(settings, HttpClient.Client);
         }
 
         public async Task<IReadOnlyList<BaseItemDto>> GetItemsFromItem(BaseItemDto dto)
@@ -119,7 +120,20 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         {
             return new WrappedJellyFinStream(audioClient, userDto, dto);
         }
+        public async Task<WrappedStream?> GetImageStream(BaseItemDto dto)
+        {
+            try
+            {
+                var fr = await imageClient.GetItemImageAsync(dto.Id, ImageType.Primary);
 
+                return new WrappedStreamImplementedByOneRealOne("image/jpg", fr.Stream);
+            }
+       catch
+            {
+                return null;
+            }
+        }
+        IImageClient imageClient;
         private ServerUrlWindow serverwindow;
         private AuthInfoWindow authwindow;
 
@@ -146,29 +160,49 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             return serverwindow.Success;
         }
     }
+    public  class WrappedStreamImplementedByOneRealOne:WrappedStream
+    {
+        public WrappedStreamImplementedByOneRealOne(string mimeType, Stream RealStream)
+        {
+            MimeType = mimeType;
+        }
 
+        public override string MimeType { get; }
+        Stream RealStream;
+        public override Stream GetStream()
+        {
+            return RealStream;
+        }
+
+    }
     public class WrappedJellyFinStream : WrappedStream, IDisposable
     {
         private bool disposedValue;
         private IUniversalAudioClient audioClient;
         private UserDto userDto;
-        BaseItemDto song;
+        private BaseItemDto song;
         private MemoryStream FStream = new();
         private Stream rs;
         private Thread t;
 
         private void CopyToMS()
         {
-            rs.CopyTo(FStream);
+            try
+            {
+                rs.CopyTo(FStream);
+            }
+            catch
+            {
+
+            }
         }
 
         public WrappedJellyFinStream(IUniversalAudioClient ac, UserDto user, BaseItemDto baseItemDto)
         {
-            audioClient=ac;
+            audioClient = ac;
             song = baseItemDto;
             userDto = user;
-            t = new(CopyToMS);
-            t.Start();
+
             userDto = user;
             audioClient = ac;
 
@@ -184,16 +218,18 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         private Stream InternalGetStream()
         {
             var Stream = audioClient.GetUniversalAudioStreamAsync(song.Id, container: new string[] { "flac", "wav", "mp3" }, userId: userDto.Id).GetAwaiter().GetResult();
-            Streams.Add(Stream);
-            return Stream;
+            Streams.Add(Stream.Stream);
+            return Stream.Stream;
         }
+
+       
 
         public override Stream GetStream()
         {
-            var content = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult();
-            var Stream = content.Content.ReadAsStream();
+            var content = audioClient.GetUniversalAudioStreamAsync(song.Id, container: new string[] { "flac", "wav", "mp3" }, userId: userDto.Id).GetAwaiter().GetResult();
+            var Stream = content.Stream;
             Streams.Add(Stream);
-            var mt = content.Content.Headers.ContentType?.MediaType;
+            var mt = content.Headers["Content-Type"].First();
             if (mt == null)
             {
                 var stream2 = InternalGetStream();
@@ -212,7 +248,19 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
                 mt = "application/octet-stream";
             }
             _MimeType = mt.RealMimeTypeToFakeMimeType();
-            return Stream;
+
+            rs = Stream;
+            if(!FStream.CanRead)
+            {
+                FStream = new();
+
+            }
+            if (FStream.Length == 0)
+            {
+                t = new(CopyToMS);
+                t.Start();
+            }
+            return new FakeMemoryStreamReference(FStream);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -238,7 +286,7 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         }
     }
 
-    public class FakeMemoryStreamReference : Stream
+    public class FakeMemoryStreamReference : Stream, IDisposable
     {
         private MemoryStream Realstream;
         private MemoryStream Fakestream;
@@ -288,6 +336,14 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+        }
+
+        void IDisposable.Dispose()
+        {
+            Fakestream.Dispose();
+            Realstream.Dispose();
+            GC.SuppressFinalize(this);
+            base.Dispose();
         }
     }
 }

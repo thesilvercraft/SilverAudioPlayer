@@ -4,7 +4,8 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		x:Class="SilverAudioPlayer.Avalonia.MainWindow"
-		Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico">
+		Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
+    ExtendClientAreaToDecorationsHint="True">
 	<Window.Styles>
 		<Style Selector="Button">
 			<Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -24,44 +25,56 @@
 			<Setter Property="FontSize" Value="20" />
 		</Style>
 	</Window.Styles>
-	<Grid RowDefinitions="260,*">
-		<Border Grid.Row="0">
-			<Grid ColumnDefinitions="256,*">
-				<Border Grid.Column="0">
-					<Image Height="256" Width="256" Name="Image" PointerPressed="Metadata_Click" />
-				</Border>
-				<StackPanel Margin="10,10,0,10" Grid.Column="1">
-					<ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50"  Margin="0,0,10,10" />
-					<Grid Margin="1,0,10,0">
-						<TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"></TextBlock>
-						<TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"></TextBlock>
-					</Grid>
-					<Grid ColumnDefinitions="*,*,*,*,*" Margin="0,10,10,10">
-						<Button Name="PlayButton" Grid.Column="0">Play</Button>
-						<Button Name="PauseButton" Grid.Column="1">Pause</Button>
-						<Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
-						<Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>
-						<Button Name="Settings" Grid.Column="4">Settings</Button>
-					</Grid>
-					<Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding V, Mode=TwoWay}" Padding="20,0,20,0" />
-				</StackPanel>
-			</Grid>
-		</Border>
-		<TreeView Grid.Row="1" Name="TreeView" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple">
-			<TreeView.ContextMenu>
-				<ContextMenu>
-					<MenuItem Header="Clear Queue" Click="ClearAll" />
-					<MenuItem Header="Remove Selected" Click="RemoveSelected" />
-					<MenuItem Header="Browse From Dialog" Click="AddFilee" />
-				</ContextMenu>
-			</TreeView.ContextMenu>
-			<TreeView.ItemTemplate>
-				<TreeDataTemplate>
-					<Grid PointerPressed="TreeView_PointerPressed1">
-						<TextBlock Text="{Binding .}" Classes.Playing="{Binding Playing}" Classes.NotPlaying="{Binding !Playing}"></TextBlock>
-					</Grid>
-				</TreeDataTemplate>
-			</TreeView.ItemTemplate>
-		</TreeView>
-	</Grid>
+
+    <Grid RowDefinitions="25,260,*" Margin="5">
+      <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <MenuItem Header="_About" Height="0">
+          <MenuItem x:Name="ShowAppInfo"  Command="{Binding RunTheThing}" Header="_Info" HotKey="F1"/>
+        </MenuItem>
+      </Menu>
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="5"/>
+    <Border Grid.Row="1">
+      <Grid ColumnDefinitions="256,*">
+        <Border Grid.Column="0">
+          <Image Height="256" Width="256" Name="Image" PointerPressed="Metadata_Click" />
+        </Border>
+        <StackPanel Margin="10,10,0,10" Grid.Column="1">
+          <ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50" Foreground="{Binding PBForeground}" Margin="0,0,10,10" />
+          <Grid Margin="1,0,10,0">
+            <TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"></TextBlock>
+            <TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"></TextBlock>
+          </Grid>
+          <Grid ColumnDefinitions="*,*,*,*" Margin="0,10,10,10">
+            <Button Name="PlayButton" Grid.Column="0">Play</Button>
+            <Button Name="PauseButton" Grid.Column="1">Pause</Button>
+            <Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
+           <!-- <Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>-->
+            <Button Name="Settings" Grid.Column="4">Settings</Button>
+          </Grid>
+          <Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding V, Mode=TwoWay}" Padding="20,0,20,0" />
+        </StackPanel>
+      </Grid>
+    </Border>
+      <TreeView Grid.Row="2" Name="mainListBox" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple">
+        <TreeView.ContextMenu>
+          <ContextMenu>
+            <MenuItem Header="Remove Selected" Click="RemoveSelected" />
+            <MenuItem Header="Clear Queue" Click="ClearAll" />
+            <MenuItem Header="Browse From Dialog" Click="AddFilee" />
+          </ContextMenu>
+        </TreeView.ContextMenu>
+        <TreeView.ItemTemplate>
+          <TreeDataTemplate>
+          <Grid PointerPressed="TreeView_PointerPressed1" ColumnDefinitions="100,*,*,*">
+            <TextBlock Text="{Binding TrackNoF}" Grid.Column="0" HorizontalAlignment="Left"/>
+            <TextBlock Text="{Binding Metadata.Title}" Grid.Column="1" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding Metadata.Artist}" Grid.Column="2" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding Metadata.Album}" Grid.Column="3" HorizontalAlignment="Center"/>
+          </Grid>
+          </TreeDataTemplate>
+        </TreeView.ItemTemplate>
+      </TreeView>
+    </Grid>
+ 
+  
 </Window>

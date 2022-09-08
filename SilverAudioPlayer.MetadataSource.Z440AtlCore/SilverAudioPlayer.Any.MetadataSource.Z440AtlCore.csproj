@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
-    <PackageReference Include="z440.atl.core" Version="4.4.0-alpha" />
+    <PackageReference Include="z440.atl.core" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>

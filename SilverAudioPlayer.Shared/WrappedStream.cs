@@ -5,5 +5,6 @@
         public abstract string MimeType { get; }
 
         public abstract Stream GetStream();
+
     }
 }

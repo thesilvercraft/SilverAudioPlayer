@@ -4,29 +4,31 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		x:Class="SilverAudioPlayer.Avalonia.MetadataView"
-		Title="MetadataView" Icon="/icon.ico">
+		Title="MetadataView" Icon="/icon.ico"
+   ExtendClientAreaToDecorationsHint="True">
 	<Window.Styles>
 		<Style Selector="TextBlock">
 			<Setter Property="FontSize" Value="24" />
 			<Setter Property="Padding" Value="5,10,5,10" />
 		</Style>
 	</Window.Styles>
-	<Grid>
+	<Grid Margin="5 30 5 5">
 
 		<ScrollViewer  ScrollViewer.VerticalScrollBarVisibility="Visible">
 			<Grid>
-				<Image Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top" Source="{Binding Bitmaps[0]}" Width="256" Height="256" />
-				<ItemsRepeater Items="{Binding ValuePairs}">
-					<ItemsRepeater.ItemTemplate>
-						<DataTemplate>
-							<StackPanel Orientation="Horizontal">
-								<TextBlock Text="{Binding Key}" />
-								<TextBlock Text="{Binding Value}" />
-							</StackPanel>
-						</DataTemplate>
-					</ItemsRepeater.ItemTemplate>
-				</ItemsRepeater>
-			</Grid>
+        <TreeView Name="mainTreeView" Items="{Binding ValuePairs}">
+          <TreeView.ItemTemplate>
+            <TreeDataTemplate ItemsSource="{Binding SubFields}">
+              <Grid ColumnDefinitions="*,*">
+                <TextBlock Grid.Column="0" Text="{Binding FieldName}" />
+                <TextBox Grid.Column="1" Text="{Binding FieldValue}"  IsReadOnly="True"/>
+              </Grid>
+            </TreeDataTemplate>
+          </TreeView.ItemTemplate>
+        </TreeView>
+        <Image Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top" Source="{Binding Bitmaps[0]}" Width="256" Height="256" />
+
+      </Grid>
 		</ScrollViewer>
 	</Grid>
 </Window>

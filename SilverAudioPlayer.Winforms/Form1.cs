@@ -234,7 +234,7 @@ namespace SilverAudioPlayer
             AutosaveConfig.Start();
             if (WatchForConfigChanges)
             {
-                cfw = new(ConfigLoc);
+                cfw = new(Path.GetDirectoryName(ConfigLoc));
                 cfw.Changed += Cfw_OnChangedE;
                 cfw.Deleted += Cfw_OnDeletedE;
                 cfw.Created += Cfw_OnCreatedE;
@@ -514,17 +514,11 @@ namespace SilverAudioPlayer
             {
                 Player.Play();
                 SendIfStateIsNotNull();
-
                 Player.TrackEnd += OutputDevice_PlaybackStopped;
-                /*ChannelsLabel.Text = $"Channels: {Player.ChannelCount()}";
-                BPSLabel.Text = $"Bits per sample: {Player.GetBitsPerSample()}";
-                SampleRateLabel.Text = $"Sample rate: {Player.GetSampleRate()}Hz";
-                */
                 Player?.SetVolume((byte)volumeBar.Value);
                 ProgressBar.Pos = TimeSpan.FromMilliseconds(0);
                 token = new();
                 th = new Thread(() => SndThrd(token.Token));
-
                 var total = Player?.Length();
                 if (total != null)
                 {
@@ -537,14 +531,6 @@ namespace SilverAudioPlayer
                     {
                         Text = CurrentSong.Metadata.Title + " - SilverAudioPlayer";
                     }
-                    /*if (CurrentSong.Metadata.Artist != null)
-                    {
-                        ArtistLabel.Text = CurrentSong.Metadata.Artist;
-                    }*/
-                    /*if (CurrentSong.Metadata.Album != null)
-                    {
-                        AlbumLabel.Text = CurrentSong.Metadata.Album;
-                    }*/
                     if (CurrentSong?.Metadata?.Pictures?.Any() == true)
                     {
                         var buffer = CurrentSong.Metadata.Pictures[0].Data;
@@ -1159,6 +1145,15 @@ namespace SilverAudioPlayer
                 }
                 mf = new(ref CurrentSong);
                 mf.Show();
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode==Keys.F1)
+            {
+                Manual m = new(Logic);
+                m.Show();
             }
         }
     }

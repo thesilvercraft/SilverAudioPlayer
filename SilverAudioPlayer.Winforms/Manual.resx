@@ -59,7 +59,11 @@
   </resheader>
   <data name="label2.Text" xml:space="preserve">
     <value>SilverAudioPlayer is a relativly simple audio player that aims to be modular in design.
-While not everything is modular and most things can not be simply swapped out SilverAudioPlayer focuses on it in its design decisions in  a way that does not limit the future opportunites to be fully modular
+The modules are devided into multiple categories
+PlayProviders - A module that provides players of a specified media type. (SilverAudioPlayer.Any.PlayProvider.NAudio (NAudio, WAV/MP3/AIFF, extensible via INaudioWaveStreamWrapper (SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac, FLAC)) and SilverAudioPlayer.Any.PlayProvider.DryWetMidi (DryWetMidi, MIDI))
+MetadataSources - A module that provides metadata of a specified media type. (SilverAudioPlayer.Any.MetadataSource.Z440AtlCore, ATL.Core)
+MusicStatusInterfaces - A module that tracks what's currently playing and allows the user to control playback through other means (Flyout, desktop widget, network, etc.)
+PlayStreamProviders - A module that can load media through other sources (JellyFin, http(s), etc.)
 </value>
   </data>
 </root>

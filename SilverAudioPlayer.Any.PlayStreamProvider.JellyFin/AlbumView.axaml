@@ -9,7 +9,7 @@
 			<Panel Background="#7FFF22DD">
 				<Image Width="200" Stretch="Uniform" Source="{Binding Cover}" />
 				<Panel Height="200" IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNull}}">
-					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">AAAA</TextBlock>
+					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">{Binding Name}</TextBlock>
 				</Panel>
 			</Panel>
 		</Border>

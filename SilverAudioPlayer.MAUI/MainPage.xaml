@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SilverAudioPlayer.MAUI.MainPage">
+    <Grid RowDefinitions="260,*">
+        <Grid.GestureRecognizers>
+            <DropGestureRecognizer x:Name="gridDropGestureRecogniser" />
+        </Grid.GestureRecognizers>
+        <Border Grid.Row="0">
+            <Grid ColumnDefinitions="256,*">
+                <Border Grid.Column="0">
+                    <Image HeightRequest="256" WidthRequest="256" x:Name="imageBox"  />
+                </Border>
+                <StackLayout Margin="10,10,0,10" Grid.Column="1">
+                    <ProgressBar x:Name="progressBar" HorizontalOptions="Fill" VerticalOptions="Fill"  Margin="0,0,10,10" />
+                    <Grid Margin="1,0,10,0">
+                        <Label HorizontalOptions="Start" x:Name="leftText" Text="00:00:00"></Label>
+                        <Label HorizontalOptions="End" x:Name="rightText" Text="00:00:00"></Label>
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,10,10,10">
+                        <Button x:Name="playButton" Grid.Column="0" Text="Play"/>
+                        <Button x:Name="pauseButton" Grid.Column="1" Text="Pause"/>
+                        <Button x:Name="stopButton" Grid.Column="2" Text="Stop/Skip"/>
+                        <Button x:Name="loadFromProviders" Grid.Column="3" Text="Providers" />
+                        <Button x:Name="settings" Grid.Column="4" Text="Settings" />
+                    </Grid>
+                    <Slider x:Name="VolumeBar" Minimum="0" Maximum="100" Margin="20,0,20,0" />
+                </StackLayout>
+            </Grid>
+        </Border>
+        <ListView Grid.Row="1" x:Name="listView" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                <ViewCell>
+                        <Label Text="{Binding .}" FontSize="Medium"/>
+                    </ViewCell>
+                </DataTemplate>
+               
+                   
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</ContentPage>

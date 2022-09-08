@@ -18,6 +18,17 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     }
 
     public ILogger? logger { get; set; }
+    string ICodeInformation.Name => "CAD Music status interface";
+    public string Description => "CD Art display compatible interface";
+
+    WrappedStream? ICodeInformation.Icon => null;
+
+    public Version? Version => typeof(CADMusicStatusInterface).Assembly.GetName().Version;
+
+    public string Licenses => "";
+
+    public List<Tuple<Uri, URLType>>? Links => null;
+
     private Label label1;
     private bool disposedValue;
 

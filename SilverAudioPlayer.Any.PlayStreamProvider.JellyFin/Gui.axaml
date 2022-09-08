@@ -12,15 +12,15 @@
 				<Button Click="Button_Click">Home</Button>
 				<Button Click="AddEntireScreen">Add all songs from this screen</Button>
 			</StackPanel>
-			<ListBox DockPanel.Dock="Bottom" Items="{Binding SearchResults}" Name="LB" Background="Gray" Margin="0 20">
+			<ListBox Background="Transparent" DockPanel.Dock="Bottom" Items="{Binding SearchResults}" Name="LB" Margin="0 20">
 				<ListBox.DataTemplates>
 					<DataTemplate>
 						<StackPanel Spacing="5" Width="200">
 							<Border CornerRadius="10" ClipToBounds="True">
-								<Panel Background="#7FFF22DD">
+								<Panel Background="Transparent">
 									<Image Width="200" Stretch="Uniform" Source="{Binding Cover}" />
 									<Panel Height="200" IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNull}}">
-										<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">AAAA</TextBlock>
+										<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Name}"/>
 									</Panel>
 								</Panel>
 							</Border>

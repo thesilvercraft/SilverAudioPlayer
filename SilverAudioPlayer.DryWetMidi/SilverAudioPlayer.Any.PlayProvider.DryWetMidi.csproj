@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="DryWetMidiLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="DryWetMidiLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Melanchall.DryWetMidi" Version="6.1.0-prerelease2" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
   </ItemGroup>

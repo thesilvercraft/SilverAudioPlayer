@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="NAudioLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="NAudioLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     <ProjectReference Include="..\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound.csproj" />
     <PackageReference Include="NAudio" Version="2.1.0" />

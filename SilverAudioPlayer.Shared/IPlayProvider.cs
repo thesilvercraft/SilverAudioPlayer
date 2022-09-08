@@ -1,6 +1,6 @@
 ﻿namespace SilverAudioPlayer.Shared
 {
-    public interface IPlayProvider
+    public interface IPlayProvider : ICodeInformation
     {
         /// <summary>
         /// Determines if the following provider can play a certain file
@@ -18,6 +18,11 @@
         /// <returns>a player or null if the provider is unable to find a player suited for the job</returns>
         IPlay? GetPlayer(WrappedStream stream);
 
+        public IPlayProviderListner ProviderListner { set; }
         Task OnStartup();
+    }
+    public interface IPlayProviderListner
+    {
+        IPlayerEnviroment GetEnviroment();
     }
 }

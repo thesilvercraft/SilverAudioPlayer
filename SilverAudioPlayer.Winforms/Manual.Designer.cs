@@ -32,8 +32,7 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -63,35 +62,26 @@
             this.label2.Location = new System.Drawing.Point(210, 52);
             this.label2.MaximumSize = new System.Drawing.Size(590, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(588, 45);
+            this.label2.Size = new System.Drawing.Size(584, 165);
             this.label2.TabIndex = 2;
             this.label2.Text = resources.GetString("label2.Text");
             // 
-            // label3
+            // richTextBox1
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(210, 109);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(157, 15);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Frequently Asked Questions:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(210, 133);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(328, 15);
-            this.label4.TabIndex = 4;
-            this.label4.Text = "Ayo stop looking at the source code/datamining please k thx";
+            this.richTextBox1.Location = new System.Drawing.Point(12, 227);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.ReadOnly = true;
+            this.richTextBox1.Size = new System.Drawing.Size(800, 96);
+            this.richTextBox1.TabIndex = 3;
+            this.richTextBox1.Text = "";
             // 
             // Manual
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.AutoScroll = true;
+            this.ClientSize = new System.Drawing.Size(824, 461);
+            this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
@@ -110,5 +100,6 @@
         private Label label2;
         private Label label3;
         private Label label4;
+        private RichTextBox richTextBox1;
     }
 }

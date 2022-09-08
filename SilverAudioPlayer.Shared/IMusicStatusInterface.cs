@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Shared
 {
-    public interface IMusicStatusInterface : IDisposable
+    public interface IMusicStatusInterface : IDisposable, ICodeInformation
     {
         void StartIPC();
 

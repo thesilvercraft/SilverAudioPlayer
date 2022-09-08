@@ -1,7 +1,11 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using Jellyfin.Sdk;
+using SilverAudioPlayer.Avalonia;
+using SilverAudioPlayer.Shared;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -23,23 +27,24 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             Opened += Gui_Opened;
             g = new();
             this.DataContext = g;
+            this.DoAfterInitTasks(true);
+            LB.DoubleTapped += LB_DoubleTapped;
+
         }
 
-        private async void Button_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private async void Button_Click(object? sender, RoutedEventArgs e)
         {
-            g.SearchResults = new(new List<BaseItemDto>(await helper.GetDefaultItems()).OrderBy(x => x.IndexNumber));
+            g.SearchResults = new(new List<BaseItemDto>(await helper.GetDefaultItems()).OrderBy(x => x.IndexNumber).Select(x => new WrappedDto(x)));
             LB.Items = g.SearchResults;
             Debug.WriteLine(g.SearchResults.Count);
             LB.InvalidateVisual();
-            LB.DoubleTapped += LB_DoubleTapped;
         }
 
-        private async void AddEntireScreen(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private async void AddEntireScreen(object? sender, RoutedEventArgs e)
         {
             foreach (var song in g.SearchResults.Where(x => x.IsFolder != true).OrderBy(x => x.IndexNumber))
             {
-                var ws = await helper.GetStream(song);
-                await Task.Delay(100);
+                var ws = await helper.GetStream(song.dto);
 
                 jellyFinPlayStreamProvider.ProviderListner.LoadSong(ws);
             }
@@ -50,7 +55,7 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             if (helper != null)
             {
                 await helper.MakeSureUserLogsIn(this);
-                g.SearchResults = new(new List<BaseItemDto>(await helper.GetDefaultItems()));
+                g.SearchResults = new(new List<BaseItemDto>(await helper.GetDefaultItems()).Select(x => new WrappedDto(x)));
                 LB.Items = g.SearchResults;
                 Debug.WriteLine(g.SearchResults.Count);
                 LB.InvalidateVisual();
@@ -58,21 +63,36 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             }
         }
 
-        private async void LB_DoubleTapped(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        private async void LB_DoubleTapped(object? sender, RoutedEventArgs e)
         {
-            if (LB.SelectedItem is BaseItemDto si)
+            if (LB.SelectedItem is WrappedDto si)
             {
                 Debug.WriteLine(si);
                 if (si.IsFolder == true)
                 {
-                    g.SearchResults = new(new List<BaseItemDto>(await helper.GetItemsFromItem(si)));
+                    var o= (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
+
+                    g.SearchResults = new(o);
+                    foreach(var u in g.SearchResults)
+                    {
+                        var s = await helper.GetImageStream(u.dto);
+                        if(s!=null)
+                        {
+                            var strm = s.GetStream();
+                            if (strm != null)
+                            {
+                                u.Cover = Bitmap.DecodeToHeight(strm, 200);
+                            }
+                        }
+                        
+                    }
                     LB.Items = g.SearchResults;
                     Debug.WriteLine(g.SearchResults.Count);
                     LB.InvalidateVisual();
                 }
                 else
                 {
-                    jellyFinPlayStreamProvider.ProviderListner.LoadSong(await helper.GetStream(si));
+                    jellyFinPlayStreamProvider.ProviderListner.LoadSong(await helper.GetStream(si.dto));
                 }
             }
         }
@@ -90,8 +110,26 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         }
     }
 
+    public class WrappedDto
+    {
+        public BaseItemDto dto;
+        public WrappedDto(BaseItemDto dto, WrappedStream? ws=null)
+        {
+            this.dto = dto;
+            if(ws!=null)
+            {
+                Cover = Bitmap.DecodeToHeight(ws.GetStream(), 200);
+            }    
+        }
+        public string Name => dto.Name;
+        public string AlbumArtist => dto.AlbumArtist;
+
+        public bool? IsFolder => dto.IsFolder;
+        public int? IndexNumber => dto.IndexNumber;
+        public Bitmap? Cover { get; set; }
+    }
     public class GuiBinding
     {
-        public ObservableCollection<BaseItemDto> SearchResults { get; set; } = new();
+        public ObservableCollection<WrappedDto> SearchResults { get; set; } = new();
     }
 }

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Sdk" Version="2022.6.21-unstable.202206210047" />
+    <PackageReference Include="Jellyfin.Sdk" Version="2022.6.11" />
   </ItemGroup>
     <ItemGroup>
         <!--This helps with theme dll-s trimming.
@@ -17,16 +17,13 @@
         <TrimmableAssembly Include="Avalonia.Themes.Default" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="0.10.14" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.14" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.14" />
-        <PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />	
-        <PackageReference Include="ReactiveUI" Version="18.0.10" />
+        <PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />
         <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
     </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+    <ProjectReference Include="..\SilverCraft.AvaloniaUtils\SilverCraft.AvaloniaUtils.csproj" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Gui.axaml" />

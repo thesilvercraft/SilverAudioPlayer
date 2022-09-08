@@ -88,12 +88,12 @@
 		<PackageReference Include="Serilog.Settings.Configuration" Version="3.3.1-dev-00313" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
+		<PackageReference Include="SilverCraft.SilverConfig" Version="1.0.3" />
 		<PackageReference Include="SilverFormsUtils" Version="1.0.8" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\SilverConfig\SilverConfig.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProvider.DryWetMidi.csproj" />

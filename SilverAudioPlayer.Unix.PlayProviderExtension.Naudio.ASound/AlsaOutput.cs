@@ -33,6 +33,7 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
         /// </summary>
         public void Dispose()
         {
+            Stop();
             if (writer != null)
             {
                 writer.Dispose();
@@ -70,8 +71,6 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
                             try
                             {
                                 sounddevice.OpenPlaybackPcm();
-                                Debug.WriteLine(sounddevice.PlaybackVolume = 65536);
-                                Debug.WriteLine(sounddevice.PlaybackVolume);
                                 sounddevice.PcmInitialize(sounddevice._playbackPcm, header, ref @params, ref dir);
                                 Debug.WriteLine("Init finished");
 
@@ -95,6 +94,7 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
                                     }
                                 }
                                 Debug.WriteLine("WriteStream finished");
+                            
                                 //sounddevice.ClosePlaybackPcm();
                             }
                             catch (Exception e)
@@ -108,7 +108,7 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
                         }
                     });
                     t.GetAwaiter();
-                    PlaybackState = PlaybackState.Stopped;
+                        PlaybackState = PlaybackState.Stopped;
                     PlaybackStopped.Invoke(this, new StoppedEventArgs());
                 });
             }
@@ -116,7 +116,14 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
 
         public void Stop()
         {
-            //sounddevice.StopPlaying();
+        if(PlaybackState == PlaybackState.Playing || PlaybackState==PlaybackState.Paused)
+        {
+            Debug.WriteLine("Stopping");
+            Interop.snd_pcm_close(sounddevice._playbackPcm);
+            PlaybackState = PlaybackState.Stopped;
+            PlaybackStopped?.Invoke(this,new(){});
+        }
+          
         }
 
         public void Pause()

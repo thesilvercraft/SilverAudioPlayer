@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using SilverAudioPlayer.Shared;
 using System;
@@ -20,13 +21,17 @@ namespace SilverAudioPlayer.Avalonia
     {
         private Song s;
 
-        public MetadataView(Song s) : this()
+       
+        public void LoadSong(Song s)
         {
             this.s = s;
-            processproperties(s.Metadata);
+            var x = new Field("Song", s.ToString());
+
+            processproperties(s, x);
+            dc.ValuePairs.Add(x);
             Opened += MetadataView_Opened;
         }
-
+        
         private void MetadataView_Opened(object? sender, EventArgs e)
         {
             if (s != null && s?.Metadata?.Pictures?.Count > 0)
@@ -34,7 +39,6 @@ namespace SilverAudioPlayer.Avalonia
                 var memstream = new MemoryStream(s.Metadata.Pictures[0].Data);
                 dc.Bitmaps[0] = new Bitmap(memstream);
             }
-            Debug.WriteLine("dab");
         }
 
         private DC dc = new();
@@ -46,20 +50,26 @@ namespace SilverAudioPlayer.Avalonia
 #if DEBUG
             this.AttachDevTools();
 #endif
+            mainTreeView = this.FindControl<TreeView>("mainTreeView");
+            this.DoAfterInitTasks(true);
         }
 
-        private void processproperties(object thing, int meta1 = 20, int meta2 = 30, int graduality = 10, int overflow = 3)
+        private void processproperties(object thing, Field parentfield, int allowedlength=5)
         {
-            Debug.WriteLine("Processing properties");
+            if(allowedlength==0) return;
             if (thing is string)
             {
                 return;
             }
-            if (thing is IList tlist && overflow != 0)
+            if (thing is IList tlist)
             {
-                foreach (var item in tlist)
+                
+                for (int i = 0; i < tlist.Count; i++)
                 {
-                    processproperties(item, meta1 + graduality, meta2 + graduality, graduality, overflow - 1);
+                    object? item = tlist[i];
+                    var pf = new Field(i.ToString(),null);
+                    parentfield.SubFields.Add(pf);
+                    processproperties(item, pf, allowedlength-1);
                 }
                 return;
             }
@@ -77,11 +87,11 @@ namespace SilverAudioPlayer.Avalonia
                 try
                 {
                     var v = property.GetValue(thing);
-                    dc.ValuePairs.Add(new(property.Name, v?.ToString()));
-                    Debug.WriteLine($"{property.Name} : {v?.ToString()}");
-                    if (v != null && overflow != 0)
+                    var pf = new Field(property.Name, v?.ToString());
+                    parentfield.SubFields.Add(pf);
+                    if (v != null)
                     {
-                        processproperties(v, meta1 + graduality, meta2 + graduality, graduality, overflow - 1);
+                        processproperties(v, pf, allowedlength - 1);
                     }
                 }
                 catch (Exception e)
@@ -99,11 +109,23 @@ namespace SilverAudioPlayer.Avalonia
         {
         }
     }
+    public class Field
+    {
+        public ObservableCollection<Field> SubFields { get; set; } = new();
 
+        public string FieldName { get; }
+        public string FieldValue { get; }
+
+        public Field(string name, string value)
+        {
+           FieldName = name;
+           FieldValue = value;
+        }
+    }
     internal class DC
     {
-        public ObservableCollection<KeyValuePair<string, string>> ValuePairs { get; }
-    = new ObservableCollection<KeyValuePair<string, string>>();
+        public ObservableCollection<Field> ValuePairs { get; }
+    = new ObservableCollection<Field>();
 
         public ObservableCollection<Bitmap> Bitmaps { get; }
 = new ObservableCollection<Bitmap>() { null };
