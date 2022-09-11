@@ -2,13 +2,12 @@
 using Avalonia.Media;
 using Avalonia.Threading;
 using System;
-using System.Diagnostics;
 
 namespace SilverAudioPlayer.Avalonia
 {
     public static class WindowExtensions
     {
-        public static string? GetEnv(string EnvvarName)
+        public static string? GetEnv(this string EnvvarName)
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
@@ -16,7 +15,7 @@ namespace SilverAudioPlayer.Avalonia
             }
             return Environment.GetEnvironmentVariable(EnvvarName);
         }
-        public static T? GetEnv<T>(string EnvvarName) where T : struct
+        public static T? GetEnv<T>(this string EnvvarName) where T : struct
         {
             if (Enum.TryParse(GetEnv(EnvvarName), out T value2))
             {
@@ -24,7 +23,7 @@ namespace SilverAudioPlayer.Avalonia
             }
             return null;
         }
-        public static void SetEnv(string EnvvarName, string? Value)
+        public static void SetEnv(this string EnvvarName, string? Value)
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
@@ -36,7 +35,7 @@ namespace SilverAudioPlayer.Avalonia
             }
         }
         public static EventHandler<Tuple<bool, WindowTransparencyLevel, Color>> OnStyleChange;
-        public static Color ReadColor(string varname, Color? def= null)
+        public static Color ReadColor(this string varname, Color? def= null)
         {
             var color = GetEnv(varname);
             if (color != null)
@@ -67,20 +66,16 @@ namespace SilverAudioPlayer.Avalonia
             if(firstrun)
             {
                 EventHandler<Tuple<bool, WindowTransparencyLevel, Color>> x = ( _, _) => {
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        w.DoAfterInitTasks(false);
-                    });
+                    Dispatcher.UIThread.InvokeAsync(() => w.DoAfterInitTasks(false));
                 };
                 OnStyleChange +=x;
                 w.Closing += (_, _) => { if (OnStyleChange != null) { OnStyleChange -= x; } };
             }
             var color = ReadColor("SAPColor",def:Colors.Black);
-            
+
                 w.Background = new SolidColorBrush(color, GetEnv("DisableSAPTransparency") == "true" ? 1 : 0.3);
-            
+
         }
 
-        
     }
 }

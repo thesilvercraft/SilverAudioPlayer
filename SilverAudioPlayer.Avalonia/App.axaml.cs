@@ -1,5 +1,4 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Themes.Fluent;
@@ -126,7 +125,7 @@ namespace SilverAudioPlayer.Avalonia
                 {
                     foreach (var playprovider in mw.Logic.PlayProviders)
                     {
-                        if (playprovider != null && playprovider.Value != null)
+                        if (playprovider?.Value != null)
                         {
                             await playprovider.Value.OnStartup();
                         }
@@ -158,7 +157,7 @@ namespace SilverAudioPlayer.Avalonia
                 .ReadFrom.Configuration(configuration)
                 .WriteTo.Debug(Serilog.Events.LogEventLevel.Verbose)
                 .CreateLogger();
-                Shared.Logger.GetLoggerFunc += (e) => { return logger.ForContext(e); };
+                Shared.Logger.GetLoggerFunc += (e) => logger.ForContext(e);
                 mw.Logic.log = logger;
                 mw.ProcessFiles(desktop.Args);
             }

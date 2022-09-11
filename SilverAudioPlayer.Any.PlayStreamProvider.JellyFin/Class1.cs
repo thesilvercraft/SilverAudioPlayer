@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls.Primitives;
-using SilverAudioPlayer.Shared;
-using System.Diagnostics;
+﻿using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
 {

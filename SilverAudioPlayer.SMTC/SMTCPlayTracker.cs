@@ -133,8 +133,9 @@ namespace SilverAudioPlayer.SMTC
             _systemMediaTransportControls.IsStopEnabled = true;
             _systemMediaTransportControls.IsRewindEnabled = false;
             _systemMediaTransportControls.IsFastForwardEnabled = false;
-            _systemMediaTransportControls.ShuffleEnabled = false;
-            _systemMediaTransportControls.AutoRepeatMode = MediaPlaybackAutoRepeatMode.None;
+            _systemMediaTransportControls.ShuffleEnabled = true;
+            _mediaPlayer.IsLoopingEnabled = false;
+
             _systemMediaTransportControls.ButtonPressed += SystemControls_ButtonPressed;
             _systemMediaTransportControls.ShuffleEnabledChangeRequested += SystemControls_ShuffleEnabledChangeRequested;
             _systemMediaTransportControls.AutoRepeatModeChangeRequested += SystemControls_AutoRepeatModeChangeRequested;
@@ -202,6 +203,7 @@ namespace SilverAudioPlayer.SMTC
                 MediaPlaybackAutoRepeatMode.List => RepeatState.Queue,
                 _ => RepeatState.None,
             };
+            sender.AutoRepeatMode = args.RequestedAutoRepeatMode;
             SetRepeat?.Invoke(this, a);
         }
 
@@ -211,7 +213,7 @@ namespace SilverAudioPlayer.SMTC
             {
                 return;
             }
-            SetShuffle(this, args.RequestedShuffleEnabled);
+            SetShuffle?.Invoke(this, args.RequestedShuffleEnabled);
         }
 
         private void PlayOrResume()
@@ -219,9 +221,6 @@ namespace SilverAudioPlayer.SMTC
             switch (GetState())
             {
                 case PlaybackState.Stopped:
-                    Play?.Invoke(this, null);
-                    break;
-
                 case PlaybackState.Paused:
                     Play?.Invoke(this, null);
                     break;
@@ -233,10 +232,12 @@ namespace SilverAudioPlayer.SMTC
             switch (GetState())
             {
                 case PlaybackState.Playing:
+
                     Pause?.Invoke(this, null);
                     break;
-
+                case PlaybackState.Stopped:
                 case PlaybackState.Paused:
+
                     Play?.Invoke(this, null);
                     break;
             };
@@ -290,7 +291,7 @@ namespace SilverAudioPlayer.SMTC
                 {
                     File.Delete(file);
                 }
-            }    
+            }
         }
         List<string> TempFiles = new();
 
@@ -325,6 +326,7 @@ namespace SilverAudioPlayer.SMTC
                 updater.MusicProperties.TrackNumber = (uint)(newtrack?.Metadata?.TrackNumber ?? 0);
                 //string s = newtrack.URI.ToLower();
                // bool isWeb = s.StartsWith("http://") || s.StartsWith("https://");
+
                 if (newtrack?.Metadata?.Pictures?.Count >= 1)
                 {
                     var first = newtrack?.Metadata?.Pictures?[0];
@@ -338,6 +340,7 @@ namespace SilverAudioPlayer.SMTC
                         fs.Dispose();
                         TempFiles.Add(fullPath);
                         updater.Thumbnail = RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(fullPath));
+
                     }
                 }
                 updater.Update();
@@ -363,23 +366,14 @@ namespace SilverAudioPlayer.SMTC
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
                     _mediaPlayer?.Dispose();
                 }
                 _systemMediaTransportControls = null;
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
 
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~SMTCPlayTracker()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

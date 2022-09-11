@@ -6,7 +6,6 @@ using Avalonia.Media.Imaging;
 using Jellyfin.Sdk;
 using SilverAudioPlayer.Avalonia;
 using SilverAudioPlayer.Shared;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -26,7 +25,7 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
 #endif
             Opened += Gui_Opened;
             g = new();
-            this.DataContext = g;
+            DataContext = g;
             this.DoAfterInitTasks(true);
             LB.DoubleTapped += LB_DoubleTapped;
 

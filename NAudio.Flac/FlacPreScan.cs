@@ -144,7 +144,7 @@ namespace NAudio.Flac
                                     frameInfo.IsFirstFrame = false;
                                 }
 
-                                if (baseHeader != null && baseHeader.IsFormatEqualTo(header))
+                                if (baseHeader?.IsFormatEqualTo(header) == true)
                                 {
                                     frameInfo.StreamOffset = stream.Position - read + (ptrSafe - 1 - bufferPtr);
                                     frameInfo.Header = header;

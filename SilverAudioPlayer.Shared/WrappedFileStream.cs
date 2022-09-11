@@ -1,5 +1,4 @@
 ﻿using SilverMagicBytes;
-using System.Diagnostics;
 
 namespace SilverAudioPlayer.Shared
 {
@@ -15,8 +14,8 @@ namespace SilverAudioPlayer.Shared
         public string URL { get; set; }
         public List<Stream> Streams { get; set; } = new();
 
-        public override string MimeType { get => _MimeType; }
-        private string _MimeType { get; set; } = "application/octet-stream";
+        public override MimeType MimeType { get => _MimeType; }
+        private MimeType _MimeType { get; set; } 
 
         private Stream InternalGetStream()
         {
@@ -28,7 +27,7 @@ namespace SilverAudioPlayer.Shared
         public override Stream GetStream()
         {
             var Stream = InternalGetStream();
-            string? mt = null;
+            MimeType? mt = null;
             if (mt == null)
             {
                 var stream2 = InternalGetStream();
@@ -44,9 +43,9 @@ namespace SilverAudioPlayer.Shared
             }
             if (mt == null)
             {
-                mt = new FileInfo(URL).Extension;
+                mt = KnownMimes.GetKnownMimeByExtension(new FileInfo(URL).Extension);
             }
-            _MimeType = mt.RealMimeTypeToFakeMimeType();
+            _MimeType = mt;
             return Stream;
         }
 

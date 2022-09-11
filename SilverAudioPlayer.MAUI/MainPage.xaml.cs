@@ -16,7 +16,6 @@ namespace SilverAudioPlayer.MAUI
             gridDropGestureRecogniser.Drop += DropGestureRecognizer_Drop;
         }
 
-       
         private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
         {
             Debug.WriteLine(e.Data);

@@ -1,7 +1,6 @@
 ﻿using Serilog;
 using SilverAudioPlayer.Shared;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace SilverAudioPlayer.CAD;
@@ -28,8 +27,6 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     public string Licenses => "";
 
     public List<Tuple<Uri, URLType>>? Links => null;
-
-    private Label label1;
     private bool disposedValue;
 
     [DllImport("KERNEL32", EntryPoint = "RtlMoveMemory")]
@@ -149,7 +146,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         if (song.Metadata != null)
         {
             string art = song.URI;
-            if (song.Metadata.Pictures != null && song.Metadata.Pictures.Any())
+            if (song.Metadata.Pictures?.Any() == true)
             {
                 Picture SelectBest(IReadOnlyList<Picture> pictures)
                 {
@@ -443,7 +440,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         string arglpWindowName = "CD Art Display 1.x Class";
         var ThWnd = FindWindow(null, arglpWindowName);
         var ct = GetCurrentTrack != null ? GetCurrentTrack() : null;
-        if (ct != null && ct.Metadata != null && !string.IsNullOrEmpty(ct.Metadata.Lyrics))
+        if (ct?.Metadata != null && !string.IsNullOrEmpty(ct.Metadata.Lyrics))
         {
             strTemp = ct.Metadata.Lyrics;
         }
@@ -551,11 +548,9 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     public void StopIPC()
     {
         cadShutdown();
-        label1.Invoke(() =>
+        Invoke(() =>
         {
-            Close();
             Dispose();
-            base.Dispose();
         });
     }
 
@@ -563,29 +558,17 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     {
         if (!disposedValue)
         {
-            if (disposing)
-            {
-                // TODO: dispose managed state (managed objects)
-            }
-
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
             foreach (var handle in Handles)
             {
                 handle.Free();
             }
             disposedValue = true;
         }
-
+        Invoke(() => { 
         base.Dispose(disposing);
+        });
     }
 
-    // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-    // ~CADMusicStatusInterface()
-    // {
-    //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-    //     Dispose(disposing: false);
-    // }
 
     public void Dispose()
     {
@@ -596,33 +579,20 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     private void InitializeComponent()
     {
-        this.label1 = new System.Windows.Forms.Label();
-        this.SuspendLayout();
-        //
-        // label1
-        //
-        this.label1.AutoSize = true;
-        this.label1.Location = new System.Drawing.Point(12, 9);
-        this.label1.Name = "label1";
-        this.label1.Size = new System.Drawing.Size(141, 15);
-        this.label1.TabIndex = 0;
-        this.label1.Text = "coh-myoo-nee-kay-shun";
-        //
-        // CADMusicStatusInterface
-        //
-        this.ClientSize = new System.Drawing.Size(162, 30);
-        this.Controls.Add(this.label1);
-        this.Name = "CADMusicStatusInterface";
-        this.Load += new System.EventHandler(CADMusicStatusInterface_Load);
-        this.ResumeLayout(false);
-        this.PerformLayout();
+            SuspendLayout();
+            // 
+            // CADMusicStatusInterface
+            // 
+            ClientSize = new System.Drawing.Size(120, 26);
+            Name = "CADMusicStatusInterface";
+            Load += CADMusicStatusInterface_Load;
+            ResumeLayout(false);
+
     }
 
     private void CADMusicStatusInterface_Load(object sender, EventArgs e)
     {
-        //Visible = false;
-        //WindowState = FormWindowState.Minimized;
-        //ShowInTaskbar = false;
+        
     }
 
     public void TrackChangedNotification(Song? newtrack)

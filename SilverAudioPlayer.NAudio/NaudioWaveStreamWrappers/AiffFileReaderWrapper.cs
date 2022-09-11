@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using SilverAudioPlayer.Shared;
+using SilverMagicBytes;
 using System.ComponentModel.Composition;
 
 namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
@@ -9,7 +10,7 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
     {
         public bool CanPlay(WrappedStream stream)
         {
-            return stream.MimeType == "audio/aiff" || stream.MimeType == "audio/x-aiff" || stream.MimeType == ".aiff" || stream.MimeType == ".aif";
+            return stream.MimeType == KnownMimes.AiffMime;
         }
 
         public WaveStream GetStream(WrappedStream stream)

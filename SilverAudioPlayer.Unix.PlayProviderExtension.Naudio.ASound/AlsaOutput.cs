@@ -138,7 +138,7 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
 
         public void Init(IWaveProvider waveProvider)
         {
-            this.source = waveProvider;
+            source = waveProvider;
             var s = new SoundConnectionSettings();
             s.RecordingBitsPerSample = 16;
             sounddevice = new UnixSoundDevice(s);

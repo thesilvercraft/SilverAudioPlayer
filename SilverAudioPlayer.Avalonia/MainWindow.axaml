@@ -1,30 +1,30 @@
 <Window xmlns="https://github.com/avaloniaui"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-		x:Class="SilverAudioPlayer.Avalonia.MainWindow"
-		Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="SilverAudioPlayer.Avalonia.MainWindow"
+    Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
     ExtendClientAreaToDecorationsHint="True">
-	<Window.Styles>
-		<Style Selector="Button">
-			<Setter Property="HorizontalAlignment" Value="Stretch" />
-			<Setter Property="FontWeight" Value="Bold" />
-			<Setter Property="HorizontalContentAlignment" Value="Center" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-			<Setter Property="Height" Value="70" />
-			<Setter Property="Margin" Value="2,0,2,0" />
-		</Style>
-		<Style Selector="TextBlock.Playing">
-			<Setter Property="Foreground" Value="#D000FF" />
-		</Style>
-		<Style Selector="TreeViewItem:selected">
-			<Setter Property="Background" Value="#3A2595" />
-		</Style>
-		<Style Selector="TreeViewItem">
-			<Setter Property="FontSize" Value="20" />
-		</Style>
-	</Window.Styles>
+  <Window.Styles>
+    <Style Selector="Button">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Height" Value="70" />
+      <Setter Property="Margin" Value="2,0,2,0" />
+    </Style>
+    <Style Selector="TextBlock.Playing">
+      <Setter Property="Foreground" Value="#D000FF" />
+    </Style>
+    <Style Selector="TreeViewItem:selected">
+      <Setter Property="Background" Value="#3A2595" />
+    </Style>
+    <Style Selector="TreeViewItem">
+      <Setter Property="FontSize" Value="20" />
+    </Style>
+  </Window.Styles>
 
     <Grid RowDefinitions="25,260,*" Margin="5">
       <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -35,8 +35,8 @@
     <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="5"/>
     <Border Grid.Row="1">
       <Grid ColumnDefinitions="256,*">
-        <Border Grid.Column="0">
-          <Image Height="256" Width="256" Name="Image" PointerPressed="Metadata_Click" />
+        <Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
+          <Image Height="256" Width="256" Name="Image"  />
         </Border>
         <StackPanel Margin="10,10,0,10" Grid.Column="1">
           <ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50" Foreground="{Binding PBForeground}" Margin="0,0,10,10" />
@@ -44,10 +44,13 @@
             <TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"></TextBlock>
             <TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"></TextBlock>
           </Grid>
-          <Grid ColumnDefinitions="*,*,*,*" Margin="0,10,10,10">
+          <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,10,10,10">
             <Button Name="PlayButton" Grid.Column="0">Play</Button>
             <Button Name="PauseButton" Grid.Column="1">Pause</Button>
             <Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
+            <Button Name="RepeatButton" Grid.Column="3" >
+              <TextBlock Text="{Binding LoopType}"/>
+            </Button>
            <!-- <Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>-->
             <Button Name="Settings" Grid.Column="4">Settings</Button>
           </Grid>
@@ -67,7 +70,7 @@
           <TreeDataTemplate>
           <Grid PointerPressed="TreeView_PointerPressed1" ColumnDefinitions="100,*,*,*">
             <TextBlock Text="{Binding TrackNoF}" Grid.Column="0" HorizontalAlignment="Left"/>
-            <TextBlock Text="{Binding Metadata.Title}" Grid.Column="1" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding TitleOrURLF}" Grid.Column="1" HorizontalAlignment="Center"/>
             <TextBlock Text="{Binding Metadata.Artist}" Grid.Column="2" HorizontalAlignment="Center"/>
             <TextBlock Text="{Binding Metadata.Album}" Grid.Column="3" HorizontalAlignment="Center"/>
           </Grid>

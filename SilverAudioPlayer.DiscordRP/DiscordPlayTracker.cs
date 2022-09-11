@@ -7,6 +7,87 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 
 namespace SilverAudioPlayer.DiscordRP;
+public class DebugLogger : ILogger
+{
+    //
+    // Summary:
+    //     The level of logging to apply to this logger.
+    public LogLevel Level { get; set; }
+
+    // Summary:
+    //     Creates a new instance of a Console Logger.
+    public DebugLogger()
+    {
+        Level = LogLevel.Info;
+    }
+
+
+    //
+    // Summary:
+    //     Informative log messages
+    //
+    // Parameters:
+    //   message:
+    //
+    //   args:
+    public void Trace(string message, params object[] args)
+    {
+        if (Level <= LogLevel.Trace)
+        {
+            Debug.WriteLine("TRACE: " + message, args);
+        }
+    }
+
+    //
+    // Summary:
+    //     Informative log messages
+    //
+    // Parameters:
+    //   message:
+    //
+    //   args:
+    public void Info(string message, params object[] args)
+    {
+        if (Level <= LogLevel.Info)
+        {
+               Debug.WriteLine("INFO: " + message, args);
+        }
+    }
+
+    //
+    // Summary:
+    //     Warning log messages
+    //
+    // Parameters:
+    //   message:
+    //
+    //   args:
+    public void Warning(string message, params object[] args)
+    {
+        if (Level <= LogLevel.Warning)
+        {
+            Debug.WriteLine("WARN: " + message, args);
+        }
+    }
+
+    //
+    // Summary:
+    //     Error log messsages
+    //
+    // Parameters:
+    //   message:
+    //
+    //   args:
+    public void Error(string message, params object[] args)
+    {
+        if (Level <= LogLevel.Error)
+        {
+
+
+            Debug.WriteLine("ERR : " + message, args);
+        }
+    }
+}
 
 [Export(typeof(IMusicStatusInterface))]
 public class DiscordPlayTracker : IMusicStatusInterface
@@ -80,14 +161,16 @@ public class DiscordPlayTracker : IMusicStatusInterface
 
     public DiscordPlayTracker(string id)
     {
-        client = new(id);
-        client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
+        client = new(id)
+        {
+            SkipIdenticalPresence = false
+        };
+        client.Logger = new DebugLogger() { Level = LogLevel.Warning };
         client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
     }
 
     public void Dispose()
     {
-        throw new NotImplementedException();
     }
 
     public void PlayerStateChanged(PlaybackState newstate)
@@ -144,24 +227,7 @@ public class DiscordPlayTracker : IMusicStatusInterface
 
     private readonly Dictionary<string, string> tracks = new()
     {
-        { "Human After All - Daft Punk", "human-after-all-daft-punk" },
-        { "Homework - Daft Punk", "homework-daft-punk" },
-        { "Star Road - Kitsune²", "star-road-kitsune" },
-        { "Dancin - Aaron Smith", "dancin-aaron-smith" },
-        { "Jet Set Radio  - Hideki Naganuma", "jst-ost" },
-        { "Jet Set Radio - Richard Jacques", "jst-ost" },
-        { "Jet Set Radio - Toronto", "jst-ost" },
-        { "Jet Set Radio Original Soundtrack - Hideki Naganuma", "jst-ost" },
-        { "Jet Set Radio Original Soundtrack - Richard Jacques", "jst-ost" },
-        { "Jet Set Radio Original Soundtrack - Toronto", "jst-ost" },
-        { "Audio Crime - 3kliksphilip", "audio-crime-3klks" },
-        { "DELTARUNE Chapter 2 (Original Game Soundtrack) - Toby Fox", "deltarunech2" },
-        { "DELTARUNE Chapter 1 (Original Game Soundtrack) - Toby Fox", "deltarunech1" },
-        { "Thriller - Michael Jackson", "thriller-mj" },
-        { "Marsupial Madness - Adhesive Wombat", "mm-aw" },
-        { "Jetpack Joyride (Original Game Soundtrack) - Halfbrick", "jjost-hlfbrk" },
-        { "Everybody Jam! - Scatman John", "ej-sctman" },
-        { "Scatman's World - Scatman John", "sctmnswrld-sctman" }
+
     };
 
     public void ChangeSong(string? loc, Song a)
@@ -209,6 +275,56 @@ public class DiscordPlayTracker : IMusicStatusInterface
     private const string StoppedTextSState = "Stopped";
     private const string StoppedTextState = "Currently stopped";
     private const string StoppedStateRPSMLICN = "stop";
+
+    public string Name => "Discord RP";
+
+    public string Description => "Discord rich presence music status interface";
+
+    public WrappedStream? Icon => null;
+
+    public Version? Version => typeof(DiscordPlayTracker).Assembly.GetName().Version;
+
+    public string Licenses => @"DiscordRichPresence - https://www.nuget.org/packages/DiscordRichPresence
+MIT License
+
+Copyright (c) 2021 Lachee
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the ""Software""), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+SilverAudioPlayer.DiscordRP
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.";
+
+    public List<Tuple<Uri, URLType>>? Links => new() {
+            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DiscordRP"), URLType.Code),
+            new(new($"https://www.nuget.org/packages/DiscordRichPresence/{typeof(DiscordRpcClient).Assembly.GetName().Version}"), URLType.PackageManager),
+            new(new("https://github.com/Lachee/discord-rpc-csharp/issues"),URLType.LibraryCode),
+        };
 
     public void SPause(string? loc, Song a)
     {

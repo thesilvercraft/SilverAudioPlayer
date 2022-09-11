@@ -1,16 +1,8 @@
 ﻿using SilverAudioPlayer.Shared;
 using SilverFormsUtils;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SilverAudioPlayer.Winforms
 {
@@ -27,7 +19,7 @@ namespace SilverAudioPlayer.Winforms
         private void AddLabel(string? text, int pos, int x, Color? color = null)
         {
             color ??= DefaultBackColor;
-            this.Controls.Add(new Label() { Text = text ?? "", Location = new Point(x, pos == 1 ? 15 : Controls[Controls.Count - 1].Location.Y + Controls[Controls.Count - 1].Size.Height + 5), AutoSize = true, ForeColor = (Color)color });
+            Controls.Add(new Label() { Text = text ?? "", Location = new Point(x, pos == 1 ? 15 : Controls[Controls.Count - 1].Location.Y + Controls[Controls.Count - 1].Size.Height + 5), AutoSize = true, ForeColor = (Color)color });
         }
 
         private int poscount = 1;
@@ -121,7 +113,7 @@ namespace SilverAudioPlayer.Winforms
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            if (Song.Metadata != null && Song.Metadata.Pictures != null && Song.Metadata.Pictures.Any())
+            if (Song.Metadata != null && Song.Metadata.Pictures?.Any() == true)
             {
                 PictureForm pf = new(Song);
                 pf.Show();

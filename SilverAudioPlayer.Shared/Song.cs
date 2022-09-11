@@ -67,7 +67,12 @@ namespace SilverAudioPlayer.Shared
             return Metadata?.TrackNumber.ToString() ?? "";
         }
 
+        public string TitleOrURLF => TitleOrURL();
+        public string TitleOrURL()
+        {
 
+            return Metadata?.Title ?? Name?? URI;
+        }
         public string ArtistAlbumOptional(bool thingyatstart = false, bool thingyatend = false)
         {
             if (Metadata?.Artist != null && Metadata?.Album != null)
@@ -107,16 +112,8 @@ namespace SilverAudioPlayer.Shared
 
 public static class MimeTypeExtensions
 {
-    public static string RealMimeTypeToFakeMimeType(this string realmime)
+    public static string RealMimeTypeToFakeMimeType(this MimeType realmime)
     {
-        return realmime switch
-        {
-            "audio/flac" => ".flac",
-            "audio/x-flac" => ".flac",
-
-            "audio/mpeg" => ".mp3",
-            "audio/aac" => ".aac",
-            _ => realmime,
-        };
+        return realmime.FileExtensions[0];
     }
 }

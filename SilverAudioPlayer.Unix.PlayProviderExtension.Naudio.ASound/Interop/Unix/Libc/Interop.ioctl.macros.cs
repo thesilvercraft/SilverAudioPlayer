@@ -6,7 +6,6 @@
 #pragma warning disable SA1307 // Field should begin with upper-case letter
 #pragma warning disable CS1591
 
-using System;
 using System.Runtime.InteropServices;
 
 partial class Interop

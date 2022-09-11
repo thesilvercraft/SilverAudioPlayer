@@ -3,7 +3,6 @@ using NLayer.NAudioSupport;
 using SilverAudioPlayer.Shared;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace SilverAudioPlayer.NAudio

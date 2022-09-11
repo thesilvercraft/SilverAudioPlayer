@@ -2,8 +2,8 @@
 using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using SilverAudioPlayer.Shared;
+using SilverMagicBytes;
 using System.ComponentModel.Composition;
-using System.Reflection;
 
 namespace SilverAudioPlayer.DryWetMidi
 {
@@ -194,7 +194,7 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
 
         public bool CanPlayFile(WrappedStream stream)
         {
-            return stream.MimeType == "audio/mid" || stream.MimeType == "audio/midi" || stream.MimeType == ".midi" || stream.MimeType == ".mid" || stream.MimeType == "mid" || stream.MimeType == "midi";
+            return stream.MimeType == KnownMimes.MidMime;
         }
 
         public IPlay? GetPlayer(WrappedStream stream)

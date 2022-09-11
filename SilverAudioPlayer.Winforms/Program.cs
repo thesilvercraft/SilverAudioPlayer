@@ -20,8 +20,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Runtime.InteropServices;   //GuidAttribute
-using System.Reflection;
-using System.Security.Permissions;
 using System.Security.Principal;
 using Microsoft.Win32;
 using System.Text;
@@ -115,7 +113,7 @@ namespace SilverAudioPlayer
             {
                 foreach (var playprovider in frm1.Logic.PlayProviders)
                 {
-                    if (playprovider != null && playprovider.Value != null)
+                    if (playprovider?.Value != null)
                     {
                         await playprovider.Value.OnStartup();
                     }
@@ -276,7 +274,7 @@ namespace SilverAudioPlayer
                 .WriteTo.MSAppCenter()
 #endif
                 .CreateLogger();
-            Logger.GetLoggerFunc += (e) => { return logger.ForContext(e); };
+            Logger.GetLoggerFunc += (e) => logger.ForContext(e);
 #if MS
 
             Application.ThreadException += (sender, args) =>
@@ -299,15 +297,12 @@ namespace SilverAudioPlayer
             ApplicationConfiguration.Initialize();
             if (mutex.WaitOne(TimeSpan.FromSeconds(2), true))
             {
-                Task.Run(async () =>
-                {
-                    await au.CheckForUpdates();
-                }).Wait();
+                Task.Run(async () => await au.CheckForUpdates()).Wait();
                 Debug.WriteLine("AAA");
                 frm1 = new Form1();
                 frm1.Logic.log = logger;
                 DoContainerShit();
-                if (args != null && !args.Any(x => string.IsNullOrEmpty(x)))
+                if (args?.Any(x => string.IsNullOrEmpty(x)) == false)
                 {
                     if (args.Length == 1 && args[0] == "--reg")
                     {

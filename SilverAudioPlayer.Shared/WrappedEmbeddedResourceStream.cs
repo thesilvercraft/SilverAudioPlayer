@@ -1,10 +1,5 @@
 ﻿using SilverMagicBytes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Shared
 {
@@ -19,8 +14,8 @@ namespace SilverAudioPlayer.Shared
         Assembly Assembly;
         public string URL { get; set; }
         public List<Stream> Streams { get; set; } = new();
-        public override string MimeType { get => _MimeType; }
-        private string _MimeType { get; set; } = "application/octet-stream";
+        public override MimeType MimeType { get => _MimeType; }
+        private MimeType _MimeType { get; set; } 
         private Stream InternalGetStream()
         {
             var Stream = Assembly.GetManifestResourceStream(URL);
@@ -31,14 +26,13 @@ namespace SilverAudioPlayer.Shared
         public override Stream GetStream()
         {
             var Stream = InternalGetStream();
-            string mt;
+            MimeType? mt;
             using (var stream2 = InternalGetStream())
             {
                 mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
                 Streams.Remove(stream2);
             }
-            mt ??= "application/octet-stream";
-            _MimeType = mt.RealMimeTypeToFakeMimeType();
+            _MimeType = mt;
             return Stream;
         }
 

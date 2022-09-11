@@ -102,9 +102,8 @@ namespace SilverAudioPlayer.NAudio
             outputDevice?.Play();
         }
 
-        public virtual void Stop()
+        public void Stop()
         {
-            outputDevice?.Stop();
             outputDevice?.Dispose();
         }
 

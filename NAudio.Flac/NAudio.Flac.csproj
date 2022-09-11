@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../SilverAudioPlayer.targets" />
 
-	<PropertyGroup>
+  <PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -9,7 +10,6 @@
 		<Company>BunLabs</Company>
 		<Description>A FLAC library for NAudio &gt;= 2.0 based on the CSCore FLAC codec</Description>
 		<PackageLicenseExpression>MS-PL</PackageLicenseExpression>
-		<Version>2.0.1</Version>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 		<IncludeSymbols>true</IncludeSymbols>

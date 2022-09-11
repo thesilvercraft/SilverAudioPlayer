@@ -35,7 +35,7 @@ namespace NAudio.Flac.Metadata
                 FlacMetadata data = FlacMetadataFactory.Instance.ParseMetadata(stream);
                 yield return data;
 
-                if (data == null || data.IsLastMetaBlock)
+                if (data?.IsLastMetaBlock != false)
                 {
                     break;
                 }

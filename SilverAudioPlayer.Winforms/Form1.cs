@@ -1,4 +1,3 @@
-using Microsoft.Win32;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
@@ -47,7 +46,7 @@ namespace SilverAudioPlayer
         {
             if (e <= 100)
             {
-                Invoke(() => { volumeBar.Value = e; });
+                Invoke(() => volumeBar.Value = e);
                 Player?.SetVolume(e);
             }
         }
@@ -79,7 +78,7 @@ namespace SilverAudioPlayer
 
         private byte MusicStatusInterface_GetVolume()
         {
-            return Invoke(() => { return (byte)volumeBar.Value; });
+            return Invoke(() => (byte)volumeBar.Value);
         }
 
         private PlaybackState MusicStatusInterface_GetState()
@@ -300,7 +299,7 @@ namespace SilverAudioPlayer
         {
             savednow = true;
             Logic.log.Information("Saving config");
-            volumeBar.Invoke(() => { Config.Volume = (byte)volumeBar.Value; });
+            volumeBar.Invoke(() => Config.Volume = (byte)volumeBar.Value);
             Config.ProgressBarRainbow = ProgressBar.ProgressBar.Rainbow;
             Config.ProgressBarRainbowShift = ProgressBar.ProgressBar.ShiftRainbow;
             Config.ProgressBarRainbowCaching = (byte)ProgressBar.ProgressBar.CacheRainbowDecimals;
@@ -327,7 +326,7 @@ namespace SilverAudioPlayer
             }
             else
             {
-                volumeBar.Invoke(() => { volumeBar.Value = Config.Volume > 100 ? 100 : Config.Volume; });
+                volumeBar.Invoke(() => volumeBar.Value = Config.Volume > 100 ? 100 : Config.Volume);
                 if (Config.Volume > 100)
                 {
                     Config.Volume = 100;
@@ -508,7 +507,7 @@ namespace SilverAudioPlayer
                 MessageBox.Show("I do not know how to play " + CurrentURI);
                 return;
             }
-            TrackChangedNotification(CurrentSong);
+            Task.Run(() => TrackChangedNotification(CurrentSong));
             if (play)
             {
                 Player.Play();
@@ -659,7 +658,7 @@ namespace SilverAudioPlayer
             var next = FindById(NextSong.Guid);
             if (next == null)
             {
-                Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
+                Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong}\nCurrentSong.URI is {CurrentSong}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
             }
             else
             {
@@ -674,7 +673,7 @@ namespace SilverAudioPlayer
             }
             if (curr == null)
             {
-                Logic.log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong.Guid}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong.Guid}\nCurrentSong.URI is {CurrentSong.URI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
+                Logic.log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSong}\nCurrentSong.Guid is {CurrentSong}\nCurrentSong.URI is {CurrentSong}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
             }
         }
 
@@ -724,8 +723,17 @@ namespace SilverAudioPlayer
                 if (Config.FillMetadataOfLoadedFilesOnLoad)
                 {
                     FillMetadataOfLoadedFiles(true);
+                    TreeNode[] tn = new TreeNode[treeView1.Nodes[0].Nodes.Count];
+                    treeView1.Nodes[0].Nodes.CopyTo(tn, 0);
+                    var tn2 = tn.GroupBy(a => ((Song)a.Tag)?.Metadata?.DiscNumber ?? 0).OrderBy(a => a.Key);
+                    treeView1.Nodes[0].Nodes.Clear();
+                    foreach (var group in tn2)
+                    {
+                        treeView1.Nodes[0].Nodes.AddRange(group.OrderBy(a => ((Song)a.Tag)?.Metadata?.TrackNumber ?? int.MaxValue).ToArray());
+                    }
                 }
-                if (treeView1.Nodes[0].Nodes.Count != 0 && (Config!.PlayAfterSelect && ((a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped)) || fromProgram || MessageBox.Show("Would you like to skip to the newly added part?", "Question", MessageBoxButtons.YesNo) == DialogResult.Yes)))
+
+                if (treeView1.Nodes[0].Nodes.Count != 0 && (Config!.PlayAfterSelect && a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped)))
                 {
                     if (fromProgram)
                     {

@@ -2,6 +2,7 @@
 using NAudio.Wave;
 using SilverAudioPlayer.NAudio;
 using SilverAudioPlayer.Shared;
+using SilverMagicBytes;
 using System.ComponentModel.Composition;
 
 namespace SilverAudioPlayer.Naudio.Flac
@@ -11,7 +12,7 @@ namespace SilverAudioPlayer.Naudio.Flac
     {
         public bool CanPlay(WrappedStream stream)
         {
-            return stream.MimeType == "audio/flac" || stream.MimeType == "audio/x-flac" || stream.MimeType == ".flac";
+            return stream.MimeType == KnownMimes.FLACMime;
         }
 
         public WaveStream GetStream(WrappedStream stream)

@@ -13,8 +13,8 @@ namespace SilverAudioPlayer.Shared
 
         public string URL { get; set; }
         public List<Stream> Streams { get; set; } = new();
-        public override string MimeType { get => _MimeType; }
-        private string _MimeType { get; set; } = "application/octet-stream";
+        public override MimeType MimeType { get => _MimeType; }
+        private MimeType _MimeType { get; set; } 
 
         private Stream InternalGetStream()
         {
@@ -29,7 +29,7 @@ namespace SilverAudioPlayer.Shared
             var content = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult();
             var Stream = content.Content.ReadAsStream();
             Streams.Add(Stream);
-            var mt = content.Content.Headers.ContentType?.MediaType;
+            MimeType? mt = KnownMimes.GetKnownMimeByName(content.Content.Headers.ContentType?.MediaType);
             if (mt == null)
             {
                 var stream2 = InternalGetStream();
@@ -43,8 +43,7 @@ namespace SilverAudioPlayer.Shared
                     Streams.Remove(stream2);
                 }
             }
-            mt ??= "application/octet-stream";
-            _MimeType = mt.RealMimeTypeToFakeMimeType();
+            _MimeType = mt;
             return Stream;
         }
 

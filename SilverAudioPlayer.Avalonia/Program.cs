@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Dialogs;
 using System;
-using System.Diagnostics;
 namespace SilverAudioPlayer.Avalonia
 {
     internal class Program

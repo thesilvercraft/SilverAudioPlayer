@@ -144,10 +144,7 @@ namespace NAudio.Flac
             if (scanFlag != FlacPreScanMode.None)
             {
                 FlacPreScan scan = new FlacPreScan(stream);
-                scan.ScanFinished += (s, e) =>
-                {
-                    onscanFinished?.Invoke(e);
-                };
+                scan.ScanFinished += (s, e) => onscanFinished?.Invoke(e);
                 scan.ScanStream(_streamInfo, scanFlag);
                 _scan = scan;
             }

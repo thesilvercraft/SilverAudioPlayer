@@ -6,7 +6,6 @@
 #pragma warning disable SA1307 // Field should begin with upper-case letter
 #pragma warning disable CS1591 // Public members must have XML documentation
 
-using System;
 using System.Runtime.InteropServices;
 
 partial class Interop

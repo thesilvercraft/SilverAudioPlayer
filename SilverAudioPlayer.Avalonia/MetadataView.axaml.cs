@@ -2,18 +2,14 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using SilverAudioPlayer.Shared;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Avalonia
 {
@@ -21,7 +17,6 @@ namespace SilverAudioPlayer.Avalonia
     {
         private Song s;
 
-       
         public void LoadSong(Song s)
         {
             this.s = s;
@@ -31,7 +26,7 @@ namespace SilverAudioPlayer.Avalonia
             dc.ValuePairs.Add(x);
             Opened += MetadataView_Opened;
         }
-        
+
         private void MetadataView_Opened(object? sender, EventArgs e)
         {
             if (s != null && s?.Metadata?.Pictures?.Count > 0)
@@ -63,11 +58,11 @@ namespace SilverAudioPlayer.Avalonia
             }
             if (thing is IList tlist)
             {
-                
+
                 for (int i = 0; i < tlist.Count; i++)
                 {
                     object? item = tlist[i];
-                    var pf = new Field(i.ToString(),null);
+                    var pf = new Field(i.ToString(),item.ToString());
                     parentfield.SubFields.Add(pf);
                     processproperties(item, pf, allowedlength-1);
                 }

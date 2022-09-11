@@ -1,7 +1,6 @@
 ﻿using SilverAudioPlayer.Shared;
 using ATL;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 
 namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
 {
@@ -51,7 +50,7 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
-        public List<Tuple<Uri, URLType>>? Links => new() { 
+        public List<Tuple<Uri, URLType>>? Links => new() {
             new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.MetadataSource.Z440AtlCore"), URLType.Code),
             new(new($"https://www.nuget.org/packages/z440.atl.core/{typeof(Track).Assembly.GetName().Version}"), URLType.PackageManager),
             new(new("https://github.com/Zeugma440/atldotnet"),URLType.LibraryCode)
@@ -59,13 +58,13 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         public bool CanGetMetadata(WrappedStream stream)
         {
             using var s = stream.GetStream();
-            return new Track(s, stream.MimeType).AudioFormat != null;
+            return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat != null;
         }
 
         public Task<Metadata?> GetMetadata(WrappedStream stream)
         {
             using var s = stream.GetStream();
-            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(s, stream.MimeType)));
+            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(s, stream.MimeType.RealMimeTypeToFakeMimeType())));
         }
     }
 }

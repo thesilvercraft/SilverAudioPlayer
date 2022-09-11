@@ -1,12 +1,7 @@
 ﻿using Jellyfin.Sdk;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
@@ -18,9 +13,9 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             settings = new();
             settings.ClientVersion = "0";
             settings.ClientName = "SilverAudioPlayer.PlayStreamProvider.JellyFin";
-            settings.DeviceName = System.Environment.MachineName;
+            settings.DeviceName = Environment.MachineName;
             settings.DeviceId = "1";
-            //TODO device id
+            //Leave deviceid as is for privacy?
             systemClient = new SystemClient(settings, HttpClient.Client);
             userViewsClient = new UserViewsClient(settings, HttpClient.Client);
             userLibraryClient = new UserLibraryClient(settings, HttpClient.Client);
@@ -126,7 +121,7 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             {
                 var fr = await imageClient.GetItemImageAsync(dto.Id, ImageType.Primary);
 
-                return new WrappedStreamImplementedByOneRealOne("image/jpg", fr.Stream);
+                return new WrappedStreamImplementedByOneRealOne(KnownMimes.JPGMime, fr.Stream);
             }
        catch
             {
@@ -162,12 +157,12 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
     }
     public  class WrappedStreamImplementedByOneRealOne:WrappedStream
     {
-        public WrappedStreamImplementedByOneRealOne(string mimeType, Stream RealStream)
+        public WrappedStreamImplementedByOneRealOne(MimeType mimeType, Stream RealStream)
         {
             MimeType = mimeType;
         }
 
-        public override string MimeType { get; }
+        public override MimeType MimeType { get; }
         Stream RealStream;
         public override Stream GetStream()
         {
@@ -212,8 +207,8 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         private BaseItemDto dto;
 
         public List<Stream> Streams { get; set; } = new();
-        public override string MimeType { get => _MimeType; }
-        private string _MimeType { get; set; } = "application/octet-stream";
+        public override MimeType MimeType { get => _MimeType; }
+        private MimeType _MimeType { get; set; }
 
         private Stream InternalGetStream()
         {
@@ -229,7 +224,8 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             var content = audioClient.GetUniversalAudioStreamAsync(song.Id, container: new string[] { "flac", "wav", "mp3" }, userId: userDto.Id).GetAwaiter().GetResult();
             var Stream = content.Stream;
             Streams.Add(Stream);
-            var mt = content.Headers["Content-Type"].First();
+            
+            MimeType? mt = KnownMimes.GetKnownMimeByName(content.Headers["Content-Type"].First());
             if (mt == null)
             {
                 var stream2 = InternalGetStream();
@@ -243,11 +239,8 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
                     Streams.Remove(stream2);
                 }
             }
-            if (mt == null)
-            {
-                mt = "application/octet-stream";
-            }
-            _MimeType = mt.RealMimeTypeToFakeMimeType();
+            
+            _MimeType = mt;
 
             rs = Stream;
             if(!FStream.CanRead)

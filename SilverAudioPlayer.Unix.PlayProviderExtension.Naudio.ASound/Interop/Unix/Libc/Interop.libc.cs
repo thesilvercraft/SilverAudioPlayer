@@ -5,7 +5,6 @@
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable CS1591 // Public member is not documented - These members are not public in the final package
 
-using System;
 using System.Runtime.InteropServices;
 
 partial class Interop
