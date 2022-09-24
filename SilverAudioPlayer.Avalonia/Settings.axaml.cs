@@ -31,7 +31,6 @@ namespace SilverAudioPlayer.Avalonia
             };
             ColorBox.Text = WindowExtensions.GetEnv("SAPColor");
             ColorBoxPB.Text = WindowExtensions.GetEnv("SAPPBColor");
-
         }
 
         private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -123,7 +122,6 @@ namespace SilverAudioPlayer.Avalonia
                 WindowExtensions.SetEnv("DisableSAPTransparency", "true");
                 OnNewColor?.Invoke(this, null);
                 WindowExtensions.OnStyleChange(this, null);
-
             }
             else
             {
@@ -131,17 +129,14 @@ namespace SilverAudioPlayer.Avalonia
                 OnNewColor?.Invoke(this, null);
                 WindowExtensions.OnStyleChange(this, null);
 
-
             }
         }
         private void ChangeColorPB(object? sender, RoutedEventArgs e)
         {
-
             if (Color.TryParse(ColorBoxPB.Text, out Color c))
             {
                 WindowExtensions.SetEnv("SAPPBColor", ColorBoxPB.Text);
                 mainWindow.SetPBColor(c);
-
             }
             if (Enum.TryParse(ColorBoxPB.Text, out KnownColor kc))
             {
@@ -152,12 +147,10 @@ namespace SilverAudioPlayer.Avalonia
             {
                 WindowExtensions.SetEnv("SAPPBColor", null);
                 mainWindow.SetPBColor(Colors.Coral);
-
             }
         }
         private void ChangeColor(object? sender, RoutedEventArgs e)
         {
-           
              if (Color.TryParse(ColorBox.Text, out Color c))
             {
                 WindowExtensions.SetEnv("SAPColor", ColorBox.Text);

@@ -11,7 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <None Remove="SAPCAD.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SAPCAD.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Composition" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

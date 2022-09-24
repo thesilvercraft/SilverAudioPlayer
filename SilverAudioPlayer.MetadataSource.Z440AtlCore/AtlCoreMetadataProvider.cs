@@ -1,6 +1,6 @@
 ﻿using SilverAudioPlayer.Shared;
 using ATL;
-using System.ComponentModel.Composition;
+using System.Composition;
 
 namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
 {
@@ -9,10 +9,9 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
     {
         public string Name => "Z440AtlCore Metadata Provider";
 
-        public string Description => "Metadata provider that provides using AtlDotnet (https://github.com/Zeugma440/atldotnet)";
+        public string Description => "Metadata provider that provides metadata using AtlDotnet";
 
-        public WrappedStream? Icon => null;
-
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(AtlCoreFileMetadataProvider).Assembly, "SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.ZATLMetadata.png");
         public System.Version? Version => typeof(AtlCoreFileMetadataProvider).Assembly.GetName().Version;
 
         public string Licenses => @"atldotnet - https://github.com/Zeugma440/atldotnet

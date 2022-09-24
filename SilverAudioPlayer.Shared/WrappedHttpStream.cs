@@ -14,7 +14,7 @@ namespace SilverAudioPlayer.Shared
         public string URL { get; set; }
         public List<Stream> Streams { get; set; } = new();
         public override MimeType MimeType { get => _MimeType; }
-        private MimeType _MimeType { get; set; } 
+        private MimeType _MimeType { get; set; }
 
         private Stream InternalGetStream()
         {

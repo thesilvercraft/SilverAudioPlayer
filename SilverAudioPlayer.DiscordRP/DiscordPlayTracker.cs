@@ -3,7 +3,7 @@ using DiscordRPC.Logging;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Diagnostics;
 
 namespace SilverAudioPlayer.DiscordRP;

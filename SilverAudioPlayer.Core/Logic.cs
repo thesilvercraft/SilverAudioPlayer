@@ -1,30 +1,29 @@
 ﻿using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
+using System.Composition;
 
 namespace SilverAudioPlayer.Core
 {
     public class Logic
     {
-        [ImportMany(typeof(IPlayProvider))]
-        public IEnumerable<Lazy<IPlayProvider>>? PlayProviders;
+        [ImportMany]
+        public IEnumerable<IPlayProvider> PlayProviders { get; set; }
 
-        [ImportMany(typeof(IMetadataProvider))]
-        public IEnumerable<Lazy<IMetadataProvider>>? MetadataProviders;
-
-        [ImportMany(typeof(IMusicStatusInterface))]
-        public IEnumerable<Lazy<IMusicStatusInterface>>? MusicStatusInterfaces;
+        [ImportMany]
+        public IEnumerable<IMetadataProvider> MetadataProviders { get; set; }
+        [ImportMany]
+        public IEnumerable<IMusicStatusInterface> MusicStatusInterfaces { get; set; }
 
         public Serilog.Core.Logger log { get; set; }
 
         public IPlay? GetPlayerFromStream(WrappedStream stream)
         {
-            var provider = PlayProviders?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanPlayFile(stream));
-            return provider?.Value?.GetPlayer(stream);
+            var provider = PlayProviders?.FirstOrDefault(x => x.CanPlayFile(stream));
+            return provider?.GetPlayer(stream);
         }
 
         public IMetadataProvider? GetMetadataProviderFromStream(WrappedStream stream)
         {
-            return MetadataProviders?.FirstOrDefault(x => x.IsValueCreated && x.Value.CanGetMetadata(stream))?.Value;
+            return MetadataProviders?.FirstOrDefault(x => x.CanGetMetadata(stream));
         }
 
         public Task<Metadata?>? GetMetadataFromStream(WrappedStream stream)

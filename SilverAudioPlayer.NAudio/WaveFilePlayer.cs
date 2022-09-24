@@ -1,7 +1,7 @@
 ﻿using Audioz_playerZ;
 using NAudio.Wave;
 using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
+using System.Composition;
 using PlaybackState = NAudio.Wave.PlaybackState;
 
 namespace SilverAudioPlayer.NAudio

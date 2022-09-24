@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <None Remove="SMTC.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SMTC.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Composition" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

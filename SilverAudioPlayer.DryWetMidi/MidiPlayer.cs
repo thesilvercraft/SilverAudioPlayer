@@ -3,7 +3,7 @@ using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
-using System.ComponentModel.Composition;
+using System.Composition;
 
 namespace SilverAudioPlayer.DryWetMidi
 {

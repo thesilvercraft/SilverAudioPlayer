@@ -618,7 +618,7 @@ namespace SilverAudioPlayer
             {
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-                var a = aa.FirstOrDefault(x => (Song)x.Tag == CurrentSong);
+                var a = Array.Find(aa, x => (Song)x.Tag == CurrentSong);
 
                 if (a != null)
                 {
@@ -714,7 +714,7 @@ namespace SilverAudioPlayer
             {
                 files = FilterFiles(Directory.GetFiles(files[0])).ToArray();
             }
-            if ((files.Length > 0))
+            if (files.Length > 0)
             {
                 files = FilterFiles(files).ToArray();
                 var a = treeView1.Nodes[0].Nodes.Count;
@@ -746,7 +746,7 @@ namespace SilverAudioPlayer
                     }
                     else
                     {
-                        HandleSongChanging((Song)treeView1.Nodes[0].Nodes[a].Tag, (a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped)));
+                        HandleSongChanging((Song)treeView1.Nodes[0].Nodes[a].Tag, a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped));
                     }
                 }
             }
@@ -1126,7 +1126,7 @@ namespace SilverAudioPlayer
         {
             if (Logic.MusicStatusInterfaces?.Any() == true)
             {
-                foreach (var dangthing in Logic.MusicStatusInterfaces.Where(x => x.Value != null).Select(x => x.Value))
+                foreach (var dangthing in Logic.MusicStatusInterfaces.Where(x => x != null).Select(x => x))
                 {
                     var a = dangthing;
                     GC.KeepAlive(a);

@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using System;
 using System.Collections;
@@ -22,34 +23,36 @@ namespace SilverAudioPlayer.Avalonia
             this.s = s;
             var x = new Field("Song", s.ToString());
 
-            processproperties(s, x);
-            dc.ValuePairs.Add(x);
+            ProcessSubProperties(s, x);
+            dataContext.ValuePairs.Add(x);
             Opened += MetadataView_Opened;
         }
 
         private void MetadataView_Opened(object? sender, EventArgs e)
         {
-            if (s != null && s?.Metadata?.Pictures?.Count > 0)
+            if (s != null && s?.Metadata?.Pictures?.Count > 0 && s?.Metadata?.Pictures[0]?.Data is byte[] b)
             {
-                var memstream = new MemoryStream(s.Metadata.Pictures[0].Data);
-                dc.Bitmaps[0] = new Bitmap(memstream);
+                using var memstream = new MemoryStream(b);
+                dataContext.Bitmaps[0] = new Bitmap(memstream);
             }
         }
 
-        private DC dc = new();
+        private readonly DC dataContext = new();
 
         public MetadataView()
         {
-            DataContext = dc;
+            DataContext = dataContext;
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
             mainTreeView = this.FindControl<TreeView>("mainTreeView");
             this.DoAfterInitTasks(true);
+            Log = Logger.GetLogger(typeof(MetadataView));
         }
+        private readonly ILogger? Log;
 
-        private void processproperties(object thing, Field parentfield, int allowedlength=5)
+        private void ProcessSubProperties(object thing, Field parentfield, int allowedlength=5)
         {
             if(allowedlength==0) return;
             if (thing is string)
@@ -58,13 +61,19 @@ namespace SilverAudioPlayer.Avalonia
             }
             if (thing is IList tlist)
             {
-
-                for (int i = 0; i < tlist.Count; i++)
+                int c = tlist.Count;
+                if (c > 200){
+                    c = 200;
+                }
+                for (int i = 0; i < c; i++)
                 {
                     object? item = tlist[i];
-                    var pf = new Field(i.ToString(),item.ToString());
+                    var pf = new Field(i.ToString(),item?.ToString()??"null");
                     parentfield.SubFields.Add(pf);
-                    processproperties(item, pf, allowedlength-1);
+                    if(item is not null)
+                    {
+                        ProcessSubProperties(item, pf, allowedlength - 1);
+                    }
                 }
                 return;
             }
@@ -82,15 +91,17 @@ namespace SilverAudioPlayer.Avalonia
                 try
                 {
                     var v = property.GetValue(thing);
-                    var pf = new Field(property.Name, v?.ToString());
+                    var pf = new Field(property.Name, v?.ToString() ?? "null");
                     parentfield.SubFields.Add(pf);
                     if (v != null)
                     {
-                        processproperties(v, pf, allowedlength - 1);
+                        ProcessSubProperties(v, pf, allowedlength - 1);
                     }
                 }
                 catch (Exception e)
                 {
+                    //No crash needed
+                    Log?.Information(e, "Exception in ProcessSubProperties");
                 }
             }
         }
@@ -102,6 +113,7 @@ namespace SilverAudioPlayer.Avalonia
 
         public void Pictures_Click(object? sender, PointerPressedEventArgs e)
         {
+            //TODO Embedded pictures viewer
         }
     }
     public class Field
@@ -122,7 +134,7 @@ namespace SilverAudioPlayer.Avalonia
         public ObservableCollection<Field> ValuePairs { get; }
     = new ObservableCollection<Field>();
 
-        public ObservableCollection<Bitmap> Bitmaps { get; }
-= new ObservableCollection<Bitmap>() { null };
+        public ObservableCollection<Bitmap?> Bitmaps { get; }
+= new ObservableCollection<Bitmap?>() { null };
     }
 }

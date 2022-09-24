@@ -59,7 +59,7 @@
             this.clipboardbutton.TabIndex = 1;
             this.clipboardbutton.Text = "Copy to clipboard";
             this.clipboardbutton.UseVisualStyleBackColor = true;
-            this.clipboardbutton.Click += new System.EventHandler(this.clipboardbutton_Click);
+            this.clipboardbutton.Click += new System.EventHandler(this.ClipboardClick);
             // 
             // label1
             // 
@@ -80,7 +80,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "Current image";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.SaveClick);
             // 
             // zipButton
             // 
@@ -91,7 +91,7 @@
             this.zipButton.TabIndex = 4;
             this.zipButton.Text = "All original images";
             this.zipButton.UseVisualStyleBackColor = true;
-            this.zipButton.Click += new System.EventHandler(this.zipButton_Click);
+            this.zipButton.Click += new System.EventHandler(this.ZipClick);
             // 
             // left
             // 
@@ -104,7 +104,7 @@
             this.left.TabIndex = 5;
             this.left.Text = "<";
             this.left.UseVisualStyleBackColor = true;
-            this.left.Click += new System.EventHandler(this.left_Click);
+            this.left.Click += new System.EventHandler(this.LeftClick);
             // 
             // right
             // 
@@ -117,7 +117,7 @@
             this.right.TabIndex = 6;
             this.right.Text = ">";
             this.right.UseVisualStyleBackColor = true;
-            this.right.Click += new System.EventHandler(this.right_Click);
+            this.right.Click += new System.EventHandler(this.RightClick);
             // 
             // PictureForm
             // 

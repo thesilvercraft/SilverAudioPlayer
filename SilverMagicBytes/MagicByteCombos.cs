@@ -18,6 +18,10 @@
             new(KnownMimes.JPGMime, 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01),
             new(KnownMimes.JPGMime, 0xFF, 0xD8, 0xFF, 0xEE),
             new(KnownMimes.JPGMime, 0xFF, 0xD8, 0xFF, 0xE1, null, null, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00),
+            new(KnownMimes.OGGMime, 0x4f, 0x67, 0x67, 0x53),
+            new(KnownMimes.AACMime, 0xFF, 0xF1),
+            new(KnownMimes.AACMime, 0xFF, 0xF9),
+            new(KnownMimes.OctetMime),
         };
         public static MagicByteComboWithMimeType? Match(Stream s, long offset)
         {
@@ -31,7 +35,17 @@
 
         public static void AddMBC(MagicByteComboWithMimeType mbc)
         {
-            ByteCombos.Add(mbc);
+            var x = ByteCombos.FindIndex(y => y.MimeType == KnownMimes.OctetMime);
+            if (x == -1)
+            {
+                ByteCombos.Add(mbc);
+
+            }
+            else
+            {
+                ByteCombos.Insert(x,mbc);
+
+            }
         }
 
         public static void OverrideMBC(MagicByteComboWithMimeType mbc)

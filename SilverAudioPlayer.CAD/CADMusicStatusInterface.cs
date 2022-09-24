@@ -1,6 +1,6 @@
 ﻿using Serilog;
 using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Runtime.InteropServices;
 
 namespace SilverAudioPlayer.CAD;
@@ -18,15 +18,15 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public ILogger? logger { get; set; }
     string ICodeInformation.Name => "CAD Music status interface";
-    public string Description => "CD Art display compatible interface";
+    public string Description => "CD Art display compatible interface, interfaces with Rainmeter or CD Art Display (or anything else that follows the cad-sdk-2.1 protocol";
 
-    WrappedStream? ICodeInformation.Icon => null;
 
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(CADMusicStatusInterface).Assembly, "SilverAudioPlayer.Windows.MusicStatusInterface.CAD.SAPCAD.png");
     public Version? Version => typeof(CADMusicStatusInterface).Assembly.GetName().Version;
 
     public string Licenses => "";
 
-    public List<Tuple<Uri, URLType>>? Links => null;
+    public List<Tuple<Uri, URLType>>? Links => new() { new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.CAD"), URLType.Code), new(new("https://web.archive.org/web/20120721202025/http://www.cdartdisplay.com/download/cad-sdk-2.1.zip"), URLType.LibraryDocumentation) };
     private bool disposedValue;
 
     [DllImport("KERNEL32", EntryPoint = "RtlMoveMemory")]
@@ -127,12 +127,12 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         }
         return input.Replace('\t', ' ');
     }
+    const string arglpWindowName = "CD Art Display 1.x Class";
 
     public void cadSendSongInfo()
     {
         CopyDataStruct cdCopyData;
         string strTemp;
-        string arglpWindowName = "CD Art Display 1.x Class";
 
         Song? song = GetCurrentTrack != null ? GetCurrentTrack() : null;
         if (song == null)
@@ -184,7 +184,6 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     {
         long wp_id = wparam.ToInt64();
         long lp_id = lparam.ToInt64();
-        //long wHwnd = Hwnd.ToInt64();
         long CallbackMsgsRet = default;
         logger?.Debug("WP: {wp_id} LP: {lp_id}", wp_id, lp_id);
 
@@ -437,7 +436,6 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     {
         CopyDataStruct cdCopyData;
         string strTemp = "";
-        string arglpWindowName = "CD Art Display 1.x Class";
         var ThWnd = FindWindow(null, arglpWindowName);
         var ct = GetCurrentTrack != null ? GetCurrentTrack() : null;
         if (ct?.Metadata != null && !string.IsNullOrEmpty(ct.Metadata.Lyrics))
@@ -564,9 +562,6 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             }
             disposedValue = true;
         }
-        Invoke(() => { 
-        base.Dispose(disposing);
-        });
     }
 
 
@@ -597,8 +592,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void TrackChangedNotification(Song? newtrack)
     {
-        long ThWnd;
-        ThWnd = FindWindow(null, "CD Art Display 1.x Class");
+        long ThWnd = FindWindow(null, arglpWindowName);
         logger?.Debug("TrackChangedNotification, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 123);
         logger?.Debug("TrackChangedNotification, return of 123 {e}", e);
@@ -606,8 +600,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void PlayerStateChanged(PlaybackState newstate)
     {
-        long ThWnd;
-        ThWnd = FindWindow(null, "CD Art Display 1.x Class");
+        long ThWnd = FindWindow(null, arglpWindowName);
         logger?.Debug("PlayerStateChanged, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 126);
         logger?.Debug("PlayerStateChanged, return of 126 {e}", e);
@@ -615,8 +608,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void cadShutdown()
     {
-        long ThWnd;
-        ThWnd = FindWindow(null, "CD Art Display 1.x Class");
+        long ThWnd = FindWindow(null, arglpWindowName);
         logger?.Debug("cadShutdown, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 129);
         logger?.Debug("cadShutdown, return of 129 {e}", e);

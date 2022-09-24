@@ -1,24 +1,21 @@
-﻿using SilverAudioPlayer.Shared;
+﻿using Microsoft.Win32;
+using SilverAudioPlayer.Shared;
 using SilverFormsUtils;
-using Microsoft.Win32;
 
 namespace SilverAudioPlayer.Winforms
 {
     public partial class PictureForm : Form
     {
-        public static string GetDefaultExtension(string mimeType)
+        public static string? GetDefaultExtension(string mimeType)
         {
-            string defaultExt;
-            RegistryKey key;
-            object value;
+            RegistryKey? key;
+            object? value;
             key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false);
-            value = key != null ? key.GetValue("Extension", null) : null;
-            defaultExt = value != null ? value.ToString() : string.Empty;
-            return defaultExt;
+            value = key?.GetValue("Extension", null);
+            return value != null ? value.ToString() : string.Empty;
         }
 
-        private Song Song;
-        private List<Picture> Pictures;
+        private readonly List<Picture> Pictures;
         private int CurrentPictureIndex = 0;
 
         public PictureForm(Song song)
@@ -29,7 +26,6 @@ namespace SilverAudioPlayer.Winforms
                 this.UseDarkModeBar(true);
                 this.UseDarkModeForThingsInsideOfForm(true, true);
             }
-            Song = song;
             Pictures = song.Metadata.Pictures.ToList();
             DisableIfNeeded();
             ChangePicture();
@@ -48,7 +44,7 @@ namespace SilverAudioPlayer.Winforms
             right.Enabled = CurrentPictureIndex < Pictures.Count - 1;
         }
 
-        private void left_Click(object sender, EventArgs e)
+        private void LeftClick(object sender, EventArgs e)
         {
             if (CurrentPictureIndex > 0)
             {
@@ -58,7 +54,7 @@ namespace SilverAudioPlayer.Winforms
             DisableIfNeeded();
         }
 
-        private void right_Click(object sender, EventArgs e)
+        private void RightClick(object sender, EventArgs e)
         {
             if (CurrentPictureIndex < Pictures.Count - 1)
             {
@@ -68,13 +64,13 @@ namespace SilverAudioPlayer.Winforms
             DisableIfNeeded();
         }
 
-        private void clipboardbutton_Click(object sender, EventArgs e)
+        private void ClipboardClick(object sender, EventArgs e)
         {
             Clipboard.Clear();
             Clipboard.SetImage(pictureBox1.Image);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void SaveClick(object sender, EventArgs e)
         {
             Stream myStream;
             SaveFileDialog saveFileDialog1 = new();
@@ -85,21 +81,20 @@ namespace SilverAudioPlayer.Winforms
             saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
 
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK && (myStream = saveFileDialog1.OpenFile()) != null)
             {
-                if ((myStream = saveFileDialog1.OpenFile()) != null)
-                {
-                    // Code to write the stream goes here.
-                    myStream.Write(Pictures[CurrentPictureIndex].Data, 0, Pictures[CurrentPictureIndex].Data.Length);
-                    myStream.Close();
-                }
+                // Code to write the stream goes here.
+                myStream.Write(Pictures[CurrentPictureIndex].Data, 0, Pictures[CurrentPictureIndex].Data.Length);
+                myStream.Close();
             }
         }
 
-        private void zipButton_Click(object sender, EventArgs e)
+        private void ZipClick(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderBrowserDialog = new();
-            folderBrowserDialog.Description = "Select a folder to save the pictures to";
+            FolderBrowserDialog folderBrowserDialog = new()
+            {
+                Description = "Select a folder to save the pictures to"
+            };
             if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
                 var folder = folderBrowserDialog.SelectedPath;
@@ -107,11 +102,10 @@ namespace SilverAudioPlayer.Winforms
                 {
                     var filetype = GetDefaultExtension(picture.MimeType) ?? ".jpeg";
                     var filename = picture.Position + " " + picture.Hash + " " + picture.Description + filetype;
-                    using var filestream = new FileStream(Path.Combine(folder , filename), FileMode.Create);
+                    using var filestream = new FileStream(Path.Combine(folder, filename), FileMode.Create);
                     filestream.Write(picture.Data);
                 }
-                }
-            
             }
+        }
     }
 }

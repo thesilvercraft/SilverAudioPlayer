@@ -1,5 +1,5 @@
 ﻿using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
+using System.Composition;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using Windows.Media;
@@ -295,11 +295,11 @@ namespace SilverAudioPlayer.SMTC
         }
         List<string> TempFiles = new();
 
-        public string Name => "SystemMediaTransportControls";
+        public string Name => "SystemMediaTransportControls"+(DISABLE?" (DISABLED)":"");
 
-        public string Description => "Windows 10 integration";
+        public string Description => "Windows 10 / ModernFlyouts integration, interfaces through SMTC";
 
-        public WrappedStream? Icon => null;
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SMTCPlayTracker).Assembly, "SilverAudioPlayer.Windows.MusicStatusInterface.SMTC.SMTC.png");
 
         public Version? Version => typeof(SMTCPlayTracker).Assembly.GetName().Version;
 

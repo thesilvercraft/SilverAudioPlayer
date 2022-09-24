@@ -15,10 +15,10 @@
       </StackPanel>
       <Image Source="{Binding ProductIcon}" Grid.Column="0" Width="200" Height="200"></Image>
     </Grid>
-    <ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="2">
-      <ListBox.ItemTemplate>
+    <ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="2" DoubleTapped="ElementDoubleTapped">
+      <ListBox.ItemTemplate >
         <DataTemplate>
-          <Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
+          <Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*" >
             <StackPanel Grid.Column="1">
               <TextBlock Text="{Binding Name}" FontSize="25" Margin="5" ></TextBlock>
               <TextBlock Text="{Binding Description}" FontSize="12"  Margin="5"  ></TextBlock>

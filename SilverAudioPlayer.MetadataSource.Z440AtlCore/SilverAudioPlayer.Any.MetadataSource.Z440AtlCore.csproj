@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../SilverAudioPlayer.targets" />
 
   <PropertyGroup>
@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <None Remove="ZATLMetadata.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ZATLMetadata.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Composition" Version="6.0.0" />
     <PackageReference Include="z440.atl.core" Version="4.9.0" />
   </ItemGroup>
 

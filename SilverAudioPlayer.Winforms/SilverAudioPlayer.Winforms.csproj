@@ -101,7 +101,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
     <PackageReference Include="SilverCraft.SilverConfig" Version="1.0.3" />
     <PackageReference Include="SilverFormsUtils" Version="1.0.8" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <PackageReference Include="System.Composition" Version="6.0.0" />
     <PackageReference Include="Clowd.Squirrel" Version="2.9.40" Condition="$(DefineConstants.Contains('SQRL'))" />
   </ItemGroup>
 

@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400" ExtendClientAreaToDecorationsHint="True" Height="400" Width="800"
+        x:Class="SilverAudioPlayer.Avalonia.LaunchActionsWindow"
+        Title="LaunchActionsWindow">
+  <Grid Margin="5 30 5 5">
+    <ListBox Items="{Binding Actions}" Name="LB" DoubleTapped="ElementDoubleTapped" Background="Transparent">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding ActionName}"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </Grid>
+
+
+</Window>

@@ -5,11 +5,15 @@ using Avalonia.Themes.Fluent;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
+using System.Collections.Generic;
+using System.Composition;
+using System.Composition.Hosting;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
@@ -36,8 +40,7 @@ namespace SilverAudioPlayer.Avalonia
 
     public partial class App : Application
     {
-        private AggregateCatalog Catalog;
-        private CompositionContainer Container;
+        private CompositionHost Container;
 
         public override void Initialize()
         {
@@ -73,61 +76,61 @@ namespace SilverAudioPlayer.Avalonia
                         ChangeTheme(WindowExtensions.GetEnv("LIGHTTHEME") != "1");
                     }
                 }
-                Catalog = new();
-                try
+                List<Assembly> assemblies = new();
+                // An aggregate catalog that combines multiple catalogs.
+                var catalog = new ContainerConfiguration();
+                // Adds all the parts found in the same assembly as the Program class.
+                void AddAssembliesFrom(string path, string filter)
                 {
-                    // An aggregate catalog that combines multiple catalogs.
-                    var catalog = new AggregateCatalog();
-                    // Adds all the parts found in the same assembly as the Program class.
-                    catalog.Catalogs.Add(new AssemblyCatalog(typeof(Program).Assembly));
-                    if (Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Extensions")))
-                    {
-                        catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "Extensions")));
-                    }
-                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Any.*.dll"));
+                    assemblies.AddRange(Directory.GetFiles(path, filter).Select(path2 => AssemblyLoadContext.Default.LoadFromAssemblyPath(path2)).Where(x => x != null));
+                }
+                void PlatformLogic(string path)
+                {
                     switch (Environment.OSVersion.Platform)
                     {
                         case PlatformID.Win32NT:
-                            catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Windows.*.dll"));
+                            AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
                             break;
 
                         case PlatformID.Xbox:
-                            catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Xbox360.*.dll"));
+                            AddAssembliesFrom(path, "SilverAudioPlayer.Xbox360.*.dll");
                             break;
                     }
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                     {
-                        catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Sheep.*.dll"));
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Sheep.*.dll");
                     }
                     else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     {
-                        catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Unix.*.dll"));
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Unix.*.dll");
                     }
-                    // Create the CompositionContainer with the parts in the catalog.
-                    Container = new CompositionContainer(catalog);
-                    Container.ComposeParts(this);
+                    AddAssembliesFrom(path, "SilverAudioPlayer.Any.*.dll");
                 }
-                catch (CompositionException compositionException)
+                var nextpath = Path.Combine(AppContext.BaseDirectory, "Extensions");
+                if (Directory.Exists(nextpath))
                 {
-                    Console.WriteLine(compositionException.ToString());
+                    PlatformLogic(nextpath);
                 }
-                Container.SatisfyImportsOnce(mw.Logic);
+                PlatformLogic(AppContext.BaseDirectory);
+                catalog.WithAssemblies(assemblies);
+                Container = catalog.CreateContainer();
+                Container.SatisfyImports(mw.Logic);
                 if (mw.Logic.PlayProviders == null)
                 {
                     throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
                 }
                 foreach (var provider in mw.Logic.PlayProviders)
                 {
-                    var name = provider.Value.GetType().Name;
+                    var name = provider.GetType().Name;
                     Debug.WriteLine($"Play provider {name} loaded.");
                 }
                 Task.Run(async () =>
                 {
                     foreach (var playprovider in mw.Logic.PlayProviders)
                     {
-                        if (playprovider?.Value != null)
+                        if (playprovider != null)
                         {
-                            await playprovider.Value.OnStartup();
+                            await playprovider.OnStartup();
                         }
                     }
                 });
@@ -137,7 +140,7 @@ namespace SilverAudioPlayer.Avalonia
                 }
                 foreach (var provider in mw.Logic.MetadataProviders)
                 {
-                    var name = provider.Value.GetType().Name;
+                    var name = provider.GetType().Name;
                     Debug.WriteLine($"Metadata provider {name} loaded.");
                 }
                 if (mw.Logic.MusicStatusInterfaces == null)
@@ -146,7 +149,7 @@ namespace SilverAudioPlayer.Avalonia
                 }
                 foreach (var provider in mw.Logic.MusicStatusInterfaces)
                 {
-                    var name = provider.Value.GetType().Name;
+                    var name = provider.GetType().Name;
                     Debug.WriteLine($"Music status interface {name} loaded.");
                 }
                 var configuration = new ConfigurationBuilder()

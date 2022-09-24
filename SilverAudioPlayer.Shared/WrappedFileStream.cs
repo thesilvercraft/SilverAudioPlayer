@@ -15,7 +15,7 @@ namespace SilverAudioPlayer.Shared
         public List<Stream> Streams { get; set; } = new();
 
         public override MimeType MimeType { get => _MimeType; }
-        private MimeType _MimeType { get; set; } 
+        private MimeType _MimeType=KnownMimes.OctetMime;
 
         private Stream InternalGetStream()
         {
@@ -28,23 +28,17 @@ namespace SilverAudioPlayer.Shared
         {
             var Stream = InternalGetStream();
             MimeType? mt = null;
-            if (mt == null)
+            var stream2 = InternalGetStream();
+            try
             {
-                var stream2 = InternalGetStream();
-                try
-                {
-                    mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-                }
-                finally
-                {
-                    stream2.Dispose();
-                    Streams.Remove(stream2);
-                }
+                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
             }
-            if (mt == null)
+            finally
             {
-                mt = KnownMimes.GetKnownMimeByExtension(new FileInfo(URL).Extension);
+                stream2.Dispose();
+                Streams.Remove(stream2);
             }
+            mt ??= KnownMimes.GetKnownMimeByExtension(new FileInfo(URL).Extension);
             _MimeType = mt;
             return Stream;
         }
@@ -59,7 +53,6 @@ namespace SilverAudioPlayer.Shared
                     {
                         stream.Dispose();
                     }
-                    // Stream.Dispose();
                 }
                 disposedValue = true;
             }

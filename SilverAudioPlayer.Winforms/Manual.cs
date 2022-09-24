@@ -12,9 +12,9 @@ namespace SilverAudioPlayer.Winforms
         {
             InitializeComponent();
             List<ICodeInformation> info = new();
-            info.AddRange(l.PlayProviders.Select(x => x.Value)); ;
-            info.AddRange(l.MusicStatusInterfaces.Select(x => x.Value));
-            info.AddRange(l.MetadataProviders.Select(x => x.Value));
+            info.AddRange(l.PlayProviders.Select(x => x)); ;
+            info.AddRange(l.MusicStatusInterfaces.Select(x => x));
+            info.AddRange(l.MetadataProviders.Select(x => x));
             List<object> infop = new();
             StringBuilder licenses = new();
             int a = 400;

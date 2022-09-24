@@ -1,6 +1,6 @@
 ﻿using NAudio.Wave;
 using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
+using System.Composition;
 using NLayer.NAudioSupport;
 using SilverMagicBytes;
 
@@ -9,9 +9,14 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
     [Export(typeof(INaudioWaveStreamWrapper))]
     public class Mp3FileReaderReaderWrapper : INaudioWaveStreamWrapper
     {
-        public bool CanPlay(WrappedStream stream)
+
+        public byte GetPlayingAbility(WrappedStream stream)
         {
-            return stream.MimeType == KnownMimes.MP3Mime;
+            if(stream.MimeType == KnownMimes.MP3Mime)
+            {
+                return 40;
+            }
+            return 0;
         }
 
         public WaveStream GetStream(WrappedStream stream)

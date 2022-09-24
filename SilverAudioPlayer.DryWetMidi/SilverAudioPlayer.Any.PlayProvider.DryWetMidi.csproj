@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../SilverAudioPlayer.targets" />
 
   <PropertyGroup>
@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Melanchall.DryWetMidi" Version="6.1.0-prerelease2" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <PackageReference Include="System.Composition" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

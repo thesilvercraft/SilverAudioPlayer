@@ -1,9 +1,14 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using SilverAudioPlayer.Shared;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SilverAudioPlayer.Avalonia
@@ -13,27 +18,62 @@ namespace SilverAudioPlayer.Avalonia
         public Info()
         {
             InitializeComponent();
+            CapBox = this.FindControl<ListBox>("CapBox");
             this.DoAfterInitTasks(true);
+        }
+        public static void OpenBrowser(string url)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow=true});
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("xdg-open", url);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", url);
+            }
+            else
+            {
+                throw new NotSupportedException("Os not supported");
+            }
+        }
+        public void ElementDoubleTapped(object _, RoutedEventArgs args)
+        {
+            var y = (InfoPRecord?)CapBox.SelectedItem;
+            if(y?.Item.Links!=null)
+            {
+                LaunchActionsWindow launchActionsWindow = new();
+                List<SAction> actions = new();
+                foreach (var z in y.Item.Links)
+                {
+                    actions.Add(new() { ActionName = "Open " + z.Item1, ActionToInvoke = () => { OpenBrowser(z.Item1.ToString()); } });
+                }
+                launchActionsWindow.AddActions(actions);
+                launchActionsWindow.Show();
+            }
         }
         public Info(MainWindow mainWindow) : this()
         {
             MainWindow = mainWindow;
             ObservableCollection<ICodeInformation> info = new();
-            info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x.Value));
-            info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x.Value));
-            info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x.Value));
-            ObservableCollection<object> infop = new();
+            info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x));
+            info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
+            info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
+            ObservableCollection<InfoPRecord> infop = new();
             StringBuilder licenses = new();
             foreach (var item in info)
             {
-                infop.Add(new
-                {
+                infop.Add(new InfoPRecord(
                     item.Name,
                     item.Description,
                     item.Version,
-                    Icon = item.Icon == null ? null : Bitmap.DecodeToHeight(item.Icon.GetStream(), 80),
+item.Icon == null ? null : Bitmap.DecodeToHeight(item.Icon.GetStream(), 80),
                     item.Licenses,
-                });
+                    item
+                ));
                 licenses.AppendLine(item.Licenses);
             }
             SAPAvaloniaPlayerEnviroment sap = new();
@@ -48,6 +88,7 @@ namespace SilverAudioPlayer.Avalonia
             };
         }
         public MainWindow MainWindow;
-
     }
+
+    internal record InfoPRecord(string Name, string Description, Version? Version, Bitmap? Icon, string Licenses, ICodeInformation Item);
 }

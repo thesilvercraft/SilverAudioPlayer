@@ -13,6 +13,10 @@
         public static readonly MimeType MidMime = new WAVMime();
         public static readonly MimeType PngMime = new PngMime();
         public static readonly MimeType JPGMime = new JPGMime();
+        public static readonly MimeType OGGMime = new OGGMime();
+        public static readonly MimeType AACMime = new AACMime();
+        public static readonly MimeType OctetMime = new OctetMime();
+
         public static readonly List<MimeType> KnownMimeTypes = new()
         {
             MP3Mime,
@@ -22,7 +26,10 @@
             MidMime,
             MidMime,
             PngMime,
-            JPGMime
+            JPGMime,
+            OGGMime,
+            AACMime,
+            OctetMime
         };
         public static MimeType? GetKnownMimeByName(string Mime)
         {
@@ -45,12 +52,25 @@
         {
         }
     }
+    public class OGGMime : CompressedAudioMime
+    {
+        public OGGMime() : base("audio/vorbis", CompressionType.Lossy, Array.Empty<string>(), new[] { ".ogg" })
+        {
+        }
+    }
+    public class AACMime : CompressedAudioMime
+    {
+        public AACMime() : base("audio/aac", CompressionType.Lossy, Array.Empty<string>(), new[] { ".aac" })
+        {
+        }
+    }
     public class WAVMime : AudioMime
     {
         public WAVMime() : base("audio/wave", new[] { "audio/vnd.wave", "audio/wav", "audio/x-wav" }, new[] { ".wav" })
         {
         }
     }
+
     public class PngMime : CompressedImageMime
     {
         public PngMime() : base("image/png", CompressionType.Lossless, Array.Empty<string>(), new[] { ".png", })
@@ -73,6 +93,12 @@
     public class ImageMime : MimeType
     {
         public ImageMime(string common, string[] alternativeTypes = null, string[] fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+        {
+        }
+    }
+    public class OctetMime : MimeType
+    {
+        public OctetMime() : base("application/octet-stream", new[] {"application/binary"}, Array.Empty<string>())
         {
         }
     }

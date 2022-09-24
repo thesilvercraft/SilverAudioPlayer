@@ -1,15 +1,22 @@
 ﻿using NAudio.Wave;
 using NLayer.NAudioSupport;
 using SilverAudioPlayer.Shared;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
+using System.Composition;
+using System.Composition.Hosting;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 
 namespace SilverAudioPlayer.NAudio
 {
     public interface INaudioWaveStreamWrapper
     {
-        bool CanPlay(WrappedStream stream);
+        /// <summary>
+        /// Get how ready this player is at playing a file
+        /// </summary>
+        /// <param name="stream">the file</param>
+        /// <returns>A number ranging from 255 (best possible implementation), 127 (can play but not the best implementation), to 0 (can not play)</returns>
+        byte GetPlayingAbility(WrappedStream stream);
 
         WaveStream GetStream(WrappedStream stream);
     }
@@ -27,7 +34,7 @@ namespace SilverAudioPlayer.NAudio
     [Export(typeof(IPlayProvider))]
     public class NaudioWaveStreamWrapper : IPlayProvider
     {
-        public IPlayProviderListner ProviderListner { set => _=value; }
+        public IPlayProviderListner ProviderListner { set => _ = value; }
 
         public string Name => "NAudio Player";
 
@@ -42,7 +49,8 @@ namespace SilverAudioPlayer.NAudio
                new(new($"https://www.nuget.org/packages/NLayer/{typeof(NLayer.MpegFile).Assembly.GetName().Version}"), URLType.PackageManager),
                  new(new($"https://www.nuget.org/packages/NLayer.NAudioSupport/{typeof(Mp3FrameDecompressor).Assembly.GetName().Version}"), URLType.PackageManager),
             new(new("https://github.com/naudio/NAudio"),URLType.LibraryCode),
-            new(new("https://github.com/naudio/NLayer"),URLType.LibraryCode)
+            new(new("https://github.com/naudio/NLayer"),URLType.LibraryCode),
+            new(new("https://github.com/naudio/Vorbis"),URLType.LibraryCode)
         };
         public string Licenses => @"NAudio - https://github.com/naudio/NAudio 
 Copyright 2020 Mark Heath
@@ -56,6 +64,28 @@ NLayer - https://github.com/naudio/NLayer/blob/master/LICENSE
 MIT License
 
 Copyright (c) 2018 Mark Heath, Andrew Ward & Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the ""Software""), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+Vorbis - https://github.com/naudio/Vorbis/blob/master/LICENSE
+MIT License
+
+Copyright (c) 2021 Andrew Ward
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the ""Software""), to deal
@@ -114,72 +144,71 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
     public class NaudioWaveStreamWrapperTypes
     {
         private List<INaudioWaveStreamWrapper>? wrapper = null;
-        private CompositionContainer _container;
+        private CompositionHost _container;
 
-        [ImportMany(typeof(INaudioWaveStreamWrapper))]
-        private IEnumerable<Lazy<INaudioWaveStreamWrapper>>? Wrappers;
+        [ImportMany]
+        private IEnumerable<INaudioWaveStreamWrapper> Wrappers { get; set; }
 
         public NaudioWaveStreamWrapperTypes()
         {
-            try
+
+            var catalog = new ContainerConfiguration();
+            List<Assembly> assemblies = new();
+            void AddAssembliesFrom(string path, string filter)
             {
-                var catalog = new AggregateCatalog();
-                catalog.Catalogs.Add(new AssemblyCatalog(typeof(INaudioWaveStreamWrapper).Assembly));
-                if (Directory.Exists(Path.Combine(AppContext.BaseDirectory, "NExtensions")))
-                {
-                    catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "NExtensions")));
-                }
-                catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Any.*.dll"));
+                assemblies.AddRange(Directory.GetFiles(path, filter).Select(path2 => AssemblyLoadContext.Default.LoadFromAssemblyPath(path2)).Where(x => x != null));
+            }
+            void PlatformLogic(string path)
+            {
                 switch (Environment.OSVersion.Platform)
                 {
                     case PlatformID.Win32NT:
-                        catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Windows.*.dll"));
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
                         break;
 
                     case PlatformID.Xbox:
-                        catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Xbox360.*.dll"));
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Xbox360.*.dll");
                         break;
                 }
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Sheep.*.dll"));
+                    AddAssembliesFrom(path, "SilverAudioPlayer.Sheep.*.dll");
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.Unix.*.dll"));
+                    AddAssembliesFrom(path, "SilverAudioPlayer.Unix.*.dll");
                 }
-                _container = new CompositionContainer(catalog);
-                _container.ComposeParts(this);
+                AddAssembliesFrom(path, "SilverAudioPlayer.Any.*.dll");
             }
-            catch (CompositionException compositionException)
+            var nextpath = Path.Combine(AppContext.BaseDirectory, "NExtensions");
+            if (Directory.Exists(nextpath))
             {
-                Console.WriteLine(compositionException.ToString());
+                PlatformLogic(nextpath);
             }
+            PlatformLogic(AppContext.BaseDirectory);
+            catalog.WithAssemblies(assemblies);
+            _container = catalog.CreateContainer();
+            _container.SatisfyImports(this);
         }
 
         private List<INaudioWaveStreamWrapper> GetWrapper()
         {
-            wrapper ??= new(Wrappers.Select(x => x.Value) ?? Array.Empty<INaudioWaveStreamWrapper>());
+            wrapper ??= new(Wrappers ?? Array.Empty<INaudioWaveStreamWrapper>());
             return wrapper;
         }
 
         public INaudioWaveStreamWrapper? GetWrapper(WrappedStream stream)
         {
-            return GetWrapper().FirstOrDefault(x => x.CanPlay(stream));
+            return GetWrapper().OrderByDescending(x => x.GetPlayingAbility(stream)).First(x=>x.GetPlayingAbility(stream)!=0);
         }
 
         public bool HasWrapper(WrappedStream stream)
         {
-            return GetWrapper().Any(x =>
-            {
-                var e = x.CanPlay(stream);
-                return e;
-            });
+            return GetWrapper().Any(x => x.GetPlayingAbility(stream) != 0);
         }
-
         internal WaveStream? GetStream(WrappedStream stream)
         {
-            return GetWrapper().FirstOrDefault(x => x.CanPlay(stream))?.GetStream(stream);
+            return GetWrapper().OrderByDescending(x => x.GetPlayingAbility(stream)).First(x => x.GetPlayingAbility(stream) != 0)?.GetStream(stream);
         }
     }
 }

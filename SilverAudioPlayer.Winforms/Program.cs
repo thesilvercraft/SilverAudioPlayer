@@ -16,13 +16,16 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Runtime.InteropServices;   //GuidAttribute
 using System.Security.Principal;
 using Microsoft.Win32;
 using System.Text;
+using System.ComponentModel;
+using System.Composition.Hosting;
+using System.Reflection;
+using System.Runtime.Loader;
+using System.Composition;
 
 namespace SilverAudioPlayer
 {
@@ -70,34 +73,49 @@ namespace SilverAudioPlayer
         }
 
         private static readonly Mutex mutex = new(true, "8501d027-384f-4a8f-9cf0-4c35936360fa");
-
-        private CompositionContainer _container;
+        private CompositionHost Container;
 
         private void DoContainerShit()
         {
-            try
+            List<Assembly> assemblies = new();
+            // An aggregate catalog that combines multiple catalogs.
+            var catalog = new ContainerConfiguration();
+            // Adds all the parts found in the same assembly as the Program class.
+            void AddAssembliesFrom(string path, string filter)
             {
-                // An aggregate catalog that combines multiple catalogs.
-                var catalog = new AggregateCatalog();
-                // Adds all the parts found in the same assembly as the Program class.
-                catalog.Catalogs.Add(new AssemblyCatalog(typeof(Program).Assembly));
-
-                if (Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Extensions")))
+                assemblies.AddRange(Directory.GetFiles(path, filter).Select(path2 => AssemblyLoadContext.Default.LoadFromAssemblyPath(path2)).Where(x => x != null));
+            }
+            void PlatformLogic(string path)
+            {
+                switch (Environment.OSVersion.Platform)
                 {
-                    catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(AppContext.BaseDirectory, "Extensions")));
+                    case PlatformID.Win32NT:
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
+                        break;
+
+                    case PlatformID.Xbox:
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Xbox360.*.dll");
+                        break;
                 }
-
-                catalog.Catalogs.Add(new DirectoryCatalog(AppContext.BaseDirectory, "SilverAudioPlayer.*.dll"));
-
-                // Create the CompositionContainer with the parts in the catalog.
-                _container = new CompositionContainer(catalog);
-                _container.ComposeParts(this);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    AddAssembliesFrom(path, "SilverAudioPlayer.Sheep.*.dll");
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    AddAssembliesFrom(path, "SilverAudioPlayer.Unix.*.dll");
+                }
+                AddAssembliesFrom(path, "SilverAudioPlayer.Any.*.dll");
             }
-            catch (CompositionException compositionException)
+            var nextpath = Path.Combine(AppContext.BaseDirectory, "Extensions");
+            if (Directory.Exists(nextpath))
             {
-                Console.WriteLine(compositionException.ToString());
+                PlatformLogic(nextpath);
             }
-            _container.SatisfyImportsOnce(frm1.Logic);
+            PlatformLogic(AppContext.BaseDirectory);
+            catalog.WithAssemblies(assemblies);
+            Container = catalog.CreateContainer();
+            Container.SatisfyImports(frm1.Logic);
             //ACCESS THE DANG THINGS HERE FOR IT TO WORK
             if (frm1.Logic.PlayProviders == null)
             {
@@ -106,17 +124,14 @@ namespace SilverAudioPlayer
 
             foreach (var provider in frm1.Logic.PlayProviders)
             {
-                var name = provider.Value.GetType().Name;
+                var name = provider.GetType().Name;
                 Debug.WriteLine(name);
             }
             Task.Run(async () =>
             {
                 foreach (var playprovider in frm1.Logic.PlayProviders)
                 {
-                    if (playprovider?.Value != null)
-                    {
-                        await playprovider.Value.OnStartup();
-                    }
+                        await playprovider?.OnStartup();
                 }
             });
             if (frm1.Logic.MetadataProviders == null)
@@ -125,7 +140,7 @@ namespace SilverAudioPlayer
             }
             foreach (var provider in frm1.Logic.MetadataProviders)
             {
-                var name = provider.Value.GetType().Name;
+                var name = provider.GetType().Name;
                 Debug.WriteLine(name);
             }
             if (frm1.Logic.MusicStatusInterfaces == null)
@@ -134,7 +149,7 @@ namespace SilverAudioPlayer
             }
             foreach (var provider in frm1.Logic.MusicStatusInterfaces)
             {
-                var name = provider.Value.GetType().Name;
+                var name = provider.GetType().Name;
                 Debug.WriteLine(name);
             }
         }
