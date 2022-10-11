@@ -26,7 +26,7 @@
             </TreeDataTemplate>
           </TreeView.ItemTemplate>
         </TreeView>
-        <Image Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top" Source="{Binding Bitmaps[0]}" Width="256" Height="256" />
+        <Image Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top" Source="{Binding Bitmaps[0]}" Width="256" Height="256" DoubleTapped="IMG_DoubleTapped" />
 
       </Grid>
 		</ScrollViewer>

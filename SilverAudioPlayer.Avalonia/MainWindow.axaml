@@ -4,6 +4,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="SilverAudioPlayer.Avalonia.MainWindow"
+    xmlns:local="clr-namespace:SilverAudioPlayer.Avalonia;assembly=SilverAudioPlayer.Avalonia"
     Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
     ExtendClientAreaToDecorationsHint="True">
   <Window.Styles>
@@ -21,10 +22,13 @@
     <Style Selector="TreeViewItem:selected">
       <Setter Property="Background" Value="#3A2595" />
     </Style>
-    <Style Selector="TreeViewItem">
+    <Style Selector="TextBlock.c">
       <Setter Property="FontSize" Value="20" />
     </Style>
   </Window.Styles>
+  <Window.Resources>
+    <local:NullableReplacingConverter x:Key="nullableReplacingConverter"/>
+  </Window.Resources>
 
     <Grid RowDefinitions="25,260,*" Margin="5">
       <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -58,25 +62,41 @@
         </StackPanel>
       </Grid>
     </Border>
-      <TreeView Grid.Row="2" Name="mainListBox" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple">
-        <TreeView.ContextMenu>
+      <ListBox Items="{Binding Queue}" Grid.Row="2" Name="mainListBox" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple" Background="Transparent">
+        <ListBox.ContextMenu>
           <ContextMenu>
             <MenuItem Header="Remove Selected" Click="RemoveSelected" />
             <MenuItem Header="Clear Queue" Click="ClearAll" />
             <MenuItem Header="Browse From Dialog" Click="AddFilee" />
           </ContextMenu>
-        </TreeView.ContextMenu>
-        <TreeView.ItemTemplate>
-          <TreeDataTemplate>
+        </ListBox.ContextMenu>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
           <Grid PointerPressed="TreeView_PointerPressed1" ColumnDefinitions="100,*,*,*">
-            <TextBlock Text="{Binding TrackNoF}" Grid.Column="0" HorizontalAlignment="Left"/>
-            <TextBlock Text="{Binding TitleOrURLF}" Grid.Column="1" HorizontalAlignment="Center"/>
-            <TextBlock Text="{Binding Metadata.Artist}" Grid.Column="2" HorizontalAlignment="Center"/>
-            <TextBlock Text="{Binding Metadata.Album}" Grid.Column="3" HorizontalAlignment="Center"/>
+            <TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="CD{0}/{1}">
+                  <Binding Path="Metadata.DiscNumber"/>
+                  <Binding Path="Metadata.TrackNumber"/>
+                </MultiBinding>
+              </TextBlock.Text>
+
+
+            </TextBlock>
+            <TextBlock Classes="c c2" Grid.Column="1" HorizontalAlignment="Center">
+              <TextBlock.Text>
+                <MultiBinding Converter="{StaticResource ResourceKey=nullableReplacingConverter}">
+                  <Binding Path="Metadata.Title"/>
+                  <Binding Path="URI"/>
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock> 
+            <TextBlock Classes="c c3" Text="{Binding Metadata.Artist}" Grid.Column="2" HorizontalAlignment="Center"/>
+            <TextBlock Classes="c c4" Text="{Binding Metadata.Album}" Grid.Column="3" HorizontalAlignment="Center"/>
           </Grid>
-          </TreeDataTemplate>
-        </TreeView.ItemTemplate>
-      </TreeView>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
     </Grid>
  
   

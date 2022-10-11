@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="512"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="Win32WakeLock.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   inkscape:export-filename="Win32WakeLock.png"
+   inkscape:export-xdpi="3072"
+   inkscape:export-ydpi="3072"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview21"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="3.5705387"
+     inkscape:cx="151.23768"
+     inkscape:cy="255.98378"
+     inkscape:window-width="3840"
+     inkscape:window-height="2097"
+     inkscape:window-x="1432"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid27"
+       originx="0"
+       originy="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs16" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="path136"
+       style="fill:#ffcc00;stroke-width:41.25"
+       d="M 253.88819,5.9317457 A 247.5,247.5 0 0 0 6.3881903,253.43175 247.5,247.5 0 0 0 253.88819,500.93175 247.5,247.5 0 0 0 308.18994,494.24476 247.5,247.5 0 0 1 82.442877,248.2755 247.5,247.5 0 0 1 277.49413,7.0596857 247.5,247.5 0 0 0 253.88819,5.9317457 Z" />
+    <rect
+       style="fill:#0000ff;stroke-width:19.3823"
+       id="rect378"
+       width="82.5"
+       height="82.5"
+       x="291.12381"
+       y="54.294037"
+       ry="12.375"
+       rx="12.375" />
+    <rect
+       style="fill:#0000ff;stroke-width:19.3823"
+       id="rect378-6"
+       width="82.5"
+       height="82.5"
+       x="387.72778"
+       y="54.400208"
+       ry="12.375"
+       rx="12.375" />
+    <rect
+       style="fill:#0000ff;stroke-width:19.3823"
+       id="rect378-8"
+       width="82.5"
+       height="82.5"
+       x="291.43219"
+       y="151.35541"
+       ry="12.375"
+       rx="12.375" />
+    <rect
+       style="fill:#0000ff;stroke-width:19.3823"
+       id="rect378-6-0"
+       width="82.5"
+       height="82.5"
+       x="388.0361"
+       y="151.46156"
+       ry="12.375"
+       rx="12.375" />
+  </g>
+</svg>

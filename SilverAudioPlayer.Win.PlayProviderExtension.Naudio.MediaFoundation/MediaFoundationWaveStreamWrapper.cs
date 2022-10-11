@@ -23,10 +23,18 @@ namespace SilverAudioPlayer.Naudio.MediaFoundation
 
         public byte GetPlayingAbility(WrappedStream stream)
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT && stream is WrappedFileStream && (stream.MimeType == KnownMimes.WAVMime || stream.MimeType == KnownMimes.AACMime || stream.MimeType == KnownMimes.MP3Mime || (stream.MimeType == KnownMimes.FLACMime && Environment.OSVersion.Version.Major >= 10)))
+            if(Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                return 60;
+                if (stream is WrappedFileStream && (stream.MimeType == KnownMimes.WAVMime || stream.MimeType == KnownMimes.AACMime || stream.MimeType == KnownMimes.MP3Mime))
+                {
+                    return 60;
+                }
+                if (stream.MimeType == KnownMimes.FLACMime && Environment.OSVersion.Version.Major >= 10)
+                {
+                    return 30;
+                }
             }
+            
             return 0;
         }
 

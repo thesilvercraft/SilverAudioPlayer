@@ -128,7 +128,6 @@ namespace SilverAudioPlayer.Avalonia
                 WindowExtensions.SetEnv("DisableSAPTransparency", "false");
                 OnNewColor?.Invoke(this, null);
                 WindowExtensions.OnStyleChange(this, null);
-
             }
         }
         private void ChangeColorPB(object? sender, RoutedEventArgs e)

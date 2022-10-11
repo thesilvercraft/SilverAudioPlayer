@@ -20,8 +20,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     string ICodeInformation.Name => "CAD Music status interface";
     public string Description => "CD Art display compatible interface, interfaces with Rainmeter or CD Art Display (or anything else that follows the cad-sdk-2.1 protocol";
 
-
-    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(CADMusicStatusInterface).Assembly, "SilverAudioPlayer.Windows.MusicStatusInterface.CAD.SAPCAD.png");
+    new public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(CADMusicStatusInterface).Assembly, "SilverAudioPlayer.Windows.MusicStatusInterface.CAD.SAPCAD.png" );
     public Version? Version => typeof(CADMusicStatusInterface).Assembly.GetName().Version;
 
     public string Licenses => "";
@@ -70,10 +69,12 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         string strTemp;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
         logger?.Information("Registering for CAD, found window: {ThWnd}", ThWnd);
-        strTemp = "1" + "\t" + "\t" + "SilverAudioPlayerIPC" + "\t" + AppContext.BaseDirectory + @"SilverAudioPlayer.Winforms.exe" + "\t";
+        strTemp = "1\t\tSilverAudioPlayerIPC\t" + AppContext.BaseDirectory + "SilverAudioPlayer.Winforms.exe\t";
         logger?.Debug("Registering for CAD, will send: {strTemp}", strTemp);
-        CopyDataStruct copyData = new();
-        copyData.lpData = Marshal.StringToHGlobalUni(strTemp);
+        CopyDataStruct copyData = new()
+        {
+            lpData = Marshal.StringToHGlobalUni(strTemp)
+        };
         if (copyData.lpData != IntPtr.Zero)
         {
             copyData.dwData = new IntPtr(700);
@@ -98,14 +99,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     private static IntPtr SetWindowProc(IntPtr hWnd, WndProcDelegate newWndProc)
     {
         IntPtr newWndProcPtr = Marshal.GetFunctionPointerForDelegate(newWndProc);
-        IntPtr oldWndProcPtr;
-
-        if (IntPtr.Size == 4)
-            oldWndProcPtr = SetWindowLongPtr32(hWnd, GWL_WNDPROC, newWndProcPtr);
-        else
-            oldWndProcPtr = SetWindowLongPtr64(hWnd, GWL_WNDPROC, newWndProcPtr);
-
-        return oldWndProcPtr;
+        return IntPtr.Size == 4 ? SetWindowLongPtr32(hWnd, GWL_WNDPROC, newWndProcPtr) : SetWindowLongPtr64(hWnd, GWL_WNDPROC, newWndProcPtr);
     }
 
     public void HookMsg(IntPtr hwnd)
@@ -164,7 +158,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                 }
                 art = Path.Combine(AppContext.BaseDirectory, "Art", bestart.Hash + ".jpg");
             }
-            strTemp = $"{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Title)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Artist)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Album)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Genre)}\t{song.Metadata.Year}\t\t{(song.Metadata.TrackNumber ?? 0)}\t{((int)(song.Metadata.Duration / 1000 ?? 60))}\t{song.URI.Replace("\t", "\\t")}\t0\t{art.Replace("\t", "\\t")}\t\t\t\t\t\t\t";
+            strTemp = $"{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Title)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Artist)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Album)}\t{ReplaceNullWithEmptyAndTabsWithSpace(song.Metadata.Genre)}\t{song.Metadata.Year}\t\t{song.Metadata.TrackNumber ?? 0}\t{(int)(song.Metadata.Duration / 1000 ?? 60)}\t{song.URI.Replace("\t", "\\t")}\t0\t{art.Replace("\t", "\\t")}\t\t\t\t\t\t\t";
             logger?.Debug("Sending CAD the song info, will send {strTemp}", strTemp);
         }
         else
@@ -469,10 +463,10 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         if (string.IsNullOrEmpty(value)) return value;
         maxLength = Math.Abs(maxLength);
 
-        return (value.Length <= maxLength
+        return value.Length <= maxLength
                ? value
                : value[..maxLength]
-               );
+               ;
     }
 
     private List<GCHandle> Handles = new();
@@ -564,8 +558,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         }
     }
 
-
-    public void Dispose()
+    public new void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(disposing: true);

@@ -9,6 +9,19 @@ namespace SilverAudioPlayer.Shared
         public WrappedFileStream(string url)
         {
             URL = url;
+            MimeType? mt = null;
+            var stream2 = InternalGetStream();
+            try
+            {
+                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+            }
+            finally
+            {
+                stream2.Dispose();
+                Streams.Remove(stream2);
+            }
+            mt ??= KnownMimes.GetKnownMimeByExtension(new FileInfo(URL).Extension);
+            _MimeType = mt;
         }
 
         public string URL { get; set; }
@@ -27,19 +40,7 @@ namespace SilverAudioPlayer.Shared
         public override Stream GetStream()
         {
             var Stream = InternalGetStream();
-            MimeType? mt = null;
-            var stream2 = InternalGetStream();
-            try
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            }
-            finally
-            {
-                stream2.Dispose();
-                Streams.Remove(stream2);
-            }
-            mt ??= KnownMimes.GetKnownMimeByExtension(new FileInfo(URL).Extension);
-            _MimeType = mt;
+
             return Stream;
         }
 

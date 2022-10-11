@@ -2,6 +2,7 @@
 using NAudio.Wave;
 using SilverAudioPlayer.Shared;
 using System.Composition;
+using System.Diagnostics;
 using PlaybackState = NAudio.Wave.PlaybackState;
 
 namespace SilverAudioPlayer.NAudio
@@ -104,6 +105,7 @@ namespace SilverAudioPlayer.NAudio
 
         public void Stop()
         {
+            outputDevice.Stop();
             outputDevice?.Dispose();
         }
 
@@ -134,6 +136,7 @@ namespace SilverAudioPlayer.NAudio
                 return ws.CurrentTime;
             }
             //this should not happen
+            Debug.WriteLine("PlayProvider.NAudio THISSHOULDNOTHAPPEN");
             return TimeSpan.Zero;
         }
 
@@ -158,7 +161,7 @@ namespace SilverAudioPlayer.NAudio
 
         public TimeSpan? Length()
         {
-            return ((WaveStream?)audioFile)?.TotalTime;
+            return (audioFile)?.TotalTime;
         }
 
         public uint? ChannelCount()

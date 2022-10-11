@@ -21,6 +21,12 @@
         public IPlayProviderListner ProviderListner { set; }
         Task OnStartup();
     }
+    public interface IWakeLockProvider : ICodeInformation
+    {
+        public void WakeLock();
+        public void UnWakeLock();
+
+    }
     public interface IPlayProviderListner
     {
         IPlayerEnviroment GetEnviroment();

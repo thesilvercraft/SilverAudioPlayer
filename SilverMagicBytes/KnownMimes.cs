@@ -86,13 +86,13 @@
     }
     public class AudioMime : MimeType
     {
-        public AudioMime(string common, string[] alternativeTypes = null, string[] fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+        public AudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
         {
         }
     }
     public class ImageMime : MimeType
     {
-        public ImageMime(string common, string[] alternativeTypes = null, string[] fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+        public ImageMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
         {
         }
     }
@@ -104,7 +104,7 @@
     }
     public class CompressedImageMime : MimeType, ICompression
     {
-        public CompressedImageMime(string common, CompressionType CompressionType, string[] alternativeTypes = null, string[] fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+        public CompressedImageMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
         {
             this.CompressionType = CompressionType;
         }
@@ -115,7 +115,7 @@
     }
     public class CompressedAudioMime : AudioMime, ICompression
     {
-        public CompressedAudioMime(string common, CompressionType CompressionType, string[] alternativeTypes = null, string[] fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+        public CompressedAudioMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
         {
             this.CompressionType = CompressionType;
         }

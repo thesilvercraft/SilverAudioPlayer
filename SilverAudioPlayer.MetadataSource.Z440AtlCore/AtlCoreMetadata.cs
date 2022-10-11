@@ -20,6 +20,7 @@ namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
             Channels = (uint?)theTrack.ChannelsArrangement.NbChannels;
             Pictures = theTrack.EmbeddedPictures.Select(x => new ATLCOREPicture(x)).ToList();
             Lyrics = theTrack.Lyrics.UnsynchronizedLyrics;
+            SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs,x.Text)).ToList();
             DiscNumber = theTrack.DiscNumber;
         }
 

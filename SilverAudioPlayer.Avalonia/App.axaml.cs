@@ -147,6 +147,10 @@ namespace SilverAudioPlayer.Avalonia
                 {
                     throw new ProvidersReturnedNullException("The 'mw.Logic.MusicStatusInterfaces' returned null.");
                 }
+                if (mw.Logic.WakeLockInterfaces == null)
+                {
+                    throw new ProvidersReturnedNullException("The 'mw.Logic.WakeLockInterfaces' returned null.");
+                }
                 foreach (var provider in mw.Logic.MusicStatusInterfaces)
                 {
                     var name = provider.GetType().Name;

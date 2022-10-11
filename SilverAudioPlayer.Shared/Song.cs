@@ -1,10 +1,11 @@
-﻿using SilverMagicBytes;
+﻿using ReactiveUI;
+using SilverMagicBytes;
 using System.Text.RegularExpressions;
 //using VideoLibrary;
 
 namespace SilverAudioPlayer.Shared
 {
-    public sealed class Song : IEquatable<Song>, IEquatable<Guid>
+    public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>
     {
         //https://reactgo.com/javascript-check-string-url/
         public readonly Regex URLRegex = new("^(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ECMAScript);
@@ -48,7 +49,8 @@ namespace SilverAudioPlayer.Shared
         public string URI { get; set; }
         public string Name { get; set; }
         public Guid Guid { get; set; }
-        public Metadata? Metadata { get; set; }
+        public Metadata? Metadata { get => _Metadata; set=>this.RaiseAndSetIfChanged(ref _Metadata,value); }
+        private Metadata? _Metadata;
 
         public bool Equals(Song? other)
         {

@@ -1,11 +1,11 @@
 {
   "profiles": {
     "SilverAudioPlayer.Avalonia": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\Users\\filip\\source\\repos\\SilverAudioPlayer\\SilverAudioPlayer.Avalonia\\bin\\Debug\\net6.0-windows10.0.18362.0\\SilverAudioPlayer.Avalonia.exe\" \"D:\\save\\music\\Daft Punk - Discovery (2001) [FLAC] [16B-44.1kHz]\\10. Daft Punk - Voyager.flac\""
     },
     "WSL": {
       "commandName": "WSL2",
-      "environmentVariables": {},
       "distributionName": ""
     }
   }

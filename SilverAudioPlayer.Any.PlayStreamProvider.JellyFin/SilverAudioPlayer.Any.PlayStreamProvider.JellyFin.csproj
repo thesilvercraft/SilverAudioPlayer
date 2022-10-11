@@ -24,7 +24,6 @@
     </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-    <ProjectReference Include="..\SilverCraft.AvaloniaUtils\SilverCraft.AvaloniaUtils.csproj" />
   </ItemGroup>
   <ItemGroup>
     <UpToDateCheckInput Remove="Gui.axaml" />

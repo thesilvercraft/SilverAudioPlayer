@@ -52,7 +52,7 @@ namespace SilverAudioPlayer.Avalonia
         }
         private readonly ILogger? Log;
 
-        private void ProcessSubProperties(object thing, Field parentfield, int allowedlength=5)
+        private void ProcessSubProperties(object thing, Field parentfield, int allowedlength=6)
         {
             if(allowedlength==0) return;
             if (thing is string)
@@ -77,6 +77,7 @@ namespace SilverAudioPlayer.Avalonia
                 }
                 return;
             }
+           
             var typeofmetadata = thing.GetType();
             var properties = typeofmetadata.GetProperties();
             var typeofmetadataref = typeof(Metadata);
@@ -111,10 +112,14 @@ namespace SilverAudioPlayer.Avalonia
             AvaloniaXamlLoader.Load(this);
         }
 
-        public void Pictures_Click(object? sender, PointerPressedEventArgs e)
+        private void IMG_DoubleTapped(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
         {
-            //TODO Embedded pictures viewer
+            PictureViewer pv = new(s?.Metadata?.Pictures);
+
+            pv.Show();
         }
+
+       
     }
     public class Field
     {

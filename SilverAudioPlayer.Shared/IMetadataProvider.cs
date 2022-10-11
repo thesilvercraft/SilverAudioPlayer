@@ -28,6 +28,7 @@
         public double? Duration { get; init; }
 
         public string? Lyrics { get; init; }
+        public IList<LyricPhrase>? SyncedLyrics { get; set; }
         public IReadOnlyList<Picture>? Pictures { get; init; }
     }
 

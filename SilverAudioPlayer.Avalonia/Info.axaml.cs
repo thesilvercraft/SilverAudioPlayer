@@ -62,6 +62,8 @@ namespace SilverAudioPlayer.Avalonia
             info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x));
             info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
             info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
+            info.AddRange(mainWindow.Logic.WakeLockInterfaces.Select(x => x));
+
             ObservableCollection<InfoPRecord> infop = new();
             StringBuilder licenses = new();
             foreach (var item in info)

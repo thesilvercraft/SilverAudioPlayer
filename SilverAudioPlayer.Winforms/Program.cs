@@ -6,11 +6,7 @@ using Microsoft.AppCenter.Crashes;
 using Silver.Serilog.MSAppCenterSink;
 
 #endif
-#if SUP
 
-using Silver.Update;
-
-#endif
 
 using Microsoft.Extensions.Configuration;
 using Serilog;

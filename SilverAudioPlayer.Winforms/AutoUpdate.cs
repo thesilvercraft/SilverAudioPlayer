@@ -3,14 +3,7 @@
 using Squirrel;
 
 #endif
-#if SUP
 
-using Silver.Update;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Diagnostics;
-
-#endif
 
 namespace SilverAudioPlayer.Winforms
 {
@@ -73,30 +66,7 @@ namespace SilverAudioPlayer.Winforms
             using var manager = new UpdateManager(UpdateUrl, AppName, RootDir);
             await manager.UpdateApp();
 #endif
-#if SUP
-            var assembly = typeof(Program).Assembly;
-            var attribute = (GuidAttribute)assembly.GetCustomAttributes(typeof(GuidAttribute), true)[0];
-            var id = attribute.Value;
-            try
-            {
-                  Updater a = new(UpdateUrl, Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString() ?? "unknown");
-                  Updater.UpdateState? updateav = await a.CheckForUpdates();
-                  if (updateav is not null && updateav is not Updater.UpToDate && updateav is not Updater.UpToDateButFilesModified && updateav is Updater.NotUpToDate)
-                  {
-                      Tuple<string, string>? stuff = await a.ShowUpdateQuestionDialog(AppName);
-                      if (stuff != null)
-                      {
-                          Process.Start(stuff.Item1, stuff.Item2);
-                          await Task.Delay(1000);
-                          Application.Exit();
-                      }
-                  }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-            }
-#endif
+
         }
     }
 }

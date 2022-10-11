@@ -11,7 +11,7 @@
     }
     public class MimeType
     {
-        public MimeType(string common, string[] alternativeTypes =null, string[] fileExtensions = null)
+        public MimeType(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)
         {
             Common = common;
             AlternativeTypes = alternativeTypes ?? Array.Empty<string>();

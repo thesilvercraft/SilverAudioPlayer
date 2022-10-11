@@ -13,7 +13,6 @@ using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -38,7 +37,9 @@ namespace SilverAudioPlayer.Avalonia
         public string Title { get => _Title; set => this.RaiseAndSetIfChanged(ref _Title, value); }
 
         public byte V { get => GetVolume(); set => VolumeChanged(value); }
-        
+
+        public ObservableCollection<Song> Queue { get => _queue; set => this.RaiseAndSetIfChanged(ref _queue, value); }
+        private ObservableCollection<Song> _queue = new();
 
         public RepeatState LoopType { get => mainWindow.config.LoopType; set => SetLoopType(value); }
         private void SetLoopType(RepeatState v)
@@ -70,8 +71,7 @@ namespace SilverAudioPlayer.Avalonia
             this.AttachDevTools();
 #endif
             this.DoAfterInitTasks(true);
-            Songs = new();
-            mainListBox.Items = Songs;
+            //mainListBox.Items = dc.Queue;
             AddHandler(DragDrop.DropEvent, Drop);
             AddHandler(DragDrop.DragOverEvent, DragOver);
             Closing += (s, e) => Player?.Stop();
@@ -80,6 +80,7 @@ namespace SilverAudioPlayer.Avalonia
             StopButton.Click += StopButton_Click;
             PB = this.FindControl<ProgressBar>("PB");
             LT = this.FindControl<TextBlock>("LT");
+            mainListBox = this.FindControl<ListBox>("mainListBox");
             PB.PointerReleased += PB_PointerReleased;
             mainListBox.DoubleTapped += TreeView_DoubleTapped;
             Closing += MainWindow_Closing;
@@ -89,11 +90,11 @@ namespace SilverAudioPlayer.Avalonia
             mainListBox.PointerReleased += TreeView_PointerReleased;
             mainListBox.PointerPressed += TreeView_PointerPressed1;
             reader = new();
-            if(!File.Exists(ConfigPath))
+            if (!File.Exists(ConfigPath))
             {
                 reader.Write(new(), ConfigPath);
             }
-            config = reader.Read(ConfigPath)??new();
+            config = reader.Read(ConfigPath) ?? new();
             dc = new MainWindowContext(this)
             {
                 VolumeChanged = (byte vol) =>
@@ -113,10 +114,9 @@ namespace SilverAudioPlayer.Avalonia
             ShowAppInfo = this.FindControl<MenuItem>("ShowAppInfo");
             RepeatButton = this.FindControl<Button>("RepeatButton");
             RepeatButton.Click += RepeatButton_Click;
-
         }
         public Config config;
-       public CommentXmlConfigReaderNotifyWhenChanged<Config> reader;
+        public CommentXmlConfigReaderNotifyWhenChanged<Config> reader;
         MainWindowContext dc;
         private void RepeatButton_Click(object? sender, RoutedEventArgs e)
         {
@@ -149,10 +149,12 @@ namespace SilverAudioPlayer.Avalonia
         private void SetVolume(byte v)
         {
             config.Volume = v;
-            config._AllowedRead = false;
-            reader.Write(config, ConfigPath);
-            config._AllowedRead = true;
-
+            if (config._AllowedRead)
+            {
+                config._AllowedRead = false;
+                reader.Write(config, ConfigPath);
+                config._AllowedRead = true;
+            }
         }
         private void TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
@@ -182,7 +184,6 @@ namespace SilverAudioPlayer.Avalonia
         private bool en = false;
         private bool en2 = false;
 
-        private ObservableCollection<Song> Songs;
         public Logic Logic { get; set; } = new();
         public IPlay? Player { get; private set; }
         private Song? CurrentSong = null;
@@ -283,21 +284,33 @@ namespace SilverAudioPlayer.Avalonia
             {
                 PlaybackStateChangedNotification(state.Value);
             }
-        }
-
-        private void TrackChangedNotification(Song? currentSong)
-        {
-            foreach (var msI in musicStatusInterfaces)
+            else
             {
-                msI.TrackChangedNotification(currentSong!);
+                PlaybackStateChangedNotification(PlaybackState.Stopped);
             }
         }
-
+        /// <summary>
+        /// Lets music status interfaces know about a track change
+        /// </summary>
+        /// <param name="currentSong">The new track</param>
+        private void TrackChangedNotification(Song? currentSong)
+        {
+            Parallel.ForEach(musicStatusInterfaces, msI => msI?.TrackChangedNotification(currentSong!));
+        }
+        /// <summary>
+        /// Lets music status interfaces know about a playstate change
+        /// </summary>
+        /// <param name="s">The new Playstate</param>
         private void PlaybackStateChangedNotification(PlaybackState s)
         {
-            foreach (var msI in musicStatusInterfaces)
+            Parallel.ForEach(musicStatusInterfaces, msI => msI?.PlayerStateChanged(s));
+            if (s == PlaybackState.Stopped)
             {
-                msI.PlayerStateChanged(s);
+                Parallel.ForEach(Logic.WakeLockInterfaces, msI => msI.UnWakeLock());
+            }
+            else if (s == PlaybackState.Playing)
+            {
+                Parallel.ForEach(Logic.WakeLockInterfaces, msI => msI.WakeLock());
             }
         }
 
@@ -343,7 +356,6 @@ namespace SilverAudioPlayer.Avalonia
             }
             else if (allowstart)
             {
-                Debug.WriteLine("Allowstart is true");
                 Play();
             }
         }
@@ -355,7 +367,7 @@ namespace SilverAudioPlayer.Avalonia
 
         private ulong MusicStatusInterface_GetDuration()
         {
-            return (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 2;
+            return (ulong?)(Player?.Length()?.TotalSeconds) ?? (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 2;
         }
 
         private Song MusicStatusInterface_GetCurrentTrack()
@@ -372,22 +384,32 @@ namespace SilverAudioPlayer.Avalonia
         {
             Next();
         }
-
+        bool ChangeAllowed = true;
         private void Next()
         {
-            var a = Songs.IndexOf(CurrentSong);
-            if (a != -1 && a + 1 < Songs.Count)
+            if (ChangeAllowed)
             {
-                HandleSongChanging(Songs[a + 1], true);
+                var a = dc.Queue.IndexOf(CurrentSong);
+                if (a != -1 && a + 1 < dc.Queue.Count)
+                {
+                    ChangeAllowed = false;
+                    HandleSongChanging(dc.Queue[a + 1], true);
+                    ChangeAllowed = true;
+                }
             }
         }
 
         private void Previous()
         {
-            var a = Songs.IndexOf(CurrentSong);
-            if (a != -1 && a - 1 >= 0)
+            if (ChangeAllowed)
             {
-                HandleSongChanging(Songs[a - 1], true);
+                var a = dc.Queue.IndexOf(CurrentSong);
+                if (a != -1 && a - 1 >= 0)
+                {
+                    ChangeAllowed = false;
+                    HandleSongChanging(dc.Queue[a - 1], true);
+                    ChangeAllowed = true;
+                }
             }
         }
 
@@ -495,9 +517,9 @@ namespace SilverAudioPlayer.Avalonia
         {
             if (CurrentSong == null)
             {
-                if (Songs.Count > 0)
+                if (dc.Queue.Count > 0)
                 {
-                    CurrentSong = Songs[0];
+                    CurrentSong = dc.Queue[0];
                 }
                 else
                 {
@@ -514,7 +536,7 @@ namespace SilverAudioPlayer.Avalonia
                 return;
             }
 
-            Logic.log.Information("Got player of type {PlayerType}",Player.GetType());
+            Logic.log.Information("Got player of type {PlayerType}", Player.GetType());
 
             Task.Run(() => TrackChangedNotification(CurrentSong));
             if (play)
@@ -622,9 +644,10 @@ namespace SilverAudioPlayer.Avalonia
             Player?.Stop();
             Player = null;
             token?.Cancel();
+            Thread.Sleep(30);
         }
 
-        public RepeatState LoopType {get => dc.LoopType; set => dc.LoopType = value;}
+        public RepeatState LoopType { get => dc.LoopType; set => dc.LoopType = value; }
 
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
@@ -640,16 +663,16 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
             }
             else if (CurrentSong != null && !StopAutoLoading)
             {
-                var a = Songs.IndexOf(CurrentSong);
+                var a = dc.Queue.IndexOf(CurrentSong);
                 if (a != -1)
                 {
-                    if (a + 1 < Songs.Count)
+                    if (a + 1 < dc.Queue.Count)
                     {
-                        HandleSongChanging(Songs[a + 1], true);
+                        HandleSongChanging(dc.Queue[a + 1], true);
                     }
                     else if (LoopType == RepeatState.Queue)
                     {
-                        HandleSongChanging(Songs[0], true);
+                        HandleSongChanging(dc.Queue[0], true);
                     }
                     else
                     {
@@ -670,8 +693,8 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
         {
             Logic.log.Information("StopAutoLoading set to true in HandleSongChanging");
             StopAutoLoading = true;
-            var curr = Songs.IndexOf(CurrentSong);
-            var next = Songs.IndexOf(NextSong);
+            var curr = dc.Queue.IndexOf(CurrentSong);
+            var next = dc.Queue.IndexOf(NextSong);
             if (next == -1)
             {
                 Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSongURI}\nCurrentSong.Guid is {CurrentSon}\nCurrentSong.URI is {CurrentSongURI}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
@@ -701,7 +724,6 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
             else
             {
                 e.DragEffects = DragDropEffects.None;
-
             }
         }
 
@@ -719,40 +741,9 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
             {
                 ProcessFiles(e!.Data.GetFileNames());
             }
-            if(e.Data.Contains("UniformResourceLocatorW"))
+            if (e.Data.Contains("UniformResourceLocatorW"))
             {
                 ProcessFiles(new[] { e!.Data.GetText() });
-
-            }
-        }
-
-        private void FillMetadataOfLoadedFiles(bool sortafterwards = false)
-        {
-            Parallel.ForEach(Songs, (Song ayo) =>
-            {
-                if (ayo is Song song && song.Metadata == null)
-                {
-                    var a = Logic.GetMetadataFromStream(song.Stream);
-                    Logic.log.Information("Getting metadata in FMOLF about song " + song.Guid);
-                    if (a != null)
-                    {
-                        Logic.log.Verbose("a wasn't null");
-                        Task.Run(async () => song.Metadata = await a);
-                    }
-                }
-            });
-
-            if (sortafterwards)
-            {
-                Logic.log.Information("Sorting after filling metadata");
-                List<Song> songs = new();
-                foreach (var group in Songs.GroupBy(a => a?.Metadata?.DiscNumber ?? 0).OrderBy(a => a.Key))
-                {
-                    songs.AddRange(group.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
-                }
-                Songs = new ObservableCollection<Song>(songs);
-                mainListBox.Items = Songs;
-                mainListBox.InvalidateVisual();
             }
         }
 
@@ -769,9 +760,6 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
                 {
                     AddSong(new Song(file, file, Guid.NewGuid()));
                 }
-                mainListBox.Items = Songs;
-                mainListBox.InvalidateVisual();
-                FillMetadataOfLoadedFiles(true);
             }
         }
 
@@ -783,9 +771,6 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
                 {
                     AddSong(new Song(file, "unknown", Guid.NewGuid()));
                 }
-                mainListBox.Items = Songs;
-                mainListBox.InvalidateVisual();
-                FillMetadataOfLoadedFiles(true);
             }
         }
 
@@ -794,15 +779,12 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
             if (file != null)
             {
                 AddSong(new Song(file, "unknown", Guid.NewGuid()));
-                mainListBox.Items = Songs;
-                mainListBox.InvalidateVisual();
-                FillMetadataOfLoadedFiles(true);
             }
         }
 
         public void ClearAll(object sender, RoutedEventArgs e)
         {
-            Songs.Clear();
+            dc.Queue.Clear();
         }
 
         public async void AddFilee(object sender, RoutedEventArgs e)
@@ -834,16 +816,17 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
         public void RemoveSelected(object sender, RoutedEventArgs e)
         {
             Logic.log.Information("RemoveSelected called");
-            foreach (Song selected in mainListBox.SelectedItems)
+            while (mainListBox.SelectedItems.Count != 0)
             {
+                Song selected = (Song)mainListBox.SelectedItems[0];
                 if (selected == NextSong)
                 {
                     Logic.log.Information("Selected is nextsong");
-                    var a = Songs.IndexOf(selected);
-                    if (Songs.Count > a + 1)
+                    var a = dc.Queue.IndexOf(selected);
+                    if (dc.Queue.Count > a + 1)
                     {
                         Logic.log.Information("NextSong is set the next one");
-                        NextSong = Songs[a + 1];
+                        NextSong = dc.Queue[a + 1];
                     }
                     else
                     {
@@ -851,13 +834,29 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
                         NextSong = null;
                     }
                 }
-                Songs.Remove(selected);
+                dc.Queue.Remove(selected);
             }
         }
 
         private void AddSong(Song s)
         {
-            Songs.Add(s);
+            Task.Run(async () =>
+            {
+                s.Metadata ??= await Logic.GetMetadataFromStream(s.Stream)!;
+
+                dc.Queue.Add(s);
+
+                List<Song> sng = new();
+                foreach (var album in dc.Queue.AsEnumerable().GroupBy(a => a.Metadata.Album))
+                {
+                    var discs = album.GroupBy(a => a?.Metadata?.DiscNumber ?? 0);
+                    foreach (var disc in discs.OrderBy(a => a.Key))
+                    {
+                        sng.AddRange(disc.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
+                    }
+                }
+                dc.Queue = new ObservableCollection<Song>(sng);
+            });
         }
     }
 }

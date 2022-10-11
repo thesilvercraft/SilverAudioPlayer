@@ -19,7 +19,6 @@ namespace SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis
             return 0;
         }
 
-      
 
         public WaveStream GetStream(WrappedStream stream)
         {

@@ -10,12 +10,12 @@ namespace SilverAudioPlayer.Naudio.Flac
     [Export(typeof(INaudioWaveStreamWrapper))]
     public class FlacNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
     {
-        
+
         public byte GetPlayingAbility(WrappedStream stream)
         {
             if (stream.MimeType == KnownMimes.FLACMime)
             {
-                return 28;
+                return 40;
             }
             return 0;
         }

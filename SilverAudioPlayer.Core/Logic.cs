@@ -12,7 +12,8 @@ namespace SilverAudioPlayer.Core
         public IEnumerable<IMetadataProvider> MetadataProviders { get; set; }
         [ImportMany]
         public IEnumerable<IMusicStatusInterface> MusicStatusInterfaces { get; set; }
-
+        [ImportMany]
+        public IEnumerable<IWakeLockProvider> WakeLockInterfaces { get; set; }
         public Serilog.Core.Logger log { get; set; }
 
         public IPlay? GetPlayerFromStream(WrappedStream stream)
@@ -30,7 +31,6 @@ namespace SilverAudioPlayer.Core
         {
             return GetMetadataProviderFromStream(stream)?.GetMetadata(stream);
         }
-        //TODO UPDATE TO USE MAGICBYTES INSTEAD
         public IEnumerable<string> FilterFiles(IEnumerable<string> files) => files.Where(x => !(
            x.EndsWith(".png")
         || x.EndsWith(".txt")

@@ -9,7 +9,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Configurations>Debug;Release;SUP;MSRelease;SUPMS;SQRLMS</Configurations>
+    <Configurations>Debug;Release;MSRelease;SQRLMS</Configurations>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
@@ -48,9 +48,7 @@
     <!--CD Art Display - windows 7+-->
 
     <DefineConstants>$(DefineConstants);CAD;</DefineConstants>
-    <!--Silver.Update-->
 
-    <!--<DefineConstants>$(DefineConstants);SUP</DefineConstants>-->
    
     <!--Microsoft appcenter-->
 
@@ -67,11 +65,7 @@
     <Optimize>True</Optimize>
   </PropertyGroup>
 
-  <Target Condition="$(DefineConstants.Contains('SUP'))" Name="PostBuild" AfterTargets="Publish">
-    <Exec Command="echo {\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang2057{\fonttbl{\f0\fnil\fcharset0 Calibri;}} &gt; D:\tmp.rtf &amp;echo {\colortbl ;\red255\green0\blue0;} &gt;&gt; D:\tmp.rtf &amp;echo {\*\generator Riched20 10.0.19041}\viewkind4\uc1 &gt;&gt; D:\tmp.rtf &amp;echo \pard\sa200\sl276\slmult1\f0\fs22\lang9 Hey!\par  &gt;&gt; D:\tmp.rtf &amp;echo This file will contain the next release notes of SilverAudioPlayer!!!\par &gt;&gt; D:\tmp.rtf &amp;echo \cf1 PLEASE consider filling it out but if you don't want to then delete all of this text lmao\cf0\par &gt;&gt; D:\tmp.rtf &amp;echo } &gt;&gt;  D:\tmp.rtf" />
-    <Exec Command="&quot;C:\Program Files\Windows NT\Accessories\wordpad.exe&quot; D:\tmp.rtf" />
-    <Exec Command="cmd /c &quot;D: &amp; cd $(ProjectDir) &amp;cd .. &amp; cd .. &amp; cd Silver.Update\Silver.Update.Packer\bin\debug\net6.0-windows &amp;dir &amp; Silver.Update.Packer.exe $(ProjectDir)$(OutDir) D:\sup\sap $(AssemblyVersion) SilverAudioPlayer SilverDiamond https://silverdiamond.cf/sup/sap D:\tmp.rtf zrh&quot;" />
-  </Target>
+  
   <Target Name="GenerateRelease" AfterTargets="Publish" Condition="$(DefineConstants.Contains('SQRL'))">
     <Exec Command="%userprofile%\.nuget\packages\clowd.squirrel\2.9.40\tools\squirrel.exe pack --packId &quot;$(PackageId)&quot; --packVersion &quot;$(PackageVersion)&quot; --packDirectory &quot;$(ProjectDir)$(OutDir.TrimEnd('\'))&quot; --framework net6 --setupIcon &quot;icon.ico&quot; --packAuthors &quot;SilverDiamond&quot;" />
   </Target>
@@ -118,7 +112,6 @@
     <ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD'))" />
     <ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
 
-    <ProjectReference Include="..\..\Silver.Update\Silver.Update\Silver.Update.csproj" Condition="$(DefineConstants.Contains('SUP'))" />
     <ProjectReference Include="..\Silver.Serilog.MSAppCenterSink\Silver.Serilog.MSAppCenterSink.csproj" Condition="$(DefineConstants.Contains('MS'))" />
     
   </ItemGroup>

@@ -167,10 +167,7 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
             return null;
         }
 
-        public bool CanPlayStream(Stream stream)
-        {
-            return false;
-        }
+      
 
         public IPlay? GetPlayer(string URI)
         {

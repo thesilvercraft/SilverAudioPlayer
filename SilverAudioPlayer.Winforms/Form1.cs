@@ -768,7 +768,8 @@ namespace SilverAudioPlayer
                         Task.Run(async () =>
                         {
                             song.Metadata = await a;
-                            ayo.Text = song.ToString();
+                            treeView1.Invoke(() => { ayo.Text = song.ToString(); });
+                           
                         });
                     }
                 }
@@ -811,13 +812,11 @@ namespace SilverAudioPlayer
             if (SourceNode != null)
             {
                 e.Effect = DragDropEffects.Move;
-                return;
             }
             else if (data != null)
             {
                 SourceNode = data;
                 e.Effect = DragDropEffects.Move;
-                return;
             }
         }
 

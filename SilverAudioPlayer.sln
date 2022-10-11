@@ -27,8 +27,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.Music
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Serilog.MSAppCenterSink", "Silver.Serilog.MSAppCenterSink\Silver.Serilog.MSAppCenterSink.csproj", "{AFAD7B7B-DCCF-410F-BD20-3D5576F6C849}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Update", "..\Silver.Update\Silver.Update\Silver.Update.csproj", "{DA220C86-5064-47B1-86DF-719BBCDDF7B6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.MusicStatusInterface.SMTC", "SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows.MusicStatusInterface.SMTC.csproj", "{61B29DC7-83D0-4E06-BEB7-8117BBACE920}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia\SilverAudioPlayer.Avalonia.csproj", "{2073084A-BDDE-4ED7-96BC-B0D257A75FA5}"
@@ -53,10 +51,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlayStreamProviders", "Play
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayStreamProvider.JellyFin", "SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj", "{47856220-406E-445C-BA7F-C8CBEE94B429}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.MAUI", "SilverAudioPlayer.MAUI\SilverAudioPlayer.MAUI.csproj", "{1DB092B6-B055-4D88-A139-1F92EBF58B5C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverCraft.AvaloniaUtils", "SilverCraft.AvaloniaUtils\SilverCraft.AvaloniaUtils.csproj", "{D3FA52AC-15DE-4033-9C4A-AA4FD55604D6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FEC4F4D4-8769-45D9-90CD-925495D7BE1B}"
 	ProjectSection(SolutionItems) = preProject
 		SilverAudioPlayer.targets = SilverAudioPlayer.targets
@@ -65,6 +59,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis", "SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis.csproj", "{CFD86110-0A31-4BAC-AB7B-A834897A81AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation", "SilverAudioPlayer.Win.PlayProviderExtension.Naudio.MediaFoundation\SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation.csproj", "{645BCD1A-489C-46BE-A6EA-1A682ABE8EF0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlatformHelpers", "PlatformHelpers", "{3A4E128B-DB45-49D2-A3D8-51DC45A61C4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.PlatformHelper.Win", "SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj", "{4F98020D-AF39-4687-BF9C-4A95236F16EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,10 +118,6 @@ Global
 		{AFAD7B7B-DCCF-410F-BD20-3D5576F6C849}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFAD7B7B-DCCF-410F-BD20-3D5576F6C849}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFAD7B7B-DCCF-410F-BD20-3D5576F6C849}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA220C86-5064-47B1-86DF-719BBCDDF7B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61B29DC7-83D0-4E06-BEB7-8117BBACE920}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -140,16 +134,6 @@ Global
 		{47856220-406E-445C-BA7F-C8CBEE94B429}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47856220-406E-445C-BA7F-C8CBEE94B429}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47856220-406E-445C-BA7F-C8CBEE94B429}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{D3FA52AC-15DE-4033-9C4A-AA4FD55604D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3FA52AC-15DE-4033-9C4A-AA4FD55604D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3FA52AC-15DE-4033-9C4A-AA4FD55604D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3FA52AC-15DE-4033-9C4A-AA4FD55604D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CFD86110-0A31-4BAC-AB7B-A834897A81AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CFD86110-0A31-4BAC-AB7B-A834897A81AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFD86110-0A31-4BAC-AB7B-A834897A81AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -158,6 +142,10 @@ Global
 		{645BCD1A-489C-46BE-A6EA-1A682ABE8EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{645BCD1A-489C-46BE-A6EA-1A682ABE8EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{645BCD1A-489C-46BE-A6EA-1A682ABE8EF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,16 +161,15 @@ Global
 		{6F0443B6-0319-4E98-B0C4-A8AEAAD7F31E} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
 		{C0A625DB-98BD-4CBC-91B7-076B0312E540} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
 		{AFAD7B7B-DCCF-410F-BD20-3D5576F6C849} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
-		{DA220C86-5064-47B1-86DF-719BBCDDF7B6} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
 		{61B29DC7-83D0-4E06-BEB7-8117BBACE920} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
 		{2073084A-BDDE-4ED7-96BC-B0D257A75FA5} = {01C2EEE3-40C0-47CB-8CCC-65FB9CBE277F}
 		{0C596BB7-D172-4367-BA85-27F93C05AF86} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 		{69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 		{500415A9-D923-4790-8988-235A4CF56C45} = {0C596BB7-D172-4367-BA85-27F93C05AF86}
 		{47856220-406E-445C-BA7F-C8CBEE94B429} = {19B951F3-56FD-4DAC-BA15-3D54A84997ED}
-		{1DB092B6-B055-4D88-A139-1F92EBF58B5C} = {01C2EEE3-40C0-47CB-8CCC-65FB9CBE277F}
 		{CFD86110-0A31-4BAC-AB7B-A834897A81AE} = {69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1}
 		{645BCD1A-489C-46BE-A6EA-1A682ABE8EF0} = {69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1}
+		{4F98020D-AF39-4687-BF9C-4A95236F16EF} = {3A4E128B-DB45-49D2-A3D8-51DC45A61C4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}
