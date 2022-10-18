@@ -76,7 +76,6 @@
         public PngMime() : base("image/png", CompressionType.Lossless, Array.Empty<string>(), new[] { ".png", })
         {
         }
-
     }
     public class JPGMime : CompressedImageMime
     {

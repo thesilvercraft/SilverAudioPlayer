@@ -8,7 +8,7 @@ namespace SilverAudioPlayer.Winforms
 {
     public partial class Manual : Form
     {
-        public Manual(Logic l)
+        public Manual(Logic<MainWindowContext> l)
         {
             InitializeComponent();
             List<ICodeInformation> info = new();

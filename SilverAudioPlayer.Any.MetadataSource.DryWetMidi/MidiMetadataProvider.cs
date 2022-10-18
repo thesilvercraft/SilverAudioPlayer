@@ -32,5 +32,4 @@ namespace SilverAudioPlayer.Any.MetadataSource.DryWetMidi
             return Task.FromResult((Metadata?)new MidiMetadata(MidiFile.Read(stream.GetStream())));
         }
     }
-
 }

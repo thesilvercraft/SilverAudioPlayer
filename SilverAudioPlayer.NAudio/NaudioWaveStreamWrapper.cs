@@ -155,7 +155,6 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
 
         public NaudioWaveStreamWrapperTypes()
         {
-
             var catalog = new ContainerConfiguration();
             List<Assembly> assemblies = new();
             void AddAssembliesFrom(string path, string filter)

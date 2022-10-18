@@ -9,7 +9,6 @@
         void LoadStream(WrappedStream stream);
     }
 
-
     public interface IPlay
     {
         /// <summary>

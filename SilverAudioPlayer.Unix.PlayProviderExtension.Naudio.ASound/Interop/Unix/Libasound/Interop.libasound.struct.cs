@@ -93,5 +93,4 @@ partial class Interop
         SND_MIXER_SCHN_LAST = 31,
         SND_MIXER_SCHN_MONO = SND_MIXER_SCHN_FRONT_LEFT
     }
-
 }

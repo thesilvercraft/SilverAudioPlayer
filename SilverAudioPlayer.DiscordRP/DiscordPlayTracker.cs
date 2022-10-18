@@ -83,7 +83,6 @@ public class DebugLogger : ILogger
         if (Level <= LogLevel.Error)
         {
 
-
             Debug.WriteLine("ERR : " + message + args);
         }
     }

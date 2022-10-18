@@ -11,7 +11,6 @@ namespace SilverConfig.CobaltExtensions
         bool AllowedToRead { get; }
     }
 
-
     public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable where T : INotifyPropertyChanged, ILetNotify
     {
         private readonly List<FileSystemWatcher> fileSystemWatchers = new();

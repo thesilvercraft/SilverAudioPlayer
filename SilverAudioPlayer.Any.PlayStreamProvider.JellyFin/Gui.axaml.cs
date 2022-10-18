@@ -28,7 +28,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             DataContext = g;
             this.DoAfterInitTasks(true);
             LB.DoubleTapped += LB_DoubleTapped;
-
         }
 
         private async void Button_Click(object? sender, RoutedEventArgs e)
@@ -83,7 +82,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
                                 u.Cover = Bitmap.DecodeToHeight(strm, 200);
                             }
                         }
-                        
                     }
                     LB.Items = g.SearchResults;
                     Debug.WriteLine(g.SearchResults.Count);

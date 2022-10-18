@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-
 namespace SilverAudioPlayer.Avalonia
 {
     public partial class PictureViewer : Window
@@ -66,6 +65,5 @@ namespace SilverAudioPlayer.Avalonia
     {
         public Bitmap Picture { get=> picture; set=>this.RaiseAndSetIfChanged(ref picture,value); }
         Bitmap picture;
-
     }
 }

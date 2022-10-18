@@ -4,7 +4,6 @@ using Squirrel;
 
 #endif
 
-
 namespace SilverAudioPlayer.Winforms
 {
     internal class AutoUpdate

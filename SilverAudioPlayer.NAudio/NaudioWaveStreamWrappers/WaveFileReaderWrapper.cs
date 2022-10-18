@@ -19,7 +19,6 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
             return 0;
         }
 
-
         public WaveStream GetStream(WrappedStream stream)
         {
             return new WaveFileReader(stream.GetStream());

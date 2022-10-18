@@ -17,7 +17,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             this.AttachDevTools();
 #endif
             this.DoAfterInitTasks(true);
-
         }
 
         public string ServerURL;

@@ -118,7 +118,6 @@ namespace SilverAudioPlayer.Avalonia
 
             pv.Show();
         }
-
        
     }
     public class Field

@@ -340,7 +340,6 @@ namespace SilverAudioPlayer.SMTC
                         fs.Dispose();
                         TempFiles.Add(fullPath);
                         updater.Thumbnail = RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(fullPath));
-
                     }
                 }
                 updater.Update();

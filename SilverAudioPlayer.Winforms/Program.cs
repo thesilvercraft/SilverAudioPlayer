@@ -312,6 +312,8 @@ namespace SilverAudioPlayer
                 Debug.WriteLine("AAA");
                 frm1 = new Form1();
                 frm1.Logic.log = logger;
+                Log.Logger = logger;
+
                 DoContainerShit();
                 if (args?.Any(x => string.IsNullOrEmpty(x)) == false)
                 {

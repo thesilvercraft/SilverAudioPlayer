@@ -13,7 +13,6 @@ namespace SilverAudioPlayer.Avalonia
 {
     public partial class Settings : Window
     {
-    
         public Settings()
         {
             InitializeComponent();

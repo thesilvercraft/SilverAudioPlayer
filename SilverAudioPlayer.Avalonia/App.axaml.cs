@@ -5,6 +5,7 @@ using Avalonia.Themes.Fluent;
 using DynamicData;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using SilverAudioPlayer.Core;
 using System;
 using System.Collections.Generic;
 using System.Composition;
@@ -180,7 +181,7 @@ namespace SilverAudioPlayer.Avalonia
                     Debug.WriteLine($"Music status interface {name} loaded.");
                 }
                 mw.Logic.log = logger;
-                mw.ProcessFiles(desktop.Args);
+                mw.Logic.ProcessFiles(desktop.Args);
             }
 
             base.OnFrameworkInitializationCompleted();

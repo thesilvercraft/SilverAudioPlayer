@@ -27,7 +27,6 @@ namespace SilverAudioPlayer.Shared
     {
         public void WakeLock();
         public void UnWakeLock();
-
     }
     public interface IPlayProviderListner
     {

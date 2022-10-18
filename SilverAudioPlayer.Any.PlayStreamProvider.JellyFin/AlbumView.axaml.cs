@@ -8,7 +8,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         public AlbumView()
         {
             InitializeComponent();
-
         }
 
         private void InitializeComponent()

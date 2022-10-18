@@ -168,7 +168,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
         {
             return RealStream;
         }
-
     }
     public class WrappedJellyFinStream : WrappedStream, IDisposable
     {
@@ -188,7 +187,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             }
             catch
             {
-
             }
         }
 
@@ -246,7 +244,6 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
             if(!FStream.CanRead)
             {
                 FStream = new();
-
             }
             if (FStream.Length == 0)
             {

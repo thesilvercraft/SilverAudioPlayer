@@ -63,7 +63,6 @@ namespace SilverAudioPlayer.Avalonia
                         {
                             p.Children.Add(b);
                             d.Add(x.TimeStampInMilliSeconds, b);
-
                         }
                         else if(string.IsNullOrWhiteSpace(x.Content))
                         {
@@ -94,7 +93,6 @@ namespace SilverAudioPlayer.Avalonia
 
                 return !close;
             }, TimeSpan.FromMilliseconds(25), DispatcherPriority.Render);
-
         }
     }
 }

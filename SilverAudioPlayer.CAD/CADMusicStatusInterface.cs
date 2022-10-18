@@ -575,12 +575,10 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             Name = "CADMusicStatusInterface";
             Load += CADMusicStatusInterface_Load;
             ResumeLayout(false);
-
     }
 
     private void CADMusicStatusInterface_Load(object sender, EventArgs e)
     {
-        
     }
 
     public void TrackChangedNotification(Song? newtrack)

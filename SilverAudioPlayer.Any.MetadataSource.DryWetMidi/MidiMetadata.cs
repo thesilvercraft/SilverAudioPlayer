@@ -25,7 +25,6 @@ namespace SilverAudioPlayer.Any.MetadataSource.DryWetMidi
             Channels = (uint?)theTrack.GetChannels().Count();
             Pictures = null;
             Lyrics = string.Concat(theTrack.GetTimedEvents().Select(x=> {
-
                 if (x.Event is LyricEvent y)
                 {
                     return y.Text;
@@ -45,5 +44,4 @@ namespace SilverAudioPlayer.Any.MetadataSource.DryWetMidi
 
         public MidiFile OGInfo { get; init; }
     }
-
 }

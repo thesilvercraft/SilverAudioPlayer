@@ -7,6 +7,5 @@ namespace SilverAudioPlayer.Shared
         public abstract MimeType MimeType { get; }
 
         public abstract Stream GetStream();
-
     }
 }

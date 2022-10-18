@@ -123,7 +123,6 @@ namespace SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound
             PlaybackState = PlaybackState.Stopped;
             PlaybackStopped?.Invoke(this,new(){});
         }
-          
         }
 
         public void Pause()

@@ -59,7 +59,7 @@
            <!-- <Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>-->
             <Button Name="Settings" Grid.Column="4">Settings</Button>
           </Grid>
-          <Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding V, Mode=TwoWay}" Padding="20,0,20,0" />
+          <Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}" Padding="20,0,20,0" />
         </StackPanel>
       </Grid>
     </Border>

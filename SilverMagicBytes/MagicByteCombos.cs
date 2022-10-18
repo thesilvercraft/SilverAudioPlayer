@@ -39,12 +39,10 @@
             if (x == -1)
             {
                 ByteCombos.Add(mbc);
-
             }
             else
             {
                 ByteCombos.Insert(x,mbc);
-
             }
         }
 

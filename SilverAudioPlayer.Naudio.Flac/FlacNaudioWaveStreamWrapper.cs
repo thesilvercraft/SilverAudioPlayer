@@ -21,7 +21,6 @@ namespace SilverAudioPlayer.Naudio.Flac
             return 0;
         }
 
-
         public WaveStream GetStream(WrappedStream stream)
         {
             return new FlacReader(stream.GetStream());

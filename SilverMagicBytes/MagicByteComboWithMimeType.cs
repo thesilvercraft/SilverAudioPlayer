@@ -22,5 +22,4 @@
         public string[] AlternativeTypes { get; set; }
         public string[] FileExtensions { get; set; }
     }
-
 }

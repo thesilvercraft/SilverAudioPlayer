@@ -9,7 +9,6 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
     [Export(typeof(INaudioWaveStreamWrapper))]
     public class Mp3FileReaderReaderWrapper : INaudioWaveStreamWrapper
     {
-
         public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType>() { KnownMimes.MP3Mime };
 
         public byte GetPlayingAbility(WrappedStream stream)

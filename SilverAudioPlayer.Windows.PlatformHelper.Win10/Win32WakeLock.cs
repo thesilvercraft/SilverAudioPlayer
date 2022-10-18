@@ -32,7 +32,6 @@ namespace SilverAudioPlayer.Windows.PlatformHelper.Win
             SystemRequired = 0x00000001
         }
 
-
         public void WakeLock()
         {
             SetThreadExecutionState(ExecutionState.Continuous | ExecutionState.SystemRequired | ExecutionState.AwayModeRequired);

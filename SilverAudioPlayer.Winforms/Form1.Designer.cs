@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Playlist");
+            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Playlist");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.PlayButton = new System.Windows.Forms.Button();
             this.PauseButton = new System.Windows.Forms.Button();
@@ -50,6 +50,7 @@
             this.clearQueueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importFromClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToClipboardnewLineSeperatedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ProgressBar = new SilverAudioPlayer.TimedProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -92,6 +93,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.ProgressBar);
             this.splitContainer1.Panel1.Controls.Add(this.button2);
             this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
@@ -160,10 +162,10 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            treeNode1.Name = "PlaylistRoot";
-            treeNode1.Text = "Playlist";
+            treeNode2.Name = "PlaylistRoot";
+            treeNode2.Text = "Playlist";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1});
+            treeNode2});
             this.treeView1.Size = new System.Drawing.Size(800, 317);
             this.treeView1.TabIndex = 0;
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
@@ -259,6 +261,18 @@
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Text = "Export to clipboard (new line seperated)";
             this.exportToClipboardnewLineSeperatedToolStripMenuItem.Click += new System.EventHandler(this.exportToClipboardnewLineSeperatedToolStripMenuItem_Click);
             // 
+            // ProgressBar
+            // 
+            this.ProgressBar.LabelsVisible = true;
+            this.ProgressBar.LabelTimeFormat = "g";
+            this.ProgressBar.Location = new System.Drawing.Point(158, 3);
+            this.ProgressBar.Max = System.TimeSpan.Parse("00:00:00.0000001");
+            this.ProgressBar.Min = System.TimeSpan.Parse("00:00:00");
+            this.ProgressBar.Name = "ProgressBar";
+            this.ProgressBar.Pos = System.TimeSpan.Parse("00:00:00");
+            this.ProgressBar.Size = new System.Drawing.Size(642, 64);
+            this.ProgressBar.TabIndex = 6;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -293,7 +307,6 @@
         private Button PauseButton;
         private SplitContainer splitContainer1;
         private TreeView treeView1;
-        private TimedProgressBar ProgressBar;
         private TrackBar volumeBar;
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem playNowToolStripMenuItem;
@@ -309,5 +322,6 @@
         private PictureBox pictureBox1;
         private Button button2;
         private Button button1;
+        private TimedProgressBar ProgressBar;
     }
 }

@@ -1,3 +1,4 @@
+using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
@@ -7,6 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Timers;
+using Color = System.Drawing.Color;
 
 namespace SilverAudioPlayer
 {
@@ -18,107 +20,7 @@ namespace SilverAudioPlayer
         private bool WatchForConfigChanges = true;
         private FileSystemWatcher cfw;
         private string ConfigLoc;
-        private List<IMusicStatusInterface> musicStatusInterfaces = new();
 
-        private void AddMSI(IMusicStatusInterface e)
-        {
-            musicStatusInterfaces.Add(e);
-            e.Play += MusicStatusInterface_Play;
-            e.Pause += MusicStatusInterface_Pause;
-            e.Stop += MusicStatusInterface_Stop;
-            e.PlayPause += MusicStatusInterface_PlayPause;
-            e.Next += MusicStatusInterface_Next;
-            e.Previous += MusicStatusInterface_Previous;
-            e.GetCurrentTrack += MusicStatusInterface_GetCurrentTrack;
-            e.GetDuration += MusicStatusInterface_GetDuration;
-            e.GetPosition += MusicStatusInterface_GetPosition;
-            e.SetPosition += MusicStatusInterface_SetPosition;
-            e.GetShuffle += MusicStatusInterface_GetShuffle;
-            e.GetState += MusicStatusInterface_GetState;
-            e.GetVolume += MusicStatusInterface_GetVolume;
-            e.SetVolume += MusicStatusInterface_SetVolume;
-            e.GetRepeat += MusicStatusInterface_GetRepeat;
-            e.SetRating += MusicStatusInterface_SetRating;
-            e.StartIPC();
-        }
-
-        private void MusicStatusInterface_SetVolume(object? sender, byte e)
-        {
-            if (e <= 100)
-            {
-                Invoke(() => volumeBar.Value = e);
-                Player?.SetVolume(e);
-            }
-        }
-
-        private void MusicStatusInterface_SetPosition(object? sender, ulong e)
-        {
-            Player?.SetPosition(TimeSpan.FromSeconds(e));
-        }
-
-        private void MusicStatusInterface_SetRating(object? sender, byte e)
-        {
-            //TODO eventually
-        }
-
-        private bool MusicStatusInterface_GetShuffle()
-        {
-            return false;
-        }
-
-        private ulong MusicStatusInterface_GetPosition()
-        {
-            return (ulong)(Player?.GetPosition().TotalSeconds ?? 1);
-        }
-
-        private RepeatState MusicStatusInterface_GetRepeat()
-        {
-            return Config.LoopSong ? RepeatState.One : RepeatState.None;
-        }
-
-        private byte MusicStatusInterface_GetVolume()
-        {
-            return Invoke(() => (byte)volumeBar.Value);
-        }
-
-        private PlaybackState MusicStatusInterface_GetState()
-        {
-            return Player?.GetPlaybackState() ?? PlaybackState.Stopped;
-        }
-
-        private void RemoveMSI(IMusicStatusInterface e)
-        {
-            e.Play -= MusicStatusInterface_Play;
-            e.Pause -= MusicStatusInterface_Pause;
-            e.Stop -= MusicStatusInterface_Stop;
-            e.Next -= MusicStatusInterface_Next;
-            e.Previous -= MusicStatusInterface_Previous;
-            e.GetCurrentTrack -= MusicStatusInterface_GetCurrentTrack;
-            e.GetDuration -= MusicStatusInterface_GetDuration;
-            e.GetState -= MusicStatusInterface_GetState;
-            e.GetVolume -= MusicStatusInterface_GetVolume;
-            e.GetRepeat -= MusicStatusInterface_GetRepeat;
-            e.GetPosition -= MusicStatusInterface_GetPosition;
-            e.GetShuffle -= MusicStatusInterface_GetShuffle;
-            e.SetRating -= MusicStatusInterface_SetRating;
-            e.SetPosition -= MusicStatusInterface_SetPosition;
-            e.SetVolume -= MusicStatusInterface_SetVolume;
-            e.PlayPause -= MusicStatusInterface_PlayPause;
-
-            e.StopIPC();
-            e.Dispose();
-            musicStatusInterfaces.Remove(e);
-        }
-
-        private ulong MusicStatusInterface_GetDuration()
-        {
-            return (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 69;
-        }
-
-        private Song MusicStatusInterface_GetCurrentTrack()
-        {
-            return CurrentSong;
-        }
 
         private void MusicStatusInterface_Previous(object? sender, EventArgs e)
         {
@@ -130,7 +32,7 @@ namespace SilverAudioPlayer
                 if (index - 1 >= 0)
                 {
                     StopAutoLoading = true;
-                    HandleSongChanging((Song)aa[index - 1].Tag);
+                    Logic.HandleSongChanging((Song)aa[index - 1].Tag);
                 }
             });
         }
@@ -145,70 +47,19 @@ namespace SilverAudioPlayer
                 if (index + 1 < aa.Length)
                 {
                     StopAutoLoading = true;
-                    HandleSongChanging((Song)aa[index + 1].Tag);
+                    Logic.HandleSongChanging((Song)aa[index + 1].Tag);
                 }
             });
         }
 
         private void Play()
         {
-            Player?.Play();
-            SendIfStateIsNotNull();
+            Logic.Play();
         }
 
         private void Pause()
         {
-            Player?.Pause();
-            SendIfStateIsNotNull();
-        }
-
-        private void PlayPause(bool allowstart)
-        {
-            if (Player?.GetPlaybackState() == PlaybackState.Playing)
-            {
-                Pause();
-            }
-            else if (Player?.GetPlaybackState() == PlaybackState.Paused)
-            {
-                Play();
-            }
-            else if (allowstart)
-            {
-                StartPlaying(true);
-            }
-        }
-
-        private void MusicStatusInterface_PlayPause(object? sender, object e)
-        {
-            PlayPause(false);
-        }
-
-        private void MusicStatusInterface_Stop(object? sender, object e)
-        {
-            StopAutoLoading = true;
-            Player?.Stop();
-            SendIfStateIsNotNull();
-        }
-
-        private void MusicStatusInterface_Pause(object? sender, object e)
-        {
-            Player?.Pause();
-            SendIfStateIsNotNull();
-        }
-
-        private void SendIfStateIsNotNull()
-        {
-            var state = Player?.GetPlaybackState();
-            if (state != null)
-            {
-                PlaybackStateChangedNotification(state.Value);
-            }
-        }
-
-        private void MusicStatusInterface_Play(object? sender, object e)
-        {
-            Player?.Play();
-            SendIfStateIsNotNull();
+            Logic.Pause();
         }
 
         public Form1()
@@ -225,8 +76,42 @@ namespace SilverAudioPlayer
                 Config = new Preferences();
                 ConfigReader.Write(Config, ConfigLoc);
             }
+            var ctx = new MainWindowContext(this)
+            {
+                ResetUIScrollBar = () =>
+                {
+                    token = new();
+                    th = new Thread(() => SndThrd(token.Token));
+                },
+                SetScrollBarTextTo = (scrl) => Invoke(() => ProgressBar.Max = scrl),
+                HandleLateStageMetadataAndScrollBar = () =>
+                {
+                    th.Start();
+                    if (CurrentSong?.Metadata != null)
+                    {
+                        if (CurrentSong.Metadata.Title != null)
+                        {
+                            Invoke(() => base.Text = CurrentSong.Metadata.Title + " - SilverAudioPlayer");
 
-            ProgressBar.ProgressBar.MouseClick += ProgressBar_MouseClick;
+                        }
+                        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+                        {
+                            var buffer = CurrentSong.Metadata.Pictures[0].Data;
+                            if (buffer != null)
+                            {
+                                using var memstream = new MemoryStream(buffer);
+                                Invoke(() => pictureBox1.Image = Image.FromStream(memstream));
+                            }
+                        }
+                        else
+                        {
+                            Invoke(() => pictureBox1.Image = null);
+                        }
+                    }
+                }
+            };
+            Logic = new(ctx);
+           ProgressBar.ProgressBar.MouseClick += ProgressBar_MouseClick;
             OnConfigChange(true);
             AutosaveConfig.Elapsed += AutosaveConfig_Elapsed;
             AutosaveConfig.Start();
@@ -298,7 +183,7 @@ namespace SilverAudioPlayer
         private void AutoSaveConfig()
         {
             savednow = true;
-            Logic.log.Information("Saving config");
+            Log.Information("Saving config");
             volumeBar.Invoke(() => Config.Volume = (byte)volumeBar.Value);
             Config.ProgressBarRainbow = ProgressBar.ProgressBar.Rainbow;
             Config.ProgressBarRainbowShift = ProgressBar.ProgressBar.ShiftRainbow;
@@ -306,7 +191,7 @@ namespace SilverAudioPlayer
             Config.ProgressBarColour = ProgressBar.ProgressBar.Color.ToArgb();
             Config.MillisecondIntervalOfAutoSave = (ulong)AutosaveConfig.Interval;
             ConfigReader.Write(Config, ConfigLoc);
-            Logic.log.Information("Config saved");
+            Log.Information("Config saved");
         }
 
         private void OnConfigChange(bool fromstartup = false)
@@ -434,11 +319,10 @@ namespace SilverAudioPlayer
                             switch (cmd)
                             {
                                 case APPCOMMAND_MEDIA_PLAY_PAUSE:
-                                    PlayPause(true);
+                                    Logic.PlayPause(true);
+
                                     break;
 
-                                default:
-                                    break;
                             }
                             m.Result = (IntPtr)1;
                             break;
@@ -447,21 +331,19 @@ namespace SilverAudioPlayer
                             switch (m.WParam.ToInt32())
                             {
                                 case 1:
-                                    Play();
+                                    Logic.Play();
                                     break;
 
                                 case 2:
-                                    Pause();
+                                    Logic.Pause();
                                     break;
 
                                 case 3:
-                                    PlayPause(true);
+                                    Logic.PlayPause(true);
                                     break;
                             }
                             break;
 
-                        default:
-                            break;
                     }
                 }
             }
@@ -473,98 +355,14 @@ namespace SilverAudioPlayer
         private string? CurrentURI => CurrentSong?.URI;
         private bool StopAutoLoading = false;
         private Song? CurrentSong = null;
-        public IPlay? Player { get; private set; }
+        public IPlay? Player { get => Logic.Player;  }
         private Thread? th;
 
-        public Logic Logic { get; set; } = new();
+        public Logic<MainWindowContext> Logic { get; set; }
 
-        public void StartPlaying(bool play = true, bool resetsal = false)
-        {
-            if (CurrentURI == null && CurrentSong == null)
-            {
-                if (treeView1.Nodes[0].Nodes.Count > 0)
-                {
-                    CurrentSong = (Song)treeView1.Nodes[0].Nodes[0].Tag;
-                }
-                else
-                {
-                    Logic.log.Information("Avoiding fatal crash");
-                    return;
-                }
-            }
-            Player = Logic.GetPlayerFromStream(CurrentSong.Stream);
-            if (CurrentSong != null && CurrentSong?.Metadata == null && Config.CheckForMetadataInSP)
-            {
-                var a = Logic.GetMetadataFromStream(CurrentSong.Stream);
-                if (a != null)
-                {
-                    Logic.log.Information("Getting metadata in SP");
-                    CurrentSong.Metadata = a.GetAwaiter().GetResult();
-                }
-            }
-            if (Player == null)
-            {
-                MessageBox.Show("I do not know how to play " + CurrentURI);
-                return;
-            }
-            Task.Run(() => TrackChangedNotification(CurrentSong));
-            if (play)
-            {
-                Player.Play();
-                SendIfStateIsNotNull();
-                Player.TrackEnd += OutputDevice_PlaybackStopped;
-                Player?.SetVolume((byte)volumeBar.Value);
-                ProgressBar.Pos = TimeSpan.FromMilliseconds(0);
-                token = new();
-                th = new Thread(() => SndThrd(token.Token));
-                var total = Player?.Length();
-                if (total != null)
-                {
-                    ProgressBar.Max = (TimeSpan)total;
-                }
-                th.Start();
-                if (CurrentSong?.Metadata != null)
-                {
-                    if (CurrentSong.Metadata.Title != null)
-                    {
-                        Text = CurrentSong.Metadata.Title + " - SilverAudioPlayer";
-                    }
-                    if (CurrentSong?.Metadata?.Pictures?.Any() == true)
-                    {
-                        var buffer = CurrentSong.Metadata.Pictures[0].Data;
-                        if (buffer != null)
-                        {
-                            using var memstream = new MemoryStream(buffer);
-                            pictureBox1.Image = Image.FromStream(memstream);
-                        }
-                    }
-                    else
-                    {
-                        pictureBox1.Image = null;
-                    }
-                }
-            }
-            if (resetsal)
-            {
-                StopAutoLoading = false;
-            }
-        }
+       
 
-        private void TrackChangedNotification(Song? currentSong)
-        {
-            foreach (var msI in musicStatusInterfaces)
-            {
-                msI.TrackChangedNotification(currentSong);
-            }
-        }
 
-        private void PlaybackStateChangedNotification(PlaybackState s)
-        {
-            foreach (var msI in musicStatusInterfaces)
-            {
-                msI.PlayerStateChanged(s);
-            }
-        }
 
         private void SndThrd(CancellationToken e)
         {
@@ -583,7 +381,7 @@ namespace SilverAudioPlayer
                     }
                     catch (Exception ex)
                     {
-                        Logic.log.Error(ex.Message);
+                        Log.Error(ex.Message);
                         return;
                     }
                     Thread.Sleep(70);
@@ -608,11 +406,11 @@ namespace SilverAudioPlayer
 
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
-            Logic.log.Information("Output device playback stopped\nLoop single checked: {ConfigLoopSong}\nStopAutoLoading: {StopAutoLoading}\nCurrent song: {CurrentSong}", Config.LoopSong, StopAutoLoading, CurrentSong);
+            Log.Information("Output device playback stopped\nLoop single checked: {ConfigLoopSong}\nStopAutoLoading: {StopAutoLoading}\nCurrent song: {CurrentSong}", Config.LoopSong, StopAutoLoading, CurrentSong);
             if (Config.LoopSong && !StopAutoLoading)
             {
-                RemoveTrack();
-                StartPlaying();
+                Logic.RemoveTrack();
+                Logic.StartPlaying();
             }
             else if (CurrentSong != null && !StopAutoLoading)
             {
@@ -625,12 +423,12 @@ namespace SilverAudioPlayer
                     int index = a.Index;
                     if (index + 1 < aa.Length)
                     {
-                        HandleSongChanging((Song)aa[index + 1].Tag, true);
+                        Logic.HandleSongChanging((Song)aa[index + 1].Tag, true);
                     }
                 }
                 else if (NextSong != null)
                 {
-                    HandleSongChanging(NextSong, true);
+                    Logic.HandleSongChanging(NextSong, true);
                     NextSong = null;
                 }
             }
@@ -647,35 +445,9 @@ namespace SilverAudioPlayer
                 preventstoppedstatus = false;
             }*/
             StopAutoLoading = false;
-            SendIfStateIsNotNull();
         }
 
-        private void HandleSongChanging(Song NextSong, bool resetsal = false)
-        {
-            Logic.log.Information("StopAutoLoading set to true in HandleSongChanging");
-            StopAutoLoading = true;
-            var curr = FindById(CurrentSong?.Guid);
-            var next = FindById(NextSong.Guid);
-            if (next == null)
-            {
-                Logic.log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSong.URI}\nCurrentSong.Guid is {CurrentSong}\nCurrentSong.URI is {CurrentSong}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
-            }
-            else
-            {
-                CurrentSong = (Song)next.Tag;
-                RemoveTrack();
-                if (curr != null)
-                {
-                    curr.ForeColor = next.ForeColor;
-                }
-                next.ForeColor = Color.LightGreen;
-                StartPlaying(resetsal: resetsal);
-            }
-            if (curr == null)
-            {
-                Logic.log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSong}\nCurrentSong.Guid is {CurrentSong}\nCurrentSong.URI is {CurrentSong}", NextSong.Guid, NextSong.URI, CurrentSong.Guid, CurrentSong.URI);
-            }
-        }
+       
 
         private void DragOverM(object sender, DragEventArgs e)
         {
@@ -740,13 +512,13 @@ namespace SilverAudioPlayer
                         th = new Thread(() =>
                         {
                             Thread.Sleep(500);
-                            HandleSongChanging((Song)treeView1.Nodes[0].Nodes[0].Tag, true);
+                            Logic.HandleSongChanging((Song)treeView1.Nodes[0].Nodes[0].Tag, true);
                         });
                         th.Start();
                     }
                     else
                     {
-                        HandleSongChanging((Song)treeView1.Nodes[0].Nodes[a].Tag, a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped));
+                        Logic.HandleSongChanging((Song)treeView1.Nodes[0].Nodes[a].Tag, a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped));
                     }
                 }
             }
@@ -761,15 +533,14 @@ namespace SilverAudioPlayer
                 if (ayo.Tag is Song song && song.Metadata == null)
                 {
                     var a = Logic.GetMetadataFromStream(song.Stream);
-                    Logic.log.Information("Getting metadata in FMOLF about song " + song.Guid);
+                    Log.Information("Getting metadata in FMOLF about song " + song.Guid);
                     if (a != null)
                     {
-                        Logic.log.Verbose("a wasn't null");
+                        Log.Verbose("a wasn't null");
                         Task.Run(async () =>
                         {
                             song.Metadata = await a;
-                            treeView1.Invoke(() => { ayo.Text = song.ToString(); });
-                           
+                            treeView1.Invoke(() => ayo.Text = song.ToString());
                         });
                     }
                 }
@@ -777,7 +548,7 @@ namespace SilverAudioPlayer
 
             if (sortafterwards)
             {
-                Logic.log.Information("Sorting after filling metadata");
+                Log.Information("Sorting after filling metadata");
                 TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
                 treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
                 treeView1.Nodes[0].Nodes.Clear();
@@ -785,7 +556,7 @@ namespace SilverAudioPlayer
                 {
                     Debug.WriteLine(((Song?)song?.Tag)?.Metadata?.TrackNumber);
 
-                    Logic.log.Information("Adding song " + ((Song)song.Tag).Guid + " to treeview");
+                    Log.Information("Adding song " + ((Song)song.Tag).Guid + " to treeview");
                     treeView1.Nodes[0].Nodes.Add(song);
                 }
             }
@@ -838,7 +609,7 @@ namespace SilverAudioPlayer
                 var lstnod = tree.Nodes[0].Nodes[^1];
                 if (lstnod != null)
                 {
-                    Logic.log.Debug(lstnod.Bounds.X + " " + lstnod.Bounds.Y);
+                    Log.Debug(lstnod.Bounds.X + " " + lstnod.Bounds.Y);
                     if (pt.Y > lstnod.Bounds.Y && pt.X > lstnod.Bounds.X && pt.X < (lstnod.Bounds.X + lstnod.Bounds.Right))
                     {
                         DestinationNode = lstnod;
@@ -866,7 +637,7 @@ namespace SilverAudioPlayer
                 }
                 catch (Exception ex)
                 {
-                    Logic.log.Error(ex.Message);
+                    Log.Error(ex.Message);
                 }
                 SourceNode = null;
             }
@@ -922,19 +693,14 @@ namespace SilverAudioPlayer
 
         private void PlayButton_Click(object sender, EventArgs e)
         {
-            if (Player != null)
-            {
-                Play();
-            }
-            else
-            {
-                StartPlaying();
-            }
+            Logic.Play();
+
+           
         }
 
         private void PauseButton_Click(object sender, EventArgs e)
         {
-            Pause();
+            Logic.Pause();
         }
 
         private TreeNode SelectedItem;
@@ -962,7 +728,7 @@ namespace SilverAudioPlayer
         {
             if (e.Button == MouseButtons.Left && e.Node.Tag != null)
             {
-                HandleSongChanging((Song)e.Node.Tag);
+                Logic.HandleSongChanging((Song)e.Node.Tag);
             }
         }
 
@@ -970,7 +736,7 @@ namespace SilverAudioPlayer
         {
             if (SelectedItem != null)
             {
-                HandleSongChanging((Song)SelectedItem.Tag);
+                Logic.HandleSongChanging((Song)SelectedItem.Tag);
             }
         }
 
@@ -1091,9 +857,9 @@ namespace SilverAudioPlayer
             AutoSaveConfig();
             AutosaveConfig.Stop();
             AutosaveConfig.Dispose();
-            while (musicStatusInterfaces.Count != 0)
+            while (Logic.musicStatusInterfaces.Count != 0)
             {
-                RemoveMSI(musicStatusInterfaces[0]);
+                Logic.RemoveMSI(Logic.musicStatusInterfaces[0]);
             }
             if (Player != null)
             {
@@ -1113,7 +879,6 @@ namespace SilverAudioPlayer
         private void button2_Click(object sender, EventArgs e)
         {
             Player?.Stop();
-            Player = null;
         }
 
         private void treeView1_ItemDrag(object sender, ItemDragEventArgs e)
@@ -1125,13 +890,14 @@ namespace SilverAudioPlayer
         {
             if (Logic.MusicStatusInterfaces?.Any() == true)
             {
-                foreach (var dangthing in Logic.MusicStatusInterfaces.Where(x => x != null).Select(x => x))
+                Parallel.ForEach(Logic.MusicStatusInterfaces, dangthing =>
                 {
                     var a = dangthing;
                     GC.KeepAlive(a);
-                    AddMSI(a);
-                }
+                    Logic.AddMSI(a);
+                });
             }
+
         }
 
         private MetadataForm mf;
@@ -1152,11 +918,20 @@ namespace SilverAudioPlayer
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode==Keys.F1)
+            if (e.KeyCode == Keys.F1)
             {
                 Manual m = new(Logic);
                 m.Show();
             }
         }
+    }
+    public class MainWindowContext : PlayerContext
+    {
+        public MainWindowContext(Form1 mw)
+        {
+            mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
+        }
+        readonly Form1 mainWindow;
+
     }
 }

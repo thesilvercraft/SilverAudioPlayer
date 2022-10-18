@@ -21,12 +21,12 @@ namespace SilverAudioPlayer.Avalonia
 
         public void LoadSong(WrappedStream s)
         {
-            mainWindow.ProcessStream(s);
+            mainWindow.Logic.ProcessStream(s);
         }
 
         public void LoadSongs(IEnumerable<WrappedStream> streams)
         {
-            mainWindow.ProcessStreams(streams);
+            mainWindow.Logic.ProcessStreams(streams);
         }
     }
     public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment

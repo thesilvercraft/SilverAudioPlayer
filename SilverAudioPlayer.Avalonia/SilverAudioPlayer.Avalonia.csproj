@@ -81,10 +81,8 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
    </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="MrAdvice" Version="2.9.8" />
     <PackageReference Include="ReactiveUI" Version="18.3.1" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
