@@ -1,4 +1,5 @@
 ﻿using SilverAudioPlayer.Shared;
+using SilverMagicBytes;
 using System.Composition;
 
 namespace SilverAudioPlayer.Core
@@ -15,7 +16,7 @@ namespace SilverAudioPlayer.Core
         [ImportMany]
         public IEnumerable<IWakeLockProvider> WakeLockInterfaces { get; set; }
         public Serilog.Core.Logger log { get; set; }
-
+        public List<MimeType> PlayableMimes { get; set; }
         public IPlay? GetPlayerFromStream(WrappedStream stream)
         {
             var provider = PlayProviders?.FirstOrDefault(x => x.CanPlayFile(stream));

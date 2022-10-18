@@ -19,13 +19,13 @@ namespace SilverAudioPlayer.DryWetMidi
         private PlaybackState? ps;
         private Playback player;
 
-        public IPlayProviderListner ProviderListner { set => _=value; }
+        public IPlayProviderListner ProviderListner { set => _ = value; }
 
         public string Name => "DryWetMidi MidiPlayer";
 
         public string Description => "A player that plays MIDIs implemented with DryWetMidi (https://github.com/melanchall/drywetmidi)";
 
-        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly,"SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly, "SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
 
         public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
         public List<Tuple<Uri, URLType>>? Links => new() {
@@ -68,6 +68,9 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
+
+        public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.MidMime };
+
 
         public MidiPlayer(int deviceNo)
         {
@@ -126,6 +129,7 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
 
         public void SetPosition(TimeSpan position)
         {
+            midiOut.TurnAllNotesOff();
             player.MoveToTime(new MetricTimeSpan(position));
         }
 
@@ -167,7 +171,7 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
             return null;
         }
 
-      
+
 
         public IPlay? GetPlayer(string URI)
         {

@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.Music
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Serilog.MSAppCenterSink", "Silver.Serilog.MSAppCenterSink\Silver.Serilog.MSAppCenterSink.csproj", "{AFAD7B7B-DCCF-410F-BD20-3D5576F6C849}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.MusicStatusInterface.SMTC", "SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows.MusicStatusInterface.SMTC.csproj", "{61B29DC7-83D0-4E06-BEB7-8117BBACE920}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC", "SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj", "{61B29DC7-83D0-4E06-BEB7-8117BBACE920}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia\SilverAudioPlayer.Avalonia.csproj", "{2073084A-BDDE-4ED7-96BC-B0D257A75FA5}"
 EndProject
@@ -63,6 +63,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlatformHelpers", "PlatformHelpers", "{3A4E128B-DB45-49D2-A3D8-51DC45A61C4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.PlatformHelper.Win", "SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj", "{4F98020D-AF39-4687-BF9C-4A95236F16EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MetadataSource.DryWetMidi", "SilverAudioPlayer.Any.MetadataSource.DryWetMidi\SilverAudioPlayer.Any.MetadataSource.DryWetMidi.csproj", "{73E079E2-251D-46AC-B7E4-3499B10397D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,6 +148,10 @@ Global
 		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F98020D-AF39-4687-BF9C-4A95236F16EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,6 +176,7 @@ Global
 		{CFD86110-0A31-4BAC-AB7B-A834897A81AE} = {69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1}
 		{645BCD1A-489C-46BE-A6EA-1A682ABE8EF0} = {69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1}
 		{4F98020D-AF39-4687-BF9C-4A95236F16EF} = {3A4E128B-DB45-49D2-A3D8-51DC45A61C4F}
+		{73E079E2-251D-46AC-B7E4-3499B10397D1} = {DA365F63-3B6D-4763-890A-1A4785A0ABCB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

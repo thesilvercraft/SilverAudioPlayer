@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Themes.Fluent;
+using DynamicData;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
@@ -16,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
+using Path = System.IO.Path;
 
 namespace SilverAudioPlayer.Avalonia
 {
@@ -58,16 +60,65 @@ namespace SilverAudioPlayer.Avalonia
             return fallback;
         }
 
+        IEnumerable<Assembly> AssembliesFrom(string path, string filter)
+        {
+            return (Directory.GetFiles(path, filter).Select(path2 => AssemblyLoadContext.Default.LoadFromAssemblyPath(path2)).Where(x => x != null));
+        }
+        [TimingAdvice]
+        public void LoadAssemblies(ref List<Assembly> assemblies)
+        {
+            bool ExtensionsExists = Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Extensions"));
+            if (OperatingSystem.IsWindows())
+            {
+                if(ExtensionsExists)
+                {
+                    assemblies.AddRange(AssembliesFrom(Path.Combine(AppContext.BaseDirectory, "Extensions"), "SilverAudioPlayer.Windows.*.dll"));
+                }
+                assemblies.AddRange(AssembliesFrom(AppContext.BaseDirectory, "SilverAudioPlayer.Windows.*.dll"));
+                if (OperatingSystem.IsWindowsVersionAtLeast(10))
+                {
+                    if (ExtensionsExists)
+                    {
+                        assemblies.AddRange(AssembliesFrom(Path.Combine(AppContext.BaseDirectory, "Extensions"), "SilverAudioPlayer.Windows10.*.dll"));
+                    }
+                    assemblies.AddRange(AssembliesFrom(AppContext.BaseDirectory, "SilverAudioPlayer.Windows10.*.dll"));
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                if (ExtensionsExists)
+                {
+                    assemblies.AddRange(AssembliesFrom(Path.Combine(AppContext.BaseDirectory, "Extensions"), "SilverAudioPlayer.Linux.*.dll"));
+                }
+                assemblies.AddRange(AssembliesFrom(AppContext.BaseDirectory, "SilverAudioPlayer.Linux.*.dll"));
+            }
+            if (ExtensionsExists)
+            {
+                assemblies.AddRange(AssembliesFrom(Path.Combine(AppContext.BaseDirectory, "Extensions"), "SilverAudioPlayer.Any.*.dll"));
+            }
+            assemblies.AddRange(AssembliesFrom(AppContext.BaseDirectory, "SilverAudioPlayer.Any.*.dll"));
+        }
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
+                .Build();
+                var logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "log.txt"), restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                .WriteTo.Debug(Serilog.Events.LogEventLevel.Verbose)
+                .CreateLogger();
+                Shared.Logger.GetLoggerFunc += (e) => logger.ForContext(e);
+                Log.Logger = logger;
                 var mw = new MainWindow();
                 Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
                 desktop.MainWindow = mw;
                 if (WindowExtensions.GetEnv("DisableSAPTransparency") == "true")
                 {
-                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 10)
+                    if (OperatingSystem.IsWindowsVersionAtLeast(10, 1709))
                     {
                         ChangeTheme(GetThemePreference(true));
                     }
@@ -77,41 +128,8 @@ namespace SilverAudioPlayer.Avalonia
                     }
                 }
                 List<Assembly> assemblies = new();
-                // An aggregate catalog that combines multiple catalogs.
+                LoadAssemblies(ref assemblies);
                 var catalog = new ContainerConfiguration();
-                // Adds all the parts found in the same assembly as the Program class.
-                void AddAssembliesFrom(string path, string filter)
-                {
-                    assemblies.AddRange(Directory.GetFiles(path, filter).Select(path2 => AssemblyLoadContext.Default.LoadFromAssemblyPath(path2)).Where(x => x != null));
-                }
-                void PlatformLogic(string path)
-                {
-                    switch (Environment.OSVersion.Platform)
-                    {
-                        case PlatformID.Win32NT:
-                            AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
-                            break;
-
-                        case PlatformID.Xbox:
-                            AddAssembliesFrom(path, "SilverAudioPlayer.Xbox360.*.dll");
-                            break;
-                    }
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    {
-                        AddAssembliesFrom(path, "SilverAudioPlayer.Sheep.*.dll");
-                    }
-                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    {
-                        AddAssembliesFrom(path, "SilverAudioPlayer.Unix.*.dll");
-                    }
-                    AddAssembliesFrom(path, "SilverAudioPlayer.Any.*.dll");
-                }
-                var nextpath = Path.Combine(AppContext.BaseDirectory, "Extensions");
-                if (Directory.Exists(nextpath))
-                {
-                    PlatformLogic(nextpath);
-                }
-                PlatformLogic(AppContext.BaseDirectory);
                 catalog.WithAssemblies(assemblies);
                 Container = catalog.CreateContainer();
                 Container.SatisfyImports(mw.Logic);
@@ -119,12 +137,17 @@ namespace SilverAudioPlayer.Avalonia
                 {
                     throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
                 }
+                mw.Logic.PlayableMimes = new();
                 foreach (var provider in mw.Logic.PlayProviders)
                 {
                     var name = provider.GetType().Name;
                     Debug.WriteLine($"Play provider {name} loaded.");
+                    if(provider.SupportedMimes!=null)
+                    {
+                        mw.Logic.PlayableMimes.AddRange(provider.SupportedMimes);
+                    }
                 }
-                Task.Run(async () =>
+                var playproviderloadtask = Task.Run(async () =>
                 {
                     foreach (var playprovider in mw.Logic.PlayProviders)
                     {
@@ -156,15 +179,6 @@ namespace SilverAudioPlayer.Avalonia
                     var name = provider.GetType().Name;
                     Debug.WriteLine($"Music status interface {name} loaded.");
                 }
-                var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
-                .Build();
-                var logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.Debug(Serilog.Events.LogEventLevel.Verbose)
-                .CreateLogger();
-                Shared.Logger.GetLoggerFunc += (e) => logger.ForContext(e);
                 mw.Logic.log = logger;
                 mw.ProcessFiles(desktop.Args);
             }

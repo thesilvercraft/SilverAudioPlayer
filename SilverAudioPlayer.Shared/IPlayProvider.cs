@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer.Shared
+﻿using SilverMagicBytes;
+
+namespace SilverAudioPlayer.Shared
 {
     public interface IPlayProvider : ICodeInformation
     {
@@ -17,7 +19,7 @@
         /// <param name="URI">the file</param>
         /// <returns>a player or null if the provider is unable to find a player suited for the job</returns>
         IPlay? GetPlayer(WrappedStream stream);
-
+        public IReadOnlyList<MimeType>? SupportedMimes { get; }
         public IPlayProviderListner ProviderListner { set; }
         Task OnStartup();
     }

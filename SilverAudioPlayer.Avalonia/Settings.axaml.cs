@@ -4,13 +4,16 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Microsoft.Win32;
+using SilverAudioPlayer.Core;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace SilverAudioPlayer.Avalonia
 {
     public partial class Settings : Window
     {
+    
         public Settings()
         {
             InitializeComponent();
@@ -20,15 +23,10 @@ namespace SilverAudioPlayer.Avalonia
             this.DoAfterInitTasks(true);
             ColorBox = this.FindControl<AutoCompleteBox>("ColorBox");
             ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
-
             TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
             TransparencyDown.SelectedItem = WindowExtensions.GetEnv<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
             TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
-            DataContext = new
-            {
-                TransparencyTypes = Enum.GetValues<WindowTransparencyLevel>(),
-                AutoSuggestColours = Enum.GetValues<SilverAudioPlayer.Avalonia.KnownColor>(),
-            };
+            DataContext = new SettingsDC();
             ColorBox.Text = WindowExtensions.GetEnv("SAPColor");
             ColorBoxPB.Text = WindowExtensions.GetEnv("SAPPBColor");
         }
@@ -42,17 +40,16 @@ namespace SilverAudioPlayer.Avalonia
 
         public EventHandler OnNewColor;
         internal MainWindow mainWindow;
-        private static readonly string[] AssociatedFileTypes = new[] { ".mp3", ".aif", ".aiff", ".flac", ".wav", ".ogg", ".midi", ".mid" };
-
-        public static void RegisterInReg()
+    
+        public  void RegisterInReg()
         {
             if (string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty, string.Empty)))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA", "", "Audio File");
-                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA", "FriendlyTypeName", "SilverAudioPlayer Audio File");
+                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA", "FriendlyTypeName", "Audio File");
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA\\shell\\open\\command", "",
                     $"{Environment.ProcessPath} \"%1\"");
-                foreach (string? type in AssociatedFileTypes)
+                foreach (string? type in mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).SelectMany(x => x.FileExtensions).ToList())
                 {
                     string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
                     string? val = (string?)Registry.GetValue(a, "", "");
@@ -80,12 +77,12 @@ namespace SilverAudioPlayer.Avalonia
             }
         }
 
-        public static void RemoveFromReg()
+        public void RemoveFromReg()
         {
             if (!string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty, string.Empty)))
             {
                 DeleteRegistryFolder(RegistryHive.ClassesRoot, "SilverAudioPlayerA");
-                foreach (string? type in AssociatedFileTypes)
+                foreach (string? type in mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).SelectMany(x => x.FileExtensions).ToList())
                 {
                     string? a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
                     string? val = (string?)Registry.GetValue(a, "", "");
@@ -173,5 +170,12 @@ namespace SilverAudioPlayer.Avalonia
         {
             AvaloniaXamlLoader.Load(this);
         }
+    }
+
+    public class SettingsDC
+    {
+        public WindowTransparencyLevel[] TransparencyTypes { get; set; } = new WindowTransparencyLevel[] { WindowTransparencyLevel.None, WindowTransparencyLevel.Transparent, WindowTransparencyLevel.Blur, WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.ForceAcrylicBlur, WindowTransparencyLevel.Mica };
+    
+    public KnownColor[] AutoSuggestColours { get; set; } = new KnownColor[] { KnownColor.None, KnownColor.Transparent, KnownColor.Black, KnownColor.Navy, KnownColor.DarkBlue, KnownColor.MediumBlue, KnownColor.Blue, KnownColor.DarkGreen, KnownColor.Green, KnownColor.Teal, KnownColor.DarkCyan, KnownColor.DeepSkyBlue, KnownColor.DarkTurquoise, KnownColor.SilverCraftBlue, KnownColor.MediumSpringGreen, KnownColor.Lime, KnownColor.SpringGreen, KnownColor.Aqua, KnownColor.Aqua, KnownColor.MidnightBlue, KnownColor.DodgerBlue, KnownColor.LightSeaGreen, KnownColor.ForestGreen, KnownColor.SeaGreen, KnownColor.DarkSlateGray, KnownColor.LimeGreen, KnownColor.MediumSeaGreen, KnownColor.Turquoise, KnownColor.RoyalBlue, KnownColor.SteelBlue, KnownColor.DarkSlateBlue, KnownColor.MediumTurquoise, KnownColor.Indigo, KnownColor.DarkOliveGreen, KnownColor.CadetBlue, KnownColor.CornflowerBlue, KnownColor.RebeccaPurple, KnownColor.MediumAquamarine, KnownColor.DimGray, KnownColor.SlateBlue, KnownColor.OliveDrab, KnownColor.SlateGray, KnownColor.LightSlateGray, KnownColor.MediumSlateBlue, KnownColor.LawnGreen, KnownColor.Chartreuse, KnownColor.Aquamarine, KnownColor.Maroon, KnownColor.Purple, KnownColor.Olive, KnownColor.Gray, KnownColor.SkyBlue, KnownColor.LightSkyBlue, KnownColor.BlueViolet, KnownColor.DarkRed, KnownColor.DarkMagenta, KnownColor.SaddleBrown, KnownColor.DarkSeaGreen, KnownColor.LightGreen, KnownColor.MediumPurple, KnownColor.DarkViolet, KnownColor.PaleGreen, KnownColor.DarkOrchid, KnownColor.YellowGreen, KnownColor.Sienna, KnownColor.Brown, KnownColor.DarkGray, KnownColor.LightBlue, KnownColor.GreenYellow, KnownColor.PaleTurquoise, KnownColor.LightSteelBlue, KnownColor.PowderBlue, KnownColor.Firebrick, KnownColor.DarkGoldenrod, KnownColor.MediumOrchid, KnownColor.RosyBrown, KnownColor.DarkKhaki, KnownColor.Silver, KnownColor.MediumVioletRed, KnownColor.IndianRed, KnownColor.Peru, KnownColor.Chocolate, KnownColor.Tan, KnownColor.LightGray, KnownColor.Thistle, KnownColor.Orchid, KnownColor.Goldenrod, KnownColor.PaleVioletRed, KnownColor.Crimson, KnownColor.Gainsboro, KnownColor.Plum, KnownColor.BurlyWood, KnownColor.LightCyan, KnownColor.Lavender, KnownColor.DarkSalmon, KnownColor.Violet, KnownColor.PaleGoldenrod, KnownColor.LightCoral, KnownColor.Khaki, KnownColor.AliceBlue, KnownColor.Honeydew, KnownColor.Azure, KnownColor.SandyBrown, KnownColor.Wheat, KnownColor.Beige, KnownColor.WhiteSmoke, KnownColor.MintCream, KnownColor.GhostWhite, KnownColor.Salmon,KnownColor.AntiqueWhite, KnownColor.Linen, KnownColor.LightGoldenrodYellow, KnownColor.OldLace, KnownColor.Red, KnownColor.Magenta, KnownColor.Magenta, KnownColor.DeepPink, KnownColor.OrangeRed, KnownColor.Tomato, KnownColor.HotPink, KnownColor.Coral, KnownColor.DarkOrange, KnownColor.LightSalmon, KnownColor.Orange, KnownColor.LightPink, KnownColor.Pink, KnownColor.Gold, KnownColor.PeachPuff, KnownColor.NavajoWhite, KnownColor.Moccasin, KnownColor.Bisque, KnownColor.MistyRose, KnownColor.BlanchedAlmond, KnownColor.PapayaWhip, KnownColor.LavenderBlush, KnownColor.SeaShell, KnownColor.Cornsilk, KnownColor.LemonChiffon, KnownColor.FloralWhite, KnownColor.Snow, KnownColor.Yellow, KnownColor.LightYellow, KnownColor.Ivory, KnownColor.White };
     }
 }

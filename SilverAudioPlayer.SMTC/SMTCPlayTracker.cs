@@ -143,8 +143,6 @@ namespace SilverAudioPlayer.SMTC
             TimeLineTimer = new(interval: 1000);
             TimeLineTimer.Elapsed += (s, e) =>
             {
-                Debug.WriteLine("SMTC T");
-
                 if (GetState != null && GetCurrentTrack != null && GetPosition != null)
                 {
                     var state = GetState();
@@ -170,7 +168,6 @@ namespace SilverAudioPlayer.SMTC
             {
                 return;
             }
-            Debug.WriteLine("SMTC UT");
             var timelineProperties = new SystemMediaTransportControlsTimelineProperties();
             if (track != null && GetDuration != null)
             {
@@ -302,7 +299,7 @@ namespace SilverAudioPlayer.SMTC
 
         public string Description => "Windows 10 / ModernFlyouts integration, interfaces through SMTC";
 
-        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SMTCPlayTracker).Assembly, "SilverAudioPlayer.Windows.MusicStatusInterface.SMTC.SMTC.png");
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SMTCPlayTracker).Assembly, "SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.SMTC.png");
 
         public Version? Version => typeof(SMTCPlayTracker).Assembly.GetName().Version;
 

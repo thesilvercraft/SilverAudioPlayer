@@ -8,6 +8,8 @@ namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
     [Export(typeof(INaudioWaveStreamWrapper))]
     public class AiffFileReaderWrapper : INaudioWaveStreamWrapper
     {
+        public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType>() { KnownMimes.AiffMime };
+
         public byte GetPlayingAbility(WrappedStream stream)
         {
             if (stream.MimeType == KnownMimes.AiffMime)

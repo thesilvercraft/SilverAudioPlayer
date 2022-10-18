@@ -34,7 +34,7 @@ public class DebugLogger : ILogger
     {
         if (Level <= LogLevel.Trace)
         {
-            Debug.WriteLine("TRACE: " + message, args);
+            Debug.WriteLine("TRACE: " + message + args);
         }
     }
 
@@ -50,7 +50,7 @@ public class DebugLogger : ILogger
     {
         if (Level <= LogLevel.Info)
         {
-               Debug.WriteLine("INFO: " + message, args);
+               Debug.WriteLine("INFO: " + message + args);
         }
     }
 
@@ -66,7 +66,7 @@ public class DebugLogger : ILogger
     {
         if (Level <= LogLevel.Warning)
         {
-            Debug.WriteLine("WARN: " + message, args);
+            Debug.WriteLine("WARN: " + message + args);
         }
     }
 
@@ -84,7 +84,7 @@ public class DebugLogger : ILogger
         {
 
 
-            Debug.WriteLine("ERR : " + message, args);
+            Debug.WriteLine("ERR : " + message + args);
         }
     }
 }

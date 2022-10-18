@@ -34,6 +34,7 @@
       <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
         <MenuItem Header="_About" Height="0">
           <MenuItem x:Name="ShowAppInfo"  Command="{Binding RunTheThing}" Header="_Info" HotKey="F1"/>
+          <MenuItem x:Name="ShowLyrics"  Command="{Binding LyricsView}" Header="_Lyrics" HotKey="F3"/>
         </MenuItem>
       </Menu>
     <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="5"/>

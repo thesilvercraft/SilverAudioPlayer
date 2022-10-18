@@ -38,7 +38,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.volumeBar = new System.Windows.Forms.TrackBar();
-            this.ProgressBar = new SilverAudioPlayer.TimedProgressBar();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playNowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,7 +63,7 @@
             // PlayButton
             // 
             this.PlayButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.PlayButton.Location = new System.Drawing.Point(169, 96);
+            this.PlayButton.Location = new System.Drawing.Point(158, 67);
             this.PlayButton.Name = "PlayButton";
             this.PlayButton.Size = new System.Drawing.Size(96, 44);
             this.PlayButton.TabIndex = 0;
@@ -75,7 +74,7 @@
             // PauseButton
             // 
             this.PauseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.PauseButton.Location = new System.Drawing.Point(271, 97);
+            this.PauseButton.Location = new System.Drawing.Point(260, 67);
             this.PauseButton.Name = "PauseButton";
             this.PauseButton.Size = new System.Drawing.Size(96, 44);
             this.PauseButton.TabIndex = 1;
@@ -97,21 +96,20 @@
             this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.volumeBar);
-            this.splitContainer1.Panel1.Controls.Add(this.ProgressBar);
             this.splitContainer1.Panel1.Controls.Add(this.PlayButton);
             this.splitContainer1.Panel1.Controls.Add(this.PauseButton);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.treeView1);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 450);
-            this.splitContainer1.SplitterDistance = 146;
+            this.splitContainer1.Size = new System.Drawing.Size(800, 491);
+            this.splitContainer1.SplitterDistance = 170;
             this.splitContainer1.TabIndex = 2;
             // 
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(373, 97);
+            this.button2.Location = new System.Drawing.Point(362, 67);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(96, 44);
             this.button2.TabIndex = 3;
@@ -122,7 +120,7 @@
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(692, 95);
+            this.button1.Location = new System.Drawing.Point(692, 67);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(96, 44);
             this.button1.TabIndex = 5;
@@ -136,7 +134,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.pictureBox1.Location = new System.Drawing.Point(12, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(140, 140);
+            this.pictureBox1.Size = new System.Drawing.Size(140, 164);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 4;
             this.pictureBox1.TabStop = false;
@@ -146,29 +144,15 @@
             // 
             this.volumeBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.volumeBar.Location = new System.Drawing.Point(499, 95);
+            this.volumeBar.Location = new System.Drawing.Point(158, 119);
             this.volumeBar.Maximum = 100;
             this.volumeBar.Name = "volumeBar";
-            this.volumeBar.Size = new System.Drawing.Size(187, 45);
+            this.volumeBar.Size = new System.Drawing.Size(630, 45);
             this.volumeBar.TabIndex = 3;
             this.volumeBar.TickFrequency = 5;
             this.volumeBar.TickStyle = System.Windows.Forms.TickStyle.Both;
             this.volumeBar.Value = 75;
             this.volumeBar.Scroll += new System.EventHandler(this.volumeBar_Scroll);
-            // 
-            // ProgressBar
-            // 
-            this.ProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ProgressBar.LabelsVisible = true;
-            this.ProgressBar.LabelTimeFormat = "g";
-            this.ProgressBar.Location = new System.Drawing.Point(158, 3);
-            this.ProgressBar.Max = System.TimeSpan.Parse("00:00:00.0000002");
-            this.ProgressBar.Min = System.TimeSpan.Parse("00:00:00");
-            this.ProgressBar.Name = "ProgressBar";
-            this.ProgressBar.Pos = System.TimeSpan.Parse("00:00:00");
-            this.ProgressBar.Size = new System.Drawing.Size(639, 73);
-            this.ProgressBar.TabIndex = 2;
             // 
             // treeView1
             // 
@@ -180,7 +164,7 @@
             treeNode1.Text = "Playlist";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1});
-            this.treeView1.Size = new System.Drawing.Size(800, 300);
+            this.treeView1.Size = new System.Drawing.Size(800, 317);
             this.treeView1.TabIndex = 0;
             this.treeView1.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView1_ItemDrag);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
@@ -279,7 +263,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 491);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;

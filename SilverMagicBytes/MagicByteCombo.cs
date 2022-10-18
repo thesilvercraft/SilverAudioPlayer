@@ -19,7 +19,7 @@
             {
                 if (Combo[i] != null)
                 {
-                    if (s.ReadByte() != Combo[i].Value)
+                    if (s.ReadByte() != Combo[i]!.Value)
                     {
                         return false;
                     }

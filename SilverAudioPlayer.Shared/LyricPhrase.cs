@@ -2,13 +2,13 @@
 {
     public class LyricPhrase
     {
-        public LyricPhrase(long timeStampInMilliSeconds, string content)
+        public LyricPhrase(double timeStampInMilliSeconds, string content)
         {
             TimeStampInMilliSeconds = timeStampInMilliSeconds;
             Content = content;
         }
 
-        public long TimeStampInMilliSeconds { get; set; }
+        public double TimeStampInMilliSeconds { get; set; }
         public string Content { get; set; }
     }
 }

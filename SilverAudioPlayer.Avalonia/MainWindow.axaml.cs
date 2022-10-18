@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using FuzzySharp;
 using ReactiveUI;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
@@ -40,7 +41,8 @@ namespace SilverAudioPlayer.Avalonia
 
         public ObservableCollection<Song> Queue { get => _queue; set => this.RaiseAndSetIfChanged(ref _queue, value); }
         private ObservableCollection<Song> _queue = new();
-
+        public Song? CurrentSong { get => _CurrentSong; set => this.RaiseAndSetIfChanged(ref _CurrentSong, value); }
+        private Song? _CurrentSong = null;
         public RepeatState LoopType { get => mainWindow.config.LoopType; set => SetLoopType(value); }
         private void SetLoopType(RepeatState v)
         {
@@ -58,10 +60,14 @@ namespace SilverAudioPlayer.Avalonia
             Info i = new(mainWindow);
             i.Show();
         }
+        public void LyricsView()
+        {
+            LyricsView i = new(mainWindow);
+            i.Show();
+        }
     }
 
     public partial class MainWindow : Window
-
     {
         public string ConfigPath = Path.Combine(AppContext.BaseDirectory, "SilverAudioPlayer.Config.xml");
         public MainWindow()
@@ -71,7 +77,6 @@ namespace SilverAudioPlayer.Avalonia
             this.AttachDevTools();
 #endif
             this.DoAfterInitTasks(true);
-            //mainListBox.Items = dc.Queue;
             AddHandler(DragDrop.DropEvent, Drop);
             AddHandler(DragDrop.DragOverEvent, DragOver);
             Closing += (s, e) => Player?.Stop();
@@ -120,20 +125,20 @@ namespace SilverAudioPlayer.Avalonia
         MainWindowContext dc;
         private void RepeatButton_Click(object? sender, RoutedEventArgs e)
         {
-            switch (LoopType)
+            switch (dc.LoopType)
             {
                 case RepeatState.None:
-                    LoopType = RepeatState.One;
+                    dc.LoopType = RepeatState.One;
                     break;
                 case RepeatState.One:
-                    LoopType = RepeatState.Queue;
+                    dc.LoopType = RepeatState.Queue;
                     break;
                 case RepeatState.Queue:
-                    LoopType = RepeatState.None;
+                    dc.LoopType = RepeatState.None;
                     break;
             }
         }
-
+      
         public void SetPBColor(Color c)
         {
             ((MainWindowContext)DataContext).PBForeground = new SolidColorBrush(c);
@@ -186,7 +191,8 @@ namespace SilverAudioPlayer.Avalonia
 
         public Logic Logic { get; set; } = new();
         public IPlay? Player { get; private set; }
-        private Song? CurrentSong = null;
+        public Song? CurrentSong { get => dc.CurrentSong; set => dc.CurrentSong = value; }
+
         private bool StopAutoLoading = false;
         private Song? NextSong = null;
         private Thread? th;
@@ -218,7 +224,7 @@ namespace SilverAudioPlayer.Avalonia
 
         private void MusicStatusInterface_SetRepeat(object? sender, RepeatState e)
         {
-            LoopType = e;
+            dc.LoopType = e;
         }
 
         private void MusicStatusInterface_SetVolume(object? sender, byte e)
@@ -251,7 +257,7 @@ namespace SilverAudioPlayer.Avalonia
 
         private RepeatState MusicStatusInterface_GetRepeat()
         {
-            return LoopType;
+            return dc.LoopType;
         }
 
         private byte MusicStatusInterface_GetVolume()
@@ -338,7 +344,6 @@ namespace SilverAudioPlayer.Avalonia
             e.SetVolume -= MusicStatusInterface_SetVolume;
             e.PlayPause -= MusicStatusInterface_PlayPause;
             e.SetRepeat -= MusicStatusInterface_SetRepeat;
-
             e.StopIPC();
             e.Dispose();
             musicStatusInterfaces.Remove(e);
@@ -467,7 +472,7 @@ namespace SilverAudioPlayer.Avalonia
         {
             if (CurrentSong != null)
             {
-                metadataView?.Close();
+                //metadataView?.Close();
                 metadataView = new();
                 metadataView.LoadSong(CurrentSong);
                 metadataView.Show();
@@ -513,6 +518,7 @@ namespace SilverAudioPlayer.Avalonia
             SendIfStateIsNotNull();
         }
 
+        [TimingAdvice]
         public void StartPlaying(bool play = true, bool resetsal = false)
         {
             if (CurrentSong == null)
@@ -544,7 +550,6 @@ namespace SilverAudioPlayer.Avalonia
                 Player.SetVolume(Volume);
                 Player.Play();
                 SendIfStateIsNotNull();
-
                 Player.TrackEnd += OutputDevice_PlaybackStopped;
                 Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
                 Dispatcher.UIThread.InvokeAsync(() => LT.Text = TimeSpan.Zero.ToString());
@@ -637,7 +642,7 @@ namespace SilverAudioPlayer.Avalonia
                 }
             }
         }
-
+        [TimingAdvice]
         public void RemoveTrack()
         {
             Dispatcher.UIThread.InvokeAsync(() => Title = "SilverAudioPlayer");
@@ -647,16 +652,15 @@ namespace SilverAudioPlayer.Avalonia
             Thread.Sleep(30);
         }
 
-        public RepeatState LoopType { get => dc.LoopType; set => dc.LoopType = value; }
-
+        [TimingAdvice]
         private void OutputDevice_PlaybackStopped(object? sender, object o)
         {
             Logic.log.Information(@"Output device playback stopped
 StopAutoLoading: {StopAutoLoading}
 Current song: {CurrentSong}
-Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
+Loop mode: {LoopType}", StopAutoLoading, CurrentSong, dc.LoopType);
 
-            if (LoopType == RepeatState.One && !StopAutoLoading)
+            if (dc.LoopType == RepeatState.One && !StopAutoLoading)
             {
                 //Loop
                 StartPlaying();
@@ -670,7 +674,7 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
                     {
                         HandleSongChanging(dc.Queue[a + 1], true);
                     }
-                    else if (LoopType == RepeatState.Queue)
+                    else if (dc.LoopType == RepeatState.Queue)
                     {
                         HandleSongChanging(dc.Queue[0], true);
                     }
@@ -688,7 +692,7 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
             }
             StopAutoLoading = false;
         }
-
+        [TimingAdvice]
         private void HandleSongChanging(Song NextSong, bool resetsal = false)
         {
             Logic.log.Information("StopAutoLoading set to true in HandleSongChanging");
@@ -751,34 +755,47 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
         {
             if (files?.Any() == true)
             {
-                if (files.Count() == 1 && Directory.Exists(files.First()))
+                bool onefile = files.Count() == 1;
+                if (onefile && Directory.Exists(files.First()))
                 {
                     files = Directory.GetFiles(files.First());
+                    onefile = false;
                 }
                 files = Logic.FilterFiles(files);
                 foreach (var file in files)
                 {
-                    AddSong(new Song(file, file, Guid.NewGuid()));
+                    AddSong(new Song(file, file, Guid.NewGuid()), !onefile);
                 }
-            }
-        }
-
-        public void ProcessStreams(IEnumerable<WrappedStream> files)
-        {
-            if (files?.Any() == true)
-            {
-                foreach (var file in files)
+                if (!onefile && !IsSortRequested)
                 {
-                    AddSong(new Song(file, "unknown", Guid.NewGuid()));
+                    IsSortRequested = true;
+                    Task.Run(() => DoSort());
                 }
             }
         }
 
-        public void ProcessStream(WrappedStream file)
+        public void ProcessStreams(IEnumerable<WrappedStream> streams)
         {
-            if (file != null)
+            if (streams?.Any() == true)
             {
-                AddSong(new Song(file, "unknown", Guid.NewGuid()));
+                bool onefile = streams.Count() == 1;
+                foreach (var file in streams)
+                {
+                    AddSong(new Song(file, "unknown", Guid.NewGuid()), true);
+                }
+                if (!onefile && !IsSortRequested)
+                {
+                    IsSortRequested = true;
+                    Task.Run(() => DoSort());
+                }
+            }
+        }
+
+        public void ProcessStream(WrappedStream stream)
+        {
+            if (stream != null)
+            {
+                AddSong(new Song(stream, "unknown", Guid.NewGuid()));
             }
         }
 
@@ -789,22 +806,16 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
 
         public async void AddFilee(object sender, RoutedEventArgs e)
         {
+            List<FileDialogFilter> fileDialogFilters = new List<FileDialogFilter>() { new FileDialogFilter() { Name = "Audio Files", Extensions = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).SelectMany(x=>x.FileExtensions).ToList() }, new FileDialogFilter() { Name = "Everything else", Extensions = { "*" } } };
+            foreach(var mime in Logic.PlayableMimes.Where(x => x.FileExtensions.Length>0))
+            {
+                fileDialogFilters.Add(new() { Name = mime.FileExtensions[0].ToUpper() + " Files", Extensions = mime.FileExtensions.ToList() });
+            }
             OpenFileDialog fd = new()
             {
                 Title = "Add file or files to the queue",
                 AllowMultiple = true,
-                Filters = new()
-                {
-                    new FileDialogFilter() { Name = "Audio Files", Extensions = { "wav", "wave" , "flac", "ogg", "mp3", "mid", "midi" ,"aif", "aiff", "aac" } },
-                    new FileDialogFilter() { Name = "WAV Files", Extensions = { "wav", "wave" } },
-                    new FileDialogFilter() { Name = "FLAC Files", Extensions = { "flac" } },
-                    new FileDialogFilter() { Name = "OGG Files", Extensions = { "ogg" } },
-                    new FileDialogFilter() { Name = "MP3 Files", Extensions = { "mp3" } },
-                    new FileDialogFilter() { Name = "MIDI Files", Extensions = { "mid", "midi" } },
-                    new FileDialogFilter() { Name = "AIFF Files", Extensions = { "aif", "aiff" } },
-                    new FileDialogFilter() { Name = "AAC Files", Extensions = { "aac" } },
-                    new FileDialogFilter() { Name = "Everything else", Extensions = { "*" } }
-                }
+                Filters = fileDialogFilters
             };
             var a = await fd.ShowAsync(this);
             if (a != null)
@@ -837,26 +848,49 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, LoopType);
                 dc.Queue.Remove(selected);
             }
         }
-
-        private void AddSong(Song s)
+        private void AddSong(Song song, bool expectmore=false)
         {
             Task.Run(async () =>
             {
-                s.Metadata ??= await Logic.GetMetadataFromStream(s.Stream)!;
-
-                dc.Queue.Add(s);
-
-                List<Song> sng = new();
-                foreach (var album in dc.Queue.AsEnumerable().GroupBy(a => a.Metadata.Album))
+                song.Metadata ??= await Logic.GetMetadataFromStream(song.Stream)!;
+                dc.Queue.Add(song);
+                if (!expectmore && !IsSortRequested)
                 {
-                    var discs = album.GroupBy(a => a?.Metadata?.DiscNumber ?? 0);
-                    foreach (var disc in discs.OrderBy(a => a.Key))
-                    {
-                        sng.AddRange(disc.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
-                    }
+                    IsSortRequested = true;
+                    Task sortTask = Task.Run(() => DoSort());
                 }
-                dc.Queue = new ObservableCollection<Song>(sng);
             });
+        }
+        bool IsSortRequested = false;
+        [TimingAdvice]
+        public async Task DoSort()
+        {
+            await Task.Delay(200);
+            List<Song> sng = new();
+            IEnumerable<IGrouping<string?, Song>> albums = dc.Queue.AsEnumerable().GroupBy(a => a.Metadata.Album);
+            List<Tuple<string?, List<Song>>> fuzzedAlbums = new();
+            foreach (var album in albums)
+            {
+                if (fuzzedAlbums.Find(x => Fuzz.Ratio(x.Item1??"", album.Key??"") > 80) is Tuple<string?, List<Song>> group)
+                {
+                    group.Item2.AddRange(album.ToList());
+                }
+                else
+                {
+                    fuzzedAlbums.Add(new(album.Key, album.ToList()));
+                }
+            }
+            foreach (var album in fuzzedAlbums)
+            {
+                var discs = album.Item2.GroupBy(a => a?.Metadata?.DiscNumber ?? 0);
+                foreach (var disc in discs.OrderBy(a => a.Key))
+                {
+                    sng.AddRange(disc.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
+                }
+            }
+            Logic.log.Information("Sorted through {Count} songs", sng.Count);
+            dc.Queue = new ObservableCollection<Song>(sng);
+            IsSortRequested = false;
         }
     }
 }

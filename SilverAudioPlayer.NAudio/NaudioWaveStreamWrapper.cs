@@ -1,6 +1,7 @@
 ﻿using NAudio.Wave;
 using NLayer.NAudioSupport;
 using SilverAudioPlayer.Shared;
+using SilverMagicBytes;
 using System.Composition;
 using System.Composition.Hosting;
 using System.Reflection;
@@ -17,6 +18,7 @@ namespace SilverAudioPlayer.NAudio
         /// <param name="stream">the file</param>
         /// <returns>A number ranging from 255 (best possible implementation), 127 (can play but not the best implementation), to 0 (can not play)</returns>
         byte GetPlayingAbility(WrappedStream stream);
+        IReadOnlyList<MimeType> SupportedMimeTypes { get; }
 
         WaveStream GetStream(WrappedStream stream);
     }
@@ -118,6 +120,8 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
 
+        public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().Wrappers.SelectMany(x=>x.SupportedMimeTypes).ToList();
+
         public bool CanPlayFile(WrappedStream stream)
         {
             return NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(stream);
@@ -147,7 +151,7 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
         private CompositionHost _container;
 
         [ImportMany]
-        private IEnumerable<INaudioWaveStreamWrapper> Wrappers { get; set; }
+        public IEnumerable<INaudioWaveStreamWrapper> Wrappers { get; set; }
 
         public NaudioWaveStreamWrapperTypes()
         {
@@ -160,19 +164,13 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
             }
             void PlatformLogic(string path)
             {
-                switch (Environment.OSVersion.Platform)
+                if (OperatingSystem.IsWindows())
                 {
-                    case PlatformID.Win32NT:
-                        AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
-                        break;
-
-                    case PlatformID.Xbox:
-                        AddAssembliesFrom(path, "SilverAudioPlayer.Xbox360.*.dll");
-                        break;
-                }
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    AddAssembliesFrom(path, "SilverAudioPlayer.Sheep.*.dll");
+                    AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
+                    if (OperatingSystem.IsWindowsVersionAtLeast(10))
+                    {
+                        AddAssembliesFrom(path, "SilverAudioPlayer.Windows10.*.dll");
+                    }
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {

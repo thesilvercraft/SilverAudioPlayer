@@ -21,6 +21,8 @@ namespace SilverAudioPlayer.Naudio.MediaFoundation
             }
         }
 
+        public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType>() { KnownMimes.WAVMime, KnownMimes.AACMime, KnownMimes.MP3Mime };
+
         public byte GetPlayingAbility(WrappedStream stream)
         {
             if(Environment.OSVersion.Platform == PlatformID.Win32NT)
