@@ -63,7 +63,7 @@
         </StackPanel>
       </Grid>
     </Border>
-      <ListBox Items="{Binding Queue}" Grid.Row="2" Name="mainListBox" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple" Background="Transparent">
+      <ListBox Items="{Binding Queue}" Selection="{Binding Selection}" Grid.Row="2" Name="mainListBox" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple" Background="Transparent">
         <ListBox.ContextMenu>
           <ContextMenu>
             <MenuItem Header="Remove Selected" Click="RemoveSelected" />

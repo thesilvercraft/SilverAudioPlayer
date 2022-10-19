@@ -29,21 +29,26 @@ namespace SilverAudioPlayer.Shared
             var content = HttpClient.Client.GetAsync(URL).GetAwaiter().GetResult();
             var Stream = content.Content.ReadAsStream();
             Streams.Add(Stream);
-            MimeType? mt = KnownMimes.GetKnownMimeByName(content.Content.Headers.ContentType?.MediaType);
-            if (mt == null)
+            if(_MimeType==null)
             {
-                var stream2 = InternalGetStream();
-                try
+                //KnownMimes.GetKnownMimeByName(content.Content.Headers.ContentType?.MediaType)
+                MimeType? mt = null;
+                if (mt == null)
                 {
-                    mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+                    var stream2 = InternalGetStream();
+                    try
+                    {
+                        mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+                    }
+                    finally
+                    {
+                        stream2.Dispose();
+                        Streams.Remove(stream2);
+                    }
                 }
-                finally
-                {
-                    stream2.Dispose();
-                    Streams.Remove(stream2);
-                }
+                _MimeType = mt;
             }
-            _MimeType = mt;
+            
             return Stream;
         }
 

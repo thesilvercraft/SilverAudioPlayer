@@ -7,6 +7,9 @@
         public bool CanGetMetadata(WrappedStream stream);
     }
 
+
+
+
     public abstract class Metadata
     {
         public string? Title { get; init; }

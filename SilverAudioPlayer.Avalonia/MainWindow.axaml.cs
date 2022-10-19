@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Selection;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -10,8 +11,10 @@ using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverConfig.CobaltExtensions;
+using Swordfish.NET.Collections;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -24,12 +27,21 @@ namespace SilverAudioPlayer.Avalonia
         public MainWindowContext(MainWindow mw)
         {
             mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
+            Selection = new SelectionModel<Song>();
+            Selection.SingleSelect = false;
+            Selection.SelectionChanged += SelectionChanged;
+            _pbForeGround = WindowExtensions.ReadBackground("SAPPBColor", def: KnownColor.Coral.ToColor());
         }
         readonly MainWindow mainWindow;
 
         private string _Title;
-        private IBrush _pbForeGround = new SolidColorBrush(WindowExtensions.ReadColor("SAPPBColor"));
+        private IBrush _pbForeGround;
         public IBrush PBForeground { get => _pbForeGround; set => this.RaiseAndSetIfChanged(ref _pbForeGround, value); }
+        void SelectionChanged(object sender, SelectionModelSelectionChangedEventArgs e)
+        {
+
+        }
+        public SelectionModel<Song> Selection { get; }
         public string Title { get => _Title; set => this.RaiseAndSetIfChanged(ref _Title, value); }
 
         public void RunTheThing()
@@ -81,17 +93,20 @@ namespace SilverAudioPlayer.Avalonia
             {
                 SetLoopType = (lt) =>
                 {
-                    if (config.LoopType != lt)
+                    if (config.LoopType!=lt)
                     {
-                        dc?.RaiseAndSetIfChanged(ref dc._LoopType, lt);
+                        config.LoopType = lt;
+                        dc.RaisePropertyChanged(nameof(dc.LoopType));
                         config._AllowedRead = false;
                         reader.Write(config, ConfigPath);
                         config._AllowedRead = true;
                     }
                 },
+                GetLoopType = () => config.LoopType,
                 VolumeChanged = (vol) =>
                 {
                     config.Volume = vol;
+                    Player?.SetVolume(vol);
                     if (config._AllowedRead)
                     {
                         config._AllowedRead = false;
@@ -99,6 +114,7 @@ namespace SilverAudioPlayer.Avalonia
                         config._AllowedRead = true;
                     }
                 },
+                GetVolume = () => config.Volume,
                 ResetUIScrollBar = () =>
                 {
                     Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
@@ -158,6 +174,9 @@ namespace SilverAudioPlayer.Avalonia
             ShowAppInfo = this.FindControl<MenuItem>("ShowAppInfo");
             RepeatButton = this.FindControl<Button>("RepeatButton");
             RepeatButton.Click += RepeatButton_Click;
+            
+
+        ////Background= pbfg;
         }
         public Config config;
         public CommentXmlConfigReaderNotifyWhenChanged<Config> reader;
@@ -178,9 +197,9 @@ namespace SilverAudioPlayer.Avalonia
             }
         }
 
-        public void SetPBColor(Color c)
+        public void SetPBColor(IBrush c)
         {
-            ((MainWindowContext)DataContext).PBForeground = new SolidColorBrush(c);
+            ((MainWindowContext)DataContext).PBForeground = c;
         }
 
         private void TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)
@@ -205,8 +224,7 @@ namespace SilverAudioPlayer.Avalonia
             if (en && (pos.X < 0 || pos.Y < 0 || pos.X > size.Width || pos.Y > size.Height))
             {
                 var dragData = new DataObject();
-                var q = from i in mainListBox.SelectedItems.OfType<Song>()
-                        select i;
+                var q = dc.Selection.SelectedItems;
                 dragData.Set(DataFormats.FileNames, q.Select(x => x.URI));
                 DragDrop.DoDragDrop(e, dragData, DragDropEffects.Copy | DragDropEffects.Link);
                 en = false;
@@ -473,9 +491,9 @@ Loop mode: {LoopType}", Logic.StopAutoLoading, CurrentSong, dc.LoopType);
         public void RemoveSelected(object sender, RoutedEventArgs e)
         {
             Logic.log.Information("RemoveSelected called");
-            while (mainListBox.SelectedItems.Count != 0)
+            while (dc.Selection.SelectedIndexes.Count != 0)
             {
-                Song selected = (Song)mainListBox.SelectedItems[0];
+                Song selected = dc.Selection.SelectedItem;
                 if (selected == Logic.NextSong)
                 {
                     Logic.log.Information("Selected is nextsong");

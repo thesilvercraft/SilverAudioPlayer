@@ -1,8 +1,9 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.ConfigScreen;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -49,7 +50,11 @@ namespace SilverAudioPlayer.Avalonia
                 List<SAction> actions = new();
                 foreach (var z in y.Item.Links)
                 {
-                    actions.Add(new() { ActionName = "Open " + z.Item1, ActionToInvoke = () => { OpenBrowser(z.Item1.ToString()); } });
+                    actions.Add(new() { ActionName = "Open " + z.Item1, ActionToInvoke = () => OpenBrowser(z.Item1.ToString()) });
+                }
+                if(y.Item is IAmConfigurable configurable)
+                {
+                    actions.Add(new() { ActionName = "🔧Configure", ActionToInvoke = () => { ConfigureWindow cw = new(); cw.HandleConfiguration(configurable); cw.Show();  } });
                 }
                 launchActionsWindow.AddActions(actions);
                 launchActionsWindow.Show();

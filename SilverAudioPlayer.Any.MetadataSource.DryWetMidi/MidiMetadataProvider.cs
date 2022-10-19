@@ -25,7 +25,11 @@ namespace SilverAudioPlayer.Any.MetadataSource.DryWetMidi
             new(new("https://github.com/melanchall/drywetmidi"),URLType.LibraryCode)
         };
 
-        public bool CanGetMetadata(WrappedStream stream) => stream.MimeType == KnownMimes.MidMime;
+        public bool CanGetMetadata(WrappedStream stream)
+        {
+            using var s = stream.GetStream();
+            return stream.MimeType == KnownMimes.MidMime;
+        }
 
         public Task<Metadata?> GetMetadata(WrappedStream stream)
         {

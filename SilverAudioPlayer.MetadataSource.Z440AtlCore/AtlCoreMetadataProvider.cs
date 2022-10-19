@@ -1,14 +1,25 @@
-﻿using SilverAudioPlayer.Shared;
-using ATL;
+﻿using ATL;
+using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.ConfigScreen;
+using SilverMagicBytes;
 using System.Composition;
+using System.Diagnostics;
 
 namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
 {
     [Export(typeof(IMetadataProvider))]
-    public class AtlCoreFileMetadataProvider : IMetadataProvider
+    public class AtlCoreFileMetadataProvider : IMetadataProvider,
+        IAmConfigurable
     {
+        public AtlCoreFileMetadataProvider()
+        {
+            ConfigurableElements = new();
+            ConfigurableElements.Add(new SimpleCheckBox() { GetContent = () => "Allow MIDI reading", Checked = (c) => AllowMidi = c , GetChecked=()=>AllowMidi });
+            ConfigurableElements.Add(new SimpleButton() { GetContent = () => "LOL", Clicked = () => { Debug.WriteLine("LOL"); } });
+            ConfigurableElements.Add(new SimpleRow() { Content = new() { new SimpleButton() { GetContent = () => "LOL", Clicked = () => { Debug.WriteLine("LOL"); } },  new SimpleButton() { GetContent = () => "LOL", Clicked = () => { Debug.WriteLine("LOL"); } } } });
+        }
         public string Name => "Z440AtlCore Metadata Provider";
-
+        private bool AllowMidi = false;
         public string Description => "Metadata provider that provides metadata using AtlDotnet";
 
         public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(AtlCoreFileMetadataProvider).Assembly, "SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.ZATLMetadata.png");
@@ -56,8 +67,19 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         };
         public bool CanGetMetadata(WrappedStream stream)
         {
+
             using var s = stream.GetStream();
-            return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat != null;
+            if (!AllowMidi && stream.MimeType == KnownMimes.MidMime)
+            {
+                return false;
+            }
+            return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;
+        }
+        List<IConfigurableElement> ConfigurableElements;
+
+        public List<IConfigurableElement> GetElements()
+        {
+            return ConfigurableElements;
         }
 
         public Task<Metadata?> GetMetadata(WrappedStream stream)
@@ -66,4 +88,5 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
             return Task.FromResult((Metadata?)new AtlCoreMetadata(new(s, stream.MimeType.RealMimeTypeToFakeMimeType())));
         }
     }
+   
 }

@@ -10,7 +10,7 @@
         public static readonly MimeType AiffMime = new("audio/aiff",
           new[] { "audio/x-aiff" },
           new[] { ".aiff", ".aif", ".aifc" });
-        public static readonly MimeType MidMime = new WAVMime();
+        public static readonly MimeType MidMime = new MidMime();
         public static readonly MimeType PngMime = new PngMime();
         public static readonly MimeType JPGMime = new JPGMime();
         public static readonly MimeType OGGMime = new OGGMime();
@@ -19,11 +19,11 @@
 
         public static readonly List<MimeType> KnownMimeTypes = new()
         {
+            MidMime,
             MP3Mime,
             FLACMime,
             WAVMime,
             AiffMime,
-            MidMime,
             MidMime,
             PngMime,
             JPGMime,
@@ -67,6 +67,13 @@
     public class WAVMime : AudioMime
     {
         public WAVMime() : base("audio/wave", new[] { "audio/vnd.wave", "audio/wav", "audio/x-wav" }, new[] { ".wav" })
+        {
+        }
+    }
+
+    public class MidMime : AudioMime
+    {
+        public MidMime() : base("audio/midi", new[] { "audio/x-midi",  }, new[] { ".mid", ".midi" })
         {
         }
     }

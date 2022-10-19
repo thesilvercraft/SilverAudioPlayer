@@ -3,6 +3,7 @@ using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
+using Swordfish.NET.Collections;
 using System.Collections.ObjectModel;
 using System.Composition;
 
@@ -10,24 +11,25 @@ namespace SilverAudioPlayer.Core
 {
     public class PlayerContext : ReactiveObject
     {
-        public Action<byte> VolumeChanged;
-        public Func<byte> GetVolume;
-        public Func<RepeatState> GetLoopType;
-        public Action<RepeatState> SetLoopType;
-        public Action ResetUIScrollBar;
-        public Action HandleLateStageMetadataAndScrollBar;
+        public Action<byte> VolumeChanged = null;
+        public Func<byte> GetVolume=null;
+        public Func<RepeatState> GetLoopType = null;
+        public Action<RepeatState> SetLoopType = null;
+        public Action ResetUIScrollBar = null;
+        public Action HandleLateStageMetadataAndScrollBar = null;
 
-        public Action<TimeSpan> SetScrollBarTextTo;
+        public Action<TimeSpan> SetScrollBarTextTo = null;
 
         public byte Volume { get => GetVolume(); set => VolumeChanged(value); }
         public byte _Volume=50;
-        public ObservableCollection<Song> Queue { get => _queue; set => this.RaiseAndSetIfChanged(ref _queue, value); }
-        private ObservableCollection<Song> _queue = new();
+        public ConcurrentObservableCollection<Song> Queue { get => _queue; set => this.RaiseAndSetIfChanged(ref _queue, value); }
+        private ConcurrentObservableCollection<Song> _queue = new();
         public Song? CurrentSong { get => _CurrentSong; set => this.RaiseAndSetIfChanged(ref _CurrentSong, value); }
         private Song? _CurrentSong = null;
 
         public RepeatState LoopType { get => GetLoopType(); set => SetLoopType(value); }
         public RepeatState _LoopType;
+
     }
 
     public class Logic<T> where T : PlayerContext
@@ -35,14 +37,14 @@ namespace SilverAudioPlayer.Core
         public Logic(T playercontext)
         {
             playerContext = playercontext;
-            playerContext.VolumeChanged = (vol) =>
+            playerContext.VolumeChanged ??= (vol) =>
             {
                 Player?.SetVolume(vol);
                 playerContext.RaiseAndSetIfChanged(ref playerContext._Volume, vol);
             };
-            playerContext.GetVolume = () => playerContext._Volume;
-            playerContext.GetLoopType = () => playerContext._LoopType;
-            playerContext.SetLoopType = (lt) => playerContext.RaiseAndSetIfChanged(ref playerContext._LoopType, lt);
+            playerContext.GetVolume ??= () => playerContext._Volume;
+            playerContext.GetLoopType ??= () => playerContext._LoopType;
+            playerContext.SetLoopType ??= (lt) => playerContext.RaiseAndSetIfChanged(ref playerContext._LoopType, lt);
         }
         [ImportMany]
         public IEnumerable<IPlayProvider> PlayProviders { get; set; }
@@ -511,7 +513,11 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         {
             Task.Run(async () =>
             {
-                song.Metadata ??= await GetMetadataFromStream(song.Stream)!;
+                song.Metadata ??= await GetMetadataFromStream(song.Stream) ;
+                if(song == null)
+                {
+                    throw new Exception();
+                }
                 playerContext.Queue.Add(song);
                 if (!expectmore && !IsSortRequested)
                 {
@@ -527,7 +533,7 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         {
             await Task.Delay(200);
             List<Song> sng = new();
-            IEnumerable<IGrouping<string?, Song>> albums = playerContext.Queue.AsEnumerable().GroupBy(a => a.Metadata.Album);
+            IEnumerable<IGrouping<string?, Song>> albums = playerContext.Queue.ToList().GroupBy(a => a.Metadata.Album);
             List<Tuple<string?, List<Song>>> fuzzedAlbums = new();
             foreach (var album in albums)
             {
@@ -549,7 +555,8 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
                 }
             }
             Log.Information("Sorted through {Count} songs", sng.Count);
-            playerContext.Queue = new ObservableCollection<Song>(sng);
+            playerContext.Queue = new ConcurrentObservableCollection<Song>();
+            playerContext.Queue.AddRange(sng);
             IsSortRequested = false;
         }
         public IPlay? GetPlayerFromStream(WrappedStream stream)

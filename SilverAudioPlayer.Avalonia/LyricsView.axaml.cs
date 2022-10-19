@@ -26,7 +26,7 @@ namespace SilverAudioPlayer.Avalonia
             MainGrid = this.FindControl<Grid>("MainGrid");
             Dictionary<double, TextBlock> d = new();
             sv = this.FindControl<ScrollViewer>("sv");
-            var red = new SolidColorBrush(KnownColor.Red.ToColor());
+            var red = new SolidColorBrush(Color.FromRgb(230, 255, 0));
             var white = new SolidColorBrush(KnownColor.White.ToColor());
             Guid? Song = null;
             bool close=false;
