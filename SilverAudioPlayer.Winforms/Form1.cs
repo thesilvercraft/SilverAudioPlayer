@@ -1,9 +1,12 @@
+using Fluent;
+using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
 using SilverConfig;
 using SilverFormsUtils;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -22,46 +25,9 @@ namespace SilverAudioPlayer
         private string ConfigLoc;
 
 
-        private void MusicStatusInterface_Previous(object? sender, EventArgs e)
-        {
-            Invoke(() =>
-            {
-                TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-                treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-                int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
-                if (index - 1 >= 0)
-                {
-                    StopAutoLoading = true;
-                    Logic.HandleSongChanging((Song)aa[index - 1].Tag);
-                }
-            });
-        }
+       
 
-        private void MusicStatusInterface_Next(object? sender, EventArgs e)
-        {
-            Invoke(() =>
-            {
-                TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-                treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-                int index = aa.First(x => (Song)x.Tag == CurrentSong).Index;
-                if (index + 1 < aa.Length)
-                {
-                    StopAutoLoading = true;
-                    Logic.HandleSongChanging((Song)aa[index + 1].Tag);
-                }
-            });
-        }
-
-        private void Play()
-        {
-            Logic.Play();
-        }
-
-        private void Pause()
-        {
-            Logic.Pause();
-        }
-
+        MainWindowContext ctx;
         public Form1()
         {
             InitializeComponent();
@@ -76,17 +42,20 @@ namespace SilverAudioPlayer
                 Config = new Preferences();
                 ConfigReader.Write(Config, ConfigLoc);
             }
-            var ctx = new MainWindowContext(this)
+             ctx= new MainWindowContext(this)
             {
                 ResetUIScrollBar = () =>
                 {
+
                     token = new();
                     th = new Thread(() => SndThrd(token.Token));
                 },
                 SetScrollBarTextTo = (scrl) => Invoke(() => ProgressBar.Max = scrl),
                 HandleLateStageMetadataAndScrollBar = () =>
                 {
+                    Invoke(() => { ProgressBar.Pos = TimeSpan.Zero; });
                     th.Start();
+
                     if (CurrentSong?.Metadata != null)
                     {
                         if (CurrentSong.Metadata.Title != null)
@@ -128,6 +97,85 @@ namespace SilverAudioPlayer
                 this.UseDarkModeBar(true);
                 this.UseDarkModeForThingsInsideOfForm(true, true);
             }
+            // display the the file name as the list item label
+           list.Properties.Name = "Metadata.TrackNumber";
+
+            // display some more properties from our objects as columns
+            list.ShowColumns = true;
+            list.Properties.Columns = new List<string> { "TitleOrURLF", "Metadata.Artist","Metadata.Album" };
+            list.Properties.ColumnNames = new List<string> { "Name", "Artist" ,"Album"};
+          
+            list.ContextMenuStrip = contextMenuStrip1;
+            /*list.MouseClick += (x, y) => { 
+            if(y.Button == MouseButtons.Right)
+                {
+                    switch (list.SelectedItem)
+                    {
+                        case null:
+                            contextMenuStrip2.Show(list, new Point(y.X, y.Y));
+                            break;
+
+                        default:
+                            contextMenuStrip1.Show(list, new Point(y.X, y.Y));
+                            break;
+                    }
+                }
+            };*/
+
+            // set the default items
+          
+           // list.Theme = OLVTheme.VistaExplorer;
+            list.ItemFont = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            list.EnableDropFiles = true;
+            list.EnableDropOnLocations = DropTargetLocation.Background | DropTargetLocation.Item;
+            
+            list.OnDroppedFiles = (List<string> paths) =>
+            {
+                Logic.ProcessFiles(Logic.FilterFiles(paths));
+                list.Redraw();
+            };
+            list.OnItemDoubleClick = (x) => {
+                Logic.HandleSongChanging((Song)x);
+            };
+            list.Items = ctx.Queue;
+            // list.InnerList.BeforeSorting += (x, y) => { y.Canceled = true; };
+            /*list.InnerList.CustomSorter = (x, y) =>
+            {
+                list.InnerList.ListViewItemSorter = new ColumnComparer(
+              new("ignored", "Metadata.TrackNumber"), SortOrder.Ascending);
+            };*/
+            list.InnerList.UseNotifyPropertyChanged = true;
+            list.InnerList.SetObjects(ctx.Queue);
+            list.InnerList.Sort(1);
+            list.InnerList.Columns[0].Text = "Track #";
+
+            list.Redraw();
+            this.list.InnerList.DragSource = new SimpleDragSource();
+            this.list.InnerList.DropSink = new RearrangingDropSink(false);
+            ctx.ObservableForProperty(x =>x.Queue, skipInitial: false).Subscribe(x =>
+            {
+                list.InnerList.SetObjects(ctx.Queue);
+                x.Value.CollectionChanged += (x, y) => {
+                    Invoke(() => {
+                        list.InnerList.Sort(0);
+                        list.Redraw();
+                    });
+                   
+
+                };
+
+
+
+            });
+            if (Logic.MusicStatusInterfaces?.Any() == true)
+            {
+                Parallel.ForEach(Logic.MusicStatusInterfaces, dangthing =>
+                {
+                    var a = dangthing;
+                    GC.KeepAlive(a);
+                    Logic.AddMSI(a);
+                });
+            }
         }
 
         private void Cfw_OnRenamedE(object? sender, RenamedEventArgs e)
@@ -146,7 +194,7 @@ namespace SilverAudioPlayer
 
         public Form1(params string[] files) : this()
         {
-            ProcessFiles(true, files);
+            Logic.ProcessFiles(files);
         }
 
         private void AutosaveConfig_Elapsed(object? sender, ElapsedEventArgs e)
@@ -288,7 +336,7 @@ namespace SilverAudioPlayer
                 if (File.Exists(path))
                 {
                     var lines = File.ReadAllLines(path);
-                    ProcessFiles(false, lines);
+                    Logic.ProcessFiles( lines);
                 }
             }
             if (WindowState == FormWindowState.Minimized)
@@ -354,7 +402,7 @@ namespace SilverAudioPlayer
         private byte stateofdoingstuff = 0;
         private string? CurrentURI => CurrentSong?.URI;
         private bool StopAutoLoading = false;
-        private Song? CurrentSong = null;
+        private Song? CurrentSong { get => Logic.CurrentSong; set=>Logic.CurrentSong=value; }
         public IPlay? Player { get => Logic.Player;  }
         private Thread? th;
 
@@ -404,50 +452,7 @@ namespace SilverAudioPlayer
             Player?.Stop();
         }
 
-        private void OutputDevice_PlaybackStopped(object? sender, object o)
-        {
-            Log.Information("Output device playback stopped\nLoop single checked: {ConfigLoopSong}\nStopAutoLoading: {StopAutoLoading}\nCurrent song: {CurrentSong}", Config.LoopSong, StopAutoLoading, CurrentSong);
-            if (Config.LoopSong && !StopAutoLoading)
-            {
-                Logic.RemoveTrack();
-                Logic.StartPlaying();
-            }
-            else if (CurrentSong != null && !StopAutoLoading)
-            {
-                TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-                treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-                var a = Array.Find(aa, x => (Song)x.Tag == CurrentSong);
-
-                if (a != null)
-                {
-                    int index = a.Index;
-                    if (index + 1 < aa.Length)
-                    {
-                        Logic.HandleSongChanging((Song)aa[index + 1].Tag, true);
-                    }
-                }
-                else if (NextSong != null)
-                {
-                    Logic.HandleSongChanging(NextSong, true);
-                    NextSong = null;
-                }
-            }
-            else if (StopAutoLoading)
-            {
-                StopAutoLoading = false;
-            }
-            /*else if (preventstoppedstatus)
-            {
-                TrackLmao(TrackEvent.EndOfTrack);
-            }
-            else
-            {
-                preventstoppedstatus = false;
-            }*/
-            StopAutoLoading = false;
-        }
-
-       
+        
 
         private void DragOverM(object sender, DragEventArgs e)
         {
@@ -477,91 +482,10 @@ namespace SilverAudioPlayer
             {
                 files = (string[])e.Data.GetData(DataFormats.FileDrop);
             }
-            ProcessFiles(false, files);
+            Logic.ProcessFiles(files);
         }
 
-        public void ProcessFiles(bool fromProgram = false, params string[] files)
-        {
-            if (files.Length == 1 && Directory.Exists(files[0]))
-            {
-                files = FilterFiles(Directory.GetFiles(files[0])).ToArray();
-            }
-            if (files.Length > 0)
-            {
-                files = FilterFiles(files).ToArray();
-                var a = treeView1.Nodes[0].Nodes.Count;
-                treeView1.Nodes[0].Nodes.AddRange(files.Select(x => new TreeNode(x) { Tag = new Song(x, x, Guid.NewGuid()) }).ToArray());
-                treeView1.ExpandAll();
-                if (Config.FillMetadataOfLoadedFilesOnLoad)
-                {
-                    FillMetadataOfLoadedFiles(true);
-                    TreeNode[] tn = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-                    treeView1.Nodes[0].Nodes.CopyTo(tn, 0);
-                    var tn2 = tn.GroupBy(a => ((Song)a.Tag)?.Metadata?.DiscNumber ?? 0).OrderBy(a => a.Key);
-                    treeView1.Nodes[0].Nodes.Clear();
-                    foreach (var group in tn2)
-                    {
-                        treeView1.Nodes[0].Nodes.AddRange(group.OrderBy(a => ((Song)a.Tag)?.Metadata?.TrackNumber ?? int.MaxValue).ToArray());
-                    }
-                }
-
-                if (treeView1.Nodes[0].Nodes.Count != 0 && (Config!.PlayAfterSelect && a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped)))
-                {
-                    if (fromProgram)
-                    {
-                        th = new Thread(() =>
-                        {
-                            Thread.Sleep(500);
-                            Logic.HandleSongChanging((Song)treeView1.Nodes[0].Nodes[0].Tag, true);
-                        });
-                        th.Start();
-                    }
-                    else
-                    {
-                        Logic.HandleSongChanging((Song)treeView1.Nodes[0].Nodes[a].Tag, a == 0 && (Player == null || Player?.GetPlaybackState() == PlaybackState.Stopped));
-                    }
-                }
-            }
-        }
-
-        private void FillMetadataOfLoadedFiles(bool sortafterwards = false)
-        {
-            TreeNode[]? pf = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-            treeView1.Nodes[0].Nodes.CopyTo(pf, 0);
-            Parallel.ForEach(pf, (TreeNode ayo) =>
-            {
-                if (ayo.Tag is Song song && song.Metadata == null)
-                {
-                    var a = Logic.GetMetadataFromStream(song.Stream);
-                    Log.Information("Getting metadata in FMOLF about song " + song.Guid);
-                    if (a != null)
-                    {
-                        Log.Verbose("a wasn't null");
-                        Task.Run(async () =>
-                        {
-                            song.Metadata = await a;
-                            treeView1.Invoke(() => ayo.Text = song.ToString());
-                        });
-                    }
-                }
-            });
-
-            if (sortafterwards)
-            {
-                Log.Information("Sorting after filling metadata");
-                TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-                treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-                treeView1.Nodes[0].Nodes.Clear();
-                foreach (var song in aa.OrderBy(x => ((Song?)x?.Tag)?.Metadata?.TrackNumber ?? 0))
-                {
-                    Debug.WriteLine(((Song?)song?.Tag)?.Metadata?.TrackNumber);
-
-                    Log.Information("Adding song " + ((Song)song.Tag).Guid + " to treeview");
-                    treeView1.Nodes[0].Nodes.Add(song);
-                }
-            }
-        }
-
+       
         private TreeNode? SourceNode;
         private string[]? filetodrop = null;
 
@@ -644,12 +568,53 @@ namespace SilverAudioPlayer
             stateofdoingstuff = 0;
         }
 
+        
+
+        private void volumeBar_Scroll(object sender, EventArgs e)
+        {
+            Player?.SetVolume((byte)volumeBar.Value);
+        }
+
+        private void PlayButton_Click(object sender, EventArgs e)
+        {
+            Logic.Play();
+
+           
+        }
+
+        private void PauseButton_Click(object sender, EventArgs e)
+        {
+            Logic.Pause();
+        }
+
+       
+
+        private void playNowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (SelectedItem != null)
+            {
+                Logic.HandleSongChanging((Song)SelectedItem.Tag);
+            }
+        }
+
+        private void upToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MoveSel(-1);
+        }
+
+        private void downToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MoveSel(+1);
+        }
+
+       
+        private TreeNode SelectedItem;
         private void treeView1_MouseLeave(object sender, EventArgs e)
         {
             if (filetodrop != null)
             {
-                treeView1.DoDragDrop(new DataObject(DataFormats.FileDrop, filetodrop), DragDropEffects.Copy |
- DragDropEffects.Move);
+                /*treeView1.DoDragDrop(new DataObject(DataFormats.FileDrop, filetodrop), DragDropEffects.Copy |
+ DragDropEffects.Move);*/
                 filetodrop = null;
             }
         }
@@ -661,7 +626,7 @@ namespace SilverAudioPlayer
 
         private void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (treeView1.SelectedNode != null && e.Button == MouseButtons.Left)
+            /*if (treeView1.SelectedNode != null && e.Button == MouseButtons.Left)
             {
                 if (treeView1.SelectedNode == treeView1.TopNode)
                 {
@@ -683,31 +648,11 @@ namespace SilverAudioPlayer
                 {
                     filetodrop = new string[] { treeView1.SelectedNode.Text };
                 }
-            }
+            }*/
         }
-
-        private void volumeBar_Scroll(object sender, EventArgs e)
-        {
-            Player?.SetVolume((byte)volumeBar.Value);
-        }
-
-        private void PlayButton_Click(object sender, EventArgs e)
-        {
-            Logic.Play();
-
-           
-        }
-
-        private void PauseButton_Click(object sender, EventArgs e)
-        {
-            Logic.Pause();
-        }
-
-        private TreeNode SelectedItem;
-
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+           /* if (e.Button == MouseButtons.Right)
             {
                 switch (e.Node.Tag)
                 {
@@ -721,102 +666,46 @@ namespace SilverAudioPlayer
                         break;
                 }
             }
-            treeView1.SelectedNode = e.Node;
+            treeView1.SelectedNode = e.Node;*/
         }
 
         private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && e.Node.Tag != null)
+           /* if (e.Button == MouseButtons.Left && e.Node.Tag != null)
             {
                 Logic.HandleSongChanging((Song)e.Node.Tag);
-            }
+            }*/
         }
-
-        private void playNowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (SelectedItem != null)
-            {
-                Logic.HandleSongChanging((Song)SelectedItem.Tag);
-            }
-        }
-
-        private void upToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MoveSel(-1);
-        }
-
-        private void downToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MoveSel(+1);
-        }
-
-        private TreeNode? FindById(Guid? songID)
-        {
-            if (songID == null)
-            {
-                return null;
-            }
-            foreach (TreeNode TreeNode in treeView1.Nodes[0].Nodes)
-            {
-                if (((Song)TreeNode.Tag).Guid == songID)
-                {
-                    return TreeNode;
-                }
-            }
-            return null;
-        }
-
         private void MoveSel(short where)
         {
-            MoveTrack(where, SelectedItem);
+          //  MoveTrack(where, SelectedItem);
         }
 
         private void MoveTrack(short howmuch, TreeNode what)
         {
-            treeView1.Nodes[0].Nodes.RemoveAt(what.Index);
-            treeView1.Nodes[0].Nodes.Insert(what.Index + howmuch, what);
+            //treeView1.Nodes[0].Nodes.RemoveAt(what.Index);
+            //treeView1.Nodes[0].Nodes.Insert(what.Index + howmuch, what);
         }
 
         private void playNextToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TreeNode[]? aa = new TreeNode[treeView1.Nodes[0].Nodes.Count];
-            treeView1.Nodes[0].Nodes.CopyTo(aa, 0);
-            if (CurrentSong == (Song)SelectedItem.Tag)
-            {
-                MessageBox.Show("You thought");
-                return;
-            }
-            int indexb = aa.First(x => x == SelectedItem).Index;
-            int indexa = aa.First(x => (Song)x.Tag == CurrentSong).Index;
-            treeView1.Nodes[0].Nodes.RemoveAt(indexb);
-            treeView1.Nodes[0].Nodes.Insert(indexa + 1, aa[indexb]);
-            treeView1.SelectedNode = aa[indexb];
+            NextSong = (Song) list.SelectedItem;
         }
 
-        private Song? NextSong = null;
+        private Song? NextSong { get => Logic.NextSong; set => Logic.NextSong = value; }
 
         private void removeFromQueueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedItem != null)
+           if (list.SelectedItem != null)
             {
-                if (SelectedItem.Tag == CurrentSong)
-                {
-                    if (treeView1.Nodes[0].Nodes.Count > SelectedItem.Index + 1)
-                    {
-                        NextSong = treeView1.Nodes[0].Nodes[SelectedItem.Index + 1].Tag as Song;
-                    }
-                    else
-                    {
-                        NextSong = null;
-                    }
-                }
-                treeView1.Nodes[0].Nodes.Remove(SelectedItem);
+                ctx.Queue.Remove((Song)list.SelectedItem);
             }
         }
 
         private void clearQueueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            treeView1.Nodes[0].Nodes.Clear();
+            /*treeView1.Nodes[0].Nodes.Clear();*/
+            ctx.Queue.Clear();
             CurrentSong = null;
         }
 
@@ -828,17 +717,17 @@ namespace SilverAudioPlayer
                 string[]? lines = text.Split(Environment.NewLine);
                 if (lines != null)
                 {
-                    ProcessFiles(false, lines);
+                    Logic.ProcessFiles(lines);
                 }
             }
         }
 
         private void exportToClipboardnewLineSeperatedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StringBuilder? sb = new();
-            foreach (TreeNode a in treeView1.Nodes[0].Nodes)
+           StringBuilder? sb = new();
+            foreach (Song a in ctx.Queue)
             {
-                sb.AppendLine(a.Text);
+                sb.AppendLine(a.URI);
             }
             Clipboard.SetText(sb.ToString());
         }
@@ -863,7 +752,7 @@ namespace SilverAudioPlayer
             }
             if (Player != null)
             {
-                Player.TrackEnd -= OutputDevice_PlaybackStopped;
+               // Player.TrackEnd -= OutputDevice_PlaybackStopped;
             }
             Player?.Stop();
             token.Cancel();
@@ -885,7 +774,7 @@ namespace SilverAudioPlayer
         {
             DoDragDrop(e.Item, DragDropEffects.Move);
         }
-
+       
         private void Form1_Load(object sender, EventArgs e)
         {
             if (Logic.MusicStatusInterfaces?.Any() == true)
@@ -911,7 +800,7 @@ namespace SilverAudioPlayer
                     mf.Close();
                     mf.Dispose();
                 }
-                mf = new(ref CurrentSong);
+                mf = new(ctx.CurrentSong);
                 mf.Show();
             }
         }
@@ -924,6 +813,8 @@ namespace SilverAudioPlayer
                 m.Show();
             }
         }
+
+       
     }
     public class MainWindowContext : PlayerContext
     {

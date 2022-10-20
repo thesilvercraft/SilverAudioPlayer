@@ -22,6 +22,7 @@ using System.Composition.Hosting;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Composition;
+using SilverAudioPlayer.Core;
 
 namespace SilverAudioPlayer
 {
@@ -74,41 +75,8 @@ namespace SilverAudioPlayer
         private void DoContainerShit()
         {
             List<Assembly> assemblies = new();
-            // An aggregate catalog that combines multiple catalogs.
+            PlatformLogicHelper.LoadAssemblies(ref assemblies);
             var catalog = new ContainerConfiguration();
-            // Adds all the parts found in the same assembly as the Program class.
-            void AddAssembliesFrom(string path, string filter)
-            {
-                assemblies.AddRange(Directory.GetFiles(path, filter).Select(path2 => AssemblyLoadContext.Default.LoadFromAssemblyPath(path2)).Where(x => x != null));
-            }
-            void PlatformLogic(string path)
-            {
-                switch (Environment.OSVersion.Platform)
-                {
-                    case PlatformID.Win32NT:
-                        AddAssembliesFrom(path, "SilverAudioPlayer.Windows.*.dll");
-                        break;
-
-                    case PlatformID.Xbox:
-                        AddAssembliesFrom(path, "SilverAudioPlayer.Xbox360.*.dll");
-                        break;
-                }
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    AddAssembliesFrom(path, "SilverAudioPlayer.Sheep.*.dll");
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    AddAssembliesFrom(path, "SilverAudioPlayer.Unix.*.dll");
-                }
-                AddAssembliesFrom(path, "SilverAudioPlayer.Any.*.dll");
-            }
-            var nextpath = Path.Combine(AppContext.BaseDirectory, "Extensions");
-            if (Directory.Exists(nextpath))
-            {
-                PlatformLogic(nextpath);
-            }
-            PlatformLogic(AppContext.BaseDirectory);
             catalog.WithAssemblies(assemblies);
             Container = catalog.CreateContainer();
             Container.SatisfyImports(frm1.Logic);
@@ -339,7 +307,7 @@ namespace SilverAudioPlayer
                     }
                     else
                     {
-                        frm1.ProcessFiles(true, args!);
+                        frm1.Logic.ProcessFiles(args!);
                     }
                 }
 #if MS

@@ -29,7 +29,7 @@ namespace SilverAudioPlayer.Winforms
             AddLabel(text, poscount++, x, color);
         }
 
-        public MetadataForm(ref Song song)
+        public MetadataForm(Song song)
         {
             InitializeComponent();
             if (GetDarkModePreference.ShouldIUseDarkMode())
