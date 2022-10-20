@@ -7,7 +7,45 @@
     xmlns:local="clr-namespace:SilverAudioPlayer.Avalonia;assembly=SilverAudioPlayer.Avalonia"
     Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
     ExtendClientAreaToDecorationsHint="True">
+  <Window.Resources>
+    <local:NullableReplacingConverter x:Key="nullableReplacingConverter"/>
+    <local:RelativePointConverter x:Key="relativePointConverter"/>
+
+  </Window.Resources>
   <Window.Styles>
+    <Style Selector="ProgressBar">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ProgressBar">
+            <Grid>
+              <Border Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}"
+                      CornerRadius="{TemplateBinding CornerRadius}">
+                <Panel>
+                  <Border Name="PART_Indicator"
+                          Background="{TemplateBinding Foreground}"
+                          IsVisible="{Binding !IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}" >
+                    <Border.Background>
+                      <LinearGradientBrush StartPoint="0,0" EndPoint="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource relativePointConverter}}" GradientStops="{Binding GradientStops}"/>
+                    </Border.Background>
+                  </Border>
+                  <Border Name="PART_IndeterminateIndicator"
+                          Background="{TemplateBinding Foreground}"
+                          IsVisible="{Binding IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}" />
+                </Panel>
+              </Border>
+              <LayoutTransformControl Name="PART_LayoutTransformControl"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsVisible="{Binding ShowProgressText, RelativeSource={RelativeSource TemplatedParent}}">
+                
+              </LayoutTransformControl>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
     <Style Selector="Button">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="FontWeight" Value="Bold" />
@@ -26,9 +64,7 @@
       <Setter Property="FontSize" Value="20" />
     </Style>
   </Window.Styles>
-  <Window.Resources>
-    <local:NullableReplacingConverter x:Key="nullableReplacingConverter"/>
-  </Window.Resources>
+
 
     <Grid RowDefinitions="25,260,*" Margin="5">
       <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -44,7 +80,7 @@
           <Image Height="256" Width="256" Name="Image"  />
         </Border>
         <StackPanel Margin="10,10,0,10" Grid.Column="1">
-          <ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50" Foreground="{Binding PBForeground}" Margin="0,0,10,10" />
+          <ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50"   Margin="0,0,10,10" />
           <Grid Margin="1,0,10,0">
             <TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"></TextBlock>
             <TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"></TextBlock>

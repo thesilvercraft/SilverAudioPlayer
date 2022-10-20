@@ -29,20 +29,26 @@ namespace SilverAudioPlayer.Avalonia
             mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
             Selection = new SelectionModel<Song>();
             Selection.SingleSelect = false;
-            Selection.SelectionChanged += SelectionChanged;
             _pbForeGround = WindowExtensions.ReadBackground("SAPPBColor", def: KnownColor.Coral.ToColor());
+            if (_pbForeGround is LinearGradientBrush lgb)
+            {
+                GradientStops = lgb.GradientStops;
+            }
+            else
+            {
+                GradientStops = new();
+                GradientStops.Add(new(KnownColor.Coral.ToColor(), 0));
+            }
         }
         readonly MainWindow mainWindow;
 
         private string _Title;
         private IBrush _pbForeGround;
         public IBrush PBForeground { get => _pbForeGround; set => this.RaiseAndSetIfChanged(ref _pbForeGround, value); }
-        void SelectionChanged(object sender, SelectionModelSelectionChangedEventArgs e)
-        {
-
-        }
         public SelectionModel<Song> Selection { get; }
         public string Title { get => _Title; set => this.RaiseAndSetIfChanged(ref _Title, value); }
+        private GradientStops _GradientStops;
+        public GradientStops GradientStops { get => _GradientStops; set => this.RaiseAndSetIfChanged(ref _GradientStops, value); }
 
         public void RunTheThing()
         {

@@ -3,6 +3,7 @@ using DiscordRPC.Logging;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.ConfigScreen;
 using System.Composition;
 using System.Diagnostics;
 
@@ -50,7 +51,7 @@ public class DebugLogger : ILogger
     {
         if (Level <= LogLevel.Info)
         {
-               Debug.WriteLine("INFO: " + message + args);
+            Debug.WriteLine("INFO: " + message + args);
         }
     }
 
@@ -89,8 +90,15 @@ public class DebugLogger : ILogger
 }
 
 [Export(typeof(IMusicStatusInterface))]
-public class DiscordPlayTracker : IMusicStatusInterface
+public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
 {
+
+    List<IConfigurableElement> ConfigurableElements;
+
+    public List<IConfigurableElement> GetElements()
+    {
+        return ConfigurableElements;
+    }
     public event EventHandler Play;
 
     public event EventHandler Pause;
@@ -149,23 +157,35 @@ public class DiscordPlayTracker : IMusicStatusInterface
 
     private const string AppName = "SilverAudioPlayer";
 
-    public DiscordPlayTracker(string id, IRememberRichPresenceURLs? richPresenceURLgetter) : this(id)
-    {
-        richPresenceURLs = richPresenceURLgetter;
-    }
 
-    public DiscordPlayTracker() : this("926595775574712370", File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")) ? new RememberRichPresenceURLsUsingImgurAndAJsonFile() { Uploadit = true } : null)
+
+    public DiscordPlayTracker() : this("926595775574712370")
     {
+        richPresenceURLs = new RememberRichPresenceURLsUsingImgurAndAJsonFile() { Uploadit = true };
+
     }
 
     public DiscordPlayTracker(string id)
     {
         client = new(id)
         {
-            SkipIdenticalPresence = false
+            SkipIdenticalPresence = false,
+            Logger = new DebugLogger() { Level = LogLevel.Warning }
         };
-        client.Logger = new DebugLogger() { Level = LogLevel.Warning };
         client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
+        ConfigurableElements = new()
+            {
+                new SimpleCheckBox() { GetContent = () => "Allow imgur uploads", Checked = (c) => {
+                if(c && !File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
+                {
+                    File.Create(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
+                }
+                else if(File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
+                {
+                    File.Delete(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
+                }
+                }, GetChecked = () => File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")) }
+            };
     }
 
     public void Dispose()
@@ -235,7 +255,7 @@ public class DiscordPlayTracker : IMusicStatusInterface
         Debug.WriteLine($"cs called {artistandalbum}");
 
         var bigimage = GetAlbumArt(loc, a);
-        SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState), StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap", bigimage == null ? AppName : a.Metadata?.Album ?? AppName, "start", "currently playing");
+        SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState), StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap", bigimage == null ? AppName : a.Metadata?.Album ?? AppName, "start", PlayTextState);
     }
 
     private static string StatusOrNotToStatus(string message, string status)
@@ -263,16 +283,16 @@ public class DiscordPlayTracker : IMusicStatusInterface
         return tracks.GetValueOrDefault(artistandalbum, null);
     }
 
-    private const string PauseTextState = "Currently paused";
+    private const string PauseTextState = "Paused";
     private const string PauseTextSState = "Paused";
     private const string PauseStateRPSMLICN = "pause";
 
     private const string PlayTextSState = "Playing";
-    private const string PlayTextState = "Currently playing";
+    private const string PlayTextState = "Playing";
     private const string PlayStateRPSMLICN = "start";
 
     private const string StoppedTextSState = "Stopped";
-    private const string StoppedTextState = "Currently stopped";
+    private const string StoppedTextState = "Stopped";
     private const string StoppedStateRPSMLICN = "stop";
 
     public string Name => "Discord RP";
@@ -394,6 +414,11 @@ public interface IRememberRichPresenceURLs
 public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPresenceURLs
 {
     public bool Uploadit;
+    public RememberRichPresenceURLsUsingImgurAndAJsonFile()
+    {
+        imageEndpoint = new ImageEndpoint(client, Shared.HttpClient.Client);
+
+    }
 
     public string? GetURL(Song track)
     {
@@ -426,13 +451,12 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
         }
         return null;
     }
+    ApiClient client = new ApiClient("d169c9264561822", "ce1616d067cb1493bc1df67b53e03660c5c02cc2"); ImageEndpoint imageEndpoint;
 
     public virtual string? Upload(byte[] bits)
     {
-        var client = new ApiClient("d169c9264561822", "ce1616d067cb1493bc1df67b53e03660c5c02cc2");
         Debug.WriteLine("uploading " + bits.Length);
 
-        var imageEndpoint = new ImageEndpoint(client, Shared.HttpClient.Client);
 
         var imageUpload = imageEndpoint.UploadImageAsync(new MemoryStream(bits));
         var res = imageUpload.GetAwaiter().GetResult();
@@ -441,6 +465,7 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
     }
 
     private MscArtFile[] cached;
+
 
     private void GetCache()
     {
