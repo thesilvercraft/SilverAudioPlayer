@@ -1,9 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace SilverAudioPlayer.Shared.ConfigScreen
+namespace SilverAudioPlayer.Shared.ConfigScreen;
+
+public class SimpleRow : IConfigurableRow
 {
-    public class SimpleRow : IConfigurableRow
-    {
-        public ObservableCollection<IConfigurableElement> Content { get; set; }
-    }
+    public ObservableCollection<IConfigurableElement> Content { get; set; }
 }

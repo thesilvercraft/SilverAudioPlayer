@@ -6,9 +6,7 @@
         x:Class="SilverAudioPlayer.Avalonia.ConfigureWindow"
         Title="ConfigureWindow"
         ExtendClientAreaToDecorationsHint="True">
-  <Grid Margin="5" RowDefinitions="25,*">
-    <StackPanel Orientation="Vertical" Grid.Row="1" Name="MainGrid">
-
-    </StackPanel>
-  </Grid>
+    <Grid Margin="5" RowDefinitions="25,*">
+        <StackPanel Orientation="Vertical" Grid.Row="1" Name="MainGrid" />
+    </Grid>
 </Window>

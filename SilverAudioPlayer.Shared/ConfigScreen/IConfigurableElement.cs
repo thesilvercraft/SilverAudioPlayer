@@ -1,9 +1,8 @@
-﻿namespace SilverAudioPlayer.Shared.ConfigScreen
+﻿namespace SilverAudioPlayer.Shared.ConfigScreen;
+
+/// <summary>
+///     An element in the configuration UI
+/// </summary>
+public interface IConfigurableElement
 {
-    /// <summary>
-    /// An element in the configuration UI
-    /// </summary>
-    public interface IConfigurableElement
-    {
-    }
 }

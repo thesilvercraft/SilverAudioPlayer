@@ -1,10 +1,10 @@
-﻿using NAudio.Flac.Metadata;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using NAudio.Flac.Metadata;
 
 namespace NAudio.Flac
 {
@@ -14,7 +14,14 @@ namespace NAudio.Flac
         private readonly Stream _stream;
         private bool _isRunning;
 
-        public event EventHandler<FlacPreScanFinishedEventArgs> ScanFinished;
+        public FlacPreScan(Stream stream)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
+            if (!stream.CanRead) throw new ArgumentException("stream is not readable");
+
+            _stream = stream;
+        }
 
         public List<FlacFrameInformation> Frames { get; private set; }
 
@@ -22,45 +29,31 @@ namespace NAudio.Flac
 
         public long TotalSamples { get; private set; }
 
-        public FlacPreScan(Stream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            if (!stream.CanRead)
-            {
-                throw new ArgumentException("stream is not readable");
-            }
-
-            _stream = stream;
-        }
+        public event EventHandler<FlacPreScanFinishedEventArgs> ScanFinished;
 
         public void ScanStream(FlacMetadataStreamInfo streamInfo, FlacPreScanMode mode)
         {
-            long saveOffset = _stream.Position;
+            var saveOffset = _stream.Position;
             StartScan(streamInfo, mode);
             _stream.Position = saveOffset;
 
             long totalLength = 0, totalsamples = 0;
-            foreach (FlacFrameHeader frame in Frames.Select(Frame => Frame.Header))
+            foreach (var frame in Frames.Select(Frame => Frame.Header))
             {
                 totalLength += frame.BlockSize * frame.BitsPerSample * frame.Channels;
                 totalsamples += frame.BlockSize;
             }
+
             TotalLength = totalLength;
             TotalSamples = totalsamples;
 
-            Debug.WriteLineIf(TotalSamples == streamInfo.TotalSamples, "Flac prescan successful. Calculated total_samples value matching the streaminfo-metadata.");
+            Debug.WriteLineIf(TotalSamples == streamInfo.TotalSamples,
+                "Flac prescan successful. Calculated total_samples value matching the streaminfo-metadata.");
         }
 
         private void StartScan(FlacMetadataStreamInfo streamInfo, FlacPreScanMode mode)
         {
-            if (_isRunning)
-            {
-                throw new Exception("Scan is already running.");
-            }
+            if (_isRunning) throw new Exception("Scan is already running.");
 
             _isRunning = true;
 
@@ -85,7 +78,7 @@ namespace NAudio.Flac
             Stopwatch watch = new Stopwatch();
             watch.Start();
 #endif
-            List<FlacFrameInformation> result = ScanThisShit(streamInfo);
+            var result = ScanThisShit(streamInfo);
 
 #if FLAC_DEBUG
             watch.Stop();
@@ -103,15 +96,15 @@ namespace NAudio.Flac
 
         private unsafe List<FlacFrameInformation> ScanThisShit(FlacMetadataStreamInfo streamInfo)
         {
-            Stream stream = _stream;
-            byte[] buffer = new byte[BufferSize];
+            var stream = _stream;
+            var buffer = new byte[BufferSize];
             stream.Position = 4; //fLaC
 
             //skip the metadata
             FlacMetadata.SkipMetadata(stream);
 
-            List<FlacFrameInformation> frames = new List<FlacFrameInformation>();
-            FlacFrameInformation frameInfo = new FlacFrameInformation
+            var frames = new List<FlacFrameInformation>();
+            var frameInfo = new FlacFrameInformation
             {
                 IsFirstFrame = true
             };
@@ -120,24 +113,20 @@ namespace NAudio.Flac
 
             while (true)
             {
-                int read = stream.Read(buffer, 0, buffer.Length);
-                if (read <= FlacConstant.FrameHeaderSize)
-                {
-                    break;
-                }
+                var read = stream.Read(buffer, 0, buffer.Length);
+                if (read <= FlacConstant.FrameHeaderSize) break;
 
                 fixed (byte* bufferPtr = buffer)
                 {
-                    byte* ptr = bufferPtr;
+                    var ptr = bufferPtr;
                     while (bufferPtr + read - FlacConstant.FrameHeaderSize > ptr)
-                    {
                         if (*ptr++ == 0xFF && (*ptr & 0xF8) == 0xF8) //check sync
                         {
-                            byte* ptrSafe = ptr;
+                            var ptrSafe = ptr;
                             ptr--;
-                            if (IsFrame(ref ptr, streamInfo, out FlacFrameHeader tmp))
+                            if (IsFrame(ref ptr, streamInfo, out var tmp))
                             {
-                                FlacFrameHeader header = tmp;
+                                var header = tmp;
                                 if (frameInfo.IsFirstFrame)
                                 {
                                     baseHeader = header;
@@ -162,7 +151,6 @@ namespace NAudio.Flac
                                 ptr = ptrSafe;
                             }
                         }
-                    }
                 }
 
                 stream.Position -= FlacConstant.FrameHeaderSize;

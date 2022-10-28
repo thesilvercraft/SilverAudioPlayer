@@ -1,51 +1,48 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using SilverAudioPlayer.Avalonia;
 
-namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
+namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
+
+public partial class AuthInfoWindow : Window
 {
-    public partial class AuthInfoWindow : Window
+    private readonly JellyFinHelper jellyFinHelper;
+
+    public string ServerURL;
+    public bool Success;
+
+    public AuthInfoWindow()
     {
-        private JellyFinHelper jellyFinHelper;
-
-        public AuthInfoWindow()
-        {
-            InitializeComponent();
+        InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+        this.AttachDevTools();
 #endif
-            this.DoAfterInitTasks(true);
-        }
+        this.DoAfterInitTasks(true);
+    }
 
-        public string ServerURL;
-        public bool Success = false;
+    public AuthInfoWindow(JellyFinHelper jellyFinHelper) : this()
+    {
+        this.jellyFinHelper = jellyFinHelper;
+    }
 
-        public AuthInfoWindow(JellyFinHelper jellyFinHelper) : this()
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+        Fail = this.FindControl<TextBlock>("Fail");
+        UserName = this.FindControl<TextBox>("UserName");
+        Password = this.FindControl<TextBox>("Password");
+    }
+
+    private async void ButtonClick(object? sender, RoutedEventArgs e)
+    {
+        Fail.IsVisible = false;
+        if (await jellyFinHelper.TryLogInAsync(UserName.Text, Password.Text))
         {
-            this.jellyFinHelper = jellyFinHelper;
+            Success = true;
+            Close();
+            return;
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-            Fail = this.FindControl<TextBlock>("Fail");
-            UserName = this.FindControl<TextBox>("UserName");
-            Password = this.FindControl<TextBox>("Password");
-        }
-
-        private async void ButtonClick(object? sender, RoutedEventArgs e)
-        {
-            Fail.IsVisible = false;
-            if (await jellyFinHelper.TryLogInAsync(UserName.Text, Password.Text))
-            {
-                Success = true;
-                Close();
-                return;
-            }
-
-            Fail.IsVisible = true;
-        }
+        Fail.IsVisible = true;
     }
 }

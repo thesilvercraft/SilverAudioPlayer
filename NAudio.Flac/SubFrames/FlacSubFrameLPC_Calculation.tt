@@ -1,8 +1,5 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 namespace NAudio.Flac.SubFrames
 {
@@ -15,13 +12,13 @@ namespace NAudio.Flac.SubFrames
 			if(order <= 12)
 			{
 <#
-Generate(1, 12, false);
+    Generate(1, 12, false);
 #>
 			}
 			else if(order > 12)
 			{
 <#
-Generate(13, 32, false);
+    Generate(13, 32, false);
 #>
 			}
 		}
@@ -33,13 +30,13 @@ Generate(13, 32, false);
 			if(order <= 12)
 			{
 <#
-Generate(1, 12, true);
+    Generate(1, 12, true);
 #>
 			}
 			else if(order > 12)
 			{
 <#
-Generate(13, 32, true);
+    Generate(13, 32, true);
 #>
 			}
 		}
@@ -47,7 +44,6 @@ Generate(13, 32, true);
 }
 
 <#+
-
     private void Generate(int minOrder, int maxOrder, bool isWide)
     {
 #>
@@ -55,27 +51,27 @@ Generate(13, 32, true);
 switch(order)
 				{
 <#+
-		for (var o = maxOrder; o >= minOrder; o--)
-		{
+        for (var o = maxOrder; o >= minOrder; o--)
+        {
 #>
 	case <#= o #>:
 		for(int i = 0; i < length; i++)
 		{
 			z = 
 <#+
-			for (var n = o - 1; n >= 0; n--)
-			{
+            for (var n = o - 1; n >= 0; n--)
+            {
 #>
-			(q[<#= n #>] * <#= isWide ? "(long)" : "" #>d[i - <#= n+ 1 #>]) <#= n > 0 ? "+" : "" #>
+			(q[<#= n #>] * <#= isWide ? "(long)" : "" #>d[i - <#= n + 1 #>]) <#= n > 0 ? "+" : "" #>
 <#+
-			}
+            }
 #>
 			;
 			d[i] = residual[i] + <#= isWide ? "(int)" : "" #>(z >> lpcShiftNeeded);
 		}
 		break;
 <#+
-		}
+        }
 #>
 				}
 <#+

@@ -1,26 +1,29 @@
-﻿using DiscordRPC;
+﻿using System.Composition;
+using System.Diagnostics;
+using System.Text.Json;
+using DiscordRPC;
 using DiscordRPC.Logging;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.ConfigScreen;
-using System.Composition;
-using System.Diagnostics;
+using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 
 namespace SilverAudioPlayer.DiscordRP;
+
 public class DebugLogger : ILogger
 {
-    //
-    // Summary:
-    //     The level of logging to apply to this logger.
-    public LogLevel Level { get; set; }
-
     // Summary:
     //     Creates a new instance of a Console Logger.
     public DebugLogger()
     {
         Level = LogLevel.Info;
     }
+
+    //
+    // Summary:
+    //     The level of logging to apply to this logger.
+    public LogLevel Level { get; set; }
 
 
     //
@@ -33,10 +36,7 @@ public class DebugLogger : ILogger
     //   args:
     public void Trace(string message, params object[] args)
     {
-        if (Level <= LogLevel.Trace)
-        {
-            Debug.WriteLine("TRACE: " + message + args);
-        }
+        if (Level <= LogLevel.Trace) Debug.WriteLine("TRACE: " + message + args);
     }
 
     //
@@ -49,10 +49,7 @@ public class DebugLogger : ILogger
     //   args:
     public void Info(string message, params object[] args)
     {
-        if (Level <= LogLevel.Info)
-        {
-            Debug.WriteLine("INFO: " + message + args);
-        }
+        if (Level <= LogLevel.Info) Debug.WriteLine("INFO: " + message + args);
     }
 
     //
@@ -65,10 +62,7 @@ public class DebugLogger : ILogger
     //   args:
     public void Warning(string message, params object[] args)
     {
-        if (Level <= LogLevel.Warning)
-        {
-            Debug.WriteLine("WARN: " + message + args);
-        }
+        if (Level <= LogLevel.Warning) Debug.WriteLine("WARN: " + message + args);
     }
 
     //
@@ -81,24 +75,69 @@ public class DebugLogger : ILogger
     //   args:
     public void Error(string message, params object[] args)
     {
-        if (Level <= LogLevel.Error)
-        {
-
-            Debug.WriteLine("ERR : " + message + args);
-        }
+        if (Level <= LogLevel.Error) Debug.WriteLine("ERR : " + message + args);
     }
 }
 
 [Export(typeof(IMusicStatusInterface))]
 public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
 {
+    private const string AppName = "SilverAudioPlayer";
 
-    List<IConfigurableElement> ConfigurableElements;
+    private const string PauseTextState = "Paused";
+    private const string PauseTextSState = "Paused";
+    private const string PauseStateRPSMLICN = "pause";
+
+    private const string PlayTextSState = "Playing";
+    private const string PlayTextState = "Playing";
+    private const string PlayStateRPSMLICN = "start";
+
+    private const string StoppedTextSState = "Stopped";
+    private const string StoppedTextState = "Stopped";
+    private const string StoppedStateRPSMLICN = "stop";
+
+    private readonly Dictionary<string, string> tracks = new();
+
+    public DiscordRpcClient client;
+
+    private readonly List<IConfigurableElement> ConfigurableElements;
+    public IRememberRichPresenceURLs? richPresenceURLs;
+
+
+    public DiscordPlayTracker() : this("926595775574712370")
+    {
+        richPresenceURLs = new RememberRichPresenceURLsUsingImgurAndAJsonFile { Uploadit = true };
+    }
+
+    public DiscordPlayTracker(string id)
+    {
+        client = new DiscordRpcClient(id)
+        {
+            SkipIdenticalPresence = false,
+            Logger = new DebugLogger { Level = LogLevel.Warning }
+        };
+        client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
+        ConfigurableElements = new List<IConfigurableElement>
+        {
+            new SimpleCheckBox
+            {
+                GetContent = () => "Allow imgur uploads", Checked = c =>
+                {
+                    if (c && !File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
+                        File.Create(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
+                    else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
+                        File.Delete(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
+                },
+                GetChecked = () => File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"))
+            }
+        };
+    }
 
     public List<IConfigurableElement> GetElements()
     {
         return ConfigurableElements;
     }
+
     public event EventHandler Play;
 
     public event EventHandler Pause;
@@ -155,39 +194,6 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
 
     public event Func<string> GetLyrics;
 
-    private const string AppName = "SilverAudioPlayer";
-
-
-
-    public DiscordPlayTracker() : this("926595775574712370")
-    {
-        richPresenceURLs = new RememberRichPresenceURLsUsingImgurAndAJsonFile() { Uploadit = true };
-
-    }
-
-    public DiscordPlayTracker(string id)
-    {
-        client = new(id)
-        {
-            SkipIdenticalPresence = false,
-            Logger = new DebugLogger() { Level = LogLevel.Warning }
-        };
-        client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
-        ConfigurableElements = new()
-            {
-                new SimpleCheckBox() { GetContent = () => "Allow imgur uploads", Checked = (c) => {
-                if(c && !File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
-                {
-                    File.Create(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
-                }
-                else if(File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
-                {
-                    File.Delete(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
-                }
-                }, GetChecked = () => File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")) }
-            };
-    }
-
     public void Dispose()
     {
     }
@@ -206,6 +212,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
                     var ct = GetCurrentTrack();
                     SPlay(ct.URI, ct);
                 }
+
                 break;
 
             case PlaybackState.Paused:
@@ -214,12 +221,10 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
                     var ct = GetCurrentTrack();
                     SPause(ct.URI, ct);
                 }
+
                 break;
 
             case PlaybackState.Buffering:
-                break;
-
-            default:
                 break;
         }
     }
@@ -236,64 +241,10 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
 
     public void StopIPC()
     {
-        Debug.WriteLine($"disable called");
+        Debug.WriteLine("disable called");
         client.Deinitialize();
         client.Dispose();
     }
-
-    public DiscordRpcClient client;
-    public IRememberRichPresenceURLs? richPresenceURLs;
-
-    private readonly Dictionary<string, string> tracks = new()
-    {
-
-    };
-
-    public void ChangeSong(string? loc, Song a)
-    {
-        var artistandalbum = $"{a.Metadata?.Album} - {a.Metadata?.Artist}";
-        Debug.WriteLine($"cs called {artistandalbum}");
-
-        var bigimage = GetAlbumArt(loc, a);
-        SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState), StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap", bigimage == null ? AppName : a.Metadata?.Album ?? AppName, "start", PlayTextState);
-    }
-
-    private static string StatusOrNotToStatus(string message, string status)
-    {
-        if (message.Length == 0)
-        {
-            return "";
-        }
-        if (message.Length > 10)
-        {
-            return message;
-        }
-        return status + " " + message;
-    }
-
-    public string? GetAlbumArt(string? loc, Song a)
-    {
-        if (richPresenceURLs != null)
-        {
-            var url = richPresenceURLs.GetURL(a);
-            if (!string.IsNullOrEmpty(url))
-            { return url; }
-        }
-        var artistandalbum = $"{a.Metadata?.Album} - {a.Metadata?.Artist}";
-        return tracks.GetValueOrDefault(artistandalbum, null);
-    }
-
-    private const string PauseTextState = "Paused";
-    private const string PauseTextSState = "Paused";
-    private const string PauseStateRPSMLICN = "pause";
-
-    private const string PlayTextSState = "Playing";
-    private const string PlayTextState = "Playing";
-    private const string PlayStateRPSMLICN = "start";
-
-    private const string StoppedTextSState = "Stopped";
-    private const string StoppedTextState = "Stopped";
-    private const string StoppedStateRPSMLICN = "stop";
 
     public string Name => "Discord RP";
 
@@ -339,58 +290,101 @@ SilverAudioPlayer.DiscordRP
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
 
-    public List<Tuple<Uri, URLType>>? Links => new() {
-            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DiscordRP"), URLType.Code),
-            new(new($"https://www.nuget.org/packages/DiscordRichPresence/{typeof(DiscordRpcClient).Assembly.GetName().Version}"), URLType.PackageManager),
-            new(new("https://github.com/Lachee/discord-rpc-csharp/issues"),URLType.LibraryCode),
-        };
+    public List<Tuple<Uri, URLType>>? Links => new()
+    {
+        new Tuple<Uri, URLType>(
+            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DiscordRP"),
+            URLType.Code),
+        new Tuple<Uri, URLType>(
+            new Uri(
+                $"https://www.nuget.org/packages/DiscordRichPresence/{typeof(DiscordRpcClient).Assembly.GetName().Version}"),
+            URLType.PackageManager),
+        new Tuple<Uri, URLType>(new Uri("https://github.com/Lachee/discord-rpc-csharp/issues"), URLType.LibraryCode)
+    };
+
+    public void ChangeSong(string? loc, Song a)
+    {
+        var artistandalbum = $"{a.Metadata?.Album} - {a.Metadata?.Artist}";
+        Debug.WriteLine($"cs called {artistandalbum}");
+
+        var bigimage = GetAlbumArt(loc, a);
+        SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
+            StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
+            bigimage == null ? AppName : a.Metadata?.Album ?? AppName, "start", PlayTextState);
+    }
+
+    private static string StatusOrNotToStatus(string message, string status)
+    {
+        if (message.Length == 0) return "";
+        if (message.Length > 10) return message;
+        return status + " " + message;
+    }
+
+    public string? GetAlbumArt(string? loc, Song a)
+    {
+        if (richPresenceURLs != null)
+        {
+            var url = richPresenceURLs.GetURL(a);
+            if (!string.IsNullOrEmpty(url)) return url;
+        }
+
+        var artistandalbum = $"{a.Metadata?.Album} - {a.Metadata?.Artist}";
+        return tracks.GetValueOrDefault(artistandalbum, null);
+    }
 
     public void SPause(string? loc, Song a)
     {
-        Debug.WriteLine($"Pause called");
+        Debug.WriteLine("Pause called");
 
         if (a != null)
         {
             var bigimage = GetAlbumArt(loc, a);
-            SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState), StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap", bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PauseStateRPSMLICN, PauseTextState);
+            SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
+                StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
+                bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PauseStateRPSMLICN, PauseTextState);
         }
         else
         {
-            SetStatus(Path.GetFileNameWithoutExtension(loc), PauseTextSState, "sap", AppName, PauseStateRPSMLICN, PauseTextState);
+            SetStatus(Path.GetFileNameWithoutExtension(loc), PauseTextSState, "sap", AppName, PauseStateRPSMLICN,
+                PauseTextState);
         }
     }
 
     public void SPlay(string? loc, Song a)
     {
-        Debug.WriteLine($"play called");
+        Debug.WriteLine("play called");
 
         if (a != null)
         {
             var bigimage = GetAlbumArt(loc, a);
-            SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PlayTextSState), StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap", bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PlayStateRPSMLICN, PlayTextState);
+            SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PlayTextSState),
+                StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
+                bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PlayStateRPSMLICN, PlayTextState);
         }
         else
         {
-            SetStatus(Path.GetFileNameWithoutExtension(loc), PlayTextSState, "sap", AppName, PlayStateRPSMLICN, PlayTextState);
+            SetStatus(Path.GetFileNameWithoutExtension(loc), PlayTextSState, "sap", AppName, PlayStateRPSMLICN,
+                PlayTextState);
         }
     }
 
     public void SStop()
     {
-        Debug.WriteLine($"stop called");
+        Debug.WriteLine("stop called");
 
         SetStatus(StoppedTextSState, "Not playing anything", "sap", AppName, StoppedStateRPSMLICN, StoppedTextState);
     }
 
-    private void SetStatus(string details, string state, string largeimage, string largeimagetext, string smallimage, string smallimagetext)
+    private void SetStatus(string details, string state, string largeimage, string largeimagetext, string smallimage,
+        string smallimagetext)
     {
         try
         {
-            client.SetPresence(new RichPresence()
+            client.SetPresence(new RichPresence
             {
                 Details = details,
                 State = state,
-                Assets = new Assets()
+                Assets = new Assets
                 {
                     LargeImageKey = largeimage,
                     LargeImageText = largeimagetext,
@@ -413,11 +407,14 @@ public interface IRememberRichPresenceURLs
 
 public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPresenceURLs
 {
+    private MscArtFile[] cached;
+    private readonly ApiClient client = new("d169c9264561822", "ce1616d067cb1493bc1df67b53e03660c5c02cc2");
+    private readonly ImageEndpoint imageEndpoint;
     public bool Uploadit;
+
     public RememberRichPresenceURLsUsingImgurAndAJsonFile()
     {
-        imageEndpoint = new ImageEndpoint(client, Shared.HttpClient.Client);
-
+        imageEndpoint = new ImageEndpoint(client, HttpClient.Client);
     }
 
     public string? GetURL(Song track)
@@ -428,15 +425,11 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
         if (track != null)
         {
             var a = track.Metadata?.Pictures?.FirstOrDefault(x => x.Data.Length > 1000);
-            if (a == null)
-            {
-                return null;
-            }
+            if (a == null) return null;
             if (cached.Any(x => x.hsh == a.Hash))
-            {
                 return cached.First(x => x.hsh == a.Hash).url.Replace("https", "http");
-            }
-            else if (Uploadit)
+
+            if (Uploadit)
             {
                 Debug.WriteLine("uplodit");
                 var res = Upload(a.Data);
@@ -446,12 +439,13 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
                     cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
                     SetCache();
                 }
+
                 return res;
             }
         }
+
         return null;
     }
-    ApiClient client = new ApiClient("d169c9264561822", "ce1616d067cb1493bc1df67b53e03660c5c02cc2"); ImageEndpoint imageEndpoint;
 
     public virtual string? Upload(byte[] bits)
     {
@@ -464,25 +458,19 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
         return res.Link;
     }
 
-    private MscArtFile[] cached;
-
 
     private void GetCache()
     {
         if (File.Exists(Path.Combine(AppContext.BaseDirectory, "musicart.json")))
-        {
-            cached = System.Text.Json.JsonSerializer.Deserialize<MscArtFile[]>(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "musicart.json")));
-        }
-        if (cached == null)
-        {
-            cached = System.Array.Empty<MscArtFile>();
-        }
+            cached = JsonSerializer.Deserialize<MscArtFile[]>(
+                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "musicart.json")));
+        if (cached == null) cached = Array.Empty<MscArtFile>();
     }
 
     private void SetCache()
     {
-        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "musicart.json"), System.Text.Json.JsonSerializer.Serialize(cached));
+        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "musicart.json"), JsonSerializer.Serialize(cached));
     }
 }
 
-record class MscArtFile(string hsh, string url);
+internal record class MscArtFile(string hsh, string url);

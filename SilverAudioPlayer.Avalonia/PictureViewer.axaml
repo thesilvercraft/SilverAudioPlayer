@@ -6,16 +6,16 @@
         x:Class="SilverAudioPlayer.Avalonia.PictureViewer"
         Title="PictureViewer"
         ExtendClientAreaToDecorationsHint="True">
-  <Grid ColumnDefinitions="50,*,50">
-    <Button Grid.Column="0" Click="Left" >&lt;</Button>
-    <Grid Grid.Column="1" RowDefinitions="*,50">
-      <Image Grid.Row="0" Name="ImageViewer" Source="{Binding Picture}" />
-      <Grid Grid.Row="1" ColumnDefinitions="140,50,*">
-        <Button Grid.Column="0" Click="Copy">Copy to clipboard</Button>
-        <!--<Button Grid.Column="1">Save</Button>-->
-      </Grid>
-    </Grid>
-    <Button Grid.Column="2" Click="Right">&gt;</Button>
+    <Grid ColumnDefinitions="50,*,50">
+        <Button Grid.Column="0" Click="Left">&lt;</Button>
+        <Grid Grid.Column="1" RowDefinitions="*,50">
+            <Image Grid.Row="0" Name="ImageViewer" Source="{Binding Picture}" />
+            <Grid Grid.Row="1" ColumnDefinitions="140,50,*">
+                <Button Grid.Column="0" Click="Copy">Copy to clipboard</Button>
+                <!--<Button Grid.Column="1">Save</Button>-->
+            </Grid>
+        </Grid>
+        <Button Grid.Column="2" Click="Right">&gt;</Button>
 
-  </Grid>
+    </Grid>
 </Window>

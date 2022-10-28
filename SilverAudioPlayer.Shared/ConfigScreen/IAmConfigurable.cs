@@ -1,7 +1,6 @@
-﻿namespace SilverAudioPlayer.Shared.ConfigScreen
+﻿namespace SilverAudioPlayer.Shared.ConfigScreen;
+
+public interface IAmConfigurable
 {
-    public interface IAmConfigurable
-    {
-        public List<IConfigurableElement> GetElements();
-    }
+    public List<IConfigurableElement> GetElements();
 }

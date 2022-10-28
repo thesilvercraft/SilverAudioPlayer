@@ -1,5 +1,4 @@
 ﻿#if SQRL
-
 using Squirrel;
 
 #endif
@@ -30,7 +29,6 @@ namespace SilverAudioPlayer.Winforms
         }
 
 #if SQRL
-
         private static void OnAppInstall(SemanticVersion version, IAppTools tools)
         {
             tools.CreateShortcutForThisExe(ShortcutLocation.StartMenu | ShortcutLocation.Desktop);
@@ -65,7 +63,6 @@ namespace SilverAudioPlayer.Winforms
             using var manager = new UpdateManager(UpdateUrl, AppName, RootDir);
             await manager.UpdateApp();
 #endif
-
         }
     }
 }

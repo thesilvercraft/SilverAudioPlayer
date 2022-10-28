@@ -5,11 +5,12 @@ namespace NAudio.Flac.SubFrames
 {
     internal class FlacSubFrameBase
     {
-        public static unsafe FlacSubFrameBase GetSubFrame(FlacBitReader reader, FlacSubFrameData data, FlacFrameHeader header, int bitsPerSample)
+        public static unsafe FlacSubFrameBase GetSubFrame(FlacBitReader reader, FlacSubFrameData data,
+            FlacFrameHeader header, int bitsPerSample)
         {
             int wastedBits = 0, order;
 
-            uint firstByte = reader.ReadBits(8);
+            var firstByte = reader.ReadBits(8);
 
             if ((firstByte & 0x80) != 0) //Zero bit padding, to prevent sync-fooling string of 1s
             {
@@ -17,16 +18,16 @@ namespace NAudio.Flac.SubFrames
                 return null;
             }
 
-            bool hasWastedBits = (firstByte & 1) != 0; //Wasted bits-per-sample' flag
+            var hasWastedBits = (firstByte & 1) != 0; //Wasted bits-per-sample' flag
             if (hasWastedBits)
             {
-                int k = (int)reader.ReadUnary();
+                var k = (int)reader.ReadUnary();
                 wastedBits = k + 1; //"k-1" follows -> add 1
                 bitsPerSample -= wastedBits;
             }
 
             FlacSubFrameBase subFrame;
-            uint subframeType = (firstByte & 0x7E) >> 1; //0111 1110
+            var subframeType = (firstByte & 0x7E) >> 1; //0111 1110
 
             if (subframeType == 0) //000000
             {
@@ -44,26 +45,20 @@ namespace NAudio.Flac.SubFrames
             else if ((subframeType & 0x08) != 0) //001000 = 0x08
             {
                 order = (int)(subframeType & 0x07);
-                if (order > 4)
-                {
-                    return null;
-                }
+                if (order > 4) return null;
 
                 subFrame = new FlacSubFrameFixed(reader, header, data, bitsPerSample, order);
             }
             else
             {
-                Debug.WriteLine(string.Format("Invalid Flac-SubframeType. SubframeType: 0x{0:x}.", subframeType));
+                Debug.WriteLine("Invalid Flac-SubframeType. SubframeType: 0x{0:x}.", subframeType);
                 return null;
             }
 
             if (hasWastedBits)
             {
-                int* destination = data.DestinationBuffer;
-                for (int i = 0; i < header.BlockSize; i++)
-                {
-                    *destination++ <<= wastedBits;
-                }
+                var destination = data.DestinationBuffer;
+                for (var i = 0; i < header.BlockSize; i++) *destination++ <<= wastedBits;
             }
 
 #if FLAC_DEBUG

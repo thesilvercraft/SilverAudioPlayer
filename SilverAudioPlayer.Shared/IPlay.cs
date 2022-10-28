@@ -1,69 +1,69 @@
-﻿namespace SilverAudioPlayer.Shared
+﻿namespace SilverAudioPlayer.Shared;
+
+public interface IPlayStreams : IPlay
 {
-    public interface IPlayStreams : IPlay
-    {
-        /// <summary>
-        /// Loads a new stream to be played using the player
-        /// </summary>
-        /// <param name="stream">The stream to be loaded</param>
-        void LoadStream(WrappedStream stream);
-    }
+    /// <summary>
+    ///     Loads a new stream to be played using the player
+    /// </summary>
+    /// <param name="stream">The stream to be loaded</param>
+    void LoadStream(WrappedStream stream);
+}
 
-    public interface IPlay
-    {
-        /// <summary>
-        /// Starts playing the loaded file.
-        /// </summary>
-        void Play();
+public interface IPlay
+{
+    /// <summary>
+    ///     Starts playing the loaded file.
+    /// </summary>
+    void Play();
 
-        /// <summary>
-        /// Stops playing the loaded file and unloads the file.
-        /// </summary>
-        void Stop();
+    /// <summary>
+    ///     Stops playing the loaded file and unloads the file.
+    /// </summary>
+    void Stop();
 
-        /// <summary>
-        /// Pauses the player.
-        /// </summary>
-        void Pause();
+    /// <summary>
+    ///     Pauses the player.
+    /// </summary>
+    void Pause();
 
-        /// <summary>
-        /// Resumes the player.
-        /// </summary>
-        void Resume();
+    /// <summary>
+    ///     Resumes the player.
+    /// </summary>
+    void Resume();
 
-        /// <summary>
-        /// Returns the count of how many channels this audio file has
-        /// </summary>
-        /// <returns></returns>
-        uint? ChannelCount();
+    /// <summary>
+    ///     Returns the count of how many channels this audio file has
+    /// </summary>
+    /// <returns></returns>
+    uint? ChannelCount();
 
-        /// <summary>
-        /// Sets the volume level of the audio player.
-        /// </summary>
-        /// <param name="volume">The volume level, a byte ranging from 1-100.</param>
-        void SetVolume(byte volume);
+    /// <summary>
+    ///     Sets the volume level of the audio player.
+    /// </summary>
+    /// <param name="volume">The volume level, a byte ranging from 1-100.</param>
+    void SetVolume(byte volume);
 
-        /// <summary>
-        /// Gets the position of the audio player.
-        /// </summary>
-        /// <returns></returns>
-        TimeSpan GetPosition();
+    /// <summary>
+    ///     Gets the position of the audio player.
+    /// </summary>
+    /// <returns></returns>
+    TimeSpan GetPosition();
 
-        void SetPosition(TimeSpan position);
+    void SetPosition(TimeSpan position);
 
-        PlaybackState? GetPlaybackState();
+    PlaybackState? GetPlaybackState();
 
-        TimeSpan? Length();
+    TimeSpan? Length();
 
-        long? GetSampleRate();
+    long? GetSampleRate();
 
-        uint? GetBitsPerSample();
+    uint? GetBitsPerSample();
 
-        event EventHandler<object> TrackEnd;
+    event EventHandler<object> TrackEnd;
 
-        event EventHandler<object> TrackPause;
-    }
+    event EventHandler<object> TrackPause;
+}
 
-    public interface ICanTellIfICanPlayAFile
-    { }
+public interface ICanTellIfICanPlayAFile
+{
 }

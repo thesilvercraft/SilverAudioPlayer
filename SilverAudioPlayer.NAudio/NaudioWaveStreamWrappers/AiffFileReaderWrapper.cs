@@ -1,27 +1,23 @@
-﻿using NAudio.Wave;
+﻿using System.Composition;
+using NAudio.Wave;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
-using System.Composition;
 
-namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers
+namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers;
+
+[Export(typeof(INaudioWaveStreamWrapper))]
+public class AiffFileReaderWrapper : INaudioWaveStreamWrapper
 {
-    [Export(typeof(INaudioWaveStreamWrapper))]
-    public class AiffFileReaderWrapper : INaudioWaveStreamWrapper
+    public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType> { KnownMimes.AiffMime };
+
+    public byte GetPlayingAbility(WrappedStream stream)
     {
-        public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType>() { KnownMimes.AiffMime };
+        if (stream.MimeType == KnownMimes.AiffMime) return 40;
+        return 0;
+    }
 
-        public byte GetPlayingAbility(WrappedStream stream)
-        {
-            if (stream.MimeType == KnownMimes.AiffMime)
-            {
-                return 40;
-            }
-            return 0;
-        }
-
-        public WaveStream GetStream(WrappedStream stream)
-        {
-            return new AiffFileReader(stream.GetStream());
-        }
+    public WaveStream GetStream(WrappedStream stream)
+    {
+        return new AiffFileReader(stream.GetStream());
     }
 }

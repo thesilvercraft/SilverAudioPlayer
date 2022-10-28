@@ -1,23 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows7</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0-windows7</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Win32WakeLock.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="Win32WakeLock.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Win32WakeLock.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="Win32WakeLock.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="JetBrains.Annotations">
+            <HintPath>..\..\..\..\..\..\..\..\..\..\home\silver\.nuget\packages\jetbrains.annotations\10.3.0\lib\netstandard1.0\JetBrains.Annotations.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
 </Project>

@@ -1,148 +1,60 @@
-﻿using NAudio.Flac.Metadata;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
+using NAudio.Flac.Metadata;
+using NAudio.Flac.Utils;
 
 namespace NAudio.Flac
 {
     /// <summary>
-    /// Represents the header of a <see cref="FlacFrame"/>.
+    ///     Represents the header of a <see cref="FlacFrame" />.
     /// </summary>
     public sealed class FlacFrameHeader
     {
         private int _blocksizeHint; //if bsindex == 6 || 7
         private int _sampleRateHint; //if sampleRateIndex == 12 || 13 || 14
 
-        /// <summary>
-        /// Gets number of samples, the frame contains.
-        /// </summary>
-        /// <value>
-        /// The number of samples, the frame contains.
-        /// </value>
-        public int BlockSize { get; private set; }
-
-        /// <summary>
-        /// Gets the sample rate in Hz.
-        /// </summary>
-        /// <value>
-        /// The sample rate in Hz.
-        /// </value>
-        public int SampleRate { get; private set; }
-
-        /// <summary>
-        /// Gets the number of channels.
-        /// </summary>
-        /// <value>
-        /// The number of channels.
-        /// </value>
-        public int Channels { get; private set; }
-
-        /// <summary>
-        /// Gets the channel assignment.
-        /// </summary>
-        /// <value>
-        /// The channel assignment.
-        /// </value>
-        public ChannelAssignment ChannelAssignment { get; private set; }
-
-        /// <summary>
-        /// Gets the bits per sample.
-        /// </summary>
-        /// <value>
-        /// The bits per sample.
-        /// </value>
-        public int BitsPerSample { get; private set; }
-
-        /// <summary>
-        /// Gets a value which indicates whether the frame provides the <see cref="SampleNumber"/> or the <see cref="FrameNumber"/>.
-        /// </summary>
-        /// <value>
-        /// A value which indicates whether the frame provides the <see cref="SampleNumber"/> or the <see cref="FrameNumber"/>.
-        /// </value>
-        public BlockingStrategy BlockingStrategy { get; private set; }
-
-        /// <summary>
-        /// Gets the frame's starting sample number.
-        /// </summary>
-        /// <value>
-        /// The frame's starting sample number.
-        /// </value>
-        /// <remarks>Only available if the <see cref="BlockingStrategy"/> is set to <see cref="BlockingStrategy.VariableBlockSize"/>.</remarks>
-        public long SampleNumber { get; private set; }
-
-        /// <summary>
-        /// Gets the frame's number.
-        /// </summary>
-        /// <value>
-        /// The frame's number.
-        /// </value>
-        /// <remarks>Only available if the <see cref="BlockingStrategy"/> is set to <see cref="BlockingStrategy.FixedBlockSize"/>.</remarks>
-        public int FrameNumber { get; private set; }
-
-        /// <summary>
-        /// Gets the 8-bit crc checksum of the frame header.
-        /// </summary>
-        /// <value>
-        /// The 8-bit crc checksum of the frame header.
-        /// </value>
-        public byte Crc8 { get; private set; }
-
-        private bool DoCrc { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has error.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance has error; otherwise, <c>false</c>.
-        /// </value>
-        public bool HasError { get; private set; }
-
-        /// <summary>
-        /// Gets the stream position.
-        /// </summary>
-        /// <value>
-        /// The stream position.
-        /// </value>
-        public long StreamPosition { get; private set; }
-
         internal bool PrintErrors = true;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlacFrameHeader"/> class.
+        ///     Initializes a new instance of the <see cref="FlacFrameHeader" /> class.
         /// </summary>
-        /// <param name="stream">The underlying stream which contains the <see cref="FlacFrameHeader"/>.</param>
+        /// <param name="stream">The underlying stream which contains the <see cref="FlacFrameHeader" />.</param>
         public FlacFrameHeader(Stream stream)
             : this(stream, null, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlacFrameHeader"/> class.
+        ///     Initializes a new instance of the <see cref="FlacFrameHeader" /> class.
         /// </summary>
-        /// <param name="stream">The underlying stream which contains the <see cref="FlacFrameHeader"/>.</param>
-        /// <param name="streamInfo">The stream-info-metadata-block of the flac stream which provides some basic information about the flac framestream. Can be set to null.</param>
+        /// <param name="stream">The underlying stream which contains the <see cref="FlacFrameHeader" />.</param>
+        /// <param name="streamInfo">
+        ///     The stream-info-metadata-block of the flac stream which provides some basic information about
+        ///     the flac framestream. Can be set to null.
+        /// </param>
         public FlacFrameHeader(Stream stream, FlacMetadataStreamInfo streamInfo)
             : this(stream, streamInfo, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlacFrameHeader"/> class.
+        ///     Initializes a new instance of the <see cref="FlacFrameHeader" /> class.
         /// </summary>
-        /// <param name="stream">The underlying stream which contains the <see cref="FlacFrameHeader"/>.</param>
-        /// <param name="streamInfo">The stream-info-metadata-block of the flac stream which provides some basic information about the flac framestream. Can be set to null.</param>
-        /// <param name="doCrc">A value which indicates whether the crc8 checksum of the <see cref="FlacFrameHeader"/> should be calculated.</param>
+        /// <param name="stream">The underlying stream which contains the <see cref="FlacFrameHeader" />.</param>
+        /// <param name="streamInfo">
+        ///     The stream-info-metadata-block of the flac stream which provides some basic information about
+        ///     the flac framestream. Can be set to null.
+        /// </param>
+        /// <param name="doCrc">
+        ///     A value which indicates whether the crc8 checksum of the <see cref="FlacFrameHeader" /> should be
+        ///     calculated.
+        /// </param>
         public FlacFrameHeader(Stream stream, FlacMetadataStreamInfo streamInfo, bool doCrc)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
-            if (!stream.CanRead)
-            {
-                throw new ArgumentException("stream is not readable");
-            }
+            if (!stream.CanRead) throw new ArgumentException("stream is not readable");
             //streamInfo can be null
 
             DoCrc = doCrc;
@@ -152,11 +64,17 @@ namespace NAudio.Flac
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FlacFrameHeader"/> class.
+        ///     Initializes a new instance of the <see cref="FlacFrameHeader" /> class.
         /// </summary>
-        /// <param name="buffer">The raw byte-data which contains the <see cref="FlacFrameHeader"/>.</param>
-        /// <param name="streamInfo">The stream-info-metadata-block of the flac stream which provides some basic information about the flac framestream. Can be set to null.</param>
-        /// <param name="doCrc">A value which indicates whether the crc8 checksum of the <see cref="FlacFrameHeader"/> should be calculated.</param>
+        /// <param name="buffer">The raw byte-data which contains the <see cref="FlacFrameHeader" />.</param>
+        /// <param name="streamInfo">
+        ///     The stream-info-metadata-block of the flac stream which provides some basic information about
+        ///     the flac framestream. Can be set to null.
+        /// </param>
+        /// <param name="doCrc">
+        ///     A value which indicates whether the crc8 checksum of the <see cref="FlacFrameHeader" /> should be
+        ///     calculated.
+        /// </param>
         public unsafe FlacFrameHeader(ref byte* buffer, FlacMetadataStreamInfo streamInfo, bool doCrc)
             : this(ref buffer, streamInfo, doCrc, true)
         {
@@ -172,23 +90,120 @@ namespace NAudio.Flac
             HasError = !ParseHeader(ref buffer, streamInfo);
         }
 
+        /// <summary>
+        ///     Gets number of samples, the frame contains.
+        /// </summary>
+        /// <value>
+        ///     The number of samples, the frame contains.
+        /// </value>
+        public int BlockSize { get; private set; }
+
+        /// <summary>
+        ///     Gets the sample rate in Hz.
+        /// </summary>
+        /// <value>
+        ///     The sample rate in Hz.
+        /// </value>
+        public int SampleRate { get; private set; }
+
+        /// <summary>
+        ///     Gets the number of channels.
+        /// </summary>
+        /// <value>
+        ///     The number of channels.
+        /// </value>
+        public int Channels { get; private set; }
+
+        /// <summary>
+        ///     Gets the channel assignment.
+        /// </summary>
+        /// <value>
+        ///     The channel assignment.
+        /// </value>
+        public ChannelAssignment ChannelAssignment { get; private set; }
+
+        /// <summary>
+        ///     Gets the bits per sample.
+        /// </summary>
+        /// <value>
+        ///     The bits per sample.
+        /// </value>
+        public int BitsPerSample { get; private set; }
+
+        /// <summary>
+        ///     Gets a value which indicates whether the frame provides the <see cref="SampleNumber" /> or the
+        ///     <see cref="FrameNumber" />.
+        /// </summary>
+        /// <value>
+        ///     A value which indicates whether the frame provides the <see cref="SampleNumber" /> or the
+        ///     <see cref="FrameNumber" />.
+        /// </value>
+        public BlockingStrategy BlockingStrategy { get; private set; }
+
+        /// <summary>
+        ///     Gets the frame's starting sample number.
+        /// </summary>
+        /// <value>
+        ///     The frame's starting sample number.
+        /// </value>
+        /// <remarks>
+        ///     Only available if the <see cref="BlockingStrategy" /> is set to
+        ///     <see cref="BlockingStrategy.VariableBlockSize" />.
+        /// </remarks>
+        public long SampleNumber { get; private set; }
+
+        /// <summary>
+        ///     Gets the frame's number.
+        /// </summary>
+        /// <value>
+        ///     The frame's number.
+        /// </value>
+        /// <remarks>
+        ///     Only available if the <see cref="BlockingStrategy" /> is set to <see cref="BlockingStrategy.FixedBlockSize" />
+        ///     .
+        /// </remarks>
+        public int FrameNumber { get; private set; }
+
+        /// <summary>
+        ///     Gets the 8-bit crc checksum of the frame header.
+        /// </summary>
+        /// <value>
+        ///     The 8-bit crc checksum of the frame header.
+        /// </value>
+        public byte Crc8 { get; private set; }
+
+        private bool DoCrc { get; }
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance has error.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance has error; otherwise, <c>false</c>.
+        /// </value>
+        public bool HasError { get; }
+
+        /// <summary>
+        ///     Gets the stream position.
+        /// </summary>
+        /// <value>
+        ///     The stream position.
+        /// </value>
+        public long StreamPosition { get; }
+
         private unsafe bool ParseHeader(Stream stream, FlacMetadataStreamInfo streamInfo)
         {
             const string loggerLocation = "FlacFrameHeader.ParseHeader(Stream, FlacMetadataStreamInfo)";
 
-            byte[] headerBuffer = new byte[FlacConstant.FrameHeaderSize];
+            var headerBuffer = new byte[FlacConstant.FrameHeaderSize];
             if (stream.Read(headerBuffer, 0, headerBuffer.Length) == headerBuffer.Length)
-            {
                 fixed (byte* ptrBuffer = headerBuffer)
                 {
-                    byte* ptrSave = ptrBuffer;
-                    byte* __ptrBuffer = ptrBuffer;
-                    bool result = ParseHeader(ref __ptrBuffer, streamInfo);
+                    var ptrSave = ptrBuffer;
+                    var __ptrBuffer = ptrBuffer;
+                    var result = ParseHeader(ref __ptrBuffer, streamInfo);
                     stream.Position -= headerBuffer.Length - (__ptrBuffer - ptrSave); //todo
-
                     return result;
                 }
-            }
 
             Error("Not able to read Flac header - EOF?", loggerLocation);
             return false;
@@ -206,27 +221,28 @@ namespace NAudio.Flac
                     return false;
                 }
 
-                byte* __headerbufferPtr = headerBuffer;
-                FlacBitReader reader = new FlacBitReader(__headerbufferPtr, 0);
+                var __headerbufferPtr = headerBuffer;
+                var reader = new FlacBitReader(__headerbufferPtr, 0);
 
                 #region blocksize
 
                 //blocksize
                 val = headerBuffer[2] >> 4;
-                int blocksize = -1;
+                var blocksize = -1;
 
                 if (val == 0)
                 {
                     Error("Invalid Blocksize value: 0", loggerLocation);
                     return false;
                 }
+
                 if (val == 1)
                 {
                     blocksize = 192;
                 }
                 else if (val >= 2 && val <= 5)
                 {
-                    blocksize = 576 << val - 2;
+                    blocksize = 576 << (val - 2);
                 }
                 else if (val == 6 || val == 7)
                 {
@@ -234,13 +250,14 @@ namespace NAudio.Flac
                 }
                 else if (val >= 8 && val <= 15)
                 {
-                    blocksize = 256 << val - 8;
+                    blocksize = 256 << (val - 8);
                 }
                 else
                 {
                     Error("Invalid Blocksize value: " + val, loggerLocation);
                     return false;
                 }
+
                 BlockSize = blocksize;
 
                 #endregion blocksize
@@ -249,7 +266,7 @@ namespace NAudio.Flac
 
                 //samplerate
                 val = headerBuffer[2] & 0x0F;
-                int sampleRate = -1;
+                var sampleRate = -1;
 
                 if (val == 0)
                 {
@@ -259,7 +276,8 @@ namespace NAudio.Flac
                     }
                     else
                     {
-                        Error("Missing Samplerate. Samplerate Index = 0 && streamInfoMetaData == null.", loggerLocation);
+                        Error("Missing Samplerate. Samplerate Index = 0 && streamInfoMetaData == null.",
+                            loggerLocation);
                         return false;
                     }
                 }
@@ -276,6 +294,7 @@ namespace NAudio.Flac
                     Error("Invalid SampleRate value: " + val, loggerLocation);
                     return false;
                 }
+
                 SampleRate = sampleRate;
 
                 #endregion samplerate
@@ -292,6 +311,7 @@ namespace NAudio.Flac
                         Error("Invalid ChannelAssignment", loggerLocation);
                         return false;
                     }
+
                     ChannelAssignment = (ChannelAssignment)((val & 7) + 1);
                 }
                 else
@@ -299,6 +319,7 @@ namespace NAudio.Flac
                     channels = val + 1;
                     ChannelAssignment = ChannelAssignment.Independent;
                 }
+
                 Channels = channels;
 
                 #endregion channels
@@ -347,9 +368,9 @@ namespace NAudio.Flac
 
                 //variable blocksize
                 if ((headerBuffer[1] & 0x01) != 0 ||
-                    streamInfo != null && streamInfo.MinBlockSize != streamInfo.MaxBlockSize)
+                    (streamInfo != null && streamInfo.MinBlockSize != streamInfo.MaxBlockSize))
                 {
-                    if (reader.ReadUTF8_64(out ulong samplenumber) && samplenumber != ulong.MaxValue)
+                    if (reader.ReadUTF8_64(out var samplenumber) && samplenumber != ulong.MaxValue)
                     {
                         BlockingStrategy = BlockingStrategy.VariableBlockSize;
                         SampleNumber = (long)samplenumber;
@@ -362,7 +383,7 @@ namespace NAudio.Flac
                 }
                 else //fixed blocksize
                 {
-                    if (reader.ReadUTF8_32(out uint framenumber) && framenumber != uint.MaxValue)
+                    if (reader.ReadUTF8_32(out var framenumber) && framenumber != uint.MaxValue)
                     {
                         BlockingStrategy = BlockingStrategy.FixedBlockSize;
                         FrameNumber = (int)framenumber;
@@ -382,10 +403,7 @@ namespace NAudio.Flac
                 if (_blocksizeHint != 0)
                 {
                     val = (int)reader.ReadBits(8);
-                    if (_blocksizeHint == 7)
-                    {
-                        val = val << 8 | (int)reader.ReadBits(8);
-                    }
+                    if (_blocksizeHint == 7) val = (val << 8) | (int)reader.ReadBits(8);
                     BlockSize = val + 1;
                 }
 
@@ -393,29 +411,20 @@ namespace NAudio.Flac
                 if (_sampleRateHint != 0)
                 {
                     val = (int)reader.ReadBits(8);
-                    if (_sampleRateHint != 12)
-                    {
-                        val = val << 8 | (int)reader.ReadBits(8);
-                    }
+                    if (_sampleRateHint != 12) val = (val << 8) | (int)reader.ReadBits(8);
                     if (_sampleRateHint == 12)
-                    {
                         SampleRate = val * 1000;
-                    }
                     else if (_sampleRateHint == 13)
-                    {
                         SampleRate = val;
-                    }
                     else
-                    {
                         SampleRate = val * 10;
-                    }
                 }
 
                 #endregion read hints
 
                 if (DoCrc)
                 {
-                    byte crc8 = Utils.CRC8.Instance.CalcCheckSum(reader.Buffer, 0, reader.Position);
+                    var crc8 = CRC8.Instance.CalcCheckSum(reader.Buffer, 0, reader.Position);
                     Crc8 = (byte)reader.ReadBits(8);
                     if (Crc8 != crc8)
                     {
@@ -439,22 +448,26 @@ namespace NAudio.Flac
         [Conditional("DEBUG")]
         internal void Error(string msg, string location)
         {
-            if (PrintErrors)
-            {
-                Debug.WriteLine(location + msg);
-            }
+            if (PrintErrors) Debug.WriteLine(location + msg);
         }
 
         /// <summary>
-        /// Indicates whether the format of the current <see cref="FlacFrameHeader"/> is equal to the format of another <see cref="FlacFrameHeader"/>.
+        ///     Indicates whether the format of the current <see cref="FlacFrameHeader" /> is equal to the format of another
+        ///     <see cref="FlacFrameHeader" />.
         /// </summary>
-        /// <param name="other">A <see cref="FlacFrameHeader"/> which provides the format to compare with the format of the current <see cref="FlacFrameHeader"/>.</param>
-        /// <returns><c>true</c> if the format of the current <see cref="FlacFrameHeader"/> is equal to the format of the <paramref name="other"/> <see cref="FlacFrameHeader"/>.</returns>
+        /// <param name="other">
+        ///     A <see cref="FlacFrameHeader" /> which provides the format to compare with the format of the
+        ///     current <see cref="FlacFrameHeader" />.
+        /// </param>
+        /// <returns>
+        ///     <c>true</c> if the format of the current <see cref="FlacFrameHeader" /> is equal to the format of the
+        ///     <paramref name="other" /> <see cref="FlacFrameHeader" />.
+        /// </returns>
         public bool IsFormatEqualTo(FlacFrameHeader other)
         {
             return BitsPerSample == other.BitsPerSample &&
-                    Channels == other.Channels &&
-                    SampleRate == other.SampleRate;
+                   Channels == other.Channels &&
+                   SampleRate == other.SampleRate;
         }
     }
 }

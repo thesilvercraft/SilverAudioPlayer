@@ -8,21 +8,19 @@ namespace NAudio.Flac.SubFrames
         public int Value { get; private set; }
 #endif
 
-        public FlacSubFrameConstant(FlacBitReader reader, FlacFrameHeader header, FlacSubFrameData data, int bitsPerSample)
+        public FlacSubFrameConstant(FlacBitReader reader, FlacFrameHeader header, FlacSubFrameData data,
+            int bitsPerSample)
             : base(header)
         {
-            int value = (int)reader.ReadBits(bitsPerSample);
+            var value = (int)reader.ReadBits(bitsPerSample);
 #if FLAC_DEBUG
             Value = value;
 #endif
 
             unsafe
             {
-                int* pDestinationBuffer = data.DestinationBuffer;
-                for (int i = 0; i < header.BlockSize; i++)
-                {
-                    *pDestinationBuffer++ = value;
-                }
+                var pDestinationBuffer = data.DestinationBuffer;
+                for (var i = 0; i < header.BlockSize; i++) *pDestinationBuffer++ = value;
             }
         }
     }

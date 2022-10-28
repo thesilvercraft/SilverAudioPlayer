@@ -1,8 +1,10 @@
 ﻿namespace NAudio.Flac
 {
     /// <summary>
-    /// This method is based on the CUETools.NET BitReader (see http://sourceforge.net/p/cuetoolsnet/code/ci/default/tree/CUETools.Codecs/BitReader.cs)
-    /// The author "Grigory Chudov" explicitly gave the permission to use the source as part of the cscore source code which got licensed under the ms-pl.
+    ///     This method is based on the CUETools.NET BitReader (see
+    ///     http://sourceforge.net/p/cuetoolsnet/code/ci/default/tree/CUETools.Codecs/BitReader.cs)
+    ///     The author "Grigory Chudov" explicitly gave the permission to use the source as part of the cscore source code
+    ///     which got licensed under the ms-pl.
     /// </summary>
     internal class FlacBitReader : BitReader
     {
@@ -31,7 +33,7 @@
         public uint ReadUnary()
         {
             uint result = 0;
-            uint unaryindicator = Cache >> 24;
+            var unaryindicator = Cache >> 24;
 
             while (unaryindicator == 0)
             {
@@ -47,22 +49,22 @@
 
         public int ReadUnarySigned()
         {
-            uint value = ReadUnary();
-            return (int)(value >> 1 ^ -(int)(value & 1));
+            var value = ReadUnary();
+            return (int)((value >> 1) ^ -(int)(value & 1));
         }
 
         #region utf8
 
         public bool ReadUTF8_64Signed(out long result)
         {
-            bool returnValue = ReadUTF8_64(out ulong r);
+            var returnValue = ReadUTF8_64(out var r);
             result = (long)r;
             return returnValue;
         }
 
         public bool ReadUTF8_64(out ulong result)
         {
-            uint x = ReadBits(8);
+            var x = ReadBits(8);
             ulong v;
             int i;
 
@@ -126,7 +128,7 @@
 
         public bool ReadUTF8_32Signed(out int result)
         {
-            bool returnValue = ReadUTF8_32(out uint r);
+            var returnValue = ReadUTF8_32(out var r);
             result = (int)r;
             return returnValue;
         }

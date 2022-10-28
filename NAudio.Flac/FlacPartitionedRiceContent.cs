@@ -2,16 +2,15 @@
 {
     internal class FlacPartitionedRiceContent
     {
+        private int _capByOrder = -1;
         public int[] Parameters;
         public int[] RawBits;
-
-        private int _capByOrder = -1;
 
         public void UpdateSize(int partitionOrder)
         {
             if (_capByOrder < partitionOrder)
             {
-                int size = 1 << partitionOrder;
+                var size = 1 << partitionOrder;
                 Parameters = new int[size];
                 RawBits = new int[size];
 

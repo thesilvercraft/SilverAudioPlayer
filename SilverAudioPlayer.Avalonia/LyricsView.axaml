@@ -6,14 +6,12 @@
         x:Class="SilverAudioPlayer.Avalonia.LyricsView"
         Title="LyricsView"
         ExtendClientAreaToDecorationsHint="True">
-  <Window.Styles>
-    <Style Selector="TextBlock">
-      <Setter Property="FontSize" Value="40" />
-    </Style>
-  </Window.Styles>
-   <Grid Name="MainGrid"  RowDefinitions="25,*" Margin="5">
-     <ScrollViewer Name="sv" VerticalScrollBarVisibility="Visible" Grid.Row="1">
-       
-     </ScrollViewer>
-  </Grid>
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontSize" Value="40" />
+        </Style>
+    </Window.Styles>
+    <Grid Name="MainGrid" RowDefinitions="25,*" Margin="5">
+        <ScrollViewer Name="sv" VerticalScrollBarVisibility="Visible" Grid.Row="1" />
+    </Grid>
 </Window>

@@ -1,74 +1,60 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Xml;
-using System.Xml.Serialization;
-using SilverConfig;
-namespace SilverConfig.CobaltExtensions
+
+namespace SilverConfig.CobaltExtensions;
+
+public interface ILetNotify
 {
-    public interface ILetNotify
+    bool AllowedToRead { get; }
+    void Invoke(object e, PropertyChangedEventArgs a);
+}
+
+public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable
+    where T : INotifyPropertyChanged, ILetNotify
+{
+    private readonly List<FileSystemWatcher> fileSystemWatchers = new();
+
+    public void Dispose()
     {
-        void Invoke(object e, PropertyChangedEventArgs a);
-        bool AllowedToRead { get; }
+        foreach (var fsw in fileSystemWatchers) fsw.Dispose();
     }
 
-    public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable where T : INotifyPropertyChanged, ILetNotify
+    public override T? Read(string path)
     {
-        private readonly List<FileSystemWatcher> fileSystemWatchers = new();
+        var c = base.Read(path);
+        var fp = Path.GetFullPath(path);
+        var fpdir = Path.GetDirectoryName(fp);
+        var fpnm = Path.GetFileName(fp);
 
-        public override T? Read(string path)
+        FileSystemWatcher j = new()
         {
-            var c = base.Read(path);
-            var fp = Path.GetFullPath(path);
-            var fpdir = Path.GetDirectoryName(fp);
-            var fpnm = Path.GetFileName(fp);
-
-            FileSystemWatcher j = new()
+            Path = fpdir,
+            EnableRaisingEvents = true,
+            Filter = fpnm,
+            NotifyFilter = NotifyFilters.CreationTime
+                           | NotifyFilters.DirectoryName
+                           | NotifyFilters.LastWrite
+                           | NotifyFilters.Size
+        };
+        j.Changed += (x, y) =>
+        {
+            if (y.ChangeType != WatcherChangeTypes.Changed) return;
+            if (y.FullPath == fp && c.AllowedToRead)
             {
-                Path = fpdir,
-                EnableRaisingEvents = true,
-                Filter = fpnm,
-                NotifyFilter = NotifyFilters.CreationTime
-                          | NotifyFilters.DirectoryName
-                          | NotifyFilters.LastWrite
-                          | NotifyFilters.Size
-            };
-            j.Changed += (x, y) =>
-            {
-                if (y.ChangeType != WatcherChangeTypes.Changed)
-                {
-                    return;
-                }
-                if (y.FullPath == fp && c.AllowedToRead)
-                {
-                    var c2 = base.Read(path);
-                    var t = typeof(T);
-                    foreach (var a in t.GetProperties())
+                var c2 = base.Read(path);
+                var t = typeof(T);
+                foreach (var a in t.GetProperties())
+                    if (a.Name != "AllowedToRead" && a.CanRead && a.GetValue(c)?.Equals(a.GetValue(c2)) != true)
                     {
-                        if (a.Name!= "AllowedToRead" && a.CanRead && (a.GetValue(c)?.Equals(a.GetValue(c2)) != true))
-                        {
-                            if (a.CanWrite)
-                            {
-                                a.SetValue(c, a.GetValue(c2));
-                            }
-                            else
-                            {
-                                Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
-                            }
-                            c?.Invoke(this, new(a.Name));
-                        }
+                        if (a.CanWrite)
+                            a.SetValue(c, a.GetValue(c2));
+                        else
+                            Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
+                        c?.Invoke(this, new PropertyChangedEventArgs(a.Name));
                     }
-                }
-            };
-            fileSystemWatchers.Add(j);
-            return c;
-        }
-
-        public void Dispose()
-        {
-            foreach (var fsw in fileSystemWatchers)
-            {
-                fsw.Dispose();
             }
-        }
+        };
+        fileSystemWatchers.Add(j);
+        return c;
     }
 }

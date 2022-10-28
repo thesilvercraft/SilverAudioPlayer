@@ -1,39 +1,142 @@
-﻿using Melanchall.DryWetMidi.Core;
+﻿using System.Composition;
+using Melanchall.DryWetMidi.Common;
+using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
-using System.Composition;
 
-namespace SilverAudioPlayer.DryWetMidi
+namespace SilverAudioPlayer.DryWetMidi;
+
+[Export(typeof(IPlayProvider))]
+internal class MidiPlayer : IPlay, IPlayProvider
 {
-    [Export(typeof(IPlayProvider))]
-    internal class MidiPlayer : IPlay, IPlayProvider
+    private MidiFile? mf;
+
+    private OutputDevice midiOut;
+    private Playback player;
+    private PlaybackState? ps;
+
+
+    public MidiPlayer(int deviceNo)
     {
-        public event EventHandler<object> TrackEnd;
+        midiOut = OutputDevice.GetByIndex(deviceNo);
+    }
 
-        public event EventHandler<object> TrackPause;
+    public MidiPlayer()
+    {
+    }
 
-        private OutputDevice midiOut;
-        private MidiFile? mf;
-        private PlaybackState? ps;
-        private Playback player;
+    public event EventHandler<object> TrackEnd;
 
-        public IPlayProviderListner ProviderListner { set => _ = value; }
+    public event EventHandler<object> TrackPause;
 
-        public string Name => "DryWetMidi MidiPlayer";
+    public uint? ChannelCount()
+    {
+        return (uint?)mf.GetChannels().Count();
+    }
 
-        public string Description => "A player that plays MIDIs implemented with DryWetMidi (https://github.com/melanchall/drywetmidi)";
+    public PlaybackState? GetPlaybackState()
+    {
+        if (player?.IsRunning == true) return PlaybackState.Playing;
+        return ps;
+    }
 
-        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly, "SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+    public TimeSpan GetPosition()
+    {
+        return player.GetCurrentTime<MetricTimeSpan>();
+    }
 
-        public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
-        public List<Tuple<Uri, URLType>>? Links => new() {
-            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"), URLType.Code),
-            new(new($"https://www.nuget.org/packages/Melanchall.DryWetMidi/{typeof(OutputDevice).Assembly.GetName().Version}"), URLType.PackageManager),
-            new(new("https://github.com/melanchall/drywetmidi"),URLType.LibraryCode)
-        };
-        public string Licenses => @"DryWetMidi (https://github.com/melanchall/drywetmidi)
+    public TimeSpan? Length()
+    {
+        return player.GetDuration<MetricTimeSpan>();
+    }
+
+    public void Pause()
+    {
+        ps = PlaybackState.Paused;
+        midiOut.TurnAllNotesOff();
+        player.Stop();
+    }
+
+    public void Play()
+    {
+        ps = PlaybackState.Playing;
+        player.Start();
+    }
+
+    public void Resume()
+    {
+        if (ps == PlaybackState.Paused)
+        {
+            ps = PlaybackState.Playing;
+            player.Start();
+        }
+    }
+
+    public void SetPosition(TimeSpan position)
+    {
+        midiOut.TurnAllNotesOff();
+        player.MoveToTime(new MetricTimeSpan(position));
+    }
+
+    public void SetVolume(byte volume)
+    {
+        player.NoteCallback = (rawNoteData, rawTime, rawLength, playbackTime) =>
+            new NotePlaybackData(
+                rawNoteData.NoteNumber, // leave note number as is
+                E(rawNoteData.Velocity, volume), // change velocity
+                E(rawNoteData.OffVelocity, volume), // change off velocity
+                rawNoteData.Channel); // leave channel as is
+    }
+
+    public void Stop()
+    {
+        ps = PlaybackState.Stopped;
+        player.Stop();
+        player.Dispose();
+        midiOut.Dispose();
+        midiOut = null;
+    }
+
+    public long? GetSampleRate()
+    {
+        return null;
+    }
+
+    public uint? GetBitsPerSample()
+    {
+        return null;
+    }
+
+    public IPlayProviderListner ProviderListner
+    {
+        set => _ = value;
+    }
+
+    public string Name => "DryWetMidi MidiPlayer";
+
+    public string Description =>
+        "A player that plays MIDIs implemented with DryWetMidi (https://github.com/melanchall/drywetmidi)";
+
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly,
+        "SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+
+    public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
+
+    public List<Tuple<Uri, URLType>>? Links => new()
+    {
+        new Tuple<Uri, URLType>(
+            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"),
+            URLType.Code),
+        new Tuple<Uri, URLType>(
+            new Uri(
+                $"https://www.nuget.org/packages/Melanchall.DryWetMidi/{typeof(OutputDevice).Assembly.GetName().Version}"),
+            URLType.PackageManager),
+        new Tuple<Uri, URLType>(new Uri("https://github.com/melanchall/drywetmidi"), URLType.LibraryCode)
+    };
+
+    public string Licenses => @"DryWetMidi (https://github.com/melanchall/drywetmidi)
 MIT License
 
 Copyright (c) 2018 Maxim Dobroselsky
@@ -69,149 +172,58 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
 
-        public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.MidMime };
+    public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType> { KnownMimes.MidMime };
 
+    public bool CanPlayFile(WrappedStream stream)
+    {
+        return stream.MimeType == KnownMimes.MidMime;
+    }
 
-        public MidiPlayer(int deviceNo)
-        {
-            midiOut = OutputDevice.GetByIndex(deviceNo);
-        }
-
-        public MidiPlayer()
-        {
-        }
-
-        public uint? ChannelCount()
-        {
-            return (uint?)mf.GetChannels().Count();
-        }
-
-        public PlaybackState? GetPlaybackState()
-        {
-            if (player?.IsRunning == true)
-            {
-                return PlaybackState.Playing;
-            }
-            return ps;
-        }
-
-        public TimeSpan GetPosition()
-        {
-            return player.GetCurrentTime<MetricTimeSpan>();
-        }
-
-        public TimeSpan? Length()
-        {
-            return player.GetDuration<MetricTimeSpan>();
-        }
-
-        public void Pause()
-        {
-            ps = PlaybackState.Paused;
-            midiOut.TurnAllNotesOff();
-            player.Stop();
-        }
-
-        public void Play()
-        {
-            ps = PlaybackState.Playing;
-            player.Start();
-        }
-
-        public void Resume()
-        {
-            if (ps == PlaybackState.Paused)
-            {
-                ps = PlaybackState.Playing;
-                player.Start();
-            }
-        }
-
-        public void SetPosition(TimeSpan position)
-        {
-            midiOut.TurnAllNotesOff();
-            player.MoveToTime(new MetricTimeSpan(position));
-        }
-
-        private static Melanchall.DryWetMidi.Common.SevenBitNumber E(Melanchall.DryWetMidi.Common.SevenBitNumber e, int a)
-        {
-            if (e * (a * 0.01f) < 0)
-            {
-                return (Melanchall.DryWetMidi.Common.SevenBitNumber)1;
-            }
-            return (Melanchall.DryWetMidi.Common.SevenBitNumber)(e * (a * 0.01f));
-        }
-
-        public void SetVolume(byte volume)
-        {
-            player.NoteCallback = (rawNoteData, rawTime, rawLength, playbackTime) =>
-            new NotePlaybackData(
-                 rawNoteData.NoteNumber, // leave note number as is
-                E(rawNoteData.Velocity, volume),     // change velocity
-                 E(rawNoteData.OffVelocity, volume),  // change off velocity
-                 rawNoteData.Channel);     // leave channel as is
-        }
-
-        public void Stop()
+    public IPlay? GetPlayer(WrappedStream stream)
+    {
+        midiOut ??= OutputDevice.GetByIndex(0);
+        mf = MidiFile.Read(stream.GetStream());
+        player = mf.GetPlayback();
+        player.Finished += (a, b) =>
         {
             ps = PlaybackState.Stopped;
-            player.Stop();
-            player.Dispose();
-            midiOut.Dispose();
-            midiOut = null;
-        }
+            TrackEnd?.Invoke(a, b);
+        };
+        player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
+        player.OutputDevice = midiOut;
+        return this;
+    }
 
-        public long? GetSampleRate()
+    public Task OnStartup()
+    {
+        return Task.CompletedTask;
+    }
+
+    private static SevenBitNumber E(SevenBitNumber e, int a)
+    {
+        if (e * (a * 0.01f) < 0) return (SevenBitNumber)1;
+        return (SevenBitNumber)(e * (a * 0.01f));
+    }
+
+
+    public IPlay? GetPlayer(string URI)
+    {
+        LoadFile(URI);
+        return this;
+    }
+
+    public void LoadFile(string file)
+    {
+        if (string.IsNullOrEmpty(file)) throw new ArgumentNullException(nameof(file));
+        midiOut ??= OutputDevice.GetByIndex(0);
+        mf = MidiFile.Read(file);
+        player = mf.GetPlayback();
+        player.Finished += (a, b) =>
         {
-            return null;
-        }
-
-        public uint? GetBitsPerSample()
-        {
-            return null;
-        }
-
-
-
-        public IPlay? GetPlayer(string URI)
-        {
-            LoadFile(URI);
-            return this;
-        }
-
-        public void LoadFile(string file)
-        {
-            if (string.IsNullOrEmpty(file))
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-            midiOut ??= OutputDevice.GetByIndex(0);
-            mf = MidiFile.Read(file);
-            player = mf.GetPlayback();
-            player.Finished += (a, b) => { ps = PlaybackState.Stopped; TrackEnd?.Invoke(a, b); };
-            player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
-            player.OutputDevice = midiOut;
-        }
-
-        public bool CanPlayFile(WrappedStream stream)
-        {
-            return stream.MimeType == KnownMimes.MidMime;
-        }
-
-        public IPlay? GetPlayer(WrappedStream stream)
-        {
-            midiOut ??= OutputDevice.GetByIndex(0);
-            mf = MidiFile.Read(stream.GetStream());
-            player = mf.GetPlayback();
-            player.Finished += (a, b) => { ps = PlaybackState.Stopped; TrackEnd?.Invoke(a, b); };
-            player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
-            player.OutputDevice = midiOut;
-            return this;
-        }
-
-        public Task OnStartup()
-        {
-            return Task.CompletedTask;
-        }
+            ps = PlaybackState.Stopped;
+            TrackEnd?.Invoke(a, b);
+        };
+        player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
+        player.OutputDevice = midiOut;
     }
 }

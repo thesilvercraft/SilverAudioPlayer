@@ -6,28 +6,29 @@
         x:Class="SilverAudioPlayer.Avalonia.Info"
         Title="Info"
         ExtendClientAreaToDecorationsHint="True">
-  <Grid Margin="5" RowDefinitions="25,200,*,*">
-    <TextBlock Grid.Row="0" Margin="5" Text="{Binding Title}"></TextBlock>
-    <Grid Grid.Row="1" ColumnDefinitions="200,*">
-      <StackPanel Grid.Column="1">
-        <TextBlock Text="{Binding ProductName}" FontSize="50" Margin="5" />
-        <TextBlock Text="{Binding ProductDescription}" FontSize="25"  Margin="5"/>
-      </StackPanel>
-      <Image Source="{Binding ProductIcon}" Grid.Column="0" Width="200" Height="200"></Image>
-    </Grid>
-    <ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="2" DoubleTapped="ElementDoubleTapped">
-      <ListBox.ItemTemplate >
-        <DataTemplate>
-          <Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*" >
+    <Grid Margin="5" RowDefinitions="25,200,*,*">
+        <TextBlock Grid.Row="0" Margin="5" Text="{Binding Title}" />
+        <Grid Grid.Row="1" ColumnDefinitions="200,*">
             <StackPanel Grid.Column="1">
-              <TextBlock Text="{Binding Name}" FontSize="25" Margin="5" ></TextBlock>
-              <TextBlock Text="{Binding Description}" FontSize="12"  Margin="5"  ></TextBlock>
+                <TextBlock Text="{Binding ProductName}" FontSize="50" Margin="5" />
+                <TextBlock Text="{Binding ProductDescription}" FontSize="25" Margin="5" />
             </StackPanel>
-            <Image Source="{Binding Icon}" Grid.Column="0"></Image>
-          </Grid>
-        </DataTemplate>
-      </ListBox.ItemTemplate>
-    </ListBox>
-    <TextBox Grid.Row="3" Text="{Binding LicenseText}" IsReadOnly="True"/>
-  </Grid>
+            <Image Source="{Binding ProductIcon}" Grid.Column="0" Width="200" Height="200" />
+        </Grid>
+        <ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="2"
+                 DoubleTapped="ElementDoubleTapped">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
+                            <TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
+                        </StackPanel>
+                        <Image Source="{Binding Icon}" Grid.Column="0" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBox Grid.Row="3" Text="{Binding LicenseText}" IsReadOnly="True" />
+    </Grid>
 </Window>

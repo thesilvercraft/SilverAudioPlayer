@@ -1,115 +1,115 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <Nullable>enable</Nullable>
-    <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
-    <TrimMode>copyused</TrimMode>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove=".gitignore" />
-    <None Remove="icon.ico" />
-    <None Remove="icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="icon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <!--This helps with theme dll-s trimming.
-  If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
-  https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
-    <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
-    <TrimmableAssembly Include="Avalonia.Themes.Default" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <Nullable>enable</Nullable>
+        <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
+        <TrimMode>copyused</TrimMode>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove=".gitignore"/>
+        <None Remove="icon.ico"/>
+        <None Remove="icon.png"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="icon.ico"/>
+    </ItemGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="icon.ico"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="icon.png"/>
+    </ItemGroup>
+    <ItemGroup>
+        <!--This helps with theme dll-s trimming.
+      If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
+      https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
+        <TrimmableAssembly Include="Avalonia.Themes.Fluent"/>
+        <TrimmableAssembly Include="Avalonia.Themes.Default"/>
+    </ItemGroup>
 
-  <PropertyGroup Condition="!$(DefineConstants.Contains('IGNORECSPROJ'))">
-    <!--Customize SilverAudioPlayer here-->
+    <PropertyGroup Condition="!$(DefineConstants.Contains('IGNORECSPROJ'))">
+        <!--Customize SilverAudioPlayer here-->
 
-    <!--JellyFin - alpha (currently not supported by both SAP.Winforms and SAP.Avalonia)-->
+        <!--JellyFin - alpha (currently not supported by both SAP.Winforms and SAP.Avalonia)-->
 
-    <!--<DefineConstants>$(DefineConstants)JF</DefineConstants>-->
+        <!--<DefineConstants>$(DefineConstants)JF</DefineConstants>-->
 
-    <!--DryWetMidi-->
+        <!--DryWetMidi-->
 
-    <DefineConstants>$(DefineConstants)DWMID</DefineConstants>
+        <DefineConstants>$(DefineConstants)DWMID</DefineConstants>
 
-    <!--Z440AtlCore-->
+        <!--Z440AtlCore-->
 
-    <DefineConstants>$(DefineConstants)ZATL</DefineConstants>
+        <DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 
-    <!--NAudio-->
+        <!--NAudio-->
 
-    <DefineConstants>$(DefineConstants)NA</DefineConstants>
+        <DefineConstants>$(DefineConstants)NA</DefineConstants>
 
-    <!--NAudio + Naudio.Flac-->
+        <!--NAudio + Naudio.Flac-->
 
-    <DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>
-    <!--NAudio + Naudio.Vorbis-->
+        <DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>
+        <!--NAudio + Naudio.Vorbis-->
 
-    <DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
+        <DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 
-    <!--Discord (alpha)-->
+        <!--Discord (alpha)-->
 
-    <DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
+        <DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
 
-    <!--Windows only-->
+        <!--Windows only-->
 
-    <!--System Media Transport Controls - windows 10+-->
+        <!--System Media Transport Controls - windows 10+-->
 
-    <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
+        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
 
-    <!--CD Art Display - windows 7+-->
+        <!--CD Art Display - windows 7+-->
 
-    <DefineConstants>$(DefineConstants)CAD</DefineConstants>
+        <DefineConstants>$(DefineConstants)CAD</DefineConstants>
 
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net6.0-windows7</TargetFramework>
-    <TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net6.0-windows10.0.18362.0</TargetFramework>
-  </PropertyGroup>
+    </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net6.0-windows7</TargetFramework>
+        <TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net6.0-windows10.0.18362.0</TargetFramework>
+    </PropertyGroup>
 
-<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
-   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="ReactiveUI" Version="18.3.1" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.Composition" Version="6.0.0" />
-    <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-    <PackageReference Include="SilverCraft.AvaloniaUtils" Version="4.0.0" />
-    
-  
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.DryWetMidi\SilverAudioPlayer.Any.MetadataSource.DryWetMidi.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Win.PlayProviderExtension.Naudio.MediaFoundation\SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation.csproj" />
-    <ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj" Condition="$(DefineConstants.Contains('JF'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.csproj" Condition="$(DefineConstants.Contains('NAFLAC'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis.csproj" Condition="$(DefineConstants.Contains('NAVORB'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
-    <ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
+    <ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0"/>
+        <PackageReference Include="ReactiveUI" Version="18.3.1"/>
+        <PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0"/>
+        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="System.Composition" Version="6.0.0"/>
+        <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4"/>
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.18"/>
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="4.0.0"/>
 
-  </ItemGroup>
+
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.DryWetMidi\SilverAudioPlayer.Any.MetadataSource.DryWetMidi.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Win.PlayProviderExtension.Naudio.MediaFoundation\SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj" Condition="$(DefineConstants.Contains('JF'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.csproj" Condition="$(DefineConstants.Contains('NAFLAC'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis.csproj" Condition="$(DefineConstants.Contains('NAVORB'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))"/>
+
+    </ItemGroup>
 </Project>

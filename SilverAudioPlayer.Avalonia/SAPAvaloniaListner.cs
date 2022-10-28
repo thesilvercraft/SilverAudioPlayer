@@ -1,49 +1,59 @@
-﻿using Avalonia.Controls;
-using SilverAudioPlayer.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Avalonia.Controls;
+using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.Avalonia
+namespace SilverAudioPlayer.Avalonia;
+
+internal class SAPAvaloniaListner : IPlayStreamProviderListner
 {
-    internal class SAPAvaloniaListner : IPlayStreamProviderListner
+    private readonly MainWindow mainWindow;
+
+    public SAPAvaloniaListner(MainWindow mainWindow)
     {
-        private MainWindow mainWindow;
-
-        public SAPAvaloniaListner(MainWindow mainWindow)
-        {
-            this.mainWindow = mainWindow;
-        }
-
-        public IPlayerEnviroment GetEnviroment()
-        {
-            return new SAPAvaloniaPlayerEnviroment();
-        }
-
-        public void LoadSong(WrappedStream s)
-        {
-            mainWindow.Logic.ProcessStream(s);
-        }
-
-        public void LoadSongs(IEnumerable<WrappedStream> streams)
-        {
-            mainWindow.Logic.ProcessStreams(streams);
-        }
+        this.mainWindow = mainWindow;
     }
-    public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment
+
+    public IPlayerEnviroment GetEnviroment()
     {
-        public string Name => "SilverAudioPlayer.Avalonia";
+        return new SAPAvaloniaPlayerEnviroment();
+    }
 
-        public string Description => "AvaloniaUI (https://github.com/AvaloniaUI/Avalonia) UI for SilverAudioPlayer";
+    public void LoadSong(WrappedStream s)
+    {
+        mainWindow.Logic.ProcessStream(s);
+    }
 
-        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SAPAvaloniaPlayerEnviroment).Assembly, "SilverAudioPlayer.Avalonia.icon.png");
-        public Version? Version => typeof(SAPAvaloniaPlayerEnviroment).Assembly.GetName().Version;
-        public List<Tuple<Uri, URLType>>? Links => new() {
-            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Avalonia"), URLType.Code),
-            new(new($"https://www.nuget.org/packages/Avalonia/{typeof(Window).Assembly.GetName().Version}"), URLType.PackageManager),
-            new(new("https://github.com/AvaloniaUI/Avalonia"),URLType.LibraryCode),
-            new(new("https://docs.avaloniaui.net/"),URLType.LibraryDocumentation)
-        };
-        public string Licenses => @"Avalonia
+    public void LoadSongs(IEnumerable<WrappedStream> streams)
+    {
+        mainWindow.Logic.ProcessStreams(streams);
+    }
+}
+
+public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment
+{
+    public string Name => "SilverAudioPlayer.Avalonia";
+
+    public string Description => "AvaloniaUI (https://github.com/AvaloniaUI/Avalonia) UI for SilverAudioPlayer";
+
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SAPAvaloniaPlayerEnviroment).Assembly,
+        "SilverAudioPlayer.Avalonia.icon.png");
+
+    public Version? Version => typeof(SAPAvaloniaPlayerEnviroment).Assembly.GetName().Version;
+
+    public List<Tuple<Uri, URLType>>? Links => new()
+    {
+        new Tuple<Uri, URLType>(
+            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Avalonia"),
+            URLType.Code),
+        new Tuple<Uri, URLType>(
+            new Uri($"https://www.nuget.org/packages/Avalonia/{typeof(Window).Assembly.GetName().Version}"),
+            URLType.PackageManager),
+        new Tuple<Uri, URLType>(new Uri("https://github.com/AvaloniaUI/Avalonia"), URLType.LibraryCode),
+        new Tuple<Uri, URLType>(new Uri("https://docs.avaloniaui.net/"), URLType.LibraryDocumentation)
+    };
+
+    public string Licenses => @"Avalonia
 The MIT License (MIT)
 
 Copyright (c) .NET Foundation and Contributors All Rights Reserved
@@ -67,5 +77,4 @@ SilverAudioPlayer.Avalonia
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ";
-    }
 }

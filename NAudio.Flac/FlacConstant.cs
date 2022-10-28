@@ -2,6 +2,8 @@
 {
     internal static class FlacConstant
     {
+        public const int FrameHeaderSize = 16;
+
         public static readonly int[] SampleRateTable =
         {
             -1, 88200, 176400, 192000,
@@ -23,7 +25,5 @@
             256, 512, 1024, 2048,
             4096, 8192, 16384
         };
-
-        public const int FrameHeaderSize = 16;
     }
 }

@@ -1,31 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>BunLabs.NAudio.Flac</PackageId>
-		<Authors>Vivelin</Authors>
-		<Company>BunLabs</Company>
-		<Description>A FLAC library for NAudio &gt;= 2.0 based on the CSCore FLAC codec</Description>
-		<PackageLicenseExpression>MS-PL</PackageLicenseExpression>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedUntrackedSources>true</EmbedUntrackedSources>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<PackageReleaseNotes>- Re-ported from current CSCore library that includes FLAC bugfixes</PackageReleaseNotes>
-		<PackageProjectUrl>https://github.com/BunLabs/NAudio.Flac</PackageProjectUrl>
-		<Configurations>Debug;Release;ClickOnce</Configurations>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>BunLabs.NAudio.Flac</PackageId>
+        <Authors>Vivelin</Authors>
+        <Company>BunLabs</Company>
+        <Description>A FLAC library for NAudio &gt;= 2.0 based on the CSCore FLAC codec</Description>
+        <PackageLicenseExpression>MS-PL</PackageLicenseExpression>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageReleaseNotes>- Re-ported from current CSCore library that includes FLAC bugfixes</PackageReleaseNotes>
+        <PackageProjectUrl>https://github.com/BunLabs/NAudio.Flac</PackageProjectUrl>
+        <Configurations>Debug;Release;ClickOnce</Configurations>
+    </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ClickOnce|AnyCPU'">
-	  <Optimize>True</Optimize>
-	</PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ClickOnce|AnyCPU'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="NAudio.Core" Version="2.0.0" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+        <PackageReference Include="NAudio.Core" Version="2.0.0"/>
+    </ItemGroup>
 
 </Project>

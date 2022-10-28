@@ -1,25 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="DryWetMidiLogo.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="DryWetMidiLogo.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="DryWetMidiLogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Melanchall.DryWetMidi" Version="6.1.2" />
-    <PackageReference Include="System.Composition" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="DryWetMidiLogo.png"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Melanchall.DryWetMidi" Version="6.1.2"/>
+        <PackageReference Include="System.Composition" Version="6.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="JetBrains.Annotations">
+            <HintPath>..\..\..\..\..\..\..\..\..\..\home\silver\.nuget\packages\jetbrains.annotations\10.3.0\lib\netstandard1.0\JetBrains.Annotations.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 </Project>

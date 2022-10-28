@@ -1,11 +1,12 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-<# int[] possibleBitsPerSample = {8, 16, 24}; #>
-<# var possibleNumberOfChannels = Enumerable.Range(1, 8).ToArray(); #>
+<#
+    int[] possibleBitsPerSample = { 8, 16, 24 };
+#>
+<#
+    var possibleNumberOfChannels = Enumerable.Range(1, 8).ToArray();
+#>
 using System;
 
 namespace NAudio.Flac
@@ -34,30 +35,32 @@ namespace NAudio.Flac
 					case <#= bps #>:
 						switch (Header.Channels)
 						{
-<#  foreach (var c in possibleNumberOfChannels)
-	{
+<#
+        foreach (var c in possibleNumberOfChannels)
+        {
 #>
 							case <#= c #>:
 								for (int i = 0; i < Header.BlockSize; i++)
 								{
-<#	for (var i = 0; i < c; i++)
-	{
-	    switch (bps)
-	    {
-			case 8:
+<#
+            for (var i = 0; i < c; i++)
+            {
+                switch (bps)
+                {
+                    case 8:
 #>
 									*(ptr++) = (byte)(_subFrameData[<#= i #>].DestinationBuffer[i] + 0x80);
 <#
-	            break;
-			case 16:
+                        break;
+                    case 16:
 #>
 									vals = (short)(_subFrameData[<#= i #>].DestinationBuffer[i]);
 									*(ptr++) = (byte)(vals & 0xFF);
 									*(ptr++) = (byte)((vals >> 8) & 0xFF);
 
 <#
-	            break;
-			case 24:
+                        break;
+                    case 24:
 #>
 									vali = (_subFrameData[<#= i #>].DestinationBuffer[i]);
 									*(ptr++) = (byte)(vali & 0xFF);
@@ -65,16 +68,16 @@ namespace NAudio.Flac
 									*(ptr++) = (byte)((vali >> 16) & 0xFF);
 
 <#
-	            break;
-			default:
-				throw new Exception("Invalid bps");
-	    }
-	} 
+                        break;
+                    default:
+                        throw new Exception("Invalid bps");
+                }
+            }
 #>
 								}
 								break;
 <#
-	}
+        }
 #>
 							default:
 <#
@@ -91,7 +94,7 @@ namespace NAudio.Flac
 								}
 <#
                 break;
-			case 16:
+            case 16:
 #>
 								for (int i = 0; i < Header.BlockSize; i++)
 								{
@@ -104,7 +107,7 @@ namespace NAudio.Flac
 								}
 <#
                 break;
-			case 24:
+            case 24:
 #>
 								for (int i = 0; i < Header.BlockSize; i++)
 								{
@@ -118,8 +121,8 @@ namespace NAudio.Flac
 								}
 <#
                 break;
-				default: 
-					throw new Exception("Invalid bps");
+            default:
+                throw new Exception("Invalid bps");
         }
 #>
 								break;

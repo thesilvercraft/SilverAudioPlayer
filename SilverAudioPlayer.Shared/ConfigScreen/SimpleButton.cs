@@ -1,13 +1,13 @@
-﻿namespace SilverAudioPlayer.Shared.ConfigScreen
+﻿namespace SilverAudioPlayer.Shared.ConfigScreen;
+
+public class SimpleButton : IConfigurableButton
 {
-    public class SimpleButton : IConfigurableButton
+    public Action Clicked;
+    public Func<string> GetContent;
+    public string Content => GetContent();
+
+    public void Click()
     {
-        public Action Clicked;
-        public Func<string> GetContent;
-        public string Content => GetContent();
-        public void Click()
-        {
-            Clicked();
-        }
+        Clicked();
     }
 }
