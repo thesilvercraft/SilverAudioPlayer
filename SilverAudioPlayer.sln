@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Winforms", "SilverAudioPlayer.Winforms\SilverAudioPlayer.Winforms.csproj", "{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Shared", "SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj", "{27C3AB0D-6A16-4171-AA05-0673F38A4650}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.NAudio", "SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj", "{ADABB162-038F-4391-9794-924DB1B385B1}"
@@ -68,7 +66,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.Metad
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "SilverAudioPlayer.WinUI (Package)", "SilverAudioPlayer.WinUI\SilverAudioPlayer.WinUI (Package)\SilverAudioPlayer.WinUI (Package).wapproj", "{A3D9D773-E405-43DE-8C65-243A79B0CB77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.WinUI", "SilverAudioPlayer.WinUI\SilverAudioPlayer.WinUI\SilverAudioPlayer.WinUI.csproj", "{56799A11-72A0-4348-856F-FCE1F51A9833}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.WinUI", "SilverAudioPlayer.WinUI\SilverAudioPlayer.WinUI\SilverAudioPlayer.WinUI.csproj", "{56799A11-72A0-4348-856F-FCE1F51A9833}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,22 +80,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|arm64.Build.0 = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|x64.Build.0 = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Debug|x86.Build.0 = Debug|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|arm64.ActiveCfg = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|arm64.Build.0 = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|x64.ActiveCfg = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|x64.Build.0 = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|x86.ActiveCfg = Release|Any CPU
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2}.Release|x86.Build.0 = Release|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -447,7 +429,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{5F8BFD8A-2476-4384-BA4B-A886BC0820B2} = {01C2EEE3-40C0-47CB-8CCC-65FB9CBE277F}
 		{ADABB162-038F-4391-9794-924DB1B385B1} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 		{8E300BBC-DE83-49C4-B8A9-36CF71423E16} = {0C596BB7-D172-4367-BA85-27F93C05AF86}
 		{86A77925-4230-41B9-B388-7D5336DA3395} = {69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1}
