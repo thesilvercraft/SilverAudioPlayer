@@ -1,19 +1,17 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
+namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
+
+public partial class AlbumView : UserControl
 {
-    public partial class AlbumView : UserControl
+    public AlbumView()
     {
-        public AlbumView()
-        {
-            InitializeComponent();
+        InitializeComponent();
+    }
 
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
     }
 }

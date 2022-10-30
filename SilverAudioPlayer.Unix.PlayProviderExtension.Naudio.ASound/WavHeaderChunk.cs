@@ -26,21 +26,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Iot.Device.Media
+namespace Iot.Device.Media;
+
+/// <summary>
+///     Wave header chunk
+/// </summary>
+public struct WavHeaderChunk
 {
     /// <summary>
-    /// Wave header chunk
+    ///     The chunk id of the wave header chunk
     /// </summary>
-    public struct WavHeaderChunk
-    {
-        /// <summary>
-        /// The chunk id of the wave header chunk
-        /// </summary>
-        public char[] ChunkId { get; set; }
+    public char[] ChunkId { get; set; }
 
-        /// <summary>
-        /// The size of the wave header chunk
-        /// </summary>
-        public uint ChunkSize { get; set; }
-    }
+    /// <summary>
+    ///     The size of the wave header chunk
+    /// </summary>
+    public uint ChunkSize { get; set; }
 }

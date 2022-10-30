@@ -1,28 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="DryWetMidiLogo.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="DryWetMidiLogo.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="DryWetMidiLogo.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="DryWetMidiLogo.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Melanchall.DryWetMidi" Version="6.1.0-prerelease2" />
-    <PackageReference Include="System.Composition" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Melanchall.DryWetMidi" Version="6.1.3"/>
+        <PackageReference Include="System.Composition" Version="6.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+    </ItemGroup>
 
 </Project>

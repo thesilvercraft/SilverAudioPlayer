@@ -1,52 +1,48 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using SilverAudioPlayer.Avalonia;
 
-namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
+namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
+
+public partial class ServerUrlWindow : Window
 {
-    public partial class ServerUrlWindow : Window
+    private readonly JellyFinHelper jellyFinHelper;
+
+    public string ServerURL;
+    public bool Success;
+
+    public ServerUrlWindow()
     {
-        private JellyFinHelper jellyFinHelper;
-
-        public ServerUrlWindow()
-        {
-            InitializeComponent();
+        InitializeComponent();
 #if DEBUG
-            this.AttachDevTools();
+        this.AttachDevTools();
 #endif
-            this.DoAfterInitTasks(true);
+        this.DoAfterInitTasks(true);
+    }
 
-        }
+    public ServerUrlWindow(JellyFinHelper jellyFinHelper) : this()
+    {
+        this.jellyFinHelper = jellyFinHelper;
+    }
 
-        public string ServerURL;
-        public bool Success = false;
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+        Fail = this.FindControl<TextBlock>("Fail");
+        Url = this.FindControl<TextBox>("Url");
+    }
 
-        public ServerUrlWindow(JellyFinHelper jellyFinHelper) : this()
+    private async void ButtonClick(object? sender, RoutedEventArgs e)
+    {
+        Fail.IsVisible = false;
+        if (await jellyFinHelper.TryGetSystemInfoAsync(Url.Text))
         {
-            this.jellyFinHelper = jellyFinHelper;
+            ServerURL = Url.Text;
+            Success = true;
+            Close();
+            return;
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-            Fail = this.FindControl<TextBlock>("Fail");
-            Url = this.FindControl<TextBox>("Url");
-        }
-
-        private async void ButtonClick(object? sender, RoutedEventArgs e)
-        {
-            Fail.IsVisible = false;
-            if (await jellyFinHelper.TryGetSystemInfoAsync(Url.Text))
-            {
-                ServerURL = Url.Text;
-                Success = true;
-                Close();
-                return;
-            }
-
-            Fail.IsVisible = true;
-        }
+        Fail.IsVisible = true;
     }
 }

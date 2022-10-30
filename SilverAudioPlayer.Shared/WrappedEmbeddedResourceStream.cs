@@ -1,61 +1,60 @@
-﻿using SilverMagicBytes;
-using System.Reflection;
+﻿using System.Reflection;
+using SilverMagicBytes;
 
-namespace SilverAudioPlayer.Shared
+namespace SilverAudioPlayer.Shared;
+
+public class WrappedEmbeddedResourceStream : WrappedStream, IDisposable
 {
-    public class WrappedEmbeddedResourceStream : WrappedStream, IDisposable
+    private readonly Assembly Assembly;
+    private bool disposedValue;
+
+    public WrappedEmbeddedResourceStream(Assembly assembly, string resourceLoc)
     {
-        public WrappedEmbeddedResourceStream(Assembly assembly, string resourceLoc)
+        Assembly = assembly;
+        URL = resourceLoc;
+    }
+
+    public string URL { get; set; }
+    public List<Stream> Streams { get; set; } = new();
+    public override MimeType MimeType => _MimeType;
+    private MimeType _MimeType { get; set; }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private Stream InternalGetStream()
+    {
+        var Stream = Assembly.GetManifestResourceStream(URL);
+        Streams.Add(Stream);
+        return Stream;
+    }
+
+    public override Stream GetStream()
+    {
+        var Stream = InternalGetStream();
+        MimeType? mt;
+        using (var stream2 = InternalGetStream())
         {
-            Assembly = assembly;
-            URL = resourceLoc;
-        }
-        private bool disposedValue;
-        Assembly Assembly;
-        public string URL { get; set; }
-        public List<Stream> Streams { get; set; } = new();
-        public override MimeType MimeType { get => _MimeType; }
-        private MimeType _MimeType { get; set; }
-        private Stream InternalGetStream()
-        {
-            var Stream = Assembly.GetManifestResourceStream(URL);
-            Streams.Add(Stream);
-            return Stream;
+            mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+            Streams.Remove(stream2);
         }
 
-        public override Stream GetStream()
-        {
-            var Stream = InternalGetStream();
-            MimeType? mt;
-            using (var stream2 = InternalGetStream())
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-                Streams.Remove(stream2);
-            }
-            _MimeType = mt;
-            return Stream;
-        }
+        _MimeType = mt;
+        return Stream;
+    }
 
-        protected virtual void Dispose(bool disposing)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
         {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    foreach (var stream in Streams.Where(x => x.CanRead))
-                    {
-                        stream.Dispose();
-                    }
-                }
-                disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            if (disposing)
+                foreach (var stream in Streams.Where(x => x.CanRead))
+                    stream.Dispose();
+            disposedValue = true;
         }
     }
 }

@@ -6,14 +6,33 @@
         x:Class="SilverAudioPlayer.Avalonia.Settings"
         Title="Settings"
         ExtendClientAreaToDecorationsHint="True">
-  <Grid RowDefinitions="25,30,30,30,30" ColumnDefinitions="*,*" Margin="5">
-    <TextBlock Grid.Row="0" Text="Settings" Margin="5"/>
-    <Button Grid.Row="1" Click="RegisterClick">Register/Unregister in registry</Button>
-    <Button Grid.Row="2" Click="ToggleTransparency">Toggle transparency</Button>
-    <ComboBox Name="TransparencyDown" Grid.Row="2" Grid.Column="1" Items="{Binding TransparencyTypes}" ></ComboBox>
-    <AutoCompleteBox Grid.Row="3" Grid.Column="1" Name="ColorBox" Items="{Binding AutoSuggestColours}"/>
-    <Button Grid.Row="3" Click="ChangeColor">Change window color</Button>
-    <AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBoxPB" Items="{Binding AutoSuggestColours}"/>
-    <Button Grid.Row="4" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
-  </Grid>
+    <Grid RowDefinitions="25,30,30,30,30,30,*" ColumnDefinitions="*,*" Margin="5">
+        <TextBlock Grid.Row="0" Text="Settings" Margin="5" />
+        <Button Grid.Row="1" Click="RegisterClick">Register/Unregister in registry</Button>
+        <Button Grid.Row="2" Click="ToggleTransparency">Toggle transparency</Button>
+        <ComboBox Name="TransparencyDown" Grid.Row="2" Grid.Column="1" Items="{Binding TransparencyTypes}" />
+        <AutoCompleteBox Grid.Row="3" Grid.Column="1" Name="ColorBox" Items="{Binding AutoSuggestColours}" />
+        <Button Grid.Row="3" Click="ChangeColor">Change window color</Button>
+        <AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBoxPB" Items="{Binding AutoSuggestColours}" />
+        <Button Grid.Row="4" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
+		<TextBlock Grid.Row="5" Text="Plugins:" FontSize="25" Margin="5" />
+
+		<ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="6"
+                 DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
+                            <TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
+                            <TextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
+                        </StackPanel>
+                        <Image Source="{Binding Icon}" Grid.Column="0" />
+                        <Button Grid.Column="1" IsVisible="{Binding Configurable}" HorizontalAlignment="Right" Click="ConfigureClick">⚙️Configure</Button>
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
 </Window>

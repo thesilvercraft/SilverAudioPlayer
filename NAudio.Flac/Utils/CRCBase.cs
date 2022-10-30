@@ -3,8 +3,9 @@
 namespace NAudio.Flac.Utils
 {
     /// <summary>
-    /// This class is based on the CUETools.NET project (see http://sourceforge.net/p/cuetoolsnet/)
-    /// The author "Grigory Chudov" explicitly gave the permission to use the source as part of the cscore source code which got licensed under the ms-pl.
+    ///     This class is based on the CUETools.NET project (see http://sourceforge.net/p/cuetoolsnet/)
+    ///     The author "Grigory Chudov" explicitly gave the permission to use the source as part of the cscore source code
+    ///     which got licensed under the ms-pl.
     /// </summary>
     internal abstract class CRCBase<T> where T : struct
     {
@@ -13,31 +14,22 @@ namespace NAudio.Flac.Utils
 
         protected void CalcTable(int bits)
         {
-            if (bits != 8 && bits != 16)
-            {
-                throw new ArgumentOutOfRangeException(nameof(bits));
-            }
+            if (bits != 8 && bits != 16) throw new ArgumentOutOfRangeException(nameof(bits));
 
-            int polySumm = bits == 8 ? 0x07 : 0x8005;
-            int bitmask = bits == 8 ? 0x00FF : 0xFFFF;
+            var polySumm = bits == 8 ? 0x07 : 0x8005;
+            var bitmask = bits == 8 ? 0x00FF : 0xFFFF;
             crc_table = new ushort[tableSize];
 
             int poly = (ushort)(polySumm + (1 << bits));
-            for (int i = 0; i < crc_table.Length; i++)
+            for (var i = 0; i < crc_table.Length; i++)
             {
-                int crc = i;
-                for (int n = 0; n < bits; n++)
-                {
-                    if ((crc & 1 << bits - 1) != 0)
-                    {
-                        crc = crc << 1
-                               ^ poly;
-                    }
+                var crc = i;
+                for (var n = 0; n < bits; n++)
+                    if ((crc & (1 << (bits - 1))) != 0)
+                        crc = (crc << 1)
+                              ^ poly;
                     else
-                    {
                         crc <<= 1;
-                    }
-                }
                 crc_table[i] = (ushort)(crc & bitmask);
             }
         }

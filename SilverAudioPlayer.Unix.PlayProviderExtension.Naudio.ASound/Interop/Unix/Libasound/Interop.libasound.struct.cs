@@ -2,17 +2,37 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 // Disable these StyleCop rules for this file, as we are using native names here.
+
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1307 // Field should begin with upper-case letter
 #pragma warning disable CS1591 // Public members must have XML documentation
 
-partial class Interop
+internal partial class Interop
 {
-    public enum snd_pcm_stream_t
+    public enum snd_mixer_selem_channel_id
     {
-        SND_PCM_STREAM_PLAYBACK = 0,
-        SND_PCM_STREAM_CAPTURE = 1,
-        SND_PCM_STREAM_LAST = SND_PCM_STREAM_CAPTURE,
+        SND_MIXER_SCHN_UNKNOWN = -1,
+        SND_MIXER_SCHN_FRONT_LEFT = 0,
+        SND_MIXER_SCHN_FRONT_RIGHT = 1,
+        SND_MIXER_SCHN_REAR_LEFT = 2,
+        SND_MIXER_SCHN_REAR_RIGHT = 3,
+        SND_MIXER_SCHN_FRONT_CENTER = 4,
+        SND_MIXER_SCHN_WOOFER = 5,
+        SND_MIXER_SCHN_SIDE_LEFT = 6,
+        SND_MIXER_SCHN_SIDE_RIGHT = 7,
+        SND_MIXER_SCHN_REAR_CENTER = 8,
+        SND_MIXER_SCHN_LAST = 31,
+        SND_MIXER_SCHN_MONO = SND_MIXER_SCHN_FRONT_LEFT
+    }
+
+    public enum snd_pcm_access_t
+    {
+        SND_PCM_ACCESS_MMAP_INTERLEAVED = 0,
+        SND_PCM_ACCESS_MMAP_NONINTERLEAVED = 1,
+        SND_PCM_ACCESS_MMAP_COMPLEX = 2,
+        SND_PCM_ACCESS_RW_INTERLEAVED = 3,
+        SND_PCM_ACCESS_RW_NONINTERLEAVED = 4,
+        SND_PCM_ACCESS_LAST = SND_PCM_ACCESS_RW_NONINTERLEAVED
     }
 
     public enum snd_pcm_format_t
@@ -65,33 +85,13 @@ partial class Interop
         SND_PCM_FORMAT_DSD_U32_LE = 50,
         SND_PCM_FORMAT_DSD_U16_BE = 51,
         SND_PCM_FORMAT_DSD_U32_BE = 52,
-        SND_PCM_FORMAT_LAST = SND_PCM_FORMAT_DSD_U32_BE,
+        SND_PCM_FORMAT_LAST = SND_PCM_FORMAT_DSD_U32_BE
     }
 
-    public enum snd_pcm_access_t
+    public enum snd_pcm_stream_t
     {
-        SND_PCM_ACCESS_MMAP_INTERLEAVED = 0,
-        SND_PCM_ACCESS_MMAP_NONINTERLEAVED = 1,
-        SND_PCM_ACCESS_MMAP_COMPLEX = 2,
-        SND_PCM_ACCESS_RW_INTERLEAVED = 3,
-        SND_PCM_ACCESS_RW_NONINTERLEAVED = 4,
-        SND_PCM_ACCESS_LAST = SND_PCM_ACCESS_RW_NONINTERLEAVED,
+        SND_PCM_STREAM_PLAYBACK = 0,
+        SND_PCM_STREAM_CAPTURE = 1,
+        SND_PCM_STREAM_LAST = SND_PCM_STREAM_CAPTURE
     }
-
-    public enum snd_mixer_selem_channel_id
-    {
-        SND_MIXER_SCHN_UNKNOWN = -1,
-        SND_MIXER_SCHN_FRONT_LEFT = 0,
-        SND_MIXER_SCHN_FRONT_RIGHT = 1,
-        SND_MIXER_SCHN_REAR_LEFT = 2,
-        SND_MIXER_SCHN_REAR_RIGHT = 3,
-        SND_MIXER_SCHN_FRONT_CENTER = 4,
-        SND_MIXER_SCHN_WOOFER = 5,
-        SND_MIXER_SCHN_SIDE_LEFT = 6,
-        SND_MIXER_SCHN_SIDE_RIGHT = 7,
-        SND_MIXER_SCHN_REAR_CENTER = 8,
-        SND_MIXER_SCHN_LAST = 31,
-        SND_MIXER_SCHN_MONO = SND_MIXER_SCHN_FRONT_LEFT
-    }
-
 }

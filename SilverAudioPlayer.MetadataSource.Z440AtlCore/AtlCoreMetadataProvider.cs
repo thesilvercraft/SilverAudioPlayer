@@ -1,20 +1,42 @@
-﻿using SilverAudioPlayer.Shared;
+﻿using System.Composition;
 using ATL;
-using System.Composition;
+using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.ConfigScreen;
+using SilverMagicBytes;
+using Version = System.Version;
 
-namespace SilverAudioPlayer.MetadataSource.Z440AtlCore
+namespace SilverAudioPlayer.MetadataSource.Z440AtlCore;
+
+[Export(typeof(IMetadataProvider))]
+public class AtlCoreFileMetadataProvider : IMetadataProvider,
+    IAmConfigurable
 {
-    [Export(typeof(IMetadataProvider))]
-    public class AtlCoreFileMetadataProvider : IMetadataProvider
+    private bool AllowMidi;
+    private readonly List<IConfigurableElement> ConfigurableElements;
+
+    public AtlCoreFileMetadataProvider()
     {
-        public string Name => "Z440AtlCore Metadata Provider";
+        ConfigurableElements = new List<IConfigurableElement>
+        {
+            new SimpleCheckBox
+                { GetContent = () => "Allow MIDI reading", Checked = c => AllowMidi = c, GetChecked = () => AllowMidi }
+        };
+    }
 
-        public string Description => "Metadata provider that provides metadata using AtlDotnet";
+    public List<IConfigurableElement> GetElements()
+    {
+        return ConfigurableElements;
+    }
 
-        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(AtlCoreFileMetadataProvider).Assembly, "SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.ZATLMetadata.png");
-        public System.Version? Version => typeof(AtlCoreFileMetadataProvider).Assembly.GetName().Version;
+    public string Name => "Z440AtlCore Metadata Provider";
+    public string Description => "Metadata provider that provides metadata using AtlDotnet";
 
-        public string Licenses => @"atldotnet - https://github.com/Zeugma440/atldotnet
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(AtlCoreFileMetadataProvider).Assembly,
+        "SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.ZATLMetadata.png");
+
+    public Version? Version => typeof(AtlCoreFileMetadataProvider).Assembly.GetName().Version;
+
+    public string Licenses => @"atldotnet - https://github.com/Zeugma440/atldotnet
 MIT License
 
 Copyright (c) 2017 Zeugma440
@@ -49,21 +71,30 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
-        public List<Tuple<Uri, URLType>>? Links => new() {
-            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.MetadataSource.Z440AtlCore"), URLType.Code),
-            new(new($"https://www.nuget.org/packages/z440.atl.core/{typeof(Track).Assembly.GetName().Version}"), URLType.PackageManager),
-            new(new("https://github.com/Zeugma440/atldotnet"),URLType.LibraryCode)
-        };
-        public bool CanGetMetadata(WrappedStream stream)
-        {
-            using var s = stream.GetStream();
-            return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat != null;
-        }
 
-        public Task<Metadata?> GetMetadata(WrappedStream stream)
-        {
-            using var s = stream.GetStream();
-            return Task.FromResult((Metadata?)new AtlCoreMetadata(new(s, stream.MimeType.RealMimeTypeToFakeMimeType())));
-        }
+    public List<Tuple<Uri, URLType>>? Links => new()
+    {
+        new Tuple<Uri, URLType>(
+            new Uri(
+                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.MetadataSource.Z440AtlCore"),
+            URLType.Code),
+        new Tuple<Uri, URLType>(
+            new Uri($"https://www.nuget.org/packages/z440.atl.core/{typeof(Track).Assembly.GetName().Version}"),
+            URLType.PackageManager),
+        new Tuple<Uri, URLType>(new Uri("https://github.com/Zeugma440/atldotnet"), URLType.LibraryCode)
+    };
+
+    public bool CanGetMetadata(WrappedStream stream)
+    {
+        using var s = stream.GetStream();
+        if (!AllowMidi && stream.MimeType == KnownMimes.MidMime) return false;
+        return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;
+    }
+
+    public Task<Metadata?> GetMetadata(WrappedStream stream)
+    {
+        using var s = stream.GetStream();
+        return Task.FromResult(
+            (Metadata?)new AtlCoreMetadata(new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType())));
     }
 }

@@ -3,47 +3,47 @@
 namespace NAudio.Flac.Metadata
 {
     /// <summary>
-    /// Defines flac metadata types.
+    ///     Defines flac metadata types.
     /// </summary>
     public enum FlacMetaDataType
     {
         /// <summary>
-        /// Streaminfo metadata.
+        ///     Streaminfo metadata.
         /// </summary>
         StreamInfo = 0,
 
         /// <summary>
-        /// Padding metadata.
+        ///     Padding metadata.
         /// </summary>
         Padding = 1,
 
         /// <summary>
-        /// Application metadata.
+        ///     Application metadata.
         /// </summary>
         Application = 2,
 
         /// <summary>
-        /// Seektable metadata.
+        ///     Seektable metadata.
         /// </summary>
         Seektable = 3,
 
         /// <summary>
-        /// Vorbis comment metadata.
+        ///     Vorbis comment metadata.
         /// </summary>
         VorbisComment = 4,
 
         /// <summary>
-        /// Cue sheet metadata.
+        ///     Cue sheet metadata.
         /// </summary>
         CueSheet = 5,
 
         /// <summary>
-        /// Picture metadata.
+        ///     Picture metadata.
         /// </summary>
         Picture = 6,
 
         /// <summary>
-        /// Undefined metadata. Used for custom metadata fields.
+        ///     Undefined metadata. Used for custom metadata fields.
         /// </summary>
         Undef = 7
     }

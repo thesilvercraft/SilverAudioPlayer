@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	  <UseWindowsForms>true</UseWindowsForms>
-	  <Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <UseWindowsForms>true</UseWindowsForms>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="SAPCAD.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="SAPCAD.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="SAPCAD.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="SAPCAD.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Composition" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Composition" Version="6.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+    </ItemGroup>
 
 </Project>

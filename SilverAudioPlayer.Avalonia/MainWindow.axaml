@@ -1,104 +1,146 @@
 <Window xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="SilverAudioPlayer.Avalonia.MainWindow"
-    xmlns:local="clr-namespace:SilverAudioPlayer.Avalonia;assembly=SilverAudioPlayer.Avalonia"
-    Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
-    ExtendClientAreaToDecorationsHint="True">
-  <Window.Styles>
-    <Style Selector="Button">
-      <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="HorizontalContentAlignment" Value="Center" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-      <Setter Property="Height" Value="70" />
-      <Setter Property="Margin" Value="2,0,2,0" />
-    </Style>
-    <Style Selector="TextBlock.Playing">
-      <Setter Property="Foreground" Value="#D000FF" />
-    </Style>
-    <Style Selector="TreeViewItem:selected">
-      <Setter Property="Background" Value="#3A2595" />
-    </Style>
-    <Style Selector="TextBlock.c">
-      <Setter Property="FontSize" Value="20" />
-    </Style>
-  </Window.Styles>
-  <Window.Resources>
-    <local:NullableReplacingConverter x:Key="nullableReplacingConverter"/>
-  </Window.Resources>
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SilverAudioPlayer.Avalonia.MainWindow"
+        xmlns:local="clr-namespace:SilverAudioPlayer.Avalonia;assembly=SilverAudioPlayer.Avalonia"
+        Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
+        ExtendClientAreaToDecorationsHint="True">
+    <Window.Resources>
+        <local:NullableReplacingConverter x:Key="nullableReplacingConverter" />
+        <local:RelativePointConverter x:Key="relativePointConverter" />
+
+    </Window.Resources>
+    <Window.Styles>
+        <Style Selector="ProgressBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ProgressBar">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}">
+                                <Panel>
+                                    <Border Name="PART_Indicator"
+                                            Background="{TemplateBinding Foreground}"
+                                            IsVisible="{Binding !IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0"
+                                                                 EndPoint="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource relativePointConverter}}"
+                                                                 GradientStops="{Binding GradientStops}" />
+                                        </Border.Background>
+                                    </Border>
+                                    <Border Name="PART_IndeterminateIndicator"
+                                            Background="{TemplateBinding Foreground}"
+                                            IsVisible="{Binding IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}" />
+                                </Panel>
+                            </Border>
+                            <LayoutTransformControl Name="PART_LayoutTransformControl"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding ShowProgressText, RelativeSource={RelativeSource TemplatedParent}}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Height" Value="70" />
+            <Setter Property="Margin" Value="2,0,2,0" />
+        </Style>
+        <Style Selector="TextBlock.Playing">
+            <Setter Property="Foreground" Value="#D000FF" />
+        </Style>
+        <Style Selector="TreeViewItem:selected">
+            <Setter Property="Background" Value="#3A2595" />
+        </Style>
+        <Style Selector="TextBlock.c">
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+    </Window.Styles>
+
 
     <Grid RowDefinitions="25,260,*" Margin="5">
-      <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
-        <MenuItem Header="_About" Height="0">
-          <MenuItem x:Name="ShowAppInfo"  Command="{Binding RunTheThing}" Header="_Info" HotKey="F1"/>
-          <MenuItem x:Name="ShowLyrics"  Command="{Binding LyricsView}" Header="_Lyrics" HotKey="F3"/>
-        </MenuItem>
-      </Menu>
-    <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="5"/>
-    <Border Grid.Row="1">
-      <Grid ColumnDefinitions="256,*">
-        <Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
-          <Image Height="256" Width="256" Name="Image"  />
+        <Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <MenuItem Header="_About" Height="0">
+                <MenuItem x:Name="ShowAppInfo" Command="{Binding RunTheThing}" Header="_Info" HotKey="F1" />
+                <MenuItem x:Name="ShowLyrics" Command="{Binding LyricsView}" Header="_Lyrics" HotKey="F3" />
+            </MenuItem>
+        </Menu>
+        <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="5" />
+        <Border Grid.Row="1">
+            <Grid ColumnDefinitions="256,*">
+                <Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
+                    <Image Height="256" Width="256" Name="Image" />
+                </Border>
+                <StackPanel Margin="10,10,0,10" Grid.Column="1">
+                    <ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50"
+                                 Margin="0,0,10,10" />
+                    <Grid Margin="1,0,10,0">
+                        <TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00" />
+                        <TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,10,10,10">
+                        <Button Name="PlayButton" Grid.Column="0">Play</Button>
+                        <Button Name="PauseButton" Grid.Column="1">Pause</Button>
+                        <Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
+                        <Button Name="RepeatButton" Grid.Column="3">
+                            <TextBlock Text="{Binding LoopType}" />
+                        </Button>
+                        <!-- <Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>-->
+                        <Button Name="Settings" Grid.Column="4">Settings</Button>
+                    </Grid>
+                    <Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"
+                            Padding="20,0,20,0" />
+                </StackPanel>
+            </Grid>
         </Border>
-        <StackPanel Margin="10,10,0,10" Grid.Column="1">
-          <ProgressBar Name="PB" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="50" Foreground="{Binding PBForeground}" Margin="0,0,10,10" />
-          <Grid Margin="1,0,10,0">
-            <TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"></TextBlock>
-            <TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"></TextBlock>
-          </Grid>
-          <Grid ColumnDefinitions="*,*,*,*,*" Margin="0,10,10,10">
-            <Button Name="PlayButton" Grid.Column="0">Play</Button>
-            <Button Name="PauseButton" Grid.Column="1">Pause</Button>
-            <Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
-            <Button Name="RepeatButton" Grid.Column="3" >
-              <TextBlock Text="{Binding LoopType}"/>
-            </Button>
-           <!-- <Button Name="LoadFromProviders" Grid.Column="3" Click="LoadFromProviders_Click">Providers</Button>-->
-            <Button Name="Settings" Grid.Column="4">Settings</Button>
-          </Grid>
-          <Slider Name="VolumeBar" Minimum="0" Maximum="100" Value="{Binding V, Mode=TwoWay}" Padding="20,0,20,0" />
-        </StackPanel>
-      </Grid>
-    </Border>
-      <ListBox Items="{Binding Queue}" Grid.Row="2" Name="mainListBox" DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple" Background="Transparent">
-        <ListBox.ContextMenu>
-          <ContextMenu>
-            <MenuItem Header="Remove Selected" Click="RemoveSelected" />
-            <MenuItem Header="Clear Queue" Click="ClearAll" />
-            <MenuItem Header="Browse From Dialog" Click="AddFilee" />
-          </ContextMenu>
-        </ListBox.ContextMenu>
-        <ListBox.ItemTemplate>
-          <DataTemplate>
-          <Grid PointerPressed="TreeView_PointerPressed1" ColumnDefinitions="100,*,*,*">
-            <TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
-              <TextBlock.Text>
-                <MultiBinding StringFormat="CD{0}/{1}">
-                  <Binding Path="Metadata.DiscNumber"/>
-                  <Binding Path="Metadata.TrackNumber"/>
-                </MultiBinding>
-              </TextBlock.Text>
+        <ListBox Items="{Binding Queue}" Selection="{Binding Selection}" Grid.Row="2" Name="mainListBox"
+                 DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"
+                 Background="Transparent">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Remove Selected" Click="RemoveSelected" />
+                    <MenuItem Header="Clear Queue" Click="ClearAll" />
+                    <MenuItem Header="Browse From Dialog" Click="AddFilee" />
+                </ContextMenu>
+            </ListBox.ContextMenu>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid PointerPressed="TreeView_PointerPressed1" ColumnDefinitions="100,*,*,*">
+                        <TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="CD{0}/{1}">
+                                    <Binding Path="Metadata.DiscNumber" />
+                                    <Binding Path="Metadata.TrackNumber" />
+                                </MultiBinding>
+                            </TextBlock.Text>
 
 
-            </TextBlock>
-            <TextBlock Classes="c c2" Grid.Column="1" HorizontalAlignment="Center">
-              <TextBlock.Text>
-                <MultiBinding Converter="{StaticResource ResourceKey=nullableReplacingConverter}">
-                  <Binding Path="Metadata.Title"/>
-                  <Binding Path="URI"/>
-                </MultiBinding>
-              </TextBlock.Text>
-            </TextBlock> 
-            <TextBlock Classes="c c3" Text="{Binding Metadata.Artist}" Grid.Column="2" HorizontalAlignment="Center"/>
-            <TextBlock Classes="c c4" Text="{Binding Metadata.Album}" Grid.Column="3" HorizontalAlignment="Center"/>
-          </Grid>
-          </DataTemplate>
-        </ListBox.ItemTemplate>
-      </ListBox>
+                        </TextBlock>
+                        <TextBlock Classes="c c2" Grid.Column="1" HorizontalAlignment="Center">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource ResourceKey=nullableReplacingConverter}">
+                                    <Binding Path="Metadata.Title" />
+                                    <Binding Path="URI" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Classes="c c3" Text="{Binding Metadata.Artist}" Grid.Column="2"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Classes="c c4" Text="{Binding Metadata.Album}" Grid.Column="3"
+                                   HorizontalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
- 
-  
+
+
 </Window>

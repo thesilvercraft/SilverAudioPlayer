@@ -4,16 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.AlbumView">
-	<StackPanel Spacing="5" Width="200">
-		<Border CornerRadius="10" ClipToBounds="True">
-			<Panel Background="#7FFF22DD">
-				<Image Width="200" Stretch="Uniform" Source="{Binding Cover}" />
-				<Panel Height="200" IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNull}}">
-					<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">{Binding Name}</TextBlock>
-				</Panel>
-			</Panel>
-		</Border>
-		<TextBlock Text="{Binding Name}" HorizontalAlignment="Center" />
-		<TextBlock Text="{Binding AlbumArtist}" HorizontalAlignment="Center" />
-	</StackPanel>
+    <StackPanel Spacing="5" Width="200">
+        <Border CornerRadius="10" ClipToBounds="True">
+            <Panel Background="#7FFF22DD">
+                <Image Width="200" Stretch="Uniform" Source="{Binding Cover}" />
+                <Panel Height="200" IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNull}}">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">{Binding Name}</TextBlock>
+                </Panel>
+            </Panel>
+        </Border>
+        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding AlbumArtist}" HorizontalAlignment="Center" />
+    </StackPanel>
 </UserControl>

@@ -5,13 +5,15 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.ServerUrlWindow"
         Title="ServerUrlWindow">
-	<Grid>
+    <Grid>
 
-		<Grid ColumnDefinitions="*,500,*" RowDefinitions="*,*,*,*,*,*,*,*,*">
-			<TextBlock Grid.Column="0" Grid.Row="4" Text="Enter server URL:" TextAlignment="Left" VerticalAlignment="Center"></TextBlock>
-			<TextBox Grid.Column="1" Name="Url" Grid.Row="4" Height="10"></TextBox>
-			<Button Grid.Column="2" Click="ButtonClick" Grid.Row="4" Margin="30,0,0,0">Confirm</Button>
-			<TextBlock Grid.Column="1" Grid.Row="5" Text="Server connection failed! Try another one?" Name="Fail" IsVisible="false" Foreground="Red" ></TextBlock>
-		</Grid>
-	</Grid>
+        <Grid ColumnDefinitions="*,500,*" RowDefinitions="*,*,*,*,*,*,*,*,*">
+            <TextBlock Grid.Column="0" Grid.Row="4" Text="Enter server URL:" TextAlignment="Left"
+                       VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Name="Url" Grid.Row="4" Height="10" />
+            <Button Grid.Column="2" Click="ButtonClick" Grid.Row="4" Margin="30,0,0,0">Confirm</Button>
+            <TextBlock Grid.Column="1" Grid.Row="5" Text="Server connection failed! Try another one?" Name="Fail"
+                       IsVisible="false" Foreground="Red" />
+        </Grid>
+    </Grid>
 </Window>

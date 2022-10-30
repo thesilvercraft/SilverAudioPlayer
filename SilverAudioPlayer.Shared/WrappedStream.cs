@@ -1,12 +1,10 @@
 ﻿using SilverMagicBytes;
 
-namespace SilverAudioPlayer.Shared
+namespace SilverAudioPlayer.Shared;
+
+public abstract class WrappedStream
 {
-    public abstract class WrappedStream
-    {
-        public abstract MimeType MimeType { get; }
+    public abstract MimeType MimeType { get; }
 
-        public abstract Stream GetStream();
-
-    }
+    public abstract Stream GetStream();
 }

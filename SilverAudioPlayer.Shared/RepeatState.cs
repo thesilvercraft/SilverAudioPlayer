@@ -1,9 +1,8 @@
-﻿namespace SilverAudioPlayer.Shared
+﻿namespace SilverAudioPlayer.Shared;
+
+public enum RepeatState
 {
-    public enum RepeatState
-    {
-        None,
-        One,
-        Queue
-    }
+    None,
+    One,
+    Queue
 }

@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 // Disable these StyleCop rules for this file, as we are using native names here.
+
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable CS1591 // Public member is not documented - These members are not public in the final package
 
 using System.Runtime.InteropServices;
 
-partial class Interop
+internal partial class Interop
 {
     public enum FileOpenFlags
     {
@@ -17,20 +18,20 @@ partial class Interop
         O_SYNC = 0x101000
     }
 
-    public enum MemoryMappedProtections
-    {
-        PROT_NONE = 0x0,
-        PROT_READ = 0x1,
-        PROT_WRITE = 0x2,
-        PROT_EXEC = 0x4
-    }
-
     [Flags]
     public enum MemoryMappedFlags
     {
         MAP_SHARED = 0x01,
         MAP_PRIVATE = 0x02,
         MAP_FIXED = 0x10
+    }
+
+    public enum MemoryMappedProtections
+    {
+        PROT_NONE = 0x0,
+        PROT_READ = 0x1,
+        PROT_WRITE = 0x2,
+        PROT_EXEC = 0x4
     }
 
     [DllImport(LibcLibrary, SetLastError = true)]
@@ -43,7 +44,8 @@ partial class Interop
     public static extern int close(int fd);
 
     [DllImport(LibcLibrary, SetLastError = true)]
-    public static extern IntPtr mmap(IntPtr addr, int length, MemoryMappedProtections prot, MemoryMappedFlags flags, int fd, int offset);
+    public static extern IntPtr mmap(IntPtr addr, int length, MemoryMappedProtections prot, MemoryMappedFlags flags,
+        int fd, int offset);
 
     [DllImport(LibcLibrary)]
     public static extern int munmap(IntPtr addr, int length);

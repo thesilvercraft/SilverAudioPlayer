@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 // Disable these StyleCop rules for this file, as we are using native names here.
+
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1307 // Field should begin with upper-case letter
 #pragma warning disable CS1591 // Public members must have XML documentation
 
 using System.Runtime.InteropServices;
 
-partial class Interop
+internal partial class Interop
 {
     [DllImport(AlsaLibrary)]
     public static extern IntPtr snd_strerror(int errnum);
@@ -45,7 +46,8 @@ partial class Interop
     public static extern int snd_pcm_readi(IntPtr pcm, IntPtr buffer, ulong size);
 
     [DllImport(AlsaLibrary)]
-    public static extern int snd_pcm_set_params(IntPtr pcm, snd_pcm_format_t format, snd_pcm_access_t access, uint channels, uint rate, int soft_resample, uint latency);
+    public static extern int snd_pcm_set_params(IntPtr pcm, snd_pcm_format_t format, snd_pcm_access_t access,
+        uint channels, uint rate, int soft_resample, uint latency);
 
     // <param name="params">snd_pcm_hw_params_t**</param>
     [DllImport(AlsaLibrary)]
@@ -65,17 +67,18 @@ partial class Interop
     public static extern int snd_pcm_hw_params_set_channels(IntPtr pcm, IntPtr @params, uint val);
 
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_pcm_hw_params_set_rate_near(IntPtr pcm, IntPtr @params, uint* val, int* dir);
+    public static extern unsafe int snd_pcm_hw_params_set_rate_near(IntPtr pcm, IntPtr @params, uint* val, int* dir);
 
     [DllImport(AlsaLibrary)]
     public static extern int snd_pcm_hw_params(IntPtr pcm, IntPtr @params);
 
     // <param name="frames">snd_pcm_uframes_t*</param>
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_pcm_hw_params_get_period_size(IntPtr @params, ulong* frames, int* dir);
+    public static extern unsafe int snd_pcm_hw_params_get_period_size(IntPtr @params, ulong* frames, int* dir);
 
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_pcm_hw_params_set_period_size_near(IntPtr pcm, IntPtr @params, ulong* frames, int* dir);
+    public static extern unsafe int snd_pcm_hw_params_set_period_size_near(IntPtr pcm, IntPtr @params, ulong* frames,
+        int* dir);
 
     // <param name="mixer">snd_mixer_t**</param>
     [DllImport(AlsaLibrary)]
@@ -109,10 +112,12 @@ partial class Interop
 
     // <param name="mixer">snd_mixer_elem_t*</param>
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_mixer_selem_get_playback_volume(IntPtr elem, snd_mixer_selem_channel_id channel, long* value);
+    public static extern unsafe int snd_mixer_selem_get_playback_volume(IntPtr elem, snd_mixer_selem_channel_id channel,
+        long* value);
 
     [DllImport(AlsaLibrary)]
-    public static extern int snd_mixer_selem_set_playback_volume(IntPtr elem, snd_mixer_selem_channel_id channel, long value);
+    public static extern int snd_mixer_selem_set_playback_volume(IntPtr elem, snd_mixer_selem_channel_id channel,
+        long value);
 
     [DllImport(AlsaLibrary)]
     public static extern int snd_mixer_selem_set_playback_volume_all(IntPtr elem, long value);
@@ -121,16 +126,18 @@ partial class Interop
     public static extern int snd_mixer_selem_set_playback_switch_all(IntPtr elem, int value);
 
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_mixer_selem_get_playback_volume_range(IntPtr elem, long* min, long* max);
+    public static extern unsafe int snd_mixer_selem_get_playback_volume_range(IntPtr elem, long* min, long* max);
 
     [DllImport(AlsaLibrary)]
     public static extern int snd_mixer_selem_set_playback_volume_range(IntPtr elem, long min, long max);
 
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_mixer_selem_get_capture_volume(IntPtr elem, snd_mixer_selem_channel_id channel, long* value);
+    public static extern unsafe int snd_mixer_selem_get_capture_volume(IntPtr elem, snd_mixer_selem_channel_id channel,
+        long* value);
 
     [DllImport(AlsaLibrary)]
-    public static extern int snd_mixer_selem_set_capture_volume(IntPtr elem, snd_mixer_selem_channel_id channel, long value);
+    public static extern int snd_mixer_selem_set_capture_volume(IntPtr elem, snd_mixer_selem_channel_id channel,
+        long value);
 
     [DllImport(AlsaLibrary)]
     public static extern int snd_mixer_selem_set_capture_volume_all(IntPtr elem, long value);
@@ -139,7 +146,7 @@ partial class Interop
     public static extern int snd_mixer_selem_set_capture_switch_all(IntPtr elem, int value);
 
     [DllImport(AlsaLibrary)]
-    public static unsafe extern int snd_mixer_selem_get_capture_volume_range(IntPtr elem, long* min, long* max);
+    public static extern unsafe int snd_mixer_selem_get_capture_volume_range(IntPtr elem, long* min, long* max);
 
     [DllImport(AlsaLibrary)]
     public static extern int snd_mixer_selem_set_capture_volume_range(IntPtr elem, long min, long max);

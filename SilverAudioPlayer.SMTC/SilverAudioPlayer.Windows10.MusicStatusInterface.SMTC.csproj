@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.targets"/>
 
-  <PropertyGroup>
-	  <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="SMTC.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="SMTC.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="SMTC.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="SMTC.png"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Composition" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Composition" Version="6.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+    </ItemGroup>
 
 </Project>

@@ -1,30 +1,25 @@
-﻿using NAudio.Flac;
+﻿using System.Composition;
+using NAudio.Flac;
 using NAudio.Wave;
 using SilverAudioPlayer.NAudio;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
-using System.Composition;
 
-namespace SilverAudioPlayer.Naudio.Flac
+namespace SilverAudioPlayer.Naudio.Flac;
+
+[Export(typeof(INaudioWaveStreamWrapper))]
+public class FlacNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {
-    [Export(typeof(INaudioWaveStreamWrapper))]
-    public class FlacNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
+    public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType> { KnownMimes.FLACMime };
+
+    public byte GetPlayingAbility(WrappedStream stream)
     {
-        public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType>() { KnownMimes.FLACMime };
+        if (stream.MimeType == KnownMimes.FLACMime) return 40;
+        return 0;
+    }
 
-        public byte GetPlayingAbility(WrappedStream stream)
-        {
-            if (stream.MimeType == KnownMimes.FLACMime)
-            {
-                return 40;
-            }
-            return 0;
-        }
-
-
-        public WaveStream GetStream(WrappedStream stream)
-        {
-            return new FlacReader(stream.GetStream());
-        }
+    public WaveStream GetStream(WrappedStream stream)
+    {
+        return new FlacReader(stream.GetStream());
     }
 }

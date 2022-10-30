@@ -1,20 +1,28 @@
-﻿using SilverAudioPlayer.Shared;
+﻿using Jellyfin.Sdk;
+using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
+namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
+
+public class JellyFinPlayStreamProvider : IPlayStreamProvider
 {
-    public class JellyFinPlayStreamProvider : IPlayStreamProvider
+    private readonly Gui gui;
+
+    public JellyFinPlayStreamProvider()
     {
-        public IPlayStreamProviderListner ProviderListner { get; set; }
+        gui = new Gui(this);
+    }
 
-        public string Name => "JellyFin Stream Provider";
+    public IPlayStreamProviderListner ProviderListner { get; set; }
 
-        public string Description => "dotnet wrapper for jellyfin api";
+    public string Name => "JellyFin Stream Provider";
 
-        public WrappedStream? Icon => null;
+    public string Description => "dotnet wrapper for jellyfin api";
 
-        public Version? Version => typeof(JellyFinPlayStreamProvider).Assembly.GetName().Version;
+    public WrappedStream? Icon => null;
 
-        public string Licenses => @"SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
+    public Version? Version => typeof(JellyFinPlayStreamProvider).Assembly.GetName().Version;
+
+    public string Licenses => @"SilverAudioPlayer.Any.PlayStreamProvider.JellyFin
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -49,22 +57,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.";
-        public List<Tuple<Uri, URLType>>? Links => new() {
-            new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"), URLType.Code),
-            new(new($"https://www.nuget.org/packages/Jellyfin.Sdk/{typeof(Jellyfin.Sdk.ApiKeyClient).Assembly.GetName().Version}"), URLType.PackageManager),
-            new(new("https://github.com/jellyfin/jellyfin-sdk-csharp"),URLType.LibraryCode)
-        };
 
-        private Gui gui;
+    public List<Tuple<Uri, URLType>>? Links => new()
+    {
+        new Tuple<Uri, URLType>(
+            new Uri(
+                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"),
+            URLType.Code),
+        new Tuple<Uri, URLType>(
+            new Uri($"https://www.nuget.org/packages/Jellyfin.Sdk/{typeof(ApiKeyClient).Assembly.GetName().Version}"),
+            URLType.PackageManager),
+        new Tuple<Uri, URLType>(new Uri("https://github.com/jellyfin/jellyfin-sdk-csharp"), URLType.LibraryCode)
+    };
 
-        public JellyFinPlayStreamProvider()
-        {
-            gui = new(this);
-        }
-
-        public void ShowGui()
-        {
-            gui.Show();
-        }
+    public void ShowGui()
+    {
+        gui.Show();
     }
 }
