@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer;
+﻿using SilverConfig;
+
+namespace SilverAudioPlayer;
 
 public class Preferences
 {

@@ -6,7 +6,6 @@ using SilverAudioPlayer.Shared;
 namespace SilverAudioPlayer.Windows.PlatformHelper.Win;
 
 [Export(typeof(IWakeLockProvider))]
-[UsedImplicitly]
 public class Win32WakeLock : IWakeLockProvider
 {
     public string Name => "Win32 WakeLock provider";

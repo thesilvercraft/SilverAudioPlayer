@@ -1,5 +1,7 @@
 ﻿using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
+using SilverFormsUtils;
+using System.Text;
 
 namespace SilverAudioPlayer.Winforms;
 

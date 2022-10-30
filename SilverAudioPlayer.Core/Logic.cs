@@ -6,6 +6,7 @@ using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using Swordfish.NET.Collections;
+using Swordfish.NET.Collections.Auxiliary;
 using Logger = Serilog.Core.Logger;
 
 namespace SilverAudioPlayer.Core;
@@ -14,7 +15,6 @@ public class PlayerContext : ReactiveObject
 {
     private Song? _CurrentSong;
     public RepeatState _LoopType;
-    private ConcurrentObservableCollection<Song> _queue = new();
     public byte _Volume = 50;
     public Func<RepeatState>? GetLoopType;
     public Func<byte>? GetVolume;
@@ -24,6 +24,8 @@ public class PlayerContext : ReactiveObject
     public Action<string,string>? ShowMessageBox;
     public Action<TimeSpan> SetScrollBarTextTo = null;
     public Action<byte>? VolumeChanged;
+    public Func<IList<Song>>? GetQueue;
+    public Action<IList<Song>>? SetQueue;
 
     public byte Volume
     {
@@ -31,10 +33,10 @@ public class PlayerContext : ReactiveObject
         set => VolumeChanged(value);
     }
 
-    public ConcurrentObservableCollection<Song> Queue
+    public IList<Song> Queue
     {
-        get => _queue;
-        set => this.RaiseAndSetIfChanged(ref _queue, value);
+        get => GetQueue();
+        set => SetQueue(value);
     }
 
     public Song? CurrentSong
@@ -71,6 +73,8 @@ public class Logic<T> where T : PlayerContext
         playerContext.GetVolume ??= () => playerContext._Volume;
         playerContext.GetLoopType ??= () => playerContext._LoopType;
         playerContext.SetLoopType ??= lt => playerContext.RaiseAndSetIfChanged(ref playerContext._LoopType, lt);
+        ConcurrentObservableCollection<Song> _queue = new();
+        playercontext.GetQueue ??= () => _queue;
     }
 
     [ImportMany] public IEnumerable<IPlayProvider> PlayProviders { get; set; }
@@ -541,7 +545,7 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         }
 
         Log.Information("Sorted through {Count} songs", sng.Count);
-        playerContext.Queue = new ConcurrentObservableCollection<Song>();
+        playerContext.Queue.Clear();
         playerContext.Queue.AddRange(sng);
         IsSortRequested = false;
     }

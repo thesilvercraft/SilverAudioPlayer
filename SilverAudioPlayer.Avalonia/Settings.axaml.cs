@@ -1,15 +1,24 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using Microsoft.Win32;
+using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.ConfigScreen;
+using Swordfish.NET.Collections.Auxiliary;
 
 namespace SilverAudioPlayer.Avalonia;
-
+public record InfoPRecord(string Name, string Description, Version? Version, Bitmap? Icon, string Licenses,
+    ICodeInformation Item, bool Configurable);
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -23,17 +32,127 @@ public partial class Settings : Window
         this.AttachDevTools();
 #endif
         this.DoAfterInitTasks(true);
+    }
+    public Settings(MainWindow mainWindow) : this()
+    {
+
         ColorBox = this.FindControl<AutoCompleteBox>("ColorBox");
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
+        CapBox = this.FindControl<ListBox>("CapBox");
+
         TransparencyDown.SelectedItem =
             "SAPTransparency".GetEnv<WindowTransparencyLevel>() ?? WindowTransparencyLevel.AcrylicBlur;
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
-        DataContext = new SettingsDC();
         ColorBox.Text = "SAPColor".GetEnv();
         ColorBoxPB.Text = "SAPPBColor".GetEnv();
+        List<ICodeInformation> info = new();
+        info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x));
+        info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
+        info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
+        info.AddRange(mainWindow.Logic.WakeLockInterfaces.Select(x => x));
+        info.Add(new SAPAvaloniaPlayerEnviroment());
+        var ir = GetInfoRecords(info);
+        DataContext = new SettingsDC() { Items = ir.Item1 };
+
+
+    }
+    public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
+    {
+        ObservableCollection<InfoPRecord> infop = new();
+        StringBuilder licenses = new();
+        foreach (var item in info)
+        {
+            infop.Add(new InfoPRecord(
+                item.Name,
+                item.Description,
+                item.Version,
+                item.Icon == null ? null : Bitmap.DecodeToHeight(item.Icon.GetStream(), 80),
+                item.Licenses,
+                item,
+                item is IAmConfigurable
+            ));
+            licenses.AppendLine(item.Licenses);
+        }
+        return new(infop, licenses.ToString());
+    }
+    public static void OpenBrowser(string url)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            Process.Start("xdg-open", url);
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            Process.Start("open", url);
+        else
+            throw new NotSupportedException("Os not supported");
     }
 
+    public void ElementDoubleTapped(object _, RoutedEventArgs args)
+    {
+        var y = (InfoPRecord?)CapBox.SelectedItem;
+        ShowElementActionWindow(y);
+    }
+    public void ConfigureClick(object button, RoutedEventArgs args)
+    {
+        var y = (Button?)button;
+        if (y != null && y.DataContext is InfoPRecord record && record.Configurable)
+        {
+            if (record.Item is IAmConfigurable configurable)
+            {
+                ConfigureWindow cw = new();
+                cw.HandleConfiguration(configurable);
+                cw.Show();
+            }
+        }
+    }
+    public static string GetHumanName(URLType type)
+    {
+        return type switch
+        {
+            URLType.Unknown => string.Empty,
+            URLType.Code => "code",
+            URLType.LibraryCode => "library code",
+            URLType.Documentation => "documentation",
+            URLType.LibraryDocumentation => "library documentation",
+            URLType.PackageManager => "package listing",
+            _ => string.Empty,
+        };
+    }
+    public static string GetHumanerName(URLType type)
+    {
+        var name = GetHumanName(type);
+        if(!string.IsNullOrEmpty(name))
+        {
+            return " (" + name + ")";
+        }
+        return name;
+    }
+    public static void ShowElementActionWindow(InfoPRecord element)
+    {
+
+        LaunchActionsWindow launchActionsWindow = new();
+        List<SAction> actions = new();
+        foreach (var z in element.Item.Links)
+        {
+            actions.Add(new SAction
+            { ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2), ActionToInvoke = () => OpenBrowser(z.Item1.ToString()) });
+
+        }
+        if (element.Item is IAmConfigurable configurable)
+            actions.Add(new SAction
+            {
+                ActionName = "🔧Configure",
+                ActionToInvoke = () =>
+                {
+                    ConfigureWindow cw = new();
+                    cw.HandleConfiguration(configurable);
+                    cw.Show();
+                }
+            });
+        launchActionsWindow.AddActions(actions);
+        launchActionsWindow.Show();
+    }
     private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         Task.Run(() => "SAPTransparency".SetEnv(Enum.GetName((WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
@@ -194,4 +313,5 @@ public class SettingsDC
         KnownColor.Cornsilk, KnownColor.LemonChiffon, KnownColor.FloralWhite, KnownColor.Snow, KnownColor.Yellow,
         KnownColor.LightYellow, KnownColor.Ivory, KnownColor.White
     };
+    public ObservableCollection<InfoPRecord> Items { get; set; }
 }

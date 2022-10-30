@@ -1,4 +1,11 @@
 ﻿using SilverAudioPlayer.Shared;
+using System.Composition;
+using System.Diagnostics;
+using System.Runtime.Versioning;
+using Windows.Media;
+using Windows.Media.Playback;
+using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace SilverAudioPlayer.SMTC;
 

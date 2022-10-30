@@ -3,6 +3,8 @@ using Microsoft.AppCenter.Crashes;
 using System.Windows.Forms;
 #endif
 
+using SilverFormsUtils;
+
 namespace SilverAudioPlayer.Winforms;
 
 public partial class UserCONSENT : Form

@@ -7,9 +7,19 @@ using Silver.Serilog.MSAppCenterSink;
 #endif
 
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Win32;
+using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
+using System.Composition;
+using System.Composition.Hosting;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Text;
 //GuidAttribute
 
 namespace SilverAudioPlayer;

@@ -275,10 +275,7 @@ public partial class MainWindow : Window
 
     private void Settings_Click(object? sender, RoutedEventArgs e)
     {
-        var s = new Settings
-        {
-            mainWindow = this
-        };
+        var s = new Settings(this);
         s.Show();
     }
 

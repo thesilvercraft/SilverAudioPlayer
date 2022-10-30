@@ -58,7 +58,7 @@
 
         <!--Discord (alpha)-->
 
-        <DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
+        <!--<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>-->
 
         <!--Windows only-->
 

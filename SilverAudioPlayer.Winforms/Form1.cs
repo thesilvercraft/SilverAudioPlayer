@@ -1,6 +1,16 @@
+using Fluent;
+using ReactiveUI;
+using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Winforms;
+using SilverConfig;
+using SilverFormsUtils;
+using Swordfish.NET.Collections;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Timers;
 using Color = System.Drawing.Color;
 
 namespace SilverAudioPlayer;
@@ -151,7 +161,7 @@ public partial class Form1 : Form
             list.Redraw();
         };
         list.OnItemDoubleClick = x => { Logic.HandleSongChanging((Song)x); };
-        list.Items = ctx.Queue;
+        list.Items = ctx.Queue.ToList();
         // list.InnerList.BeforeSorting += (x, y) => { y.Canceled = true; };
         /*list.InnerList.CustomSorter = (x, y) =>
         {
@@ -169,7 +179,7 @@ public partial class Form1 : Form
         ctx.ObservableForProperty(x => x.Queue, skipInitial: false).Subscribe(x =>
         {
             list.InnerList.SetObjects(ctx.Queue);
-            x.Value.CollectionChanged += (x, y) =>
+             ((ConcurrentObservableCollection<Song>)x.Value).CollectionChanged += (x, y) =>
             {
                 Invoke(() =>
                 {
