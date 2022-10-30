@@ -55,7 +55,7 @@ public partial class Settings : Window
         var ir = GetInfoRecords(info);
         DataContext = new SettingsDC() { Items = ir.Item1 };
 
-
+        this.mainWindow = mainWindow;
     }
     public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
     {
