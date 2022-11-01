@@ -10,7 +10,7 @@ public partial class ConfigureWindow : Window
     public ConfigureWindow()
     {
         InitializeComponent();
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
         MainGrid = this.FindControl<StackPanel>("MainGrid");
     }
 

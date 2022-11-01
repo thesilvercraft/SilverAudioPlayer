@@ -33,7 +33,7 @@ public partial class LaunchActionsWindow : Window
         x = new ActionDataContext();
         DataContext = x;
         LB = this.FindControl<ListBox>("LB");
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
     }
 
     public void ElementDoubleTapped(object _, RoutedEventArgs args)

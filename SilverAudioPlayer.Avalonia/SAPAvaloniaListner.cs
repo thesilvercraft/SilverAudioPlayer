@@ -37,7 +37,7 @@ public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment
     public string Description => "AvaloniaUI (https://github.com/AvaloniaUI/Avalonia) UI for SilverAudioPlayer";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SAPAvaloniaPlayerEnviroment).Assembly,
-        "SilverAudioPlayer.Avalonia.icon.png");
+        "SilverAudioPlayer.Avalonia.icon.svg");
 
     public Version? Version => typeof(SAPAvaloniaPlayerEnviroment).Assembly.GetName().Version;
 

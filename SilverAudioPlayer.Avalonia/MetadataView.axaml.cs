@@ -28,7 +28,7 @@ public partial class MetadataView : Window
         this.AttachDevTools();
 #endif
         mainTreeView = this.FindControl<TreeView>("mainTreeView");
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
         Log = Logger.GetLogger(typeof(MetadataView));
     }
 

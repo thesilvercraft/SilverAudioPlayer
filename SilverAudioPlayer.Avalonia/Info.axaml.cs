@@ -22,7 +22,7 @@ public partial class Info : Window
     {
         InitializeComponent();
         CapBox = this.FindControl<ListBox>("CapBox");
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
     }
 
     public Info(MainWindow mainWindow) : this()
@@ -33,6 +33,7 @@ public partial class Info : Window
         info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
         info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
         info.AddRange(mainWindow.Logic.WakeLockInterfaces.Select(x => x));
+        info.AddRange(mainWindow.Logic.PlayStreamProviders.Select(x => x));
         var ir = Settings.GetInfoRecords(info);
         SAPAvaloniaPlayerEnviroment sap = new();
         DataContext = new
@@ -40,7 +41,7 @@ public partial class Info : Window
             Title = "About " + sap.Name,
             ProductName = sap.Name,
             ProductDescription = sap.Description,
-            ProductIcon = sap.Icon == null ? null : Bitmap.DecodeToWidth(sap.Icon.GetStream(), 200),
+            ProductIcon = Settings.DecodeImage(sap.Icon,200),
             Items = ir.Item1,
             LicenseText = ir.Item2
         };
@@ -48,7 +49,7 @@ public partial class Info : Window
     public void ElementDoubleTapped(object _, RoutedEventArgs args)
     {
         var y = (InfoPRecord?)CapBox.SelectedItem;
-        Settings.ShowElementActionWindow(y);
+        Settings.ShowElementActionWindow(y, MainWindow);
     }
 }
 

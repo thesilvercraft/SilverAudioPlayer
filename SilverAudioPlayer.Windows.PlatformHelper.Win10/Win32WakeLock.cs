@@ -13,7 +13,7 @@ public class Win32WakeLock : IWakeLockProvider
     public string Description => "Uses the SetThreadExecutionState API";
 
     public WrappedStream Icon => new WrappedEmbeddedResourceStream(typeof(Win32WakeLock).Assembly,
-        "SilverAudioPlayer.Windows.PlatformHelper.Win.Win32WakeLock.png");
+        "SilverAudioPlayer.Windows.PlatformHelper.Win.Win32WakeLock.svg");
 
     public Version? Version => typeof(Win32WakeLock).Assembly.GetName().Version;
 

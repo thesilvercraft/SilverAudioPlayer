@@ -6,14 +6,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Win32WakeLock.png" />
+      <None Remove="Win32WakeLock.svg" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Win32WakeLock.png" />
+      <EmbeddedResource Include="Win32WakeLock.svg" />
     </ItemGroup>
 
     <ItemGroup>

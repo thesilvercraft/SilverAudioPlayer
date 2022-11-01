@@ -1,27 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="../SilverAudioPlayer.targets"/>
+    <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
         <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="SMTC.png"/>
+      <None Remove="SMTC.svg" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="SMTC.png"/>
+      <EmbeddedResource Include="SMTC.svg" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Composition" Version="6.0.0"/>
+        <PackageReference Include="System.Composition" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
 
 </Project>

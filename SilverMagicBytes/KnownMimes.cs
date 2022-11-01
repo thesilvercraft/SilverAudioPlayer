@@ -5,13 +5,9 @@ public static class KnownMimes
     public static readonly MimeType MP3Mime = new Mp3Mime();
     public static readonly MimeType FLACMime = new FlacMime();
 
-    public static readonly MimeType WAVMime = new("audio/wave",
-        new[] { "audio/vnd.wave", "audio/wav", "audio/x-wav" },
-        new[] { ".wav" });
+    public static readonly MimeType WAVMime = new WAVMime();
 
-    public static readonly MimeType AiffMime = new("audio/aiff",
-        new[] { "audio/x-aiff" },
-        new[] { ".aiff", ".aif", ".aifc" });
+    public static readonly MimeType AiffMime = new AiffMime();
 
     public static readonly MimeType MidMime = new MidMime();
     public static readonly MimeType PngMime = new PngMime();
@@ -19,6 +15,8 @@ public static class KnownMimes
     public static readonly MimeType OGGMime = new OGGMime();
     public static readonly MimeType AACMime = new AACMime();
     public static readonly MimeType OctetMime = new OctetMime();
+    public static readonly MimeType SVGMime = new SVGMime();
+
 
     public static readonly List<MimeType> KnownMimeTypes = new()
     {
@@ -32,7 +30,8 @@ public static class KnownMimes
         JPGMime,
         OGGMime,
         AACMime,
-        OctetMime
+        OctetMime,
+        SVGMime
     };
 
     public static MimeType? GetKnownMimeByName(string Mime)
@@ -46,16 +45,37 @@ public static class KnownMimes
     }
 }
 
+public class SVGMime : MimeType
+{
+    public SVGMime() : base("image/svg+xml", fileExtensions: new[] {".svg"})
+        {
+
+    }
+}
+
 public class Mp3Mime : CompressedAudioMime
 {
     public Mp3Mime() : base("audio/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".mp3" })
     {
     }
 }
-
+public class AiffMime : CompressedAudioMime
+{
+    public AiffMime() : base("audio/aiff", CompressionType.Lossy, new[] { "audio/x-aiff" }, new[] { ".aiff", ".aif", ".aifc" })
+    {
+    }
+}
 public class FlacMime : CompressedAudioMime
 {
     public FlacMime() : base("audio/flac", CompressionType.Lossless, Array.Empty<string>(), new[] { ".flac" })
+    {
+    }
+}
+public class WAVMime : AudioMime
+{
+    public WAVMime() : base("audio/wave",
+        new[] { "audio/vnd.wave", "audio/wav", "audio/x-wav" },
+        new[] { ".wav" })
     {
     }
 }
@@ -74,12 +94,7 @@ public class AACMime : CompressedAudioMime
     }
 }
 
-public class WAVMime : AudioMime
-{
-    public WAVMime() : base("audio/wave", new[] { "audio/vnd.wave", "audio/wav", "audio/x-wav" }, new[] { ".wav" })
-    {
-    }
-}
+
 
 public class MidMime : AudioMime
 {

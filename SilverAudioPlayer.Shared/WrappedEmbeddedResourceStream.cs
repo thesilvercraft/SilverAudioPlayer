@@ -17,7 +17,7 @@ public class WrappedEmbeddedResourceStream : WrappedStream, IDisposable
     public string URL { get; set; }
     public List<Stream> Streams { get; set; } = new();
     public override MimeType MimeType => _MimeType;
-    private MimeType _MimeType { get; set; }
+    private MimeType? _MimeType { get; set; } = null;
 
     public void Dispose()
     {
@@ -36,14 +36,19 @@ public class WrappedEmbeddedResourceStream : WrappedStream, IDisposable
     public override Stream GetStream()
     {
         var Stream = InternalGetStream();
-        MimeType? mt;
-        using (var stream2 = InternalGetStream())
+        if(_MimeType==null)
         {
-            mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            Streams.Remove(stream2);
+            MimeType? mt;
+            using (var stream2 = InternalGetStream())
+            {
+                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+                Streams.Remove(stream2);
+            }
+            _MimeType = mt;
+
         }
 
-        _MimeType = mt;
+
         return Stream;
     }
 

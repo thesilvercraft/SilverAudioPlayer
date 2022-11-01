@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -35,10 +36,20 @@ public class MainWindowContext : PlayerContext
         mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
         Selection = new SelectionModel<Song>();
         Selection.SingleSelect = false;
-        _pbForeGround = "SAPPBColor".ReadBackground(KnownColor.Coral.ToColor());
+        GradientStops defPBStops = new()
+        {
+            new(KnownColor.Coral.ToColor(), 0),
+            new(KnownColor.SilverCraftBlue.ToColor(), 1)
+        };
+        _pbForeGround = "SAPPBColor".ReadBackground(new LinearGradientBrush() { GradientStops = defPBStops });
         if (_pbForeGround is LinearGradientBrush lgb)
         {
             GradientStops = lgb.GradientStops;
+        }
+        else if(_pbForeGround is SolidColorBrush scb)
+        {
+            GradientStops = new GradientStops();
+            GradientStops.Add(new GradientStop(scb.Color, 0));
         }
         else
         {
@@ -100,7 +111,7 @@ public partial class MainWindow : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
-        this.DoAfterInitTasks(true);
+    
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
         // Closing += (s, e) => Player?.Stop();
@@ -205,7 +216,8 @@ public partial class MainWindow : Window
         ShowAppInfo = this.FindControl<MenuItem>("ShowAppInfo");
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-        ////Background= pbfg;
+         this.DoAfterInitTasksF();
+        
     }
 
     public Logic<MainWindowContext> Logic { get; set; }

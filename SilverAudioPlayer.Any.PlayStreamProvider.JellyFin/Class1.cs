@@ -1,8 +1,9 @@
 ﻿using Jellyfin.Sdk;
 using SilverAudioPlayer.Shared;
+using System.Composition;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
-
+[Export(typeof(IPlayStreamProvider))]
 public class JellyFinPlayStreamProvider : IPlayStreamProvider
 {
     private readonly Gui gui;
@@ -14,11 +15,13 @@ public class JellyFinPlayStreamProvider : IPlayStreamProvider
 
     public IPlayStreamProviderListner ProviderListner { get; set; }
 
-    public string Name => "JellyFin Stream Provider";
+    public string Name => "SilverAudioPlayer Stream Provider for Jellyfin ALPHA";
 
-    public string Description => "dotnet wrapper for jellyfin api";
+    public string Description => "Interacts with a Jellyfin server to allow you to play media from it.";
 
-    public WrappedStream? Icon => null;
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(JellyFinPlayStreamProvider).Assembly,
+        "SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.icon.svg");
+
 
     public Version? Version => typeof(JellyFinPlayStreamProvider).Assembly.GetName().Version;
 

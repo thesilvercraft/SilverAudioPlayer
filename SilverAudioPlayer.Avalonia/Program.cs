@@ -1,6 +1,7 @@
 using System;
 using Avalonia;
 using Avalonia.Dialogs;
+using Avalonia.Svg.Skia;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -20,6 +21,8 @@ internal static class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     {
+        GC.KeepAlive(typeof(SvgImageExtension).Assembly);
+        GC.KeepAlive(typeof(global::Avalonia.Svg.Skia.Svg).Assembly);
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace();

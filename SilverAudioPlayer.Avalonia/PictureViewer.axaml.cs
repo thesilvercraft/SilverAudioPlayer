@@ -18,7 +18,7 @@ public partial class PictureViewer : Window
     public PictureViewer()
     {
         InitializeComponent();
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
     }
 
     public PictureViewer(IReadOnlyList<Picture>? pictures) : this()

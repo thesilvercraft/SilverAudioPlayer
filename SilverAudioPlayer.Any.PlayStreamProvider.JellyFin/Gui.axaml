@@ -4,8 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.Gui"
-        Title="Gui">
-    <Grid>
+        Title="SilverAudioPlayer Provider for JellyFin ALPHA" ExtendClientAreaToDecorationsHint="True">
+    <Grid Margin="25,5,5,5">
         <DockPanel>
             <StackPanel DockPanel.Dock="Top">
                 <Button Click="Button_Click">Home</Button>

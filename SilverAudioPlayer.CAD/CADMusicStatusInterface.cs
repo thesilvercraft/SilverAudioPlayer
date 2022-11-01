@@ -37,7 +37,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         "CD Art display compatible interface, interfaces with Rainmeter or CD Art Display (or anything else that follows the cad-sdk-2.1 protocol";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(CADMusicStatusInterface).Assembly,
-        "SilverAudioPlayer.Windows.MusicStatusInterface.CAD.SAPCAD.png");
+        "SilverAudioPlayer.Windows.MusicStatusInterface.CAD.SAPCAD.svg");
 
     public Version? Version => typeof(CADMusicStatusInterface).Assembly.GetName().Version;
 

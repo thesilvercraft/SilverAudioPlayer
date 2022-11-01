@@ -121,7 +121,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public string Description => "Windows 10 / ModernFlyouts integration, interfaces through SMTC";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SMTCPlayTracker).Assembly,
-        "SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.SMTC.png");
+        "SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.SMTC.svg");
 
     public string Licenses => "SilverAudioPlayer.SMTC\nGPLV3";
 

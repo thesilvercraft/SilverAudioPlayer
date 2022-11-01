@@ -2,23 +2,29 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Svg.Skia;
 using Microsoft.Win32;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.ConfigScreen;
+using SilverMagicBytes;
 using Swordfish.NET.Collections.Auxiliary;
+using Bitmap = Avalonia.Media.Imaging.Bitmap;
 
 namespace SilverAudioPlayer.Avalonia;
-public record InfoPRecord(string Name, string Description, Version? Version, Bitmap? Icon, string Licenses,
-    ICodeInformation Item, bool Configurable);
+public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
+    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider);
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -31,7 +37,7 @@ public partial class Settings : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
     }
     public Settings(MainWindow mainWindow) : this()
     {
@@ -51,6 +57,8 @@ public partial class Settings : Window
         info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
         info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
         info.AddRange(mainWindow.Logic.WakeLockInterfaces.Select(x => x));
+        info.AddRange(mainWindow.Logic.PlayStreamProviders.Select(x => x));
+
         info.Add(new SAPAvaloniaPlayerEnviroment());
         var ir = GetInfoRecords(info);
         DataContext = new SettingsDC() { Items = ir.Item1 };
@@ -63,18 +71,43 @@ public partial class Settings : Window
         StringBuilder licenses = new();
         foreach (var item in info)
         {
+            IImage? icon = DecodeImage(item.Icon);
+           
             infop.Add(new InfoPRecord(
                 item.Name,
                 item.Description,
                 item.Version,
-                item.Icon == null ? null : Bitmap.DecodeToHeight(item.Icon.GetStream(), 80),
+                icon,
                 item.Licenses,
                 item,
-                item is IAmConfigurable
+                item is IAmConfigurable,
+                item is IPlayStreamProvider
             ));
             licenses.AppendLine(item.Licenses);
         }
         return new(infop, licenses.ToString());
+    }
+    public static IImage? DecodeImage(WrappedStream? stream, int width=80)
+    {
+        if (stream != null)
+        {
+            stream.GetStream();
+            Debug.WriteLine(stream.MimeType);
+            if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
+            {
+                return Bitmap.DecodeToWidth(stream.GetStream(), width);
+            }
+            else if (stream.MimeType == KnownMimes.SVGMime)
+            {
+                var img = new SvgImage
+                {
+                    Source = new()
+                };
+                img.Source.Load(stream.GetStream());
+                return img;
+            }
+        }
+        return null;
     }
     public static void OpenBrowser(string url)
     {
@@ -91,7 +124,7 @@ public partial class Settings : Window
     public void ElementDoubleTapped(object _, RoutedEventArgs args)
     {
         var y = (InfoPRecord?)CapBox.SelectedItem;
-        ShowElementActionWindow(y);
+        ShowElementActionWindow(y, mainWindow);
     }
     public void ConfigureClick(object button, RoutedEventArgs args)
     {
@@ -103,6 +136,18 @@ public partial class Settings : Window
                 ConfigureWindow cw = new();
                 cw.HandleConfiguration(configurable);
                 cw.Show();
+            }
+        }
+    }
+    public void PlayProviderClick(object button, RoutedEventArgs args)
+    {
+        var y = (Button?)button;
+        if (y != null && y.DataContext is InfoPRecord record && record.IsPlayStreamProvider)
+        {
+            if (record.Item is IPlayStreamProvider configurable)
+            {
+                configurable.ProviderListner = new SAPAvaloniaListner(mainWindow);
+                configurable.ShowGui();
             }
         }
     }
@@ -128,7 +173,7 @@ public partial class Settings : Window
         }
         return name;
     }
-    public static void ShowElementActionWindow(InfoPRecord element)
+    public static void ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)
     {
 
         LaunchActionsWindow launchActionsWindow = new();
@@ -150,6 +195,18 @@ public partial class Settings : Window
                     cw.Show();
                 }
             });
+        if(element.Item is IPlayStreamProvider streamProvider)
+        {
+            actions.Add(new SAction
+            {
+                ActionName = "Use",
+                ActionToInvoke = () =>
+                {
+                    streamProvider.ProviderListner = new SAPAvaloniaListner(mainWindow);
+                    streamProvider.ShowGui();
+                }
+            });
+        }
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }
@@ -253,8 +310,12 @@ public partial class Settings : Window
     private void ChangeColorPB(object? sender, RoutedEventArgs e)
     {
         Task.Run(() => "SAPPBColor".SetEnv(ColorBoxPB.Text));
-
-        mainWindow.SetPBColor("SAPPBColor".ReadBackground(KnownColor.Coral.ToColor()));
+        GradientStops defPBStops = new()
+        {
+            new(KnownColor.Coral.ToColor(), 0),
+            new(KnownColor.SilverCraftBlue.ToColor(), 1)
+        };
+        mainWindow.SetPBColor("SAPPBColor".ReadBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
     }
 
     private void ChangeColor(object? sender, RoutedEventArgs e)

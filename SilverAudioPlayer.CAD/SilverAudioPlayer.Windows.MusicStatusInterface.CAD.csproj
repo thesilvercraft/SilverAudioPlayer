@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="../SilverAudioPlayer.targets"/>
+    <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
         <TargetFramework>net6.0-windows</TargetFramework>
@@ -8,22 +8,23 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <UseWindowsForms>true</UseWindowsForms>
         <Configurations>Debug;Release</Configurations>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="SAPCAD.png"/>
+        <None Remove="SAPCAD.svg" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="SAPCAD.png"/>
+        <EmbeddedResource Include="SAPCAD.svg" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Composition" Version="6.0.0"/>
+        <PackageReference Include="System.Composition" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
 
 </Project>

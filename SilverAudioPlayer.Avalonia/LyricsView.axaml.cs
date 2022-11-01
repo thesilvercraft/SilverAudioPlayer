@@ -14,7 +14,7 @@ public partial class LyricsView : Window
     public LyricsView()
     {
         InitializeComponent();
-        this.DoAfterInitTasks(true);
+        this.DoAfterInitTasksF();
     }
 
     public LyricsView(MainWindow mainWindow) : this()
