@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.10"/>
+        <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.11"/>
         <PackageReference Include="System.Composition" Version="6.0.0"/>
         <PackageReference Include="MrAdvice" Version="2.9.8"/>
         <PackageReference Include="FuzzySharp" Version="2.0.2"/>
