@@ -1842,8 +1842,8 @@ The *SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj* project file cont
 
 - 1 namespaces.
 - 11 named types.
-- 627 total lines of source code.
-- Approximately 215 lines of executable code.
+- 629 total lines of source code.
+- Approximately 217 lines of executable code.
 - The highest cyclomatic complexity is 6 :heavy_check_mark:.
 
 <details>
@@ -1857,8 +1857,8 @@ The *SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj* project file cont
 The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 named types.
 
 - 11 named types.
-- 627 total lines of source code.
-- Approximately 215 lines of executable code.
+- 629 total lines of source code.
+- Approximately 217 lines of executable code.
 - The highest cyclomatic complexity is 6 :heavy_check_mark:.
 
 <details>
@@ -1900,13 +1900,13 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L14' title='AuthInfoWindow.AuthInfoWindow()'>14</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 8 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L23' title='AuthInfoWindow.AuthInfoWindow(JellyFinHelper jellyFinHelper)'>23</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L36' title='void AuthInfoWindow.ButtonClick(object? sender, RoutedEventArgs e)'>36</a> | 75 | 2 :heavy_check_mark: | 0 | 5 | 12 / 5 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L28' title='void AuthInfoWindow.InitializeComponent()'>28</a> | 80 | 1 :heavy_check_mark: | 0 | 1 | 7 / 4 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L9' title='JellyFinHelper AuthInfoWindow.jellyFinHelper'>9</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L11' title='string AuthInfoWindow.ServerURL'>11</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L12' title='bool AuthInfoWindow.Success'>12</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L16' title='AuthInfoWindow.AuthInfoWindow()'>16</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 8 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L25' title='AuthInfoWindow.AuthInfoWindow(JellyFinHelper jellyFinHelper)'>25</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L38' title='void AuthInfoWindow.ButtonClick(object? sender, RoutedEventArgs e)'>38</a> | 75 | 2 :heavy_check_mark: | 0 | 5 | 12 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L30' title='void AuthInfoWindow.InitializeComponent()'>30</a> | 80 | 1 :heavy_check_mark: | 0 | 1 | 7 / 4 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L11' title='JellyFinHelper AuthInfoWindow.jellyFinHelper'>11</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L13' title='string AuthInfoWindow.ServerURL'>13</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/AuthInfoWindow.axaml.cs#L14' title='bool AuthInfoWindow.Success'>14</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 
 <a href="#AuthInfoWindow-class-diagram">:link: to `AuthInfoWindow` class diagram</a>
 
@@ -1966,16 +1966,16 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L18' title='Gui.Gui()'>18</a> | 74 | 1 :heavy_check_mark: | 0 | 2 | 12 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L31' title='Gui.Gui(JellyFinPlayStreamProvider jellyFinPlayStreamProvider)'>31</a> | 84 | 1 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L46' title='void Gui.AddEntireScreen(object? sender, RoutedEventArgs e)'>46</a> | 72 | 2 :heavy_check_mark: | 0 | 12 | 9 / 5 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L37' title='void Gui.Button_Click(object? sender, RoutedEventArgs e)'>37</a> | 71 | 1 :heavy_check_mark: | 0 | 11 | 8 / 6 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L14' title='GuiBinding Gui.g'>14</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L56' title='void Gui.Gui_Opened(object? sender, EventArgs e)'>56</a> | 66 | 2 :heavy_check_mark: | 0 | 12 | 14 / 8 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L15' title='JellyFinHelper Gui.helper'>15</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L102' title='void Gui.InitializeComponent()'>102</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L16' title='JellyFinPlayStreamProvider Gui.jellyFinPlayStreamProvider'>16</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L71' title='void Gui.LB_DoubleTapped(object? sender, RoutedEventArgs e)'>71</a> | 56 | 6 :heavy_check_mark: | 0 | 14 | 30 / 15 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L20' title='Gui.Gui()'>20</a> | 74 | 1 :heavy_check_mark: | 0 | 2 | 12 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L33' title='Gui.Gui(JellyFinPlayStreamProvider jellyFinPlayStreamProvider)'>33</a> | 84 | 1 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L48' title='void Gui.AddEntireScreen(object? sender, RoutedEventArgs e)'>48</a> | 72 | 2 :heavy_check_mark: | 0 | 12 | 9 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L39' title='void Gui.Button_Click(object? sender, RoutedEventArgs e)'>39</a> | 71 | 1 :heavy_check_mark: | 0 | 11 | 8 / 6 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L16' title='GuiBinding Gui.g'>16</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L58' title='void Gui.Gui_Opened(object? sender, EventArgs e)'>58</a> | 66 | 2 :heavy_check_mark: | 0 | 12 | 14 / 8 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L17' title='JellyFinHelper Gui.helper'>17</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L104' title='void Gui.InitializeComponent()'>104</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L18' title='JellyFinPlayStreamProvider Gui.jellyFinPlayStreamProvider'>18</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L73' title='void Gui.LB_DoubleTapped(object? sender, RoutedEventArgs e)'>73</a> | 56 | 6 :heavy_check_mark: | 0 | 14 | 30 / 15 |
 
 <a href="#Gui-class-diagram">:link: to `Gui` class diagram</a>
 
@@ -1998,7 +1998,7 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L129' title='ObservableCollection<WrappedDto> GuiBinding.SearchResults'>129</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L131' title='ObservableCollection<WrappedDto> GuiBinding.SearchResults'>131</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 
 <a href="#GuiBinding-class-diagram">:link: to `GuiBinding` class diagram</a>
 
@@ -2060,22 +2060,22 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 <br>
 
 - The `JellyFinPlayStreamProvider` contains 10 members.
-- 72 total lines of source code.
-- Approximately 14 lines of executable code.
+- 74 total lines of source code.
+- Approximately 16 lines of executable code.
 - The highest cyclomatic complexity is 2 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L10' title='JellyFinPlayStreamProvider.JellyFinPlayStreamProvider()'>10</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L19' title='string JellyFinPlayStreamProvider.Description'>19</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L8' title='Gui JellyFinPlayStreamProvider.gui'>8</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L21' title='WrappedStream? JellyFinPlayStreamProvider.Icon'>21</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L25' title='string JellyFinPlayStreamProvider.Licenses'>25</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 35 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L61' title='List<Tuple<Uri, URLType>>? JellyFinPlayStreamProvider.Links'>61</a> | 96 | 2 :heavy_check_mark: | 0 | 7 | 11 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L17' title='string JellyFinPlayStreamProvider.Name'>17</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L15' title='IPlayStreamProviderListner JellyFinPlayStreamProvider.ProviderListner'>15</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L73' title='void JellyFinPlayStreamProvider.ShowGui()'>73</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L23' title='Version? JellyFinPlayStreamProvider.Version'>23</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L11' title='JellyFinPlayStreamProvider.JellyFinPlayStreamProvider()'>11</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L20' title='string JellyFinPlayStreamProvider.Description'>20</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L9' title='Gui JellyFinPlayStreamProvider.gui'>9</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L22' title='WrappedStream? JellyFinPlayStreamProvider.Icon'>22</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L28' title='string JellyFinPlayStreamProvider.Licenses'>28</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 35 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L64' title='List<Tuple<Uri, URLType>>? JellyFinPlayStreamProvider.Links'>64</a> | 96 | 2 :heavy_check_mark: | 0 | 7 | 11 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L18' title='string JellyFinPlayStreamProvider.Name'>18</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L16' title='IPlayStreamProviderListner JellyFinPlayStreamProvider.ProviderListner'>16</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L76' title='void JellyFinPlayStreamProvider.ShowGui()'>76</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Class1.cs#L26' title='Version? JellyFinPlayStreamProvider.Version'>26</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
 
 <a href="#JellyFinPlayStreamProvider-class-diagram">:link: to `JellyFinPlayStreamProvider` class diagram</a>
 
@@ -2098,13 +2098,13 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L14' title='ServerUrlWindow.ServerUrlWindow()'>14</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 8 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L23' title='ServerUrlWindow.ServerUrlWindow(JellyFinHelper jellyFinHelper)'>23</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L35' title='void ServerUrlWindow.ButtonClick(object? sender, RoutedEventArgs e)'>35</a> | 72 | 2 :heavy_check_mark: | 0 | 5 | 13 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L28' title='void ServerUrlWindow.InitializeComponent()'>28</a> | 85 | 1 :heavy_check_mark: | 0 | 1 | 6 / 3 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L9' title='JellyFinHelper ServerUrlWindow.jellyFinHelper'>9</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L11' title='string ServerUrlWindow.ServerURL'>11</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L12' title='bool ServerUrlWindow.Success'>12</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L16' title='ServerUrlWindow.ServerUrlWindow()'>16</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 8 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L25' title='ServerUrlWindow.ServerUrlWindow(JellyFinHelper jellyFinHelper)'>25</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L37' title='void ServerUrlWindow.ButtonClick(object? sender, RoutedEventArgs e)'>37</a> | 72 | 2 :heavy_check_mark: | 0 | 5 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L30' title='void ServerUrlWindow.InitializeComponent()'>30</a> | 85 | 1 :heavy_check_mark: | 0 | 1 | 6 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L11' title='JellyFinHelper ServerUrlWindow.jellyFinHelper'>11</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L13' title='string ServerUrlWindow.ServerURL'>13</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/ServerUrlWindow.axaml.cs#L14' title='bool ServerUrlWindow.Success'>14</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 
 <a href="#ServerUrlWindow-class-diagram">:link: to `ServerUrlWindow` class diagram</a>
 
@@ -2127,13 +2127,13 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L113' title='WrappedDto.WrappedDto(BaseItemDto dto, WrappedStream? ws = null)'>113</a> | 76 | 2 :heavy_check_mark: | 0 | 5 | 5 / 3 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L120' title='string WrappedDto.AlbumArtist'>120</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L124' title='Bitmap? WrappedDto.Cover'>124</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L111' title='BaseItemDto WrappedDto.dto'>111</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L123' title='int? WrappedDto.IndexNumber'>123</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L122' title='bool? WrappedDto.IsFolder'>122</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L119' title='string WrappedDto.Name'>119</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L115' title='WrappedDto.WrappedDto(BaseItemDto dto, WrappedStream? ws = null)'>115</a> | 76 | 2 :heavy_check_mark: | 0 | 5 | 5 / 3 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L122' title='string WrappedDto.AlbumArtist'>122</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L126' title='Bitmap? WrappedDto.Cover'>126</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L113' title='BaseItemDto WrappedDto.dto'>113</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L125' title='int? WrappedDto.IndexNumber'>125</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L124' title='bool? WrappedDto.IsFolder'>124</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/Gui.axaml.cs#L121' title='string WrappedDto.Name'>121</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
 
 <a href="#WrappedDto-class-diagram">:link: to `WrappedDto` class diagram</a>
 
@@ -2217,9 +2217,9 @@ The `SilverAudioPlayer.Any.PlayStreamProvider.JellyFin` namespace contains 11 na
 The *SilverAudioPlayer.Avalonia.csproj* project file contains:
 
 - 1 namespaces.
-- 24 named types.
-- 1,486 total lines of source code.
-- Approximately 555 lines of executable code.
+- 25 named types.
+- 1,572 total lines of source code.
+- Approximately 591 lines of executable code.
 - The highest cyclomatic complexity is 17 :exploding_head:.
 
 <details>
@@ -2230,11 +2230,11 @@ The *SilverAudioPlayer.Avalonia.csproj* project file contains:
 </summary>
 <br>
 
-The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
+The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 
-- 24 named types.
-- 1,486 total lines of source code.
-- Approximately 555 lines of executable code.
+- 25 named types.
+- 1,572 total lines of source code.
+- Approximately 591 lines of executable code.
 - The highest cyclomatic complexity is 17 :exploding_head:.
 
 <details>
@@ -2330,7 +2330,7 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/ConfigureWindow.axaml.cs#L10' title='ConfigureWindow.ConfigureWindow()'>10</a> | 86 | 1 :heavy_check_mark: | 0 | 1 | 6 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/ConfigureWindow.axaml.cs#L10' title='ConfigureWindow.ConfigureWindow()'>10</a> | 89 | 1 :heavy_check_mark: | 0 | 1 | 6 / 3 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/ConfigureWindow.axaml.cs#L17' title='Control ConfigureWindow.GetControl(IConfigurableElement element)'>17</a> | 50 | 7 :heavy_check_mark: | 0 | 16 | 54 / 28 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/ConfigureWindow.axaml.cs#L72' title='void ConfigureWindow.HandleConfiguration(IAmConfigurable configurable)'>72</a> | 87 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
 
@@ -2423,15 +2423,15 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 <br>
 
 - The `Info` contains 4 members.
-- 37 total lines of source code.
-- Approximately 18 lines of executable code.
-- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+- 38 total lines of source code.
+- Approximately 20 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L21' title='Info.Info()'>21</a> | 86 | 1 :heavy_check_mark: | 0 | 1 | 6 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L28' title='Info.Info(MainWindow mainWindow)'>28</a> | 58 | 2 :heavy_check_mark: | 0 | 13 | 20 / 13 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L48' title='void Info.ElementDoubleTapped(object _, RoutedEventArgs args)'>48</a> | 93 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L21' title='Info.Info()'>21</a> | 89 | 1 :heavy_check_mark: | 0 | 1 | 6 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L28' title='Info.Info(MainWindow mainWindow)'>28</a> | 56 | 1 :heavy_check_mark: | 0 | 14 | 21 / 15 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L49' title='void Info.ElementDoubleTapped(object _, RoutedEventArgs args)'>49</a> | 87 | 1 :heavy_check_mark: | 0 | 5 | 5 / 2 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Info.axaml.cs#L19' title='MainWindow Info.MainWindow'>19</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#Info-class-diagram">:link: to `Info` class diagram</a>
@@ -2448,21 +2448,22 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 </summary>
 <br>
 
-- The `InfoPRecord` contains 8 members.
+- The `InfoPRecord` contains 9 members.
 - 2 total lines of source code.
 - Approximately 0 lines of executable code.
 - The highest cyclomatic complexity is 1 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L20' title='InfoPRecord.InfoPRecord(string Name, string Description, Version? Version, Bitmap? Icon, string Licenses, ICodeInformation Item, bool Configurable)'>20</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 2 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L21' title='bool InfoPRecord.Configurable'>21</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L20' title='string InfoPRecord.Description'>20</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L20' title='Bitmap? InfoPRecord.Icon'>20</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L21' title='ICodeInformation InfoPRecord.Item'>21</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L20' title='string InfoPRecord.Licenses'>20</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L20' title='string InfoPRecord.Name'>20</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L20' title='Version? InfoPRecord.Version'>20</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='InfoPRecord.InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses, ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider)'>26</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 2 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L27' title='bool InfoPRecord.Configurable'>27</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='string InfoPRecord.Description'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='IImage? InfoPRecord.Icon'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L27' title='bool InfoPRecord.IsPlayStreamProvider'>27</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L27' title='ICodeInformation InfoPRecord.Item'>27</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='string InfoPRecord.Licenses'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='string InfoPRecord.Name'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='Version? InfoPRecord.Version'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
 
 <a href="#InfoPRecord-class-diagram">:link: to `InfoPRecord` class diagram</a>
 
@@ -2485,7 +2486,7 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LaunchActionsWindow.axaml.cs#L30' title='LaunchActionsWindow.LaunchActionsWindow()'>30</a> | 77 | 1 :heavy_check_mark: | 0 | 2 | 8 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LaunchActionsWindow.axaml.cs#L30' title='LaunchActionsWindow.LaunchActionsWindow()'>30</a> | 78 | 1 :heavy_check_mark: | 0 | 2 | 8 / 5 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LaunchActionsWindow.axaml.cs#L44' title='void LaunchActionsWindow.AddActions(List<SAction> action)'>44</a> | 94 | 1 :heavy_check_mark: | 0 | 5 | 4 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LaunchActionsWindow.axaml.cs#L39' title='void LaunchActionsWindow.ElementDoubleTapped(object _, RoutedEventArgs args)'>39</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LaunchActionsWindow.axaml.cs#L28' title='ActionDataContext LaunchActionsWindow.x'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
@@ -2530,49 +2531,49 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 <br>
 
 - The `MainWindow` contains 37 members.
-- 444 total lines of source code.
+- 445 total lines of source code.
 - Approximately 187 lines of executable code.
 - The highest cyclomatic complexity is 14 :x:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L97' title='MainWindow.MainWindow()'>97</a> | 36 | 14 :x: | 0 | 15 | 113 / 70 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L473' title='void MainWindow.AddFilee(object sender, RoutedEventArgs e)'>473</a> | 61 | 3 :heavy_check_mark: | 0 | 8 | 27 / 10 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L468' title='void MainWindow.ClearAll(object sender, RoutedEventArgs e)'>468</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L85' title='Config MainWindow.config'>85</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L86' title='string MainWindow.ConfigPath'>86</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L219' title='Song? MainWindow.CurrentSong'>219</a> | 98 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L87' title='MainWindowContext MainWindow.dc'>87</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L448' title='void MainWindow.DragOver(object sender, DragEventArgs e)'>448</a> | 81 | 5 :heavy_check_mark: | 0 | 3 | 9 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L458' title='void MainWindow.Drop(object sender, DragEventArgs e)'>458</a> | 76 | 5 :heavy_check_mark: | 0 | 5 | 9 / 3 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L89' title='bool MainWindow.en'>89</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L90' title='bool MainWindow.en2'>90</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L211' title='Logic<MainWindowContext> MainWindow.Logic'>211</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L293' title='void MainWindow.MainWindow_Closing(object? sender, CancelEventArgs e)'>293</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L282' title='void MainWindow.MainWindow_Opened(object? sender, EventArgs e)'>282</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L314' title='void MainWindow.Metadata_Click(object? sender, PointerPressedEventArgs e)'>314</a> | 76 | 2 :heavy_check_mark: | 0 | 5 | 10 / 4 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L91' title='MetadataView? MainWindow.metadataView'>91</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L407' title='void MainWindow.OutputDevice_PlaybackStopped(object? sender, object o)'>407</a> | 55 | 9 :warning: | 0 | 6 | 41 / 16 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L350' title='void MainWindow.Pause()'>350</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L335' title='void MainWindow.PauseButton_Click(object? sender, RoutedEventArgs e)'>335</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L325' title='void MainWindow.PB_PointerReleased(object? sender, PointerReleasedEventArgs e)'>325</a> | 70 | 2 :heavy_check_mark: | 0 | 4 | 9 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L345' title='void MainWindow.Play()'>345</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L340' title='void MainWindow.PlayButton_Click(object? sender, RoutedEventArgs e)'>340</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L213' title='IPlay? MainWindow.Player'>213</a> | 98 | 2 :heavy_check_mark: | 0 | 5 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L92' title='CommentXmlConfigReaderNotifyWhenChanged<Config> MainWindow.reader'>92</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L501' title='void MainWindow.RemoveSelected(object sender, RoutedEventArgs e)'>501</a> | 59 | 4 :heavy_check_mark: | 0 | 6 | 25 / 12 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L397' title='void MainWindow.RemoveTrack()'>397</a> | 72 | 3 :heavy_check_mark: | 0 | 5 | 9 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L225' title='void MainWindow.RepeatButton_Click(object? sender, RoutedEventArgs e)'>225</a> | 99 | 4 :heavy_check_mark: | 0 | 4 | 15 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L241' title='void MainWindow.SetPBColor(IBrush c)'>241</a> | 95 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L276' title='void MainWindow.Settings_Click(object? sender, RoutedEventArgs e)'>276</a> | 88 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L355' title='void MainWindow.SndThrd(CancellationToken e)'>355</a> | 59 | 11 :radioactive: | 0 | 7 | 40 / 14 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L309' title='void MainWindow.StopButton_Click(object? sender, RoutedEventArgs e)'>309</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L94' title='Thread? MainWindow.th'>94</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L95' title='CancellationTokenSource? MainWindow.token'>95</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L304' title='void MainWindow.TreeView_DoubleTapped(object? sender, RoutedEventArgs e)'>304</a> | 91 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L261' title='void MainWindow.TreeView_PointerMoved(object? sender, PointerEventArgs e)'>261</a> | 61 | 6 :heavy_check_mark: | 0 | 7 | 14 / 10 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L246' title='void MainWindow.TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)'>246</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L252' title='void MainWindow.TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)'>252</a> | 81 | 2 :heavy_check_mark: | 0 | 2 | 8 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L108' title='MainWindow.MainWindow()'>108</a> | 36 | 14 :x: | 0 | 15 | 114 / 70 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L485' title='void MainWindow.AddFilee(object sender, RoutedEventArgs e)'>485</a> | 61 | 3 :heavy_check_mark: | 0 | 8 | 27 / 10 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L480' title='void MainWindow.ClearAll(object sender, RoutedEventArgs e)'>480</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L96' title='Config MainWindow.config'>96</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L97' title='string MainWindow.ConfigPath'>97</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L231' title='Song? MainWindow.CurrentSong'>231</a> | 98 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L98' title='MainWindowContext MainWindow.dc'>98</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L460' title='void MainWindow.DragOver(object sender, DragEventArgs e)'>460</a> | 81 | 5 :heavy_check_mark: | 0 | 3 | 9 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L470' title='void MainWindow.Drop(object sender, DragEventArgs e)'>470</a> | 76 | 5 :heavy_check_mark: | 0 | 5 | 9 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L100' title='bool MainWindow.en'>100</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L101' title='bool MainWindow.en2'>101</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L223' title='Logic<MainWindowContext> MainWindow.Logic'>223</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L305' title='void MainWindow.MainWindow_Closing(object? sender, CancelEventArgs e)'>305</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L294' title='void MainWindow.MainWindow_Opened(object? sender, EventArgs e)'>294</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L326' title='void MainWindow.Metadata_Click(object? sender, PointerPressedEventArgs e)'>326</a> | 76 | 2 :heavy_check_mark: | 0 | 5 | 10 / 4 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L102' title='MetadataView? MainWindow.metadataView'>102</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L419' title='void MainWindow.OutputDevice_PlaybackStopped(object? sender, object o)'>419</a> | 55 | 9 :warning: | 0 | 6 | 41 / 16 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L362' title='void MainWindow.Pause()'>362</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L347' title='void MainWindow.PauseButton_Click(object? sender, RoutedEventArgs e)'>347</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L337' title='void MainWindow.PB_PointerReleased(object? sender, PointerReleasedEventArgs e)'>337</a> | 70 | 2 :heavy_check_mark: | 0 | 4 | 9 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L357' title='void MainWindow.Play()'>357</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L352' title='void MainWindow.PlayButton_Click(object? sender, RoutedEventArgs e)'>352</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L225' title='IPlay? MainWindow.Player'>225</a> | 98 | 2 :heavy_check_mark: | 0 | 5 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L103' title='CommentXmlConfigReaderNotifyWhenChanged<Config> MainWindow.reader'>103</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L513' title='void MainWindow.RemoveSelected(object sender, RoutedEventArgs e)'>513</a> | 59 | 4 :heavy_check_mark: | 0 | 6 | 25 / 12 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L409' title='void MainWindow.RemoveTrack()'>409</a> | 72 | 3 :heavy_check_mark: | 0 | 5 | 9 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L237' title='void MainWindow.RepeatButton_Click(object? sender, RoutedEventArgs e)'>237</a> | 99 | 4 :heavy_check_mark: | 0 | 4 | 15 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L253' title='void MainWindow.SetPBColor(IBrush c)'>253</a> | 95 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L288' title='void MainWindow.Settings_Click(object? sender, RoutedEventArgs e)'>288</a> | 88 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L367' title='void MainWindow.SndThrd(CancellationToken e)'>367</a> | 59 | 11 :radioactive: | 0 | 7 | 40 / 14 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L321' title='void MainWindow.StopButton_Click(object? sender, RoutedEventArgs e)'>321</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L105' title='Thread? MainWindow.th'>105</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L106' title='CancellationTokenSource? MainWindow.token'>106</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L316' title='void MainWindow.TreeView_DoubleTapped(object? sender, RoutedEventArgs e)'>316</a> | 91 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L273' title='void MainWindow.TreeView_PointerMoved(object? sender, PointerEventArgs e)'>273</a> | 61 | 6 :heavy_check_mark: | 0 | 7 | 14 / 10 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L258' title='void MainWindow.TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)'>258</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L264' title='void MainWindow.TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)'>264</a> | 81 | 2 :heavy_check_mark: | 0 | 2 | 8 / 3 |
 
 <a href="#MainWindow-class-diagram">:link: to `MainWindow` class diagram</a>
 
@@ -2589,23 +2590,23 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 <br>
 
 - The `MainWindowContext` contains 11 members.
-- 57 total lines of source code.
-- Approximately 18 lines of executable code.
-- The highest cyclomatic complexity is 3 :heavy_check_mark:.
+- 67 total lines of source code.
+- Approximately 22 lines of executable code.
+- The highest cyclomatic complexity is 4 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L28' title='GradientStops MainWindowContext._GradientStops'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L29' title='IBrush MainWindowContext._pbForeGround'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L31' title='string MainWindowContext._Title'>31</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L33' title='MainWindowContext.MainWindowContext(MainWindow mw)'>33</a> | 66 | 3 :heavy_check_mark: | 0 | 10 | 16 / 8 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L64' title='GradientStops MainWindowContext.GradientStops'>64</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L76' title='void MainWindowContext.LyricsView()'>76</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L27' title='MainWindow MainWindowContext.mainWindow'>27</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L50' title='IBrush MainWindowContext.PBForeground'>50</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L70' title='void MainWindowContext.RunTheThing()'>70</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L56' title='SelectionModel<Song> MainWindowContext.Selection'>56</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L58' title='string MainWindowContext.Title'>58</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L29' title='GradientStops MainWindowContext._GradientStops'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L30' title='IBrush MainWindowContext._pbForeGround'>30</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L32' title='string MainWindowContext._Title'>32</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L34' title='MainWindowContext.MainWindowContext(MainWindow mw)'>34</a> | 60 | 4 :heavy_check_mark: | 0 | 11 | 26 / 12 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L75' title='GradientStops MainWindowContext.GradientStops'>75</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L87' title='void MainWindowContext.LyricsView()'>87</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L28' title='MainWindow MainWindowContext.mainWindow'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L61' title='IBrush MainWindowContext.PBForeground'>61</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L81' title='void MainWindowContext.RunTheThing()'>81</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L67' title='SelectionModel<Song> MainWindowContext.Selection'>67</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L69' title='string MainWindowContext.Title'>69</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
 
 <a href="#MainWindowContext-class-diagram">:link: to `MainWindowContext` class diagram</a>
 
@@ -2628,7 +2629,7 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MetadataView.axaml.cs#L23' title='MetadataView.MetadataView()'>23</a> | 75 | 1 :heavy_check_mark: | 0 | 5 | 11 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MetadataView.axaml.cs#L23' title='MetadataView.MetadataView()'>23</a> | 76 | 1 :heavy_check_mark: | 0 | 5 | 11 / 5 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MetadataView.axaml.cs#L19' title='DC MetadataView.dataContext'>19</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MetadataView.axaml.cs#L104' title='void MetadataView.IMG_DoubleTapped(object? sender, RoutedEventArgs e)'>104</a> | 87 | 3 :heavy_check_mark: | 0 | 5 | 6 / 2 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MetadataView.axaml.cs#L99' title='void MetadataView.InitializeComponent()'>99</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
@@ -2706,14 +2707,14 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 <br>
 
 - The `Program` contains 2 members.
-- 21 total lines of source code.
-- Approximately 4 lines of executable code.
+- 23 total lines of source code.
+- Approximately 6 lines of executable code.
 - The highest cyclomatic complexity is 3 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Program.cs#L21' title='AppBuilder Program.BuildAvaloniaApp()'>21</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 7 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Program.cs#L13' title='void Program.Main(string[] args)'>13</a> | 78 | 3 :heavy_check_mark: | 0 | 3 | 10 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Program.cs#L22' title='AppBuilder Program.BuildAvaloniaApp()'>22</a> | 89 | 1 :heavy_check_mark: | 0 | 3 | 9 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Program.cs#L14' title='void Program.Main(string[] args)'>14</a> | 78 | 3 :heavy_check_mark: | 0 | 3 | 10 / 3 |
 
 <a href="#Program-class-diagram">:link: to `Program` class diagram</a>
 
@@ -2853,39 +2854,65 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 <details>
 <summary>
+  <strong id="sapawindowextensions">
+    SAPAWindowExtensions :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `SAPAWindowExtensions` contains 2 members.
+- 14 total lines of source code.
+- Approximately 4 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAWindowExtensions.cs#L13' title='GradientStops SAPAWindowExtensions.defBGStops'>13</a> | 87 | 0 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAWindowExtensions.cs#L18' title='void SAPAWindowExtensions.DoAfterInitTasksF(Window w)'>18</a> | 81 | 1 :heavy_check_mark: | 0 | 4 | 6 / 3 |
+
+<a href="#SAPAWindowExtensions-class-diagram">:link: to `SAPAWindowExtensions` class diagram</a>
+
+<a href="#silveraudioplayer-avalonia">:top: back to SilverAudioPlayer.Avalonia</a>
+
+</details>
+
+<details>
+<summary>
   <strong id="settings">
     Settings :heavy_check_mark:
   </strong>
 </summary>
 <br>
 
-- The `Settings` contains 20 members.
-- 250 total lines of source code.
-- Approximately 108 lines of executable code.
+- The `Settings` contains 22 members.
+- 305 total lines of source code.
+- Approximately 132 lines of executable code.
 - The highest cyclomatic complexity is 5 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='Settings.Settings()'>28</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 8 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L36' title='Settings.Settings(MainWindow mainWindow)'>36</a> | 54 | 2 :heavy_check_mark: | 0 | 11 | 24 / 21 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L260' title='void Settings.ChangeColor(object? sender, RoutedEventArgs e)'>260</a> | 80 | 2 :heavy_check_mark: | 0 | 5 | 6 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L253' title='void Settings.ChangeColorPB(object? sender, RoutedEventArgs e)'>253</a> | 85 | 1 :heavy_check_mark: | 0 | 4 | 6 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L96' title='void Settings.ConfigureClick(object button, RoutedEventArgs args)'>96</a> | 69 | 5 :heavy_check_mark: | 0 | 8 | 13 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L197' title='void Settings.DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)'>197</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 7 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L91' title='void Settings.ElementDoubleTapped(object _, RoutedEventArgs args)'>91</a> | 93 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L122' title='string Settings.GetHumanerName(URLType type)'>122</a> | 75 | 2 :heavy_check_mark: | 0 | 2 | 9 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L109' title='string Settings.GetHumanName(URLType type)'>109</a> | 91 | 1 :heavy_check_mark: | 0 | 2 | 13 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L60' title='Tuple<ObservableCollection<InfoPRecord>, string> Settings.GetInfoRecords(List<ICodeInformation> info)'>60</a> | 70 | 3 :heavy_check_mark: | 0 | 8 | 19 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L267' title='void Settings.InitializeComponent()'>267</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L24' title='MainWindow Settings.mainWindow'>24</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L26' title='EventHandler Settings.OnNewColor'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L79' title='void Settings.OpenBrowser(string url)'>79</a> | 79 | 4 :heavy_check_mark: | 0 | 4 | 11 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L225' title='void Settings.RegisterClick(object? sender, RoutedEventArgs e)'>225</a> | 88 | 3 :heavy_check_mark: | 0 | 3 | 11 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L164' title='void Settings.RegisterInReg()'>164</a> | 56 | 5 :heavy_check_mark: | 0 | 7 | 32 / 17 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L205' title='void Settings.RemoveFromReg()'>205</a> | 63 | 5 :heavy_check_mark: | 0 | 6 | 19 / 10 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L131' title='void Settings.ShowElementActionWindow(InfoPRecord element)'>131</a> | 61 | 3 :heavy_check_mark: | 0 | 10 | 25 / 11 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L237' title='void Settings.ToggleTransparency(object? sender, RoutedEventArgs e)'>237</a> | 67 | 4 :heavy_check_mark: | 0 | 4 | 15 / 9 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L156' title='void Settings.TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)'>156</a> | 79 | 3 :heavy_check_mark: | 0 | 5 | 7 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L34' title='Settings.Settings()'>34</a> | 93 | 1 :heavy_check_mark: | 0 | 0 | 8 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L42' title='Settings.Settings(MainWindow mainWindow)'>42</a> | 53 | 2 :heavy_check_mark: | 0 | 11 | 26 / 23 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L321' title='void Settings.ChangeColor(object? sender, RoutedEventArgs e)'>321</a> | 80 | 2 :heavy_check_mark: | 0 | 5 | 6 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L310' title='void Settings.ChangeColorPB(object? sender, RoutedEventArgs e)'>310</a> | 77 | 1 :heavy_check_mark: | 0 | 6 | 10 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L129' title='void Settings.ConfigureClick(object button, RoutedEventArgs args)'>129</a> | 69 | 5 :heavy_check_mark: | 0 | 8 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L90' title='IImage? Settings.DecodeImage(WrappedStream? stream, int width = 80)'>90</a> | 62 | 5 :heavy_check_mark: | 0 | 5 | 22 / 11 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L254' title='void Settings.DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)'>254</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 7 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L124' title='void Settings.ElementDoubleTapped(object _, RoutedEventArgs args)'>124</a> | 87 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L167' title='string Settings.GetHumanerName(URLType type)'>167</a> | 75 | 2 :heavy_check_mark: | 0 | 2 | 9 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L154' title='string Settings.GetHumanName(URLType type)'>154</a> | 91 | 1 :heavy_check_mark: | 0 | 2 | 13 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L68' title='Tuple<ObservableCollection<InfoPRecord>, string> Settings.GetInfoRecords(List<ICodeInformation> info)'>68</a> | 69 | 2 :heavy_check_mark: | 0 | 10 | 22 / 7 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L328' title='void Settings.InitializeComponent()'>328</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L30' title='MainWindow Settings.mainWindow'>30</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L32' title='EventHandler Settings.OnNewColor'>32</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L112' title='void Settings.OpenBrowser(string url)'>112</a> | 79 | 4 :heavy_check_mark: | 0 | 4 | 11 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L142' title='void Settings.PlayProviderClick(object button, RoutedEventArgs args)'>142</a> | 70 | 5 :heavy_check_mark: | 0 | 9 | 12 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L282' title='void Settings.RegisterClick(object? sender, RoutedEventArgs e)'>282</a> | 88 | 3 :heavy_check_mark: | 0 | 3 | 11 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L221' title='void Settings.RegisterInReg()'>221</a> | 56 | 5 :heavy_check_mark: | 0 | 7 | 32 / 17 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L262' title='void Settings.RemoveFromReg()'>262</a> | 63 | 5 :heavy_check_mark: | 0 | 6 | 19 / 10 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L176' title='void Settings.ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)'>176</a> | 57 | 4 :heavy_check_mark: | 0 | 13 | 37 / 15 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L294' title='void Settings.ToggleTransparency(object? sender, RoutedEventArgs e)'>294</a> | 67 | 4 :heavy_check_mark: | 0 | 4 | 15 / 9 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L213' title='void Settings.TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)'>213</a> | 79 | 3 :heavy_check_mark: | 0 | 5 | 7 / 4 |
 
 <a href="#Settings-class-diagram">:link: to `Settings` class diagram</a>
 
@@ -2908,9 +2935,9 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L281' title='KnownColor[] SettingsDC.AutoSuggestColours'>281</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 35 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L316' title='ObservableCollection<InfoPRecord> SettingsDC.Items'>316</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L275' title='WindowTransparencyLevel[] SettingsDC.TransparencyTypes'>275</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 5 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L342' title='KnownColor[] SettingsDC.AutoSuggestColours'>342</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 35 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L377' title='ObservableCollection<InfoPRecord> SettingsDC.Items'>377</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L336' title='WindowTransparencyLevel[] SettingsDC.TransparencyTypes'>336</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 5 / 1 |
 
 <a href="#SettingsDC-class-diagram">:link: to `SettingsDC` class diagram</a>
 
@@ -3100,7 +3127,7 @@ The *SilverAudioPlayer.Core.csproj* project file contains:
 
 - 1 namespaces.
 - 4 named types.
-- 649 total lines of source code.
+- 651 total lines of source code.
 - Approximately 254 lines of executable code.
 - The highest cyclomatic complexity is 31 :exploding_head:.
 
@@ -3115,7 +3142,7 @@ The *SilverAudioPlayer.Core.csproj* project file contains:
 The `SilverAudioPlayer.Core` namespace contains 4 named types.
 
 - 4 named types.
-- 649 total lines of source code.
+- 651 total lines of source code.
 - Approximately 254 lines of executable code.
 - The highest cyclomatic complexity is 31 :exploding_head:.
 
@@ -3127,72 +3154,73 @@ The `SilverAudioPlayer.Core` namespace contains 4 named types.
 </summary>
 <br>
 
-- The `Logic<T>` contains 60 members.
-- 551 total lines of source code.
+- The `Logic<T>` contains 61 members.
+- 553 total lines of source code.
 - Approximately 223 lines of executable code.
 - The highest cyclomatic complexity is 31 :exploding_head:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L65' title='Logic<T>.Logic(T playercontext)'>65</a> | 62 | 2 :heavy_check_mark: | 0 | 5 | 14 / 13 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L106' title='void Logic<T>.AddMSI(IMusicStatusInterface e)'>106</a> | 60 | 1 :heavy_check_mark: | 0 | 3 | 22 / 19 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L512' title='void Logic<T>.AddSong(Song song, bool expectmore = false)'>512</a> | 64 | 4 :heavy_check_mark: | 0 | 8 | 14 / 9 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L108' title='void Logic<T>.AddMSI(IMusicStatusInterface e)'>108</a> | 60 | 1 :heavy_check_mark: | 0 | 3 | 22 / 19 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L514' title='void Logic<T>.AddSong(Song song, bool expectmore = false)'>514</a> | 64 | 4 :heavy_check_mark: | 0 | 8 | 14 / 9 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L58' title='bool Logic<T>.ChangeAllowed'>58</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L507' title='void Logic<T>.ClearAll()'>507</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L100' title='Song? Logic<T>.CurrentSong'>100</a> | 98 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L528' title='Task Logic<T>.DoSort()'>528</a> | 54 | 13 :x: | 0 | 8 | 25 / 18 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L569' title='IEnumerable<string> Logic<T>.FilterFiles(IEnumerable<string> files)'>569</a> | 70 | 31 :exploding_head: | 0 | 2 | 36 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L564' title='Task<Metadata?>? Logic<T>.GetMetadataFromStream(WrappedStream stream)'>564</a> | 94 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L559' title='IMetadataProvider? Logic<T>.GetMetadataProviderFromStream(WrappedStream stream)'>559</a> | 86 | 2 :heavy_check_mark: | 0 | 5 | 4 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L553' title='IPlay? Logic<T>.GetPlayerFromStream(WrappedStream stream)'>553</a> | 80 | 3 :heavy_check_mark: | 0 | 6 | 5 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L445' title='void Logic<T>.HandleSongChanging(Song NextSong, bool resetsal = false)'>445</a> | 70 | 1 :heavy_check_mark: | 0 | 4 | 22 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L509' title='void Logic<T>.ClearAll()'>509</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L102' title='Song? Logic<T>.CurrentSong'>102</a> | 98 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L530' title='Task Logic<T>.DoSort()'>530</a> | 54 | 13 :x: | 0 | 8 | 25 / 18 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L571' title='IEnumerable<string> Logic<T>.FilterFiles(IEnumerable<string> files)'>571</a> | 70 | 31 :exploding_head: | 0 | 2 | 36 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L566' title='Task<Metadata?>? Logic<T>.GetMetadataFromStream(WrappedStream stream)'>566</a> | 94 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L561' title='IMetadataProvider? Logic<T>.GetMetadataProviderFromStream(WrappedStream stream)'>561</a> | 86 | 2 :heavy_check_mark: | 0 | 5 | 4 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L555' title='IPlay? Logic<T>.GetPlayerFromStream(WrappedStream stream)'>555</a> | 80 | 3 :heavy_check_mark: | 0 | 6 | 5 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L447' title='void Logic<T>.HandleSongChanging(Song NextSong, bool resetsal = false)'>447</a> | 70 | 1 :heavy_check_mark: | 0 | 4 | 22 / 6 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L59' title='bool Logic<T>.IsSortRequested'>59</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L88' title='Logger Logic<T>.log'>88</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L320' title='void Logic<T>.MainWindow_Closing(object? sender, CancelEventArgs e)'>320</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L309' title='void Logic<T>.MainWindow_Opened(object? sender, EventArgs e)'>309</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L90' title='Logger Logic<T>.log'>90</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L322' title='void Logic<T>.MainWindow_Closing(object? sender, CancelEventArgs e)'>322</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L311' title='void Logic<T>.MainWindow_Opened(object? sender, EventArgs e)'>311</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L82' title='IEnumerable<IMetadataProvider> Logic<T>.MetadataProviders'>82</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L266' title='Song Logic<T>.MusicStatusInterface_GetCurrentTrack()'>266</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L261' title='ulong Logic<T>.MusicStatusInterface_GetDuration()'>261</a> | 88 | 7 :heavy_check_mark: | 0 | 4 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L155' title='ulong Logic<T>.MusicStatusInterface_GetPosition()'>155</a> | 94 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L160' title='RepeatState Logic<T>.MusicStatusInterface_GetRepeat()'>160</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L150' title='bool Logic<T>.MusicStatusInterface_GetShuffle()'>150</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L170' title='PlaybackState Logic<T>.MusicStatusInterface_GetState()'>170</a> | 100 | 3 :heavy_check_mark: | 0 | 4 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L165' title='byte Logic<T>.MusicStatusInterface_GetVolume()'>165</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L276' title='void Logic<T>.MusicStatusInterface_Next(object? sender, EventArgs e)'>276</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L182' title='void Logic<T>.MusicStatusInterface_Pause(object? sender, object e)'>182</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L218' title='void Logic<T>.MusicStatusInterface_Play(object? sender, object e)'>218</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L256' title='void Logic<T>.MusicStatusInterface_PlayPause(object? sender, object e)'>256</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L271' title='void Logic<T>.MusicStatusInterface_Previous(object? sender, EventArgs e)'>271</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L139' title='void Logic<T>.MusicStatusInterface_SetPosition(object? sender, ulong e)'>139</a> | 96 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L144' title='void Logic<T>.MusicStatusInterface_SetRating(object? sender, byte e)'>144</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 5 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L129' title='void Logic<T>.MusicStatusInterface_SetRepeat(object? sender, RepeatState e)'>129</a> | 96 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L134' title='void Logic<T>.MusicStatusInterface_SetVolume(object? sender, byte e)'>134</a> | 92 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L175' title='void Logic<T>.MusicStatusInterface_Stop(object? sender, object e)'>175</a> | 82 | 2 :heavy_check_mark: | 0 | 3 | 6 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L268' title='Song Logic<T>.MusicStatusInterface_GetCurrentTrack()'>268</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L263' title='ulong Logic<T>.MusicStatusInterface_GetDuration()'>263</a> | 88 | 7 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L157' title='ulong Logic<T>.MusicStatusInterface_GetPosition()'>157</a> | 94 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L162' title='RepeatState Logic<T>.MusicStatusInterface_GetRepeat()'>162</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L152' title='bool Logic<T>.MusicStatusInterface_GetShuffle()'>152</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L172' title='PlaybackState Logic<T>.MusicStatusInterface_GetState()'>172</a> | 100 | 3 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L167' title='byte Logic<T>.MusicStatusInterface_GetVolume()'>167</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L278' title='void Logic<T>.MusicStatusInterface_Next(object? sender, EventArgs e)'>278</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L184' title='void Logic<T>.MusicStatusInterface_Pause(object? sender, object e)'>184</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L220' title='void Logic<T>.MusicStatusInterface_Play(object? sender, object e)'>220</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L258' title='void Logic<T>.MusicStatusInterface_PlayPause(object? sender, object e)'>258</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L273' title='void Logic<T>.MusicStatusInterface_Previous(object? sender, EventArgs e)'>273</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L141' title='void Logic<T>.MusicStatusInterface_SetPosition(object? sender, ulong e)'>141</a> | 96 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L146' title='void Logic<T>.MusicStatusInterface_SetRating(object? sender, byte e)'>146</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 5 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L131' title='void Logic<T>.MusicStatusInterface_SetRepeat(object? sender, RepeatState e)'>131</a> | 96 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L136' title='void Logic<T>.MusicStatusInterface_SetVolume(object? sender, byte e)'>136</a> | 92 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L177' title='void Logic<T>.MusicStatusInterface_Stop(object? sender, object e)'>177</a> | 82 | 2 :heavy_check_mark: | 0 | 3 | 6 / 3 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L57' title='List<IMusicStatusInterface> Logic<T>.musicStatusInterfaces'>57</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L84' title='IEnumerable<IMusicStatusInterface> Logic<T>.MusicStatusInterfaces'>84</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L281' title='void Logic<T>.Next()'>281</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L283' title='void Logic<T>.Next()'>283</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L60' title='Song? Logic<T>.NextSong'>60</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L403' title='void Logic<T>.OutputDevice_PlaybackStopped(object? sender, object o)'>403</a> | 55 | 9 :warning: | 0 | 4 | 41 / 16 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L344' title='void Logic<T>.Pause()'>344</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L331' title='void Logic<T>.Play()'>331</a> | 78 | 3 :heavy_check_mark: | 0 | 3 | 12 / 4 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L90' title='List<MimeType> Logic<T>.PlayableMimes'>90</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L210' title='void Logic<T>.PlaybackStateChangedNotification(PlaybackState s)'>210</a> | 71 | 4 :heavy_check_mark: | 0 | 6 | 11 / 6 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L98' title='IPlay? Logic<T>.Player'>98</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L89' title='T Logic<T>.playerContext'>89</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L247' title='void Logic<T>.PlayPause(bool allowstart)'>247</a> | 80 | 6 :heavy_check_mark: | 0 | 3 | 8 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L405' title='void Logic<T>.OutputDevice_PlaybackStopped(object? sender, object o)'>405</a> | 55 | 9 :warning: | 0 | 4 | 41 / 16 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L346' title='void Logic<T>.Pause()'>346</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L333' title='void Logic<T>.Play()'>333</a> | 78 | 3 :heavy_check_mark: | 0 | 3 | 12 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L92' title='List<MimeType> Logic<T>.PlayableMimes'>92</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L212' title='void Logic<T>.PlaybackStateChangedNotification(PlaybackState s)'>212</a> | 71 | 4 :heavy_check_mark: | 0 | 6 | 11 / 6 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L100' title='IPlay? Logic<T>.Player'>100</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L91' title='T Logic<T>.playerContext'>91</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L249' title='void Logic<T>.PlayPause(bool allowstart)'>249</a> | 80 | 6 :heavy_check_mark: | 0 | 3 | 8 / 3 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L80' title='IEnumerable<IPlayProvider> Logic<T>.PlayProviders'>80</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L295' title='void Logic<T>.Previous()'>295</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L467' title='void Logic<T>.ProcessFiles(IEnumerable<string> files)'>467</a> | 61 | 8 :warning: | 0 | 5 | 20 / 11 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L502' title='void Logic<T>.ProcessStream(WrappedStream stream)'>502</a> | 92 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L488' title='void Logic<T>.ProcessStreams(IEnumerable<WrappedStream> streams)'>488</a> | 67 | 6 :heavy_check_mark: | 0 | 6 | 13 / 7 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L223' title='void Logic<T>.RemoveMSI(IMusicStatusInterface e)'>223</a> | 59 | 1 :heavy_check_mark: | 0 | 3 | 23 / 20 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L394' title='void Logic<T>.RemoveTrack()'>394</a> | 77 | 3 :heavy_check_mark: | 0 | 5 | 8 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L188' title='void Logic<T>.SendIfStateIsNotNull()'>188</a> | 84 | 3 :heavy_check_mark: | 0 | 3 | 8 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L351' title='void Logic<T>.StartPlaying(bool play = true, bool resetsal = false)'>351</a> | 51 | 9 :warning: | 0 | 8 | 42 / 22 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L87' title='IEnumerable<IPlayStreamProvider> Logic<T>.PlayStreamProviders'>87</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L297' title='void Logic<T>.Previous()'>297</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L469' title='void Logic<T>.ProcessFiles(IEnumerable<string> files)'>469</a> | 61 | 8 :warning: | 0 | 5 | 20 / 11 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L504' title='void Logic<T>.ProcessStream(WrappedStream stream)'>504</a> | 92 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L490' title='void Logic<T>.ProcessStreams(IEnumerable<WrappedStream> streams)'>490</a> | 67 | 6 :heavy_check_mark: | 0 | 6 | 13 / 7 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L225' title='void Logic<T>.RemoveMSI(IMusicStatusInterface e)'>225</a> | 59 | 1 :heavy_check_mark: | 0 | 3 | 23 / 20 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L396' title='void Logic<T>.RemoveTrack()'>396</a> | 77 | 3 :heavy_check_mark: | 0 | 5 | 8 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L190' title='void Logic<T>.SendIfStateIsNotNull()'>190</a> | 84 | 3 :heavy_check_mark: | 0 | 3 | 8 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L353' title='void Logic<T>.StartPlaying(bool play = true, bool resetsal = false)'>353</a> | 51 | 9 :warning: | 0 | 8 | 42 / 22 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L62' title='bool Logic<T>.StopAutoLoading'>62</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L63' title='CancellationTokenSource? Logic<T>.token'>63</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L201' title='void Logic<T>.TrackChangedNotification(Song? currentSong)'>201</a> | 87 | 2 :heavy_check_mark: | 0 | 5 | 8 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L92' title='byte Logic<T>.Volume'>92</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L203' title='void Logic<T>.TrackChangedNotification(Song? currentSong)'>203</a> | 87 | 2 :heavy_check_mark: | 0 | 5 | 8 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L94' title='byte Logic<T>.Volume'>94</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L86' title='IEnumerable<IWakeLockProvider> Logic<T>.WakeLockInterfaces'>86</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
 
 <a href="#Logic&lt;T&gt;-class-diagram">:link: to `Logic&lt;T&gt;` class diagram</a>
@@ -4121,8 +4149,8 @@ The *SilverAudioPlayer.Shared.csproj* project file contains:
 
 - 3 namespaces.
 - 41 named types.
-- 963 total lines of source code.
-- Approximately 145 lines of executable code.
+- 968 total lines of source code.
+- Approximately 147 lines of executable code.
 - The highest cyclomatic complexity is 15 :exploding_head:.
 
 <details>
@@ -4516,8 +4544,8 @@ The `SilverAudioPlayer.Shared.ConfigScreen` namespace contains 12 named types.
 The `SilverAudioPlayer.Shared` namespace contains 27 named types.
 
 - 27 named types.
-- 778 total lines of source code.
-- Approximately 111 lines of executable code.
+- 783 total lines of source code.
+- Approximately 113 lines of executable code.
 - The highest cyclomatic complexity is 15 :exploding_head:.
 
 <details>
@@ -5183,21 +5211,21 @@ The `SilverAudioPlayer.Shared` namespace contains 27 named types.
 <br>
 
 - The `WrappedEmbeddedResourceStream` contains 11 members.
-- 55 total lines of source code.
-- Approximately 20 lines of executable code.
+- 60 total lines of source code.
+- Approximately 22 lines of executable code.
 - The highest cyclomatic complexity is 4 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L20' title='MimeType WrappedEmbeddedResourceStream._MimeType'>20</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L20' title='MimeType? WrappedEmbeddedResourceStream._MimeType'>20</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L11' title='WrappedEmbeddedResourceStream.WrappedEmbeddedResourceStream(Assembly assembly, string resourceLoc)'>11</a> | 85 | 1 :heavy_check_mark: | 0 | 1 | 5 / 2 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L8' title='Assembly WrappedEmbeddedResourceStream.Assembly'>8</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L22' title='void WrappedEmbeddedResourceStream.Dispose()'>22</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 6 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L50' title='void WrappedEmbeddedResourceStream.Dispose(bool disposing)'>50</a> | 76 | 4 :heavy_check_mark: | 0 | 4 | 10 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L55' title='void WrappedEmbeddedResourceStream.Dispose(bool disposing)'>55</a> | 76 | 4 :heavy_check_mark: | 0 | 4 | 10 / 4 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L9' title='bool WrappedEmbeddedResourceStream.disposedValue'>9</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L36' title='Stream WrappedEmbeddedResourceStream.GetStream()'>36</a> | 70 | 2 :heavy_check_mark: | 0 | 5 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L36' title='Stream WrappedEmbeddedResourceStream.GetStream()'>36</a> | 68 | 3 :heavy_check_mark: | 0 | 5 | 18 / 7 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L29' title='Stream WrappedEmbeddedResourceStream.InternalGetStream()'>29</a> | 81 | 1 :heavy_check_mark: | 0 | 3 | 6 / 3 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L19' title='MimeType WrappedEmbeddedResourceStream.MimeType'>19</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L19' title='MimeType WrappedEmbeddedResourceStream.MimeType'>19</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L18' title='List<Stream> WrappedEmbeddedResourceStream.Streams'>18</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/WrappedEmbeddedResourceStream.cs#L17' title='string WrappedEmbeddedResourceStream.URL'>17</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 
@@ -6674,9 +6702,9 @@ The `SilverAudioPlayer.WinUI` namespace contains 14 named types.
 The *SilverMagicBytes.csproj* project file contains:
 
 - 1 namespaces.
-- 20 named types.
-- 273 total lines of source code.
-- Approximately 42 lines of executable code.
+- 22 named types.
+- 302 total lines of source code.
+- Approximately 41 lines of executable code.
 - The highest cyclomatic complexity is 5 :heavy_check_mark:.
 
 <details>
@@ -6687,11 +6715,11 @@ The *SilverMagicBytes.csproj* project file contains:
 </summary>
 <br>
 
-The `SilverMagicBytes` namespace contains 20 named types.
+The `SilverMagicBytes` namespace contains 22 named types.
 
-- 20 named types.
-- 273 total lines of source code.
-- Approximately 42 lines of executable code.
+- 22 named types.
+- 302 total lines of source code.
+- Approximately 41 lines of executable code.
 - The highest cyclomatic complexity is 5 :heavy_check_mark:.
 
 <details>
@@ -6709,9 +6737,32 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L72' title='AACMime.AACMime()'>72</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L92' title='AACMime.AACMime()'>92</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
 
 <a href="#AACMime-class-diagram">:link: to `AACMime` class diagram</a>
+
+<a href="#silvermagicbytes">:top: back to SilverMagicBytes</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="aiffmime">
+    AiffMime :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `AiffMime` contains 1 members.
+- 6 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L64' title='AiffMime.AiffMime()'>64</a> | 90 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+
+<a href="#AiffMime-class-diagram">:link: to `AiffMime` class diagram</a>
 
 <a href="#silvermagicbytes">:top: back to SilverMagicBytes</a>
 
@@ -6732,7 +6783,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L107' title='AudioMime.AudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>107</a> | 79 | 1 :heavy_check_mark: | 0 | 1 | 4 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L122' title='AudioMime.AudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>122</a> | 79 | 1 :heavy_check_mark: | 0 | 1 | 4 / 2 |
 
 <a href="#AudioMime-class-diagram">:link: to `AudioMime` class diagram</a>
 
@@ -6755,8 +6806,8 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L141' title='CompressedAudioMime.CompressedAudioMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>141</a> | 75 | 1 :heavy_check_mark: | 0 | 2 | 5 / 3 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L147' title='CompressionType CompressedAudioMime.CompressionType'>147</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L156' title='CompressedAudioMime.CompressedAudioMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>156</a> | 75 | 1 :heavy_check_mark: | 0 | 2 | 5 / 3 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L162' title='CompressionType CompressedAudioMime.CompressionType'>162</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#CompressedAudioMime-class-diagram">:link: to `CompressedAudioMime` class diagram</a>
 
@@ -6779,8 +6830,8 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L130' title='CompressedImageMime.CompressedImageMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>130</a> | 75 | 1 :heavy_check_mark: | 0 | 2 | 5 / 3 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L136' title='CompressionType CompressedImageMime.CompressionType'>136</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L145' title='CompressedImageMime.CompressedImageMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>145</a> | 75 | 1 :heavy_check_mark: | 0 | 2 | 5 / 3 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L151' title='CompressionType CompressedImageMime.CompressionType'>151</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#CompressedImageMime-class-diagram">:link: to `CompressedImageMime` class diagram</a>
 
@@ -6803,8 +6854,8 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L157' title='CompressionType.Lossless'>157</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L158' title='CompressionType.Lossy'>158</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L172' title='CompressionType.Lossless'>172</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L173' title='CompressionType.Lossy'>173</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 
 <a href="#CompressionType-class-diagram">:link: to `CompressionType` class diagram</a>
 
@@ -6827,7 +6878,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L58' title='FlacMime.FlacMime()'>58</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L70' title='FlacMime.FlacMime()'>70</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
 
 <a href="#FlacMime-class-diagram">:link: to `FlacMime` class diagram</a>
 
@@ -6850,7 +6901,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L152' title='CompressionType ICompression.CompressionType'>152</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L167' title='CompressionType ICompression.CompressionType'>167</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#ICompression-class-diagram">:link: to `ICompression` class diagram</a>
 
@@ -6873,7 +6924,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L115' title='ImageMime.ImageMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>115</a> | 79 | 1 :heavy_check_mark: | 0 | 1 | 4 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L130' title='ImageMime.ImageMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)'>130</a> | 79 | 1 :heavy_check_mark: | 0 | 1 | 4 / 2 |
 
 <a href="#ImageMime-class-diagram">:link: to `ImageMime` class diagram</a>
 
@@ -6896,7 +6947,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L100' title='JPGMime.JPGMime()'>100</a> | 92 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L115' title='JPGMime.JPGMime()'>115</a> | 92 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
 
 <a href="#JPGMime-class-diagram">:link: to `JPGMime` class diagram</a>
 
@@ -6912,26 +6963,27 @@ The `SilverMagicBytes` namespace contains 20 named types.
 </summary>
 <br>
 
-- The `KnownMimes` contains 13 members.
-- 45 total lines of source code.
-- Approximately 7 lines of executable code.
+- The `KnownMimes` contains 14 members.
+- 44 total lines of source code.
+- Approximately 6 lines of executable code.
 - The highest cyclomatic complexity is 2 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L20' title='MimeType KnownMimes.AACMime'>20</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L12' title='MimeType KnownMimes.AiffMime'>12</a> | 83 | 0 :heavy_check_mark: | 0 | 1 | 2 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L16' title='MimeType KnownMimes.AACMime'>16</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L10' title='MimeType KnownMimes.AiffMime'>10</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L6' title='MimeType KnownMimes.FLACMime'>6</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L43' title='MimeType? KnownMimes.GetKnownMimeByExtension(string Extension)'>43</a> | 87 | 1 :heavy_check_mark: | 0 | 3 | 4 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L38' title='MimeType? KnownMimes.GetKnownMimeByName(string Mime)'>38</a> | 84 | 2 :heavy_check_mark: | 0 | 3 | 4 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L18' title='MimeType KnownMimes.JPGMime'>18</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L23' title='List<MimeType> KnownMimes.KnownMimeTypes'>23</a> | 80 | 0 :heavy_check_mark: | 0 | 3 | 13 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L16' title='MimeType KnownMimes.MidMime'>16</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L42' title='MimeType? KnownMimes.GetKnownMimeByExtension(string Extension)'>42</a> | 87 | 1 :heavy_check_mark: | 0 | 3 | 4 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L37' title='MimeType? KnownMimes.GetKnownMimeByName(string Mime)'>37</a> | 84 | 2 :heavy_check_mark: | 0 | 3 | 4 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L14' title='MimeType KnownMimes.JPGMime'>14</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L21' title='List<MimeType> KnownMimes.KnownMimeTypes'>21</a> | 80 | 0 :heavy_check_mark: | 0 | 3 | 14 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L12' title='MimeType KnownMimes.MidMime'>12</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L5' title='MimeType KnownMimes.MP3Mime'>5</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L21' title='MimeType KnownMimes.OctetMime'>21</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L19' title='MimeType KnownMimes.OGGMime'>19</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L17' title='MimeType KnownMimes.PngMime'>17</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L8' title='MimeType KnownMimes.WAVMime'>8</a> | 83 | 0 :heavy_check_mark: | 0 | 1 | 2 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L17' title='MimeType KnownMimes.OctetMime'>17</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L15' title='MimeType KnownMimes.OGGMime'>15</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L13' title='MimeType KnownMimes.PngMime'>13</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L18' title='MimeType KnownMimes.SVGMime'>18</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L8' title='MimeType KnownMimes.WAVMime'>8</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 
 <a href="#KnownMimes-class-diagram">:link: to `KnownMimes` class diagram</a>
 
@@ -6973,19 +7025,19 @@ The `SilverMagicBytes` namespace contains 20 named types.
 <br>
 
 - The `MagicByteCombos` contains 7 members.
-- 64 total lines of source code.
+- 78 total lines of source code.
 - Approximately 13 lines of executable code.
 - The highest cyclomatic complexity is 3 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L42' title='void MagicByteCombos.AddMBC(MagicByteComboWithMimeType mbc)'>42</a> | 77 | 2 :heavy_check_mark: | 0 | 5 | 8 / 3 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L5' title='List<MagicByteComboWithMimeType> MagicByteCombos.ByteCombos'>5</a> | 73 | 0 :heavy_check_mark: | 0 | 5 | 24 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L62' title='MagicByteComboWithMimeType[] MagicByteCombos.GetAll()'>62</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L31' title='MagicByteComboWithMimeType? MagicByteCombos.Match(Stream s, long offset)'>31</a> | 86 | 1 :heavy_check_mark: | 0 | 4 | 4 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L36' title='bool MagicByteCombos.MatchesAny(Stream s, long offset, string mimetype)'>36</a> | 82 | 3 :heavy_check_mark: | 0 | 4 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L51' title='void MagicByteCombos.OverrideMBC(MagicByteComboWithMimeType mbc)'>51</a> | 79 | 2 :heavy_check_mark: | 0 | 5 | 5 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L57' title='void MagicByteCombos.RemoveMBC(MagicByteComboWithMimeType mbc)'>57</a> | 97 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L56' title='void MagicByteCombos.AddMBC(MagicByteComboWithMimeType mbc)'>56</a> | 77 | 2 :heavy_check_mark: | 0 | 5 | 8 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L5' title='List<MagicByteComboWithMimeType> MagicByteCombos.ByteCombos'>5</a> | 71 | 0 :heavy_check_mark: | 0 | 5 | 38 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L76' title='MagicByteComboWithMimeType[] MagicByteCombos.GetAll()'>76</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L45' title='MagicByteComboWithMimeType? MagicByteCombos.Match(Stream s, long offset)'>45</a> | 86 | 1 :heavy_check_mark: | 0 | 4 | 4 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L50' title='bool MagicByteCombos.MatchesAny(Stream s, long offset, string mimetype)'>50</a> | 82 | 3 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L65' title='void MagicByteCombos.OverrideMBC(MagicByteComboWithMimeType mbc)'>65</a> | 79 | 2 :heavy_check_mark: | 0 | 5 | 5 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/MagicByteCombos.cs#L71' title='void MagicByteCombos.RemoveMBC(MagicByteComboWithMimeType mbc)'>71</a> | 97 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
 
 <a href="#MagicByteCombos-class-diagram">:link: to `MagicByteCombos` class diagram</a>
 
@@ -7032,7 +7084,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L86' title='MidMime.MidMime()'>86</a> | 91 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L101' title='MidMime.MidMime()'>101</a> | 91 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
 
 <a href="#MidMime-class-diagram">:link: to `MidMime` class diagram</a>
 
@@ -7081,7 +7133,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L51' title='Mp3Mime.Mp3Mime()'>51</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L58' title='Mp3Mime.Mp3Mime()'>58</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
 
 <a href="#Mp3Mime-class-diagram">:link: to `Mp3Mime` class diagram</a>
 
@@ -7104,7 +7156,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L123' title='OctetMime.OctetMime()'>123</a> | 96 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L138' title='OctetMime.OctetMime()'>138</a> | 96 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
 
 <a href="#OctetMime-class-diagram">:link: to `OctetMime` class diagram</a>
 
@@ -7127,7 +7179,7 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L65' title='OGGMime.OGGMime()'>65</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L85' title='OGGMime.OGGMime()'>85</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
 
 <a href="#OGGMime-class-diagram">:link: to `OGGMime` class diagram</a>
 
@@ -7150,9 +7202,32 @@ The `SilverMagicBytes` namespace contains 20 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L93' title='PngMime.PngMime()'>93</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L108' title='PngMime.PngMime()'>108</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
 
 <a href="#PngMime-class-diagram">:link: to `PngMime` class diagram</a>
+
+<a href="#silvermagicbytes">:top: back to SilverMagicBytes</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="svgmime">
+    SVGMime :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `SVGMime` contains 1 members.
+- 7 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L50' title='SVGMime.SVGMime()'>50</a> | 95 | 1 :heavy_check_mark: | 0 | 1 | 4 / 0 |
+
+<a href="#SVGMime-class-diagram">:link: to `SVGMime` class diagram</a>
 
 <a href="#silvermagicbytes">:top: back to SilverMagicBytes</a>
 
@@ -7167,13 +7242,13 @@ The `SilverMagicBytes` namespace contains 20 named types.
 <br>
 
 - The `WAVMime` contains 1 members.
-- 6 total lines of source code.
+- 8 total lines of source code.
 - Approximately 0 lines of executable code.
 - The highest cyclomatic complexity is 1 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L79' title='WAVMime.WAVMime()'>79</a> | 90 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverMagicBytes/KnownMimes.cs#L76' title='WAVMime.WAVMime()'>76</a> | 90 | 1 :heavy_check_mark: | 0 | 1 | 5 / 0 |
 
 <a href="#WAVMime-class-diagram">:link: to `WAVMime` class diagram</a>
 
@@ -8593,11 +8668,12 @@ class InfoPRecord{
     +string Name
     +string Description
     +Version? Version
-    +Bitmap? Icon
+    +IImage? Icon
     +string Licenses
     +ICodeInformation Item
     +bool Configurable
-    +.ctor(string Name, string Description, Version? Version, Bitmap? Icon, string Licenses, ICodeInformation Item, bool Configurable) InfoPRecord
+    +bool IsPlayStreamProvider
+    +.ctor(string Name, string Description, Version? Version, IImage? Icon, string Licenses, ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider) InfoPRecord
 }
 
 ```
@@ -8840,6 +8916,19 @@ class SAPAvaloniaPlayerEnviroment{
 
 ```
 
+<div id="SAPAWindowExtensions-class-diagram"></div>
+
+##### `SAPAWindowExtensions` class diagram
+
+```mermaid
+classDiagram
+class SAPAWindowExtensions{
+    -GradientStops defBGStops$
+    +DoAfterInitTasksF(Window w)$ void
+}
+
+```
+
 <div id="Settings-class-diagram"></div>
 
 ##### `Settings` class diagram
@@ -8852,12 +8941,14 @@ class Settings{
     +.ctor() Settings
     +.ctor(MainWindow mainWindow) Settings
     +ettings.GetInfoRecords(List<ICodeInformation> info)$ Tuple<ObservableCollection<InfoPRecord>,
+    +DecodeImage(WrappedStream? stream, int width = 80)$ IImage?
     +OpenBrowser(string url)$ void
     +ElementDoubleTapped(object _, RoutedEventArgs args) void
     +ConfigureClick(object button, RoutedEventArgs args) void
+    +PlayProviderClick(object button, RoutedEventArgs args) void
     +GetHumanName(URLType type)$ string
     +GetHumanerName(URLType type)$ string
-    +ShowElementActionWindow(InfoPRecord element)$ void
+    +ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)$ void
     +TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e) void
     +RegisterInReg() void
     +DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)$ void
@@ -8981,6 +9072,7 @@ class Logic<T>{
     +IEnumerable<IMetadataProvider> MetadataProviders
     +IEnumerable<IMusicStatusInterface> MusicStatusInterfaces
     +IEnumerable<IWakeLockProvider> WakeLockInterfaces
+    +IEnumerable<IPlayStreamProvider> PlayStreamProviders
     +Logger log
     +T playerContext
     +List<MimeType> PlayableMimes
@@ -10076,7 +10168,7 @@ class WrappedEmbeddedResourceStream{
     +string URL
     +List<Stream> Streams
     +MimeType MimeType
-    +MimeType _MimeType
+    +MimeType? _MimeType
     +.ctor(Assembly assembly, string resourceLoc) WrappedEmbeddedResourceStream
     +Dispose() void
     +InternalGetStream() Stream
@@ -10934,6 +11026,18 @@ class AACMime{
 
 ```
 
+<div id="AiffMime-class-diagram"></div>
+
+##### `AiffMime` class diagram
+
+```mermaid
+classDiagram
+class AiffMime{
+    +.ctor() AiffMime
+}
+
+```
+
 <div id="AudioMime-class-diagram"></div>
 
 ##### `AudioMime` class diagram
@@ -11052,6 +11156,7 @@ class KnownMimes{
     -MimeType OGGMime$
     -MimeType AACMime$
     -MimeType OctetMime$
+    -MimeType SVGMime$
     -List<MimeType> KnownMimeTypes$
     +GetKnownMimeByName(string Mime)$ MimeType?
     +GetKnownMimeByExtension(string Extension)$ MimeType?
@@ -11175,6 +11280,18 @@ class OGGMime{
 classDiagram
 class PngMime{
     +.ctor() PngMime
+}
+
+```
+
+<div id="SVGMime-class-diagram"></div>
+
+##### `SVGMime` class diagram
+
+```mermaid
+classDiagram
+class SVGMime{
+    +.ctor() SVGMime
 }
 
 ```
