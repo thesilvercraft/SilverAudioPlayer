@@ -2219,7 +2219,7 @@ The *SilverAudioPlayer.Avalonia.csproj* project file contains:
 - 1 namespaces.
 - 24 named types.
 - 1,486 total lines of source code.
-- Approximately 554 lines of executable code.
+- Approximately 555 lines of executable code.
 - The highest cyclomatic complexity is 17 :exploding_head:.
 
 <details>
@@ -2234,7 +2234,7 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 - 24 named types.
 - 1,486 total lines of source code.
-- Approximately 554 lines of executable code.
+- Approximately 555 lines of executable code.
 - The highest cyclomatic complexity is 17 :exploding_head:.
 
 <details>
@@ -2861,13 +2861,13 @@ The `SilverAudioPlayer.Avalonia` namespace contains 24 named types.
 
 - The `Settings` contains 20 members.
 - 250 total lines of source code.
-- Approximately 107 lines of executable code.
+- Approximately 108 lines of executable code.
 - The highest cyclomatic complexity is 5 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='Settings.Settings()'>28</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 8 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L36' title='Settings.Settings(MainWindow mainWindow)'>36</a> | 55 | 2 :heavy_check_mark: | 0 | 11 | 24 / 20 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L36' title='Settings.Settings(MainWindow mainWindow)'>36</a> | 54 | 2 :heavy_check_mark: | 0 | 11 | 24 / 21 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L260' title='void Settings.ChangeColor(object? sender, RoutedEventArgs e)'>260</a> | 80 | 2 :heavy_check_mark: | 0 | 5 | 6 / 4 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L253' title='void Settings.ChangeColorPB(object? sender, RoutedEventArgs e)'>253</a> | 85 | 1 :heavy_check_mark: | 0 | 4 | 6 / 3 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L96' title='void Settings.ConfigureClick(object button, RoutedEventArgs args)'>96</a> | 69 | 5 :heavy_check_mark: | 0 | 8 | 13 / 6 |
