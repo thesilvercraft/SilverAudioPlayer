@@ -41,7 +41,7 @@ public class MainWindowContext : PlayerContext
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         };
-        _pbForeGround = "SAPPBColor".ReadBackground(new LinearGradientBrush() { GradientStops = defPBStops });
+        _pbForeGround = WindowExtensions.GetEnv( "SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
         if (_pbForeGround is LinearGradientBrush lgb)
         {
             GradientStops = lgb.GradientStops;

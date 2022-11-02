@@ -29,7 +29,6 @@ public partial class Settings : Window
 {
     internal MainWindow mainWindow;
 
-    public EventHandler OnNewColor;
 
     public Settings()
     {
@@ -214,8 +213,7 @@ public partial class Settings : Window
     {
         Task.Run(() => "SAPTransparency".SetEnv(Enum.GetName((WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
                                                              WindowTransparencyLevel.AcrylicBlur)));
-        OnNewColor?.Invoke(this, null);
-        WindowExtensions.OnStyleChange(this, null);
+        WindowExtensions.OnStyleChange.Invoke(this, null);
     }
 
     public void RegisterInReg()
@@ -296,13 +294,11 @@ public partial class Settings : Window
         if ("DisableSAPTransparency".GetEnv() != "true")
         {
             Task.Run(() => "DisableSAPTransparency".SetEnv("true"));
-            OnNewColor?.Invoke(this, null);
             WindowExtensions.OnStyleChange(this, null);
         }
         else
         {
             Task.Run(() => "DisableSAPTransparency".SetEnv("false"));
-            OnNewColor?.Invoke(this, null);
             WindowExtensions.OnStyleChange(this, null);
         }
     }
@@ -315,14 +311,14 @@ public partial class Settings : Window
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         };
-        mainWindow.SetPBColor("SAPPBColor".ReadBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
+        mainWindow.SetPBColor(WindowExtensions.GetEnv("SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
+
     }
 
     private void ChangeColor(object? sender, RoutedEventArgs e)
     {
-        Task.Run(() => "SAPColor".SetEnv(ColorBox.Text));
-        OnNewColor?.Invoke(this, new EventArgs());
-        WindowExtensions.OnStyleChange(this, null);
+        Task.Run(() => { "SAPColor".SetEnv(ColorBox.Text); });
+        WindowExtensions.OnStyleChange?.Invoke(this, new(null, ColorBox.Text, null));
     }
 
     private void InitializeComponent()
