@@ -1,11 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="../SilverAudioPlayer.targets"/>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Title>SilverCraft's Magic Bytes library</Title>
+        <Authors>SilverDiamond, and the SilverCraft</Authors>
+        <Company>SilverCraft</Company>
+        <RepositoryUrl>https://github.com/thesilvercraft/SilverAudioPlayer</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverMagicBytes</PackageProjectUrl>
+        <IncludeSymbols>True</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
 
 
     </PropertyGroup>

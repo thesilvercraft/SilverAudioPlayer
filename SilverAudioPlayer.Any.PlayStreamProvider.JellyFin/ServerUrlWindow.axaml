@@ -2,18 +2,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="200"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.ServerUrlWindow"
-        Title="ServerUrlWindow">
-    <Grid>
+        Title="ServerUrlWindow" ExtendClientAreaToDecorationsHint="True" Height="200">
+    <Grid Margin="25,5,5,5">
 
-        <Grid ColumnDefinitions="*,500,*" RowDefinitions="*,*,*,*,*,*,*,*,*">
-            <TextBlock Grid.Column="0" Grid.Row="4" Text="Enter server URL:" TextAlignment="Left"
+        <Grid ColumnDefinitions="*,500,*">
+            <TextBlock Grid.Column="0" Text="Enter server URL:" TextAlignment="Left"
                        VerticalAlignment="Center" />
-            <TextBox Grid.Column="1" Name="Url" Grid.Row="4" Height="10" />
-            <Button Grid.Column="2" Click="ButtonClick" Grid.Row="4" Margin="30,0,0,0">Confirm</Button>
-            <TextBlock Grid.Column="1" Grid.Row="5" Text="Server connection failed! Try another one?" Name="Fail"
-                       IsVisible="false" Foreground="Red" />
+            <TextBox Grid.Column="1" Name="Url"  Height="10" />
+            <Button Grid.Column="2" Click="ButtonClick" Margin="30,0,0,0">Confirm</Button>
+            <TextBlock Grid.Column="1" Text="Server connection failed! Try another one?" Name="Fail"
+                       IsVisible="False" Foreground="Red" />
         </Grid>
     </Grid>
 </Window>

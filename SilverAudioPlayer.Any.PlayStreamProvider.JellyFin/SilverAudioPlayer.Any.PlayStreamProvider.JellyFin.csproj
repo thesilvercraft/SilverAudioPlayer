@@ -13,7 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Jellyfin.Sdk" Version="2022.6.11" />
-        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="5.0.0" />
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="8.2.0" />
     </ItemGroup>
     <ItemGroup>
         <!--This helps with theme dll-s trimming.

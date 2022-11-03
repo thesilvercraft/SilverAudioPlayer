@@ -18,6 +18,7 @@ using Serilog;
 using Serilog.Events;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
+using SilverCraft.AvaloniaUtils;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Avalonia;
@@ -81,12 +82,12 @@ public class App : Application
             var mw = new MainWindow();
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
-            if ("DisableSAPTransparency".GetEnv() == "true")
+            if (WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true)
             {
                 if (OperatingSystem.IsWindowsVersionAtLeast(10, 1709))
                     ChangeTheme(GetThemePreference(true));
                 else
-                    ChangeTheme("LIGHTTHEME".GetEnv() != "1");
+                    ChangeTheme(WindowExtensions.envBackend.GetByte("LIGHTTHEME") != 1);
             }
 
             List<Assembly> assemblies = new();

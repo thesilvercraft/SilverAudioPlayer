@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Avalonia;
 
