@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using SilverAudioPlayer.Avalonia;
+using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 

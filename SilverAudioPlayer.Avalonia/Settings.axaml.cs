@@ -18,9 +18,11 @@ using Avalonia.Svg.Skia;
 using Microsoft.Win32;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.ConfigScreen;
+using SilverCraft.AvaloniaUtils;
 using SilverMagicBytes;
 using Swordfish.NET.Collections.Auxiliary;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
+using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
 
 namespace SilverAudioPlayer.Avalonia;
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
@@ -47,10 +49,10 @@ public partial class Settings : Window
         CapBox = this.FindControl<ListBox>("CapBox");
 
         TransparencyDown.SelectedItem =
-            "SAPTransparency".GetEnv<WindowTransparencyLevel>() ?? WindowTransparencyLevel.AcrylicBlur;
+            WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
-        ColorBox.Text = "SAPColor".GetEnv();
-        ColorBoxPB.Text = "SAPPBColor".GetEnv();
+        ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
+        ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
         List<ICodeInformation> info = new();
         info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x));
         info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
@@ -211,9 +213,10 @@ public partial class Settings : Window
     }
     private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        Task.Run(() => "SAPTransparency".SetEnv(Enum.GetName((WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
-                                                             WindowTransparencyLevel.AcrylicBlur)));
-        WindowExtensions.OnStyleChange.Invoke(this, null);
+        Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",(Enum.GetName((WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
+                                                             WindowTransparencyLevel.AcrylicBlur))));
+        WindowExtensions.OnStyleChange.Invoke(this, new(null,null, (WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
+                                                             WindowTransparencyLevel.AcrylicBlur));
     }
 
     public void RegisterInReg()
@@ -291,33 +294,26 @@ public partial class Settings : Window
 
     private void ToggleTransparency(object? sender, RoutedEventArgs e)
     {
-        if ("DisableSAPTransparency".GetEnv() != "true")
-        {
-            Task.Run(() => "DisableSAPTransparency".SetEnv("true"));
-            WindowExtensions.OnStyleChange(this, null);
-        }
-        else
-        {
-            Task.Run(() => "DisableSAPTransparency".SetEnv("false"));
-            WindowExtensions.OnStyleChange(this, null);
-        }
+        bool SapTransparency = !(WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true);
+        Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency",SapTransparency));
+        WindowExtensions.OnStyleChange(this, new(SapTransparency, null, null));
     }
-
+    public static readonly GradientStops defPBStops = new()
+    {
+        new(KnownColor.Coral.ToColor(), 0),
+        new(KnownColor.SilverCraftBlue.ToColor(), 1)
+    };
     private void ChangeColorPB(object? sender, RoutedEventArgs e)
     {
-        Task.Run(() => "SAPPBColor".SetEnv(ColorBoxPB.Text));
-        GradientStops defPBStops = new()
-        {
-            new(KnownColor.Coral.ToColor(), 0),
-            new(KnownColor.SilverCraftBlue.ToColor(), 1)
-        };
-        mainWindow.SetPBColor(WindowExtensions.GetEnv("SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
+        Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor",ColorBoxPB.Text));
+       
+        mainWindow.SetPBColor(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
 
     }
 
     private void ChangeColor(object? sender, RoutedEventArgs e)
     {
-        Task.Run(() => { "SAPColor".SetEnv(ColorBox.Text); });
+        Task.Run(() => { WindowExtensions.envBackend.SetString("SAPColor",ColorBox.Text); });
         WindowExtensions.OnStyleChange?.Invoke(this, new(null, ColorBox.Text, null));
     }
 

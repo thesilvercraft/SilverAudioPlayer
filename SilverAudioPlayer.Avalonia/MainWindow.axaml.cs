@@ -41,7 +41,7 @@ public class MainWindowContext : PlayerContext
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         };
-        _pbForeGround = WindowExtensions.GetEnv( "SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
+        _pbForeGround = WindowExtensions.envBackend.GetString( "SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
         if (_pbForeGround is LinearGradientBrush lgb)
         {
             GradientStops = lgb.GradientStops;
@@ -252,7 +252,20 @@ public partial class MainWindow : Window
 
     public void SetPBColor(IBrush c)
     {
-        ((MainWindowContext)DataContext).PBForeground = c;
+        if (c is LinearGradientBrush lgb)
+        {
+            dc.GradientStops = lgb.GradientStops;
+        }
+        else if (c is SolidColorBrush scb)
+        {
+            dc.GradientStops = new GradientStops();
+            dc.GradientStops.Add(new GradientStop(scb.Color, 0));
+        }
+        else
+        {
+            dc.GradientStops = new GradientStops();
+            dc.GradientStops.Add(new GradientStop(KnownColor.Coral.ToColor(), 0));
+        }
     }
 
     private void TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)
@@ -322,7 +335,10 @@ public partial class MainWindow : Window
     {
         RemoveTrack();
     }
-
+    private void LyricsButton_Click(object? sender, RoutedEventArgs e)
+    {
+        dc.LyricsView();
+    }
     public void Metadata_Click(object? sender, PointerPressedEventArgs e)
     {
         if (CurrentSong != null)

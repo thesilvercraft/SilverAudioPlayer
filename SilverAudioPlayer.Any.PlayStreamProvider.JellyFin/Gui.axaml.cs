@@ -6,8 +6,8 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Jellyfin.Sdk;
-using SilverAudioPlayer.Avalonia;
 using SilverAudioPlayer.Shared;
+using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
