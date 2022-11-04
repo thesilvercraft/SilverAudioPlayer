@@ -1,5 +1,5 @@
 ![SilverAudioPlayer logo](https://raw.githubusercontent.com/thesilvercraft/SilverAudioPlayer/master/SilverAudioPlayer.Avalonia/textandlogo.svg)
-![subtext](https://user-images.githubusercontent.com/46320280/200079069-7dff40aa-cc25-4e72-b214-5a78b7e7ede7.svg)
+![subtext](https://user-images.githubusercontent.com/46320280/200084164-1d5cad56-fefb-4ea2-8634-a1f2f964dbee.svg)
 ![image](https://user-images.githubusercontent.com/46320280/199335292-e41cf205-1484-4f92-8da3-2964c0bda517.png)
 ![shortcutsandwaystoinstall](https://user-images.githubusercontent.com/46320280/200083546-5580f833-734d-4c06-8aba-801a36a0e05c.svg)
 
