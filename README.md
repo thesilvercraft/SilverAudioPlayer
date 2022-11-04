@@ -1,4 +1,4 @@
-# SilverAudioPlayer
+![SilverAudioPlayer logo](https://raw.githubusercontent.com/thesilvercraft/SilverAudioPlayer/master/SilverAudioPlayer.Avalonia/textandlogo.svg)
 A modular audio player, written in c# using dotnet 6, avalonia, naudio, drywetmidi and a lot of other dependencies.  
 ![image](https://user-images.githubusercontent.com/46320280/199335292-e41cf205-1484-4f92-8da3-2964c0bda517.png)
 Modular means different things for different people but in this case modular would be defined as having code devided up into multiple optional components all housing important code but as previously mentioned are fully optional.
