@@ -1,7 +1,9 @@
 ![SilverAudioPlayer logo](https://raw.githubusercontent.com/thesilvercraft/SilverAudioPlayer/master/SilverAudioPlayer.Avalonia/textandlogo.svg)
-![subtext](https://user-images.githubusercontent.com/46320280/200084164-1d5cad56-fefb-4ea2-8634-a1f2f964dbee.svg)
+![subtext](https://user-images.githubusercontent.com/46320280/200084291-c9700996-cd9f-4e65-ad0f-ee4dd190e905.svg)
 ![image](https://user-images.githubusercontent.com/46320280/199335292-e41cf205-1484-4f92-8da3-2964c0bda517.png)
-![shortcutsandwaystoinstall](https://user-images.githubusercontent.com/46320280/200083546-5580f833-734d-4c06-8aba-801a36a0e05c.svg)
+![shortcutsandwaystoinstall](https://user-images.githubusercontent.com/46320280/200084247-e8b6fa63-8916-44db-a55c-c8d62330c22f.svg)
+
+
 
 ## Supported enviroments
 Windows 7 and above (windows 10 recommended, use windows 11 if you want the ability to enable the Mica effect)
