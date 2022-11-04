@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1000mm"
+   height="200mm"
+   viewBox="0 0 1000 200"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="silveraudioplayertext.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview20"
+     pagecolor="#000000"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="1.0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.63118804"
+     inkscape:cx="1982.7689"
+     inkscape:cy="920.4864"
+     inkscape:window-width="3840"
+     inkscape:window-height="2089"
+     inkscape:window-x="1432"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:pageshadow="0" />
+  <defs
+     id="defs15">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient2656">
+      <stop
+         style="stop-color:#6969ff;stop-opacity:1;"
+         offset="0"
+         id="stop2652" />
+      <stop
+         style="stop-color:#696969;stop-opacity:1;"
+         offset="1"
+         id="stop2654" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2656"
+       id="linearGradient2658"
+       x1="13.432088"
+       y1="101.86747"
+       x2="964.21551"
+       y2="101.86747"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(12.449102,-0.59281904)" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:134.882px;font-family:Dubai;-inkscape-font-specification:Dubai;fill:url(#linearGradient2658);stroke-width:11.2401"
+       x="21.834728"
+       y="134.99516"
+       id="text2492"><tspan
+         id="tspan2490"
+         style="fill:url(#linearGradient2658);stroke-width:11.2401"
+         x="21.834728"
+         y="134.99516"
+         sodipodi:role="line">SilverAudioPlayer</tspan></text>
+  </g>
+</svg>
