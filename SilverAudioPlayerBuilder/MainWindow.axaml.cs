@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace SilverAudioPlayerBuilder
@@ -90,7 +91,7 @@ namespace SilverAudioPlayerBuilder
                     selectedArgs.Add(c.Key.Replace("*",""));
                 }
             }
-            var cmd = $"\"dotnet publish {Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia.csproj")} -c Release -p:ExtraDefineConstants=\"{string.Join("%3B", selectedArgs)}\" --interactive\"";
+            var cmd = $"\"dotnet publish {Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia.csproj")} -c Release -p:ExtraDefineConstants=\"{string.Join("%3B", selectedArgs)}\" --interactive\"";
             Debug.WriteLine(cmd);
             if (Environment.OSVersion.Platform==PlatformID.Unix)
             {
