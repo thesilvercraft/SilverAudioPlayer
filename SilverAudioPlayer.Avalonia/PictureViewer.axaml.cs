@@ -54,9 +54,9 @@ public partial class PictureViewer : Window
 #if WINDOWS
             if(Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                System.Windows.Forms.Clipboard.Clear();
+            Clowd.Clipboard.ClipboardAvalonia.Empty();
                 using var memstream = new MemoryStream(pictures[pos].Data);
-                System.Windows.Forms.Clipboard.SetImage(System.Drawing.Image.FromStream(memstream));
+            Clowd.Clipboard.ClipboardAvalonia.SetImage(new Bitmap(memstream));
             }
 #endif
     }

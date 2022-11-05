@@ -1,0 +1,2 @@
+cd SilverAudioPlayerBuilder
+dotnet run

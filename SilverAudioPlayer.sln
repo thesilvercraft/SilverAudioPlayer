@@ -50,6 +50,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FEC4F4D4-8769-45D9-90CD-925495D7BE1B}"
 	ProjectSection(SolutionItems) = preProject
 		SilverAudioPlayer.targets = SilverAudioPlayer.targets
+		GUIBuild.bat = GUIBuild.bat
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis", "SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis.csproj", "{CFD86110-0A31-4BAC-AB7B-A834897A81AE}"
@@ -61,6 +62,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.PlatformHelper.Win", "SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj", "{4F98020D-AF39-4687-BF9C-4A95236F16EF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.MetadataSource.DryWetMidi", "SilverAudioPlayer.Any.MetadataSource.DryWetMidi\SilverAudioPlayer.Any.MetadataSource.DryWetMidi.csproj", "{73E079E2-251D-46AC-B7E4-3499B10397D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayerBuilder", "SilverAudioPlayerBuilder\SilverAudioPlayerBuilder.csproj", "{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -362,6 +365,22 @@ Global
 		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Release|x64.Build.0 = Release|Any CPU
 		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Release|x86.ActiveCfg = Release|Any CPU
 		{73E079E2-251D-46AC-B7E4-3499B10397D1}.Release|x86.Build.0 = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|arm64.Build.0 = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|arm64.ActiveCfg = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|arm64.Build.0 = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|x64.Build.0 = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{CFBFCEB6-D5EB-47B9-9DE2-B8D794320B7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
