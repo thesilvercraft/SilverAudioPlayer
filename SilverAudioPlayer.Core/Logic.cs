@@ -308,7 +308,7 @@ public class Logic<T> where T : PlayerContext
         }
     }
 
-    private void MainWindow_Opened(object? sender, EventArgs e)
+    public void MainWindow_Opened(object? sender, EventArgs e)
     {
         if (MusicStatusInterfaces?.Any() == true)
             Parallel.ForEach(MusicStatusInterfaces, dangthing =>

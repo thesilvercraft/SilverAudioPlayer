@@ -306,13 +306,7 @@ public partial class MainWindow : Window
 
     private void MainWindow_Opened(object? sender, EventArgs e)
     {
-        if (Logic.MusicStatusInterfaces?.Any() == true)
-            Parallel.ForEach(Logic.MusicStatusInterfaces, dangthing =>
-            {
-                var a = dangthing;
-                GC.KeepAlive(a);
-                Logic.AddMSI(a);
-            });
+        Logic.MainWindow_Opened(sender,e);
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
