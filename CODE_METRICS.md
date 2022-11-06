@@ -6182,6 +6182,111 @@ The `SilverAudioPlayer.Windows.PlatformHelper.Win` namespace contains 2 named ty
 
 <a href="#silveraudioplayer-windows-platformhelper-win">:top: back to SilverAudioPlayer.Windows.PlatformHelper.Win</a>
 
+<div id='silveraudioplayerbuilder'></div>
+
+## SilverAudioPlayerBuilder :heavy_check_mark:
+
+The *SilverAudioPlayerBuilder.csproj* project file contains:
+
+- 1 namespaces.
+- 3 named types.
+- 137 total lines of source code.
+- Approximately 46 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
+
+<details>
+<summary>
+  <strong id="silveraudioplayerbuilder">
+    SilverAudioPlayerBuilder :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+The `SilverAudioPlayerBuilder` namespace contains 3 named types.
+
+- 3 named types.
+- 137 total lines of source code.
+- Approximately 46 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
+
+<details>
+<summary>
+  <strong id="app">
+    App :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `App` contains 2 members.
+- 17 total lines of source code.
+- Approximately 4 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/App.axaml.cs#L9' title='void App.Initialize()'>9</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/App.axaml.cs#L14' title='void App.OnFrameworkInitializationCompleted()'>14</a> | 84 | 2 :heavy_check_mark: | 0 | 4 | 9 / 3 |
+
+<a href="#App-class-diagram">:link: to `App` class diagram</a>
+
+<a href="#silveraudioplayerbuilder">:top: back to SilverAudioPlayerBuilder</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="mainwindow">
+    MainWindow :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `MainWindow` contains 4 members.
+- 96 total lines of source code.
+- Approximately 40 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L28' title='MainWindow.MainWindow()'>28</a> | 48 | 7 :heavy_check_mark: | 0 | 7 | 55 / 29 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L27' title='Dictionary<string, CheckBox> MainWindow.CheckBoxes'>27</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L84' title='void MainWindow.DOIT_Click(object? sender, RoutedEventArgs e)'>84</a> | 63 | 4 :heavy_check_mark: | 0 | 10 | 24 / 9 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L15' title='Dictionary<string, string> MainWindow.Modules'>15</a> | 80 | 0 :heavy_check_mark: | 0 | 2 | 11 / 1 |
+
+<a href="#MainWindow-class-diagram">:link: to `MainWindow` class diagram</a>
+
+<a href="#silveraudioplayerbuilder">:top: back to SilverAudioPlayerBuilder</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="program">
+    Program :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `Program` contains 2 members.
+- 15 total lines of source code.
+- Approximately 2 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/Program.cs#L18' title='AppBuilder Program.BuildAvaloniaApp()'>18</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 5 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/Program.cs#L14' title='void Program.Main(string[] args)'>14</a> | 97 | 1 :heavy_check_mark: | 0 | 3 | 6 / 1 |
+
+<a href="#Program-class-diagram">:link: to `Program` class diagram</a>
+
+<a href="#silveraudioplayerbuilder">:top: back to SilverAudioPlayerBuilder</a>
+
+</details>
+
+</details>
+
+<a href="#silveraudioplayerbuilder">:top: back to SilverAudioPlayerBuilder</a>
+
 <div id='silvermagicbytes'></div>
 
 ## SilverMagicBytes :heavy_check_mark:
@@ -10220,6 +10325,47 @@ class Win32WakeLock{
     +WakeLock() void
     +UnWakeLock() void
     +SetThreadExecutionState(ExecutionState esFlags)$ ExecutionState
+}
+
+```
+
+<div id="App-class-diagram"></div>
+
+##### `App` class diagram
+
+```mermaid
+classDiagram
+class App{
+    +Initialize() void
+    +OnFrameworkInitializationCompleted() void
+}
+
+```
+
+<div id="MainWindow-class-diagram"></div>
+
+##### `MainWindow` class diagram
+
+```mermaid
+classDiagram
+class MainWindow{
+    -Dictionary<string, string> Modules
+    -Dictionary<string, CheckBox> CheckBoxes
+    +.ctor() MainWindow
+    +DOIT_Click(object? sender, RoutedEventArgs e) void
+}
+
+```
+
+<div id="Program-class-diagram"></div>
+
+##### `Program` class diagram
+
+```mermaid
+classDiagram
+class Program{
+    +Main(string[] args)$ void
+    +BuildAvaloniaApp()$ AppBuilder
 }
 
 ```
