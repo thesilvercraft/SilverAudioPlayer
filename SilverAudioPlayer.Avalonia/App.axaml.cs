@@ -67,9 +67,14 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
+            if (!Directory.Exists(confdir))
+            {
+                Directory.CreateDirectory(confdir);
+            }
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "Configs", "appsettings.json"), true)
+                .AddJsonFile(Path.Combine(confdir, "appsettings.json"), true)
                 .Build();
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
