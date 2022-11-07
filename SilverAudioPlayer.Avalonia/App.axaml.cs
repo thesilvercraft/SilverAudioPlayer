@@ -69,7 +69,7 @@ public class App : Application
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), true)
+                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "Configs", "appsettings.json"), true)
                 .Build();
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)

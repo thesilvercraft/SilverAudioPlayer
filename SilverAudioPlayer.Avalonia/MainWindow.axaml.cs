@@ -97,7 +97,7 @@ public class MainWindowContext : PlayerContext
 public partial class MainWindow : Window
 {
     public Config config;
-    public static string ConfigPath = Path.Combine(AppContext.BaseDirectory, "SilverAudioPlayer.Config.xml");
+    public static string ConfigPath = Path.Combine(AppContext.BaseDirectory,"Configs", "SilverAudioPlayer.Config.xml");
     private readonly MainWindowContext dc;
 
     private bool en;

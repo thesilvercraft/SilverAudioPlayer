@@ -123,12 +123,12 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
             {
                 GetContent = () => "Allow imgur uploads", Checked = c =>
                 {
-                    if (c && !File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
-                        File.Create(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
-                    else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur")))
-                        File.Delete(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"));
+                    if (c && !File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs", "uploadtoimgur")))
+                        File.Create(Path.Combine(AppContext.BaseDirectory,"Configs",  "uploadtoimgur"));
+                    else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "Configs", "uploadtoimgur")))
+                        File.Delete(Path.Combine(AppContext.BaseDirectory, "Configs", "uploadtoimgur"));
                 },
-                GetChecked = () => File.Exists(Path.Combine(AppContext.BaseDirectory, "uploadtoimgur"))
+                GetChecked = () => File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs",  "uploadtoimgur"))
             }
         };
     }
@@ -461,15 +461,15 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
 
     private void GetCache()
     {
-        if (File.Exists(Path.Combine(AppContext.BaseDirectory, "musicart.json")))
+        if (File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs", "musicart.json")))
             cached = JsonSerializer.Deserialize<MscArtFile[]>(
-                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "musicart.json")));
+                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json")));
         if (cached == null) cached = Array.Empty<MscArtFile>();
     }
 
     private void SetCache()
     {
-        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "musicart.json"), JsonSerializer.Serialize(cached));
+        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json"), JsonSerializer.Serialize(cached));
     }
 }
 

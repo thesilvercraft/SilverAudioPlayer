@@ -180,7 +180,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         string strTemp;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
         logger?.Information("Registering for CAD, found window: {ThWnd}", ThWnd);
-        strTemp = "1\t\tSilverAudioPlayerIPC\t" + AppContext.BaseDirectory + "SilverAudioPlayer.Winforms.exe\t";
+        strTemp = "1\t\tSilverAudioPlayerIPC\t" + AppContext.BaseDirectory + "SilverAudioPlayer.Avalonia.exe\t";
         logger?.Debug("Registering for CAD, will send: {strTemp}", strTemp);
         CopyDataStruct copyData = new()
         {
