@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Avalonia.Controls;
 using SilverAudioPlayer.Shared;
 
@@ -30,7 +31,7 @@ internal class SAPAvaloniaListner : IPlayStreamProviderListner
     }
 }
 
-public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment
+public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWithKnownLocations
 {
     public string Name => "SilverAudioPlayer.Avalonia";
 
@@ -77,4 +78,6 @@ SilverAudioPlayer.Avalonia
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ";
+
+    public string[] KnownConfigFileLocations => new[] { MainWindow.ConfigPath, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SilverCraftAvaloniav1Shared", "dotfile.json") };
 }

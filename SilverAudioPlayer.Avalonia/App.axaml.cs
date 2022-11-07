@@ -99,10 +99,15 @@ public class App : Application
             if (mw.Logic.PlayProviders == null)
                 throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
             mw.Logic.PlayableMimes = new List<MimeType>();
+            bool canProvideMemory = mw.Logic.MemoryProvider != null;
             foreach (var provider in mw.Logic.PlayProviders)
             {
                 var name = provider.GetType().Name;
                 Debug.WriteLine($"Play provider {name} loaded.");
+                if (canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
+                {
+                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
+                }
                 if (provider.SupportedMimes != null) mw.Logic.PlayableMimes.AddRange(provider.SupportedMimes);
             }
 
@@ -112,24 +117,27 @@ public class App : Application
                     if (playprovider != null)
                         await playprovider.OnStartup();
             });
-            if (mw.Logic.MetadataProviders == null)
-                throw new ProvidersReturnedNullException("The 'mw.Logic.MetadataProviders' returned null.");
             foreach (var provider in mw.Logic.MetadataProviders)
             {
-                var name = provider.GetType().Name;
-                Debug.WriteLine($"Metadata provider {name} loaded.");
+                if(canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
+                {
+                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
+                }
             }
-
-            if (mw.Logic.MusicStatusInterfaces == null)
-                throw new ProvidersReturnedNullException("The 'mw.Logic.MusicStatusInterfaces' returned null.");
-            if (mw.Logic.WakeLockInterfaces == null)
-                throw new ProvidersReturnedNullException("The 'mw.Logic.WakeLockInterfaces' returned null.");
             foreach (var provider in mw.Logic.MusicStatusInterfaces)
             {
-                var name = provider.GetType().Name;
-                Debug.WriteLine($"Music status interface {name} loaded.");
+                if (canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
+                {
+                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
+                }
             }
-
+            foreach (var provider in mw.Logic.WakeLockInterfaces)
+            {
+                if (canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
+                {
+                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
+                }
+            }
             mw.Logic.log = logger;
             mw.Logic.ProcessFiles(desktop.Args);
         }

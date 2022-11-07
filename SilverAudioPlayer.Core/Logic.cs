@@ -85,6 +85,8 @@ public class Logic<T> where T : PlayerContext
 
     [ImportMany] public IEnumerable<IWakeLockProvider> WakeLockInterfaces { get; set; }
     [ImportMany] public IEnumerable<IPlayStreamProvider> PlayStreamProviders { get; set; }
+    [Import] public IWillProvideMemory MemoryProvider { get; set; }
+
 
 
     public Logger log { get; set; }

@@ -26,7 +26,7 @@ using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
 
 namespace SilverAudioPlayer.Avalonia;
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
-    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider);
+    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider);
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -82,7 +82,8 @@ public partial class Settings : Window
                 item.Licenses,
                 item,
                 item is IAmConfigurable,
-                item is IPlayStreamProvider
+                item is IPlayStreamProvider,
+                item is IAmOnceAgainAskingYouForYourMemory
             ));
             licenses.AppendLine(item.Licenses);
         }
@@ -137,6 +138,35 @@ public partial class Settings : Window
                 ConfigureWindow cw = new();
                 cw.HandleConfiguration(configurable);
                 cw.Show();
+            }
+        }
+    }
+    public void OpenConfigFileClick(object button, RoutedEventArgs args)
+    {
+        var y = (Button?)button;
+        if (y != null && y.DataContext is InfoPRecord record && record.IsAskingMemoryProvider)
+        {
+            if (record.Item is IAmOnceAgainAskingYouForYourMemory configurable)
+            {
+                if(mainWindow.Logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
+                {
+                    LaunchActionsWindow launchActionsWindow = new();
+                    List<SAction> actions = new();
+                    foreach(var ob in configurable.ObjectsToRememberForMe)
+                    {
+                        var m = l.GetConfig(ob.Id);
+                        actions.Add(new SAction
+                        {
+                            ActionName = "Open "+m,
+                            ActionToInvoke = () =>
+                            {
+                                OpenBrowser(m);
+                            }
+                        });
+                    }
+                         launchActionsWindow.AddActions(actions);
+                    launchActionsWindow.Show();
+                }
             }
         }
     }

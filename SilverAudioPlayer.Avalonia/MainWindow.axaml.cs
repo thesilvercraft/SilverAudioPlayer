@@ -18,7 +18,6 @@ using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
-using SilverConfig.CobaltExtensions;
 using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Avalonia;
@@ -41,20 +40,24 @@ public class MainWindowContext : PlayerContext
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         };
-        _pbForeGround = WindowExtensions.envBackend.GetString( "SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
+        _pbForeGround = WindowExtensions.envBackend.GetString("SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
         if (_pbForeGround is LinearGradientBrush lgb)
         {
             GradientStops = lgb.GradientStops;
         }
         else if(_pbForeGround is SolidColorBrush scb)
         {
-            GradientStops = new GradientStops();
-            GradientStops.Add(new GradientStop(scb.Color, 0));
+            GradientStops = new GradientStops
+            {
+                new GradientStop(scb.Color, 0)
+            };
         }
         else
         {
-            GradientStops = new GradientStops();
-            GradientStops.Add(new GradientStop(KnownColor.Coral.ToColor(), 0));
+            GradientStops = new GradientStops
+            {
+                new GradientStop(KnownColor.Coral.ToColor(), 0)
+            };
         }
     }
 
@@ -94,7 +97,7 @@ public class MainWindowContext : PlayerContext
 public partial class MainWindow : Window
 {
     public Config config;
-    public string ConfigPath = Path.Combine(AppContext.BaseDirectory, "SilverAudioPlayer.Config.xml");
+    public static string ConfigPath = Path.Combine(AppContext.BaseDirectory, "SilverAudioPlayer.Config.xml");
     private readonly MainWindowContext dc;
 
     private bool en;

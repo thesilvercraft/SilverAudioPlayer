@@ -1,16 +1,12 @@
-﻿using System.ComponentModel;
+﻿using SilverConfig;
+using System.ComponentModel;
 using System.Diagnostics;
 
-namespace SilverConfig.CobaltExtensions;
+namespace SilverAudioPlayer.Shared;
 
-public interface ILetNotify
-{
-    bool AllowedToRead { get; }
-    void Invoke(object e, PropertyChangedEventArgs a);
-}
 
 public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable
-    where T : INotifyPropertyChanged, ILetNotify
+    where T : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
     private readonly List<FileSystemWatcher> fileSystemWatchers = new();
 
@@ -50,7 +46,7 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                             a.SetValue(c, a.GetValue(c2));
                         else
                             Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
-                        c?.Invoke(this, new PropertyChangedEventArgs(a.Name));
+                        c?.PropertyChanged(this, new PropertyChangedEventArgs(a.Name));
                     }
             }
         };

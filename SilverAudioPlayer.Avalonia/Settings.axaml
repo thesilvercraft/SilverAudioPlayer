@@ -30,6 +30,8 @@
                         <Image Source="{Binding Icon}" Grid.Column="0" />
 						<StackPanel Orientation="Horizontal" Grid.Column="1"  HorizontalAlignment="Right">
 							<Button  IsVisible="{Binding Configurable}" Click="ConfigureClick">🔧Configure</Button>
+							<Button  IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
+
 							<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
 
 						</StackPanel>

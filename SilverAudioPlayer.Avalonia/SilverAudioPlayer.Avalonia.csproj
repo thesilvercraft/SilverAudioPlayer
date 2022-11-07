@@ -88,6 +88,7 @@
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
     </ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound\SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound.csproj" Condition="$(DefineConstants.Contains('NA'))" />

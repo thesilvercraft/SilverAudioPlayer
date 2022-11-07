@@ -5,24 +5,42 @@ using SilverAudioPlayer.Shared.ConfigScreen;
 using SilverMagicBytes;
 using Version = System.Version;
 
-namespace SilverAudioPlayer.MetadataSource.Z440AtlCore;
+namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 [Export(typeof(IMetadataProvider))]
 public class AtlCoreFileMetadataProvider : IMetadataProvider,
-    IAmConfigurable
+    IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
 {
-    private bool AllowMidi;
     private readonly List<IConfigurableElement> ConfigurableElements;
+    public ObjectToRemember ConfigObject = new(Guid.Parse("97db82ee-ac2c-4772-b3f6-ca45957316a8"), new ZAtlCoreConfig());
+    public ObjectToRemember[] ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
 
     public AtlCoreFileMetadataProvider()
     {
         ConfigurableElements = new List<IConfigurableElement>
         {
             new SimpleCheckBox
-                { GetContent = () => "Allow MIDI reading", Checked = c => AllowMidi = c, GetChecked = () => AllowMidi }
-        };
-    }
+                { GetContent = () => "Allow MIDI reading", Checked = c => {
 
+                    if(ConfigObject.Value is ZAtlCoreConfig x)
+                    {
+                        x.ReadMidiMetadata=c;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("ReadMidiMetadata"));
+                    }
+
+                },
+                GetChecked = () => GetAllowedMidi()
+                }
+            };
+    }
+    bool GetAllowedMidi()
+    {
+        if (ConfigObject.Value is ZAtlCoreConfig x)
+        {
+            return x.ReadMidiMetadata;
+        }
+        return false;
+    }
     public List<IConfigurableElement> GetElements()
     {
         return ConfigurableElements;
@@ -84,10 +102,11 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         new Tuple<Uri, URLType>(new Uri("https://github.com/Zeugma440/atldotnet"), URLType.LibraryCode)
     };
 
+
     public bool CanGetMetadata(WrappedStream stream)
     {
         using var s = stream.GetStream();
-        if (!AllowMidi && stream.MimeType == KnownMimes.MidMime) return false;
+        if (!GetAllowedMidi() && stream.MimeType == KnownMimes.MidMime) return false;
         return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;
     }
 

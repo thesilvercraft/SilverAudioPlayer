@@ -2,11 +2,10 @@
 using System.Xml.Serialization;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
-using SilverConfig.CobaltExtensions;
 
 namespace SilverAudioPlayer.Avalonia;
 
-public class Config : INotifyPropertyChanged, ILetNotify
+public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
     [XmlIgnore] public bool _AllowedRead = true;
 
@@ -18,10 +17,12 @@ public class Config : INotifyPropertyChanged, ILetNotify
 
     [XmlIgnore] public bool AllowedToRead => _AllowedRead;
 
-    public void Invoke(object e, PropertyChangedEventArgs a)
+    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {
         PropertyChanged?.Invoke(e, a);
     }
+
+   
 
     public event PropertyChangedEventHandler? PropertyChanged;
 }

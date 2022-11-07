@@ -1,7 +1,7 @@
 ﻿using ATL;
 using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.MetadataSource.Z440AtlCore;
+namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 public class ATLCOREPicture : Picture
 {
