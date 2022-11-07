@@ -115,7 +115,7 @@
 
 				<ListBox.ItemTemplate>
 					<DataTemplate >
-						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" ShowGridLines="True" PointerPressed="TreeView_PointerPressed1" >
+						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" PointerPressed="TreeView_PointerPressed1" >
 							<TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
 								<TextBlock.Text>
 									<MultiBinding StringFormat="CD{0}/{1}">
