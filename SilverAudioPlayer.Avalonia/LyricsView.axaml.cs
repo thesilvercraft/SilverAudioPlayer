@@ -47,8 +47,10 @@ public partial class LyricsView : Window
                 g.Children.Add(p);
                 foreach (var x in mainWindow.CurrentSong.Metadata.SyncedLyrics)
                 {
-                    TextBlock b = new();
-                    b.Text = x.Content;
+                    TextBlock b = new()
+                    {
+                        Text = x.Content
+                    };
                     if (x.Content.EndsWith("\n"))
                     {
                         StackPanel p2 = new()

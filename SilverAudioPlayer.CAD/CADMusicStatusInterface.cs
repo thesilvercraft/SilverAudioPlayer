@@ -1,5 +1,6 @@
 ﻿using System.Composition;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Serilog;
@@ -180,7 +181,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         string strTemp;
         ThWnd = FindWindow(null, "CD Art Display 1.x Class");
         logger?.Information("Registering for CAD, found window: {ThWnd}", ThWnd);
-        strTemp = "1\t\tSilverAudioPlayerIPC\t" + AppContext.BaseDirectory + "SilverAudioPlayer.Avalonia.exe\t";
+        strTemp = "1\t\tSilverAudioPlayerIPC\t" + AppContext.BaseDirectory + Assembly.GetEntryAssembly().GetName().Name + ".exe\t";
         logger?.Debug("Registering for CAD, will send: {strTemp}", strTemp);
         CopyDataStruct copyData = new()
         {
@@ -563,13 +564,10 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         // 
         ClientSize = new Size(120, 26);
         Name = "CADMusicStatusInterface";
-        Load += CADMusicStatusInterface_Load;
         ResumeLayout(false);
     }
 
-    private void CADMusicStatusInterface_Load(object sender, EventArgs e)
-    {
-    }
+   
 
     public void cadShutdown()
     {

@@ -82,8 +82,14 @@ public class App : Application
                     rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
                 .WriteTo.Debug()
                 .CreateLogger();
-            Logger.GetLoggerFunc += e => logger.ForContext(e);
             Log.Logger = logger;
+
+            AppDomain.CurrentDomain.UnhandledException += (x, y) =>
+            {
+                Log.Error((Exception)y.ExceptionObject, "Unhandled exception caught in AppDomain.CurrentDomain.UnhandledException, Terminating: {IsTerminating}", y.IsTerminating);
+            };
+            Logger.GetLoggerFunc += e => logger.ForContext(e);
+
             var mw = new MainWindow();
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
@@ -146,7 +152,6 @@ public class App : Application
             mw.Logic.log = logger;
             mw.Logic.ProcessFiles(desktop.Args);
         }
-
         base.OnFrameworkInitializationCompleted();
     }
 
