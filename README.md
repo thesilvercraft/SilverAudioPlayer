@@ -1,8 +1,19 @@
 ![SilverAudioPlayer logo](https://raw.githubusercontent.com/thesilvercraft/SilverAudioPlayer/master/SilverAudioPlayer.Avalonia/textandlogo.svg)
 ![subtext](https://user-images.githubusercontent.com/46320280/200084291-c9700996-cd9f-4e65-ad0f-ee4dd190e905.svg)
 ![image](https://user-images.githubusercontent.com/46320280/199335292-e41cf205-1484-4f92-8da3-2964c0bda517.png)
-![shortcutsandwaystoinstall](https://user-images.githubusercontent.com/46320280/200084247-e8b6fa63-8916-44db-a55c-c8d62330c22f.svg)
+<p>
+  <a href="https://github.com/thesilvercraft/SilverAudioPlayer/releases">
+    <image align="left" src="https://user-images.githubusercontent.com/46320280/201438261-4431164b-f762-4f72-be7c-91e0e5c429c9.svg" width="32%"/>
+  </a>
+  <a href="https://thesilvercraft.github.io/InstallSAPSilverCraftBucket">
+    <image align="center" src="https://user-images.githubusercontent.com/46320280/201438267-5e054497-718e-4dbe-af1d-59851c4dcbf7.svg" width="32%"/>
+  </a>
+  <a href="https://thesilvercraft.github.io/CompileSAPYourself">
+    <image align="right" src="https://user-images.githubusercontent.com/46320280/201438275-411bc16b-e225-472f-9cbc-aa4d051dd592.svg" width="32%"/>
+  </a>
+</p>
 
+![shortcutsandwaystoinstall](https://user-images.githubusercontent.com/46320280/200084247-e8b6fa63-8916-44db-a55c-c8d62330c22f.svg)
 
 
 ## Supported enviroments
