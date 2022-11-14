@@ -71,7 +71,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.Memor
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MemoryProviders", "MemoryProviders", "{340B55A0-8AA9-4CD0-8345-2F307DED4DA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Linux.MPRIS", "SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj", "{D05583D8-1CA0-4A21-9ACB-34B39D79BD11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Linux.MPRIS", "SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj", "{D05583D8-1CA0-4A21-9ACB-34B39D79BD11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayProvider.ChromeCast", "SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj", "{3CB2D488-3820-493F-B5EE-4FE261CFA170}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -437,6 +439,22 @@ Global
 		{D05583D8-1CA0-4A21-9ACB-34B39D79BD11}.Release|x64.Build.0 = Release|Any CPU
 		{D05583D8-1CA0-4A21-9ACB-34B39D79BD11}.Release|x86.ActiveCfg = Release|Any CPU
 		{D05583D8-1CA0-4A21-9ACB-34B39D79BD11}.Release|x86.Build.0 = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|arm64.Build.0 = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|x64.Build.0 = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Debug|x86.Build.0 = Debug|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|arm64.ActiveCfg = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|arm64.Build.0 = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x64.ActiveCfg = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x64.Build.0 = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x86.ActiveCfg = Release|Any CPU
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -463,6 +481,7 @@ Global
 		{1B540FF4-2881-4D59-9473-70B31E3D72AF} = {01C2EEE3-40C0-47CB-8CCC-65FB9CBE277F}
 		{2AA65A54-969E-4277-AD8B-7A89104DE7E0} = {340B55A0-8AA9-4CD0-8345-2F307DED4DA1}
 		{D05583D8-1CA0-4A21-9ACB-34B39D79BD11} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
+		{3CB2D488-3820-493F-B5EE-4FE261CFA170} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

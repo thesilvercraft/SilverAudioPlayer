@@ -1,11 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
@@ -19,6 +11,13 @@ using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -45,7 +44,7 @@ public class MainWindowContext : PlayerContext
         {
             GradientStops = lgb.GradientStops;
         }
-        else if(_pbForeGround is SolidColorBrush scb)
+        else if (_pbForeGround is SolidColorBrush scb)
         {
             GradientStops = new GradientStops
             {
@@ -97,7 +96,7 @@ public class MainWindowContext : PlayerContext
 public partial class MainWindow : Window
 {
     public Config config;
-    public static string ConfigPath = Path.Combine(AppContext.BaseDirectory,"Configs", "SilverAudioPlayer.Config.xml");
+    public static string ConfigPath = Path.Combine(AppContext.BaseDirectory, "Configs", "SilverAudioPlayer.Config.xml");
     private readonly MainWindowContext dc;
 
     private bool en;
@@ -114,7 +113,7 @@ public partial class MainWindow : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
-    
+
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
         // Closing += (s, e) => Player?.Stop();
@@ -205,8 +204,9 @@ public partial class MainWindow : Window
                     }
                 }
             },
-            ShowMessageBox = (s, s1) => {
-                var window = new MessageBox(s,s1);
+            ShowMessageBox = (s, s1) =>
+            {
+                var window = new MessageBox(s, s1);
                 window.ShowDialog(this);
             }
         };
@@ -219,8 +219,7 @@ public partial class MainWindow : Window
         ShowAppInfo = this.FindControl<MenuItem>("ShowAppInfo");
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-         this.DoAfterInitTasksF();
-        
+        this.DoAfterInitTasksF();
     }
 
     public Logic<MainWindowContext> Logic { get; set; }
@@ -244,9 +243,11 @@ public partial class MainWindow : Window
             case RepeatState.None:
                 dc.LoopType = RepeatState.One;
                 break;
+
             case RepeatState.One:
                 dc.LoopType = RepeatState.Queue;
                 break;
+
             case RepeatState.Queue:
                 dc.LoopType = RepeatState.None;
                 break;
@@ -309,7 +310,7 @@ public partial class MainWindow : Window
 
     private void MainWindow_Opened(object? sender, EventArgs e)
     {
-        Logic.MainWindow_Opened(sender,e);
+        Logic.MainWindow_Opened(sender, e);
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
@@ -332,10 +333,12 @@ public partial class MainWindow : Window
     {
         RemoveTrack();
     }
+
     private void LyricsButton_Click(object? sender, RoutedEventArgs e)
     {
         dc.LyricsView();
     }
+
     public void Metadata_Click(object? sender, PointerPressedEventArgs e)
     {
         if (CurrentSong != null)
@@ -407,7 +410,7 @@ public partial class MainWindow : Window
 
                 Thread.Sleep(70);
             }
-            else if (Player?.GetPlaybackState() == PlaybackState.Paused)
+            else if (Player?.GetPlaybackState() == PlaybackState.Paused || Player?.GetPlaybackState() == PlaybackState.Buffering)
             {
                 //uses 12% of cpu when paused if removed lmao
                 Thread.Sleep(270);

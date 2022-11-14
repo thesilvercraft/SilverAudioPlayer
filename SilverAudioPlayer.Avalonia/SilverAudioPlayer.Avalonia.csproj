@@ -65,6 +65,10 @@
 		<!--Discord (alpha)-->
 
 		<!--<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>-->
+		
+		<!--ChromeCast (POC)-->
+
+		<!--<DefineConstants>$(DefineConstants)CAST</DefineConstants>-->
 
 		<!--Windows only-->
 
@@ -93,6 +97,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj"  Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 

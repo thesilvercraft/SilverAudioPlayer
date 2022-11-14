@@ -1,4 +1,4 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using DynamicData;
 using SilverCraft.AvaloniaUtils;
 using System;
@@ -23,6 +23,8 @@ namespace SilverAudioPlayerBuilder
             {"DISCRD","Discord" },
             {"SMTC","System Media Transport Controls - windows 10+" },
             {"CAD","CD Art Display - windows 7+" },
+            {"MPRIS","Linux DBus music status - LINUX - pre POC" },
+            {"CAST","for support Google Chrome Cast®™️ - POC" },
         };
         Dictionary<string,CheckBox> CheckBoxes = new Dictionary<string,CheckBox>();
         public MainWindow()
