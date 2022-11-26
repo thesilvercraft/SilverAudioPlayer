@@ -1,7 +1,7 @@
 ![SilverAudioPlayer logo](https://raw.githubusercontent.com/thesilvercraft/SilverAudioPlayer/master/SilverAudioPlayer.Avalonia/textandlogo.svg)
 ![subtext](https://user-images.githubusercontent.com/46320280/204018020-6b0204a0-5b2d-4306-b6d1-488a7e621faf.svg)
-
-![image](https://user-images.githubusercontent.com/46320280/199335292-e41cf205-1484-4f92-8da3-2964c0bda517.png)
+![mockup of silveraudioplayer, interactive version on silverwebsiterepo soon™️](https://user-images.githubusercontent.com/46320280/204107142-3bd7a10a-0f94-4c1f-80b9-593ece8041a2.svg)
+![image showing silver audio playing wanna be starting something by micheal jackson with the background gradiant present on brave's start page #4d54d1,#a51c7b,#ee4a37 and a SilverCraftBlue progress bar thank me later](https://user-images.githubusercontent.com/46320280/199335292-e41cf205-1484-4f92-8da3-2964c0bda517.png)
 <p>
   <a href="https://github.com/thesilvercraft/SilverAudioPlayer/releases">
     <image src="https://user-images.githubusercontent.com/46320280/204018118-16c4caf3-dcbf-40b0-8f2a-e2c8229d2f59.svg" width="24%"/>
