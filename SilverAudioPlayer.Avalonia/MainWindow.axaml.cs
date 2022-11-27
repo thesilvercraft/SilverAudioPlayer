@@ -11,7 +11,9 @@ using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
+using SilverMagicBytes;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -206,11 +208,58 @@ public partial class MainWindow : Window
             },
             ShowMessageBox = (s, s1) =>
             {
-                var window = new MessageBox(s, s1);
-                window.ShowDialog(this);
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    var window = new MessageBox(s, s1)
+                    {
+                        Title = "Error",
+                        Icon = Icon
+                    };
+                    window.DoAfterInitTasksF();
+                    window.ShowDialog(this);
+                });
             }
         };
-        Logic = new Logic<MainWindowContext>(dc);
+        Logic = new Logic<MainWindowContext>(dc)
+        { 
+            ChoosePlayProvider= async (x,m) => {
+                if(x.Count()<2)
+                {
+                    return x.FirstOrDefault();
+                }
+                if(preferredplayer!=null )
+                {
+                    var y=x.FirstOrDefault(x=>x.GetType()==preferredplayer);
+                    if(y!=null)
+                    {
+                        return y;
+                    }
+                }
+                if(preferredplayerfortype.TryGetValue(m.MimeType.Common, out var v))
+                {
+                    var y = x.FirstOrDefault(x => x.GetType() == v);
+                    if (y != null)
+                    {
+                        return y;
+                    }
+                }
+                return await Dispatcher.UIThread.InvokeAsync(async () => {
+                     ChooseProvider w = new();
+                     w.SetProviders(x);
+                     await w.ShowDialog(this);
+                    if(w.SetAsDefaultIfPresent==true)
+                    {
+                        preferredplayer = w.Selected.GetType();
+                    }
+                    if(w.SetAsDefaultForFileType ==true)
+                    {
+                        preferredplayerfortype.AddOrUpdate(m.MimeType.Common, w.Selected.GetType(), (_, _) => w.Selected.GetType());
+                    }
+                     return w.Selected;
+                 });
+                
+             
+            }  
+        };
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
         ob.Subscribe(x => dc.Title = x.Value);
         DataContext = dc;
@@ -221,6 +270,8 @@ public partial class MainWindow : Window
         RepeatButton.Click += RepeatButton_Click;
         this.DoAfterInitTasksF();
     }
+    Type? preferredplayer;
+    ConcurrentDictionary<string, Type?> preferredplayerfortype=new();
 
     public Logic<MainWindowContext> Logic { get; set; }
 

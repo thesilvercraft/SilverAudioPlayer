@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SilverAudioPlayer.Avalonia.ChooseProvider"
+        Title="Choose player"
+		ExtendClientAreaToDecorationsHint="True"
+		Icon="/icon.ico">
+	<Grid RowDefinitions="25,*,25,25" Margin="5">
+		<TextBlock Grid.Row="0">Choose player:</TextBlock>
+		<ListBox Grid.Row="1" Name="CapBox" Items="{Binding playProviders}" Background="Transparent">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
+						<StackPanel Grid.Column="1">
+							<TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
+							<TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
+							<TextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
+						</StackPanel>
+						<Image Source="{Binding Icon}" Grid.Column="0" />
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<CheckBox Grid.Row="2" IsThreeState="False" IsChecked="{Binding SetAsDefaultIfPresent}">Set as default for this instance</CheckBox>
+		<CheckBox Grid.Row="3" IsThreeState="False" IsChecked="{Binding SetAsDefaultForFileType}">Set as default for this file type</CheckBox>
+	</Grid>
+</Window>

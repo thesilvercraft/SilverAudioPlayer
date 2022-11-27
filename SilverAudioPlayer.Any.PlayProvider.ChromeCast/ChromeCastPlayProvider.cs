@@ -66,7 +66,9 @@ namespace SilverAudioPlayer.Any.PlayProvider.ChromeCast
 
         public IPlay? GetPlayer(WrappedStream stream)
         {
-            var chromecast= Task.Run(async () => { return await (new DeviceLocator().FindReceiversAsync()); }).GetAwaiter().GetResult().First();
+            //TODO IMPLEMENT PROPER CHECK FOR CHROMECASTS
+            //If you get an error saying `System.InvalidOperationException: 'Sequence contains no elements` on the line below no chromecasts were detected
+            var chromecast = Task.Run(async () => { return await (new DeviceLocator().FindReceiversAsync()); }).GetAwaiter().GetResult().First();
             var sender = new Sender();
             Task.Run(async () =>
             {
@@ -192,7 +194,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.ChromeCast
                     "PAUSED" => PlaybackState.Paused,
                     "PLAYING" => PlaybackState.Playing,
                     "BUFFERING" => PlaybackState.Buffering,
-                    _ => PlaybackState.Playing,
+                    _ => PlaybackState.Stopped,
                 } ;
 
         }

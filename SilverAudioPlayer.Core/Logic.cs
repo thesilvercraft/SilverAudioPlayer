@@ -75,6 +75,7 @@ public class Logic<T> where T : PlayerContext
         playerContext.SetLoopType ??= lt => playerContext.RaiseAndSetIfChanged(ref playerContext._LoopType, lt);
         ConcurrentObservableCollection<Song> _queue = new();
         playercontext.GetQueue ??= () => _queue;
+        ChoosePlayProvider ??= (x,_) => Task.FromResult(x.FirstOrDefault());
     }
 
     [ImportMany] public IEnumerable<IPlayProvider> PlayProviders { get; set; }
@@ -88,6 +89,7 @@ public class Logic<T> where T : PlayerContext
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
 
 
+    public Func<IEnumerable<IPlayProvider>,WrappedStream, Task<IPlayProvider?>> ChoosePlayProvider { get; set; }
 
     public Logger log { get; set; }
     public T playerContext { get; set; }
@@ -352,7 +354,7 @@ public class Logic<T> where T : PlayerContext
     }
 
     [TimingAdvice]
-    public void StartPlaying(bool play = true, bool resetsal = false)
+    public async void StartPlaying(bool play = true, bool resetsal = false)
     {
         if (CurrentSong == null)
         {
@@ -367,12 +369,11 @@ public class Logic<T> where T : PlayerContext
             }
         }
 
-        Player = GetPlayerFromStream(CurrentSong.Stream);
+        Player = await GetPlayerFromStream(CurrentSong.Stream);
 
         if (Player == null)
         {
             playerContext?.ShowMessageBox("Error", "I do not know how to play " + CurrentSong.URI);
-            throw new NotSupportedException("aaaa");
             return;
         }
 
@@ -554,10 +555,9 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         IsSortRequested = false;
     }
 
-    public IPlay? GetPlayerFromStream(WrappedStream stream)
+    public async Task<IPlay?> GetPlayerFromStream(WrappedStream stream)
     {
-        var provider = PlayProviders?.FirstOrDefault(x => x.CanPlayFile(stream));
-        return provider?.GetPlayer(stream);
+        return (await ChoosePlayProvider(PlayProviders?.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream);
     }
 
     public IMetadataProvider? GetMetadataProviderFromStream(WrappedStream stream)

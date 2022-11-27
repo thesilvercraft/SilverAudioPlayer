@@ -10,7 +10,6 @@
 	<Window.Resources>
 		<local:NullableReplacingConverter x:Key="nullableReplacingConverter" />
 		<local:RelativePointConverter x:Key="relativePointConverter" />
-
 	</Window.Resources>
 	<Window.Styles>
 		<Style Selector="ProgressBar">

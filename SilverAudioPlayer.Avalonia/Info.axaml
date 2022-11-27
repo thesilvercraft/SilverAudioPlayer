@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Avalonia.Info"
         Title="Info"
-        ExtendClientAreaToDecorationsHint="True">
+        ExtendClientAreaToDecorationsHint="True"
+		Icon="/icon.ico">
     <Grid Margin="5" RowDefinitions="25,200,*,*">
         <TextBlock Grid.Row="0" Margin="5" Text="{Binding Title}" />
         <Grid Grid.Row="1" ColumnDefinitions="200,*">

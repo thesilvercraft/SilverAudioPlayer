@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Avalonia.LyricsView"
         Title="LyricsView"
-        ExtendClientAreaToDecorationsHint="True">
+        ExtendClientAreaToDecorationsHint="True"
+	    Icon="/icon.ico">
     <Window.Styles>
         <Style Selector="TextBlock">
             <Setter Property="FontSize" Value="40" />

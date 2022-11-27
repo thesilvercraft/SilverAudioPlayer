@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400" ExtendClientAreaToDecorationsHint="True" Height="400"
         Width="900"
         x:Class="SilverAudioPlayer.Avalonia.LaunchActionsWindow"
-        Title="LaunchActionsWindow">
+        Title="LaunchActionsWindow"
+		Icon="/icon.ico">
     <Grid Margin="5 30 5 5">
         <ListBox Items="{Binding Actions}" Name="LB" DoubleTapped="ElementDoubleTapped" Background="Transparent">
             <ListBox.ItemTemplate>

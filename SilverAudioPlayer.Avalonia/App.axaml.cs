@@ -78,8 +78,7 @@ public class App : Application
                 .Build();
             var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .WriteTo.File(Path.Combine(AppContext.BaseDirectory, "log.txt"), LogEventLevel.Information,
-                    rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+
                 .WriteTo.Debug()
                 .CreateLogger();
             Log.Logger = logger;

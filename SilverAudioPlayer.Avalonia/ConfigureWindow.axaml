@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Avalonia.ConfigureWindow"
         Title="ConfigureWindow"
-        ExtendClientAreaToDecorationsHint="True">
+        ExtendClientAreaToDecorationsHint="True"
+	    Icon="/icon.ico">
     <Grid Margin="5" RowDefinitions="25,*">
         <StackPanel Orientation="Vertical" Grid.Row="1" Name="MainGrid" />
     </Grid>
