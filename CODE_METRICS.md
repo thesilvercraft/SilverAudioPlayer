@@ -1610,6 +1610,108 @@ The `NAudio.Flac.Utils` namespace contains 2 named types.
 
 <a href="#naudio-flac">:top: back to NAudio.Flac</a>
 
+<div id='silveraudioplayer-any-memoryprovider-silverconfigmemoryprovider'></div>
+
+## SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider :warning:
+
+The *SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj* project file contains:
+
+- 1 namespaces.
+- 3 named types.
+- 55 total lines of source code.
+- Approximately 22 lines of executable code.
+- The highest cyclomatic complexity is 9 :warning:.
+
+<details>
+<summary>
+  <strong id="silveraudioplayer-any-memoryprovider-silverconfigmemoryprovider">
+    SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider :warning:
+  </strong>
+</summary>
+<br>
+
+The `SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider` namespace contains 3 named types.
+
+- 3 named types.
+- 55 total lines of source code.
+- Approximately 22 lines of executable code.
+- The highest cyclomatic complexity is 9 :warning:.
+
+<details>
+<summary>
+  <strong id="">
+     :question:
+  </strong>
+</summary>
+<br>
+
+- The `` contains 0 members.
+- 1 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 0 :question:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+
+<a href="#-class-diagram">:link: to `` class diagram</a>
+
+<a href="#silveraudioplayer-any-memoryprovider-silverconfigmemoryprovider">:top: back to SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="objectclass">
+    ObjectClass :question:
+  </strong>
+</summary>
+<br>
+
+- The `ObjectClass` contains 0 members.
+- 1 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 0 :question:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+
+<a href="#ObjectClass-class-diagram">:link: to `ObjectClass` class diagram</a>
+
+<a href="#silveraudioplayer-any-memoryprovider-silverconfigmemoryprovider">:top: back to SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="silverconfigmemoryprovider">
+    SilverConfigMemoryProvider :warning:
+  </strong>
+</summary>
+<br>
+
+- The `SilverConfigMemoryProvider` contains 5 members.
+- 51 total lines of source code.
+- Approximately 22 lines of executable code.
+- The highest cyclomatic complexity is 9 :warning:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/SilverConfigMemoryProvider.cs#L19' title='string SilverConfigMemoryProvider.basedir'>19</a> | 91 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/SilverConfigMemoryProvider.cs#L18' title='List<ObjectClass> SilverConfigMemoryProvider.Classes'>18</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/SilverConfigMemoryProvider.cs#L58' title='string SilverConfigMemoryProvider.GetConfig(Guid id)'>58</a> | 92 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/SilverConfigMemoryProvider.cs#L15' title='void SilverConfigMemoryProvider.MakeSureAllIsWell()'>15</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/SilverConfigMemoryProvider.cs#L21' title='void SilverConfigMemoryProvider.RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember)'>21</a> | 54 | 9 :warning: | 0 | 10 | 36 / 17 |
+
+<a href="#SilverConfigMemoryProvider-class-diagram">:link: to `SilverConfigMemoryProvider` class diagram</a>
+
+<a href="#silveraudioplayer-any-memoryprovider-silverconfigmemoryprovider">:top: back to SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider</a>
+
+</details>
+
+</details>
+
+<a href="#silveraudioplayer-any-memoryprovider-silverconfigmemoryprovider">:top: back to SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider</a>
+
 <div id='silveraudioplayer-any-metadatasource-drywetmidi'></div>
 
 ## SilverAudioPlayer.Any.MetadataSource.DryWetMidi :heavy_check_mark:
@@ -1694,6 +1796,143 @@ The `SilverAudioPlayer.Any.MetadataSource.DryWetMidi` namespace contains 2 named
 </details>
 
 <a href="#silveraudioplayer-any-metadatasource-drywetmidi">:top: back to SilverAudioPlayer.Any.MetadataSource.DryWetMidi</a>
+
+<div id='silveraudioplayer-any-playprovider-chromecast'></div>
+
+## SilverAudioPlayer.Any.PlayProvider.ChromeCast :heavy_check_mark:
+
+The *SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj* project file contains:
+
+- 1 namespaces.
+- 3 named types.
+- 247 total lines of source code.
+- Approximately 91 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
+
+<details>
+<summary>
+  <strong id="silveraudioplayer-any-playprovider-chromecast">
+    SilverAudioPlayer.Any.PlayProvider.ChromeCast :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+The `SilverAudioPlayer.Any.PlayProvider.ChromeCast` namespace contains 3 named types.
+
+- 3 named types.
+- 247 total lines of source code.
+- Approximately 91 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
+
+<details>
+<summary>
+  <strong id="chromecastplayer">
+    ChromeCastPlayer :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ChromeCastPlayer` contains 22 members.
+- 177 total lines of source code.
+- Approximately 59 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L89' title='ChromeCastPlayer.ChromeCastPlayer(WrappedStream stream, Sender sender, IReceiver chromecast)'>89</a> | 55 | 4 :heavy_check_mark: | 0 | 11 | 38 / 18 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L178' title='uint? ChromeCastPlayer.ChannelCount()'>178</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L87' title='ContentProviderBuilder? ChromeCastPlayer.content'>87</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L181' title='uint? ChromeCastPlayer.GetBitsPerSample()'>181</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L146' title='string? ChromeCastPlayer.getIPv4(string chromecast)'>146</a> | 71 | 3 :heavy_check_mark: | 0 | 4 | 14 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L162' title='MediaStatus? ChromeCastPlayer.GetMediaChannelStatus()'>162</a> | 76 | 2 :heavy_check_mark: | 0 | 4 | 16 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L183' title='PlaybackState? ChromeCastPlayer.GetPlaybackState()'>183</a> | 78 | 3 :heavy_check_mark: | 0 | 5 | 16 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L200' title='TimeSpan ChromeCastPlayer.GetPosition()'>200</a> | 79 | 4 :heavy_check_mark: | 0 | 5 | 9 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L210' title='long? ChromeCastPlayer.GetSampleRate()'>210</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L211' title='TimeSpan? ChromeCastPlayer.Length()'>211</a> | 79 | 4 :heavy_check_mark: | 0 | 5 | 8 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L85' title='IMediaChannel? ChromeCastPlayer.mediaChannel'>85</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L128' title='void ChromeCastPlayer.MediaChannel_StatusChanged(object? sender, EventArgs e)'>128</a> | 70 | 7 :heavy_check_mark: | 0 | 5 | 17 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L220' title='void ChromeCastPlayer.Pause()'>220</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L226' title='void ChromeCastPlayer.Play()'>226</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 6 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L233' title='void ChromeCastPlayer.Resume()'>233</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 6 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L88' title='IServerHost? ChromeCastPlayer.server'>88</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L240' title='void ChromeCastPlayer.SetPosition(TimeSpan position)'>240</a> | 88 | 2 :heavy_check_mark: | 0 | 4 | 6 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L247' title='void ChromeCastPlayer.SetVolume(byte volume)'>247</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 3 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L86' title='MediaStatus? ChromeCastPlayer.state'>86</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L251' title='void ChromeCastPlayer.Stop()'>251</a> | 83 | 3 :heavy_check_mark: | 0 | 4 | 8 / 3 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L160' title='event EventHandler<object> ChromeCastPlayer.TrackEnd'>160</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L161' title='event EventHandler<object> ChromeCastPlayer.TrackPause'>161</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+
+<a href="#ChromeCastPlayer-class-diagram">:link: to `ChromeCastPlayer` class diagram</a>
+
+<a href="#silveraudioplayer-any-playprovider-chromecast">:top: back to SilverAudioPlayer.Any.PlayProvider.ChromeCast</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="chromecastplayprovider">
+    ChromeCastPlayProvider :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ChromeCastPlayProvider` contains 14 members.
+- 54 total lines of source code.
+- Approximately 30 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L58' title='ObjectToRemember[] ChromeCastPlayProvider._ObjectsToRememberForMe'>58</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L33' title='ChromeCastPlayProvider.ChromeCastPlayProvider()'>33</a> | 85 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L61' title='bool ChromeCastPlayProvider.CanPlayFile(WrappedStream stream)'>61</a> | 88 | 1 :heavy_check_mark: | 0 | 5 | 5 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L45' title='string ChromeCastPlayProvider.Description'>45</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L67' title='IPlay? ChromeCastPlayProvider.GetPlayer(WrappedStream stream)'>67</a> | 74 | 1 :heavy_check_mark: | 0 | 7 | 10 / 6 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L47' title='WrappedStream? ChromeCastPlayProvider.Icon'>47</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L51' title='string ChromeCastPlayProvider.Licenses'>51</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L53' title='List<Tuple<Uri, URLType>>? ChromeCastPlayProvider.Links'>53</a> | 98 | 2 :heavy_check_mark: | 0 | 6 | 5 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L43' title='string ChromeCastPlayProvider.Name'>43</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L59' title='ObjectToRemember[] ChromeCastPlayProvider.ObjectsToRememberForMe'>59</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L78' title='Task ChromeCastPlayProvider.OnStartup()'>78</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L41' title='IPlayProviderListner ChromeCastPlayProvider.ProviderListner'>41</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L39' title='IReadOnlyList<MimeType>? ChromeCastPlayProvider.SupportedMimes'>39</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L49' title='Version? ChromeCastPlayProvider.Version'>49</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+
+<a href="#ChromeCastPlayProvider-class-diagram">:link: to `ChromeCastPlayProvider` class diagram</a>
+
+<a href="#silveraudioplayer-any-playprovider-chromecast">:top: back to SilverAudioPlayer.Any.PlayProvider.ChromeCast</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="chromecastsettings">
+    ChromeCastSettings :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ChromeCastSettings` contains 4 members.
+- 12 total lines of source code.
+- Approximately 2 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L20' title='bool ChromeCastSettings.AllowedToRead'>20</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L18' title='Guid ChromeCastSettings.ChromeCast'>18</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L24' title='void ChromeCastSettings.PropertyChanged(object sender, PropertyChangedEventArgs e)'>24</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Any.PlayProvider.ChromeCast/ChromeCastPlayProvider.cs#L22' title='event PropertyChangedEventHandler? ChromeCastSettings.PropertyChanged'>22</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+
+<a href="#ChromeCastSettings-class-diagram">:link: to `ChromeCastSettings` class diagram</a>
+
+<a href="#silveraudioplayer-any-playprovider-chromecast">:top: back to SilverAudioPlayer.Any.PlayProvider.ChromeCast</a>
+
+</details>
+
+</details>
+
+<a href="#silveraudioplayer-any-playprovider-chromecast">:top: back to SilverAudioPlayer.Any.PlayProvider.ChromeCast</a>
 
 <div id='silveraudioplayer-any-playproviderextenison-naudio-vorbis'></div>
 
@@ -2135,9 +2374,9 @@ The *SilverAudioPlayer.Avalonia.csproj* project file contains:
 
 - 1 namespaces.
 - 25 named types.
-- 1,578 total lines of source code.
-- Approximately 591 lines of executable code.
-- The highest cyclomatic complexity is 17 :exploding_head:.
+- 1,640 total lines of source code.
+- Approximately 607 lines of executable code.
+- The highest cyclomatic complexity is 21 :exploding_head:.
 
 <details>
 <summary>
@@ -2150,9 +2389,9 @@ The *SilverAudioPlayer.Avalonia.csproj* project file contains:
 The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 
 - 25 named types.
-- 1,578 total lines of source code.
-- Approximately 591 lines of executable code.
-- The highest cyclomatic complexity is 17 :exploding_head:.
+- 1,640 total lines of source code.
+- Approximately 607 lines of executable code.
+- The highest cyclomatic complexity is 21 :exploding_head:.
 
 <details>
 <summary>
@@ -2180,23 +2419,23 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 <details>
 <summary>
   <strong id="app">
-    App :x:
+    App :exploding_head:
   </strong>
 </summary>
 <br>
 
 - The `App` contains 5 members.
-- 98 total lines of source code.
-- Approximately 45 lines of executable code.
-- The highest cyclomatic complexity is 14 :x:.
+- 116 total lines of source code.
+- Approximately 53 lines of executable code.
+- The highest cyclomatic complexity is 21 :exploding_head:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L140' title='void App.ChangeTheme(bool dark)'>140</a> | 96 | 2 :heavy_check_mark: | 0 | 3 | 5 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L158' title='void App.ChangeTheme(bool dark)'>158</a> | 96 | 2 :heavy_check_mark: | 0 | 3 | 5 / 1 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L50' title='CompositionHost App.Container'>50</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L58' title='bool App.GetThemePreference(bool fallback = false)'>58</a> | 68 | 3 :heavy_check_mark: | 0 | 2 | 7 / 6 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L52' title='void App.Initialize()'>52</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L66' title='void App.OnFrameworkInitializationCompleted()'>66</a> | 44 | 14 :x: | 0 | 16 | 73 / 37 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/App.axaml.cs#L66' title='void App.OnFrameworkInitializationCompleted()'>66</a> | 41 | 21 :exploding_head: | 0 | 18 | 91 / 45 |
 
 <a href="#App-class-diagram">:link: to `App` class diagram</a>
 
@@ -2213,18 +2452,18 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 <br>
 
 - The `Config` contains 6 members.
-- 19 total lines of source code.
+- 21 total lines of source code.
 - Approximately 10 lines of executable code.
 - The highest cyclomatic complexity is 2 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L11' title='bool Config._AllowedRead'>11</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L19' title='bool Config.AllowedToRead'>19</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L21' title='void Config.Invoke(object e, PropertyChangedEventArgs a)'>21</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L14' title='RepeatState Config.LoopType'>14</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 2 / 3 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L26' title='event PropertyChangedEventHandler? Config.PropertyChanged'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L17' title='byte Config.Volume'>17</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 2 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L10' title='bool Config._AllowedRead'>10</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L18' title='bool Config.AllowedToRead'>18</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L20' title='void Config.PropertyChanged(object e, PropertyChangedEventArgs a)'>20</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L13' title='RepeatState Config.LoopType'>13</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 2 / 3 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L27' title='event PropertyChangedEventHandler? Config.PropertyChanged'>27</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Config.cs#L16' title='byte Config.Volume'>16</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 2 / 3 |
 
 <a href="#Config-class-diagram">:link: to `Config` class diagram</a>
 
@@ -2365,17 +2604,18 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 </summary>
 <br>
 
-- The `InfoPRecord` contains 9 members.
+- The `InfoPRecord` contains 10 members.
 - 2 total lines of source code.
 - Approximately 0 lines of executable code.
 - The highest cyclomatic complexity is 1 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='InfoPRecord.InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses, ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider)'>28</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 2 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='InfoPRecord.InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses, ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider)'>28</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 2 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L29' title='bool InfoPRecord.Configurable'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='string InfoPRecord.Description'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='IImage? InfoPRecord.Icon'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L29' title='bool InfoPRecord.IsAskingMemoryProvider'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L29' title='bool InfoPRecord.IsPlayStreamProvider'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L29' title='ICodeInformation InfoPRecord.Item'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L28' title='string InfoPRecord.Licenses'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
@@ -2423,14 +2663,14 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 <br>
 
 - The `LyricsView` contains 3 members.
-- 82 total lines of source code.
-- Approximately 37 lines of executable code.
+- 84 total lines of source code.
+- Approximately 36 lines of executable code.
 - The highest cyclomatic complexity is 14 :x:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LyricsView.axaml.cs#L15' title='LyricsView.LyricsView()'>15</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LyricsView.axaml.cs#L21' title='LyricsView.LyricsView(MainWindow mainWindow)'>21</a> | 45 | 14 :x: | 0 | 11 | 71 / 35 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LyricsView.axaml.cs#L21' title='LyricsView.LyricsView(MainWindow mainWindow)'>21</a> | 46 | 14 :x: | 0 | 11 | 73 / 34 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/LyricsView.axaml.cs#L13' title='MainWindow LyricsView.mainWindow'>13</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#LyricsView-class-diagram">:link: to `LyricsView` class diagram</a>
@@ -2448,50 +2688,50 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 <br>
 
 - The `MainWindow` contains 38 members.
-- 461 total lines of source code.
-- Approximately 194 lines of executable code.
+- 459 total lines of source code.
+- Approximately 191 lines of executable code.
 - The highest cyclomatic complexity is 14 :x:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L108' title='MainWindow.MainWindow()'>108</a> | 36 | 14 :x: | 0 | 15 | 114 / 70 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L110' title='MainWindow.MainWindow()'>110</a> | 36 | 14 :x: | 0 | 15 | 114 / 70 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L501' title='void MainWindow.AddFilee(object sender, RoutedEventArgs e)'>501</a> | 61 | 3 :heavy_check_mark: | 0 | 8 | 27 / 10 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L496' title='void MainWindow.ClearAll(object sender, RoutedEventArgs e)'>496</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L96' title='Config MainWindow.config'>96</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L97' title='string MainWindow.ConfigPath'>97</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L231' title='Song? MainWindow.CurrentSong'>231</a> | 98 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L98' title='MainWindowContext MainWindow.dc'>98</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L98' title='Config MainWindow.config'>98</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L99' title='string MainWindow.ConfigPath'>99</a> | 91 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L233' title='Song? MainWindow.CurrentSong'>233</a> | 98 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L100' title='MainWindowContext MainWindow.dc'>100</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L476' title='void MainWindow.DragOver(object sender, DragEventArgs e)'>476</a> | 81 | 5 :heavy_check_mark: | 0 | 3 | 9 / 2 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L486' title='void MainWindow.Drop(object sender, DragEventArgs e)'>486</a> | 76 | 5 :heavy_check_mark: | 0 | 5 | 9 / 3 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L100' title='bool MainWindow.en'>100</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L101' title='bool MainWindow.en2'>101</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L223' title='Logic<MainWindowContext> MainWindow.Logic'>223</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L338' title='void MainWindow.LyricsButton_Click(object? sender, RoutedEventArgs e)'>338</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L318' title='void MainWindow.MainWindow_Closing(object? sender, CancelEventArgs e)'>318</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L307' title='void MainWindow.MainWindow_Opened(object? sender, EventArgs e)'>307</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L102' title='bool MainWindow.en'>102</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L103' title='bool MainWindow.en2'>103</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L225' title='Logic<MainWindowContext> MainWindow.Logic'>225</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L337' title='void MainWindow.LyricsButton_Click(object? sender, RoutedEventArgs e)'>337</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L316' title='void MainWindow.MainWindow_Closing(object? sender, CancelEventArgs e)'>316</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L311' title='void MainWindow.MainWindow_Opened(object? sender, EventArgs e)'>311</a> | 94 | 1 :heavy_check_mark: | 0 | 5 | 4 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L342' title='void MainWindow.Metadata_Click(object? sender, PointerPressedEventArgs e)'>342</a> | 76 | 2 :heavy_check_mark: | 0 | 5 | 10 / 4 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L102' title='MetadataView? MainWindow.metadataView'>102</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L104' title='MetadataView? MainWindow.metadataView'>104</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L435' title='void MainWindow.OutputDevice_PlaybackStopped(object? sender, object o)'>435</a> | 55 | 9 :warning: | 0 | 6 | 41 / 16 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L378' title='void MainWindow.Pause()'>378</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L363' title='void MainWindow.PauseButton_Click(object? sender, RoutedEventArgs e)'>363</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L353' title='void MainWindow.PB_PointerReleased(object? sender, PointerReleasedEventArgs e)'>353</a> | 70 | 2 :heavy_check_mark: | 0 | 4 | 9 / 6 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L373' title='void MainWindow.Play()'>373</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L368' title='void MainWindow.PlayButton_Click(object? sender, RoutedEventArgs e)'>368</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L225' title='IPlay? MainWindow.Player'>225</a> | 98 | 2 :heavy_check_mark: | 0 | 5 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L103' title='CommentXmlConfigReaderNotifyWhenChanged<Config> MainWindow.reader'>103</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L227' title='IPlay? MainWindow.Player'>227</a> | 98 | 2 :heavy_check_mark: | 0 | 5 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L105' title='CommentXmlConfigReaderNotifyWhenChanged<Config> MainWindow.reader'>105</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L529' title='void MainWindow.RemoveSelected(object sender, RoutedEventArgs e)'>529</a> | 59 | 4 :heavy_check_mark: | 0 | 6 | 25 / 12 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L425' title='void MainWindow.RemoveTrack()'>425</a> | 72 | 3 :heavy_check_mark: | 0 | 5 | 9 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L237' title='void MainWindow.RepeatButton_Click(object? sender, RoutedEventArgs e)'>237</a> | 99 | 4 :heavy_check_mark: | 0 | 4 | 15 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L253' title='void MainWindow.SetPBColor(IBrush c)'>253</a> | 68 | 3 :heavy_check_mark: | 0 | 7 | 17 / 7 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L301' title='void MainWindow.Settings_Click(object? sender, RoutedEventArgs e)'>301</a> | 88 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L383' title='void MainWindow.SndThrd(CancellationToken e)'>383</a> | 59 | 11 :radioactive: | 0 | 7 | 40 / 14 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L334' title='void MainWindow.StopButton_Click(object? sender, RoutedEventArgs e)'>334</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L105' title='Thread? MainWindow.th'>105</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L106' title='CancellationTokenSource? MainWindow.token'>106</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L329' title='void MainWindow.TreeView_DoubleTapped(object? sender, RoutedEventArgs e)'>329</a> | 91 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L286' title='void MainWindow.TreeView_PointerMoved(object? sender, PointerEventArgs e)'>286</a> | 61 | 6 :heavy_check_mark: | 0 | 7 | 14 / 10 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L271' title='void MainWindow.TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)'>271</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L277' title='void MainWindow.TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)'>277</a> | 81 | 2 :heavy_check_mark: | 0 | 2 | 8 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L239' title='void MainWindow.RepeatButton_Click(object? sender, RoutedEventArgs e)'>239</a> | 99 | 4 :heavy_check_mark: | 0 | 4 | 17 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L257' title='void MainWindow.SetPBColor(IBrush c)'>257</a> | 68 | 3 :heavy_check_mark: | 0 | 7 | 17 / 7 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L305' title='void MainWindow.Settings_Click(object? sender, RoutedEventArgs e)'>305</a> | 88 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L383' title='void MainWindow.SndThrd(CancellationToken e)'>383</a> | 58 | 13 :x: | 0 | 7 | 40 / 14 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L332' title='void MainWindow.StopButton_Click(object? sender, RoutedEventArgs e)'>332</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L107' title='Thread? MainWindow.th'>107</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L108' title='CancellationTokenSource? MainWindow.token'>108</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L327' title='void MainWindow.TreeView_DoubleTapped(object? sender, RoutedEventArgs e)'>327</a> | 91 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L290' title='void MainWindow.TreeView_PointerMoved(object? sender, PointerEventArgs e)'>290</a> | 61 | 6 :heavy_check_mark: | 0 | 7 | 14 / 10 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L275' title='void MainWindow.TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)'>275</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L281' title='void MainWindow.TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)'>281</a> | 81 | 2 :heavy_check_mark: | 0 | 2 | 8 / 3 |
 
 <a href="#MainWindow-class-diagram">:link: to `MainWindow` class diagram</a>
 
@@ -2508,23 +2748,23 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 <br>
 
 - The `MainWindowContext` contains 11 members.
-- 67 total lines of source code.
-- Approximately 22 lines of executable code.
+- 71 total lines of source code.
+- Approximately 20 lines of executable code.
 - The highest cyclomatic complexity is 4 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L29' title='GradientStops MainWindowContext._GradientStops'>29</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L30' title='IBrush MainWindowContext._pbForeGround'>30</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L32' title='string MainWindowContext._Title'>32</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L34' title='MainWindowContext.MainWindowContext(MainWindow mw)'>34</a> | 60 | 4 :heavy_check_mark: | 0 | 11 | 26 / 12 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L75' title='GradientStops MainWindowContext.GradientStops'>75</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L87' title='void MainWindowContext.LyricsView()'>87</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L28' title='MainWindow MainWindowContext.mainWindow'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L61' title='IBrush MainWindowContext.PBForeground'>61</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L81' title='void MainWindowContext.RunTheThing()'>81</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L67' title='SelectionModel<Song> MainWindowContext.Selection'>67</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L69' title='string MainWindowContext.Title'>69</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L27' title='GradientStops MainWindowContext._GradientStops'>27</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L28' title='IBrush MainWindowContext._pbForeGround'>28</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L30' title='string MainWindowContext._Title'>30</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L32' title='MainWindowContext.MainWindowContext(MainWindow mw)'>32</a> | 62 | 4 :heavy_check_mark: | 0 | 11 | 30 / 10 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L77' title='GradientStops MainWindowContext.GradientStops'>77</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L89' title='void MainWindowContext.LyricsView()'>89</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L26' title='MainWindow MainWindowContext.mainWindow'>26</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L63' title='IBrush MainWindowContext.PBForeground'>63</a> | 98 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L83' title='void MainWindowContext.RunTheThing()'>83</a> | 86 | 1 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L69' title='SelectionModel<Song> MainWindowContext.Selection'>69</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/MainWindow.axaml.cs#L71' title='string MainWindowContext.Title'>71</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
 
 <a href="#MainWindowContext-class-diagram">:link: to `MainWindowContext` class diagram</a>
 
@@ -2730,11 +2970,11 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L12' title='SAPAvaloniaListner.SAPAvaloniaListner(MainWindow mainWindow)'>12</a> | 96 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L17' title='IPlayerEnviroment SAPAvaloniaListner.GetEnviroment()'>17</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L22' title='void SAPAvaloniaListner.LoadSong(WrappedStream s)'>22</a> | 94 | 1 :heavy_check_mark: | 0 | 5 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L27' title='void SAPAvaloniaListner.LoadSongs(IEnumerable<WrappedStream> streams)'>27</a> | 94 | 1 :heavy_check_mark: | 0 | 6 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L10' title='MainWindow SAPAvaloniaListner.mainWindow'>10</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L13' title='SAPAvaloniaListner.SAPAvaloniaListner(MainWindow mainWindow)'>13</a> | 96 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L18' title='IPlayerEnviroment SAPAvaloniaListner.GetEnviroment()'>18</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L23' title='void SAPAvaloniaListner.LoadSong(WrappedStream s)'>23</a> | 94 | 1 :heavy_check_mark: | 0 | 5 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L28' title='void SAPAvaloniaListner.LoadSongs(IEnumerable<WrappedStream> streams)'>28</a> | 94 | 1 :heavy_check_mark: | 0 | 6 | 4 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L11' title='MainWindow SAPAvaloniaListner.mainWindow'>11</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#SAPAvaloniaListner-class-diagram">:link: to `SAPAvaloniaListner` class diagram</a>
 
@@ -2750,19 +2990,20 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 </summary>
 <br>
 
-- The `SAPAvaloniaPlayerEnviroment` contains 6 members.
-- 48 total lines of source code.
-- Approximately 12 lines of executable code.
+- The `SAPAvaloniaPlayerEnviroment` contains 7 members.
+- 50 total lines of source code.
+- Approximately 14 lines of executable code.
 - The highest cyclomatic complexity is 2 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L37' title='string SAPAvaloniaPlayerEnviroment.Description'>37</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L39' title='WrappedStream? SAPAvaloniaPlayerEnviroment.Icon'>39</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L56' title='string SAPAvaloniaPlayerEnviroment.Licenses'>56</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 24 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L44' title='List<Tuple<Uri, URLType>>? SAPAvaloniaPlayerEnviroment.Links'>44</a> | 94 | 2 :heavy_check_mark: | 0 | 7 | 11 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L35' title='string SAPAvaloniaPlayerEnviroment.Name'>35</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L42' title='Version? SAPAvaloniaPlayerEnviroment.Version'>42</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L38' title='string SAPAvaloniaPlayerEnviroment.Description'>38</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L40' title='WrappedStream? SAPAvaloniaPlayerEnviroment.Icon'>40</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L82' title='string[] SAPAvaloniaPlayerEnviroment.KnownConfigFileLocations'>82</a> | 93 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L57' title='string SAPAvaloniaPlayerEnviroment.Licenses'>57</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 24 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L45' title='List<Tuple<Uri, URLType>>? SAPAvaloniaPlayerEnviroment.Links'>45</a> | 94 | 2 :heavy_check_mark: | 0 | 7 | 11 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L36' title='string SAPAvaloniaPlayerEnviroment.Name'>36</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAvaloniaListner.cs#L43' title='Version? SAPAvaloniaPlayerEnviroment.Version'>43</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
 
 <a href="#SAPAvaloniaPlayerEnviroment-class-diagram">:link: to `SAPAvaloniaPlayerEnviroment` class diagram</a>
 
@@ -2779,14 +3020,14 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 <br>
 
 - The `SAPAWindowExtensions` contains 2 members.
-- 14 total lines of source code.
+- 20 total lines of source code.
 - Approximately 4 lines of executable code.
-- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAWindowExtensions.cs#L14' title='GradientStops SAPAWindowExtensions.defBGStops'>14</a> | 87 | 0 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAWindowExtensions.cs#L19' title='void SAPAWindowExtensions.DoAfterInitTasksF(Window w)'>19</a> | 81 | 1 :heavy_check_mark: | 0 | 4 | 6 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/SAPAWindowExtensions.cs#L19' title='void SAPAWindowExtensions.DoAfterInitTasksF(Window w)'>19</a> | 79 | 2 :heavy_check_mark: | 0 | 4 | 12 / 3 |
 
 <a href="#SAPAWindowExtensions-class-diagram">:link: to `SAPAWindowExtensions` class diagram</a>
 
@@ -2802,35 +3043,36 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 </summary>
 <br>
 
-- The `Settings` contains 22 members.
-- 295 total lines of source code.
-- Approximately 125 lines of executable code.
-- The highest cyclomatic complexity is 5 :heavy_check_mark:.
+- The `Settings` contains 23 members.
+- 325 total lines of source code.
+- Approximately 137 lines of executable code.
+- The highest cyclomatic complexity is 7 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L35' title='Settings.Settings()'>35</a> | 93 | 1 :heavy_check_mark: | 0 | 0 | 8 / 2 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L43' title='Settings.Settings(MainWindow mainWindow)'>43</a> | 53 | 2 :heavy_check_mark: | 0 | 11 | 26 / 23 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L314' title='void Settings.ChangeColor(object? sender, RoutedEventArgs e)'>314</a> | 85 | 2 :heavy_check_mark: | 0 | 3 | 5 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L306' title='void Settings.ChangeColorPB(object? sender, RoutedEventArgs e)'>306</a> | 83 | 1 :heavy_check_mark: | 0 | 6 | 7 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L130' title='void Settings.ConfigureClick(object button, RoutedEventArgs args)'>130</a> | 69 | 5 :heavy_check_mark: | 0 | 8 | 13 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L91' title='IImage? Settings.DecodeImage(WrappedStream? stream, int width = 80)'>91</a> | 62 | 5 :heavy_check_mark: | 0 | 5 | 22 / 11 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L301' title='GradientStops Settings.defPBStops'>301</a> | 91 | 0 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L255' title='void Settings.DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)'>255</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 7 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L125' title='void Settings.ElementDoubleTapped(object _, RoutedEventArgs args)'>125</a> | 87 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L168' title='string Settings.GetHumanerName(URLType type)'>168</a> | 75 | 2 :heavy_check_mark: | 0 | 2 | 9 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L155' title='string Settings.GetHumanName(URLType type)'>155</a> | 91 | 1 :heavy_check_mark: | 0 | 2 | 13 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L69' title='Tuple<ObservableCollection<InfoPRecord>, string> Settings.GetInfoRecords(List<ICodeInformation> info)'>69</a> | 69 | 2 :heavy_check_mark: | 0 | 10 | 22 / 7 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L320' title='void Settings.InitializeComponent()'>320</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L344' title='void Settings.ChangeColor(object? sender, RoutedEventArgs e)'>344</a> | 85 | 2 :heavy_check_mark: | 0 | 3 | 5 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L336' title='void Settings.ChangeColorPB(object? sender, RoutedEventArgs e)'>336</a> | 83 | 1 :heavy_check_mark: | 0 | 6 | 7 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L131' title='void Settings.ConfigureClick(object button, RoutedEventArgs args)'>131</a> | 69 | 5 :heavy_check_mark: | 0 | 8 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L92' title='IImage? Settings.DecodeImage(WrappedStream? stream, int width = 80)'>92</a> | 62 | 5 :heavy_check_mark: | 0 | 5 | 22 / 11 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L331' title='GradientStops Settings.defPBStops'>331</a> | 91 | 0 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L285' title='void Settings.DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)'>285</a> | 86 | 1 :heavy_check_mark: | 0 | 2 | 7 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L126' title='void Settings.ElementDoubleTapped(object _, RoutedEventArgs args)'>126</a> | 87 | 1 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L198' title='string Settings.GetHumanerName(URLType type)'>198</a> | 75 | 2 :heavy_check_mark: | 0 | 2 | 9 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L185' title='string Settings.GetHumanName(URLType type)'>185</a> | 91 | 1 :heavy_check_mark: | 0 | 2 | 13 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L69' title='Tuple<ObservableCollection<InfoPRecord>, string> Settings.GetInfoRecords(List<ICodeInformation> info)'>69</a> | 69 | 2 :heavy_check_mark: | 0 | 10 | 23 / 7 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L350' title='void Settings.InitializeComponent()'>350</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L32' title='MainWindow Settings.mainWindow'>32</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L113' title='void Settings.OpenBrowser(string url)'>113</a> | 79 | 4 :heavy_check_mark: | 0 | 4 | 11 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L143' title='void Settings.PlayProviderClick(object button, RoutedEventArgs args)'>143</a> | 70 | 5 :heavy_check_mark: | 0 | 9 | 12 / 5 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L283' title='void Settings.RegisterClick(object? sender, RoutedEventArgs e)'>283</a> | 88 | 3 :heavy_check_mark: | 0 | 3 | 11 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L222' title='void Settings.RegisterInReg()'>222</a> | 56 | 5 :heavy_check_mark: | 0 | 7 | 32 / 17 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L263' title='void Settings.RemoveFromReg()'>263</a> | 63 | 5 :heavy_check_mark: | 0 | 6 | 19 / 10 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L177' title='void Settings.ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)'>177</a> | 57 | 4 :heavy_check_mark: | 0 | 13 | 37 / 15 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L295' title='void Settings.ToggleTransparency(object? sender, RoutedEventArgs e)'>295</a> | 77 | 1 :heavy_check_mark: | 0 | 3 | 6 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L214' title='void Settings.TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)'>214</a> | 83 | 3 :heavy_check_mark: | 0 | 4 | 7 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L114' title='void Settings.OpenBrowser(string url)'>114</a> | 79 | 4 :heavy_check_mark: | 0 | 4 | 11 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L144' title='void Settings.OpenConfigFileClick(object button, RoutedEventArgs args)'>144</a> | 59 | 7 :heavy_check_mark: | 0 | 16 | 29 / 12 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L173' title='void Settings.PlayProviderClick(object button, RoutedEventArgs args)'>173</a> | 70 | 5 :heavy_check_mark: | 0 | 9 | 12 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L313' title='void Settings.RegisterClick(object? sender, RoutedEventArgs e)'>313</a> | 88 | 3 :heavy_check_mark: | 0 | 3 | 11 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L252' title='void Settings.RegisterInReg()'>252</a> | 56 | 5 :heavy_check_mark: | 0 | 7 | 32 / 17 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L293' title='void Settings.RemoveFromReg()'>293</a> | 63 | 5 :heavy_check_mark: | 0 | 6 | 19 / 10 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L207' title='void Settings.ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)'>207</a> | 57 | 4 :heavy_check_mark: | 0 | 13 | 37 / 15 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L325' title='void Settings.ToggleTransparency(object? sender, RoutedEventArgs e)'>325</a> | 77 | 1 :heavy_check_mark: | 0 | 3 | 6 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L244' title='void Settings.TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)'>244</a> | 83 | 3 :heavy_check_mark: | 0 | 4 | 7 / 3 |
 
 <a href="#Settings-class-diagram">:link: to `Settings` class diagram</a>
 
@@ -2853,9 +3095,9 @@ The `SilverAudioPlayer.Avalonia` namespace contains 25 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L334' title='KnownColor[] SettingsDC.AutoSuggestColours'>334</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 35 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L369' title='ObservableCollection<InfoPRecord> SettingsDC.Items'>369</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L328' title='WindowTransparencyLevel[] SettingsDC.TransparencyTypes'>328</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 5 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L364' title='KnownColor[] SettingsDC.AutoSuggestColours'>364</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 35 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L399' title='ObservableCollection<InfoPRecord> SettingsDC.Items'>399</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Avalonia/Settings.axaml.cs#L358' title='WindowTransparencyLevel[] SettingsDC.TransparencyTypes'>358</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 5 / 1 |
 
 <a href="#SettingsDC-class-diagram">:link: to `SettingsDC` class diagram</a>
 
@@ -2875,8 +3117,8 @@ The *SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj* project file con
 
 - 1 namespaces.
 - 3 named types.
-- 584 total lines of source code.
-- Approximately 217 lines of executable code.
+- 581 total lines of source code.
+- Approximately 216 lines of executable code.
 - The highest cyclomatic complexity is 71 :exploding_head:.
 
 <details>
@@ -2890,8 +3132,8 @@ The *SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj* project file con
 The `SilverAudioPlayer.CAD` namespace contains 3 named types.
 
 - 3 named types.
-- 584 total lines of source code.
-- Approximately 217 lines of executable code.
+- 581 total lines of source code.
+- Approximately 216 lines of executable code.
 - The highest cyclomatic complexity is 71 :exploding_head:.
 
 <details>
@@ -2902,83 +3144,82 @@ The `SilverAudioPlayer.CAD` namespace contains 3 named types.
 </summary>
 <br>
 
-- The `CADMusicStatusInterface` contains 70 members.
-- 582 total lines of source code.
-- Approximately 215 lines of executable code.
+- The `CADMusicStatusInterface` contains 69 members.
+- 579 total lines of source code.
+- Approximately 214 lines of executable code.
 - The highest cyclomatic complexity is 71 :exploding_head:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L25' title='CADMusicStatusInterface.CADMusicStatusInterface()'>25</a> | 80 | 1 :heavy_check_mark: | 0 | 4 | 7 / 4 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L16' title='string CADMusicStatusInterface.arglpWindowName'>16</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L570' title='void CADMusicStatusInterface.CADMusicStatusInterface_Load(object sender, EventArgs e)'>570</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L177' title='void CADMusicStatusInterface.cadRegister()'>177</a> | 56 | 6 :heavy_check_mark: | 0 | 5 | 28 / 15 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L509' title='void CADMusicStatusInterface.cadSendLyrics()'>509</a> | 63 | 5 :heavy_check_mark: | 0 | 6 | 12 / 8 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L229' title='void CADMusicStatusInterface.cadSendSongInfo()'>229</a> | 47 | 14 :x: | 0 | 9 | 50 / 24 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L574' title='void CADMusicStatusInterface.cadShutdown()'>574</a> | 73 | 3 :heavy_check_mark: | 0 | 3 | 7 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L280' title='IntPtr CADMusicStatusInterface.CallbackMsgs(IntPtr Hwnd, int wMsg, IntPtr wparam, IntPtr lparam)'>280</a> | 25 | 71 :exploding_head: | 0 | 10 | 228 / 83 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L162' title='long CADMusicStatusInterface.CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, long msg, IntPtr wParam, IntPtr lParam)'>162</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 3 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L150' title='void CADMusicStatusInterface.CopyMemory(object hpvDest, object hpvSource, long cbCopy)'>150</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L106' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.CurrentLyricsNotification'>106</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L104' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.CurrentTrackNotification'>104</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L36' title='string CADMusicStatusInterface.Description'>36</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 2 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L126' title='void CADMusicStatusInterface.Dispose()'>126</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 6 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L549' title='void CADMusicStatusInterface.Dispose(bool disposing)'>549</a> | 80 | 3 :heavy_check_mark: | 0 | 4 | 8 / 3 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L19' title='bool CADMusicStatusInterface.disposedValue'>19</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L153' title='long CADMusicStatusInterface.FindWindow(string? lpClassName, string lpWindowName)'>153</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L80' title='event Func<Song>? CADMusicStatusInterface.GetCurrentTrack'>80</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L82' title='event Func<ulong>? CADMusicStatusInterface.GetDuration'>82</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L92' title='event Func<string>? CADMusicStatusInterface.GetLyrics'>92</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L84' title='event Func<ulong>? CADMusicStatusInterface.GetPosition'>84</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L88' title='event Func<RepeatState>? CADMusicStatusInterface.GetRepeat'>88</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L90' title='event Func<bool>? CADMusicStatusInterface.GetShuffle'>90</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L86' title='event Func<PlaybackState>? CADMusicStatusInterface.GetState'>86</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L78' title='event Func<byte>? CADMusicStatusInterface.GetVolume'>78</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L13' title='int CADMusicStatusInterface.GWL_WNDPROC'>13</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L21' title='List<GCHandle> CADMusicStatusInterface.Handles'>21</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L214' title='void CADMusicStatusInterface.HookMsg(IntPtr hwnd)'>214</a> | 78 | 1 :heavy_check_mark: | 0 | 5 | 8 / 3 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L34' title='string CADMusicStatusInterface.Name'>34</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L39' title='WrappedStream? CADMusicStatusInterface.Icon'>39</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L558' title='void CADMusicStatusInterface.InitializeComponent()'>558</a> | 76 | 1 :heavy_check_mark: | 0 | 2 | 11 / 5 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L522' title='void CADMusicStatusInterface.InterProcessComms(IntPtr lParam)'>522</a> | 65 | 2 :heavy_check_mark: | 0 | 3 | 15 / 8 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L44' title='string CADMusicStatusInterface.Licenses'>44</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L46' title='List<Tuple<Uri, URLType>>? CADMusicStatusInterface.Links'>46</a> | 98 | 2 :heavy_check_mark: | 0 | 6 | 9 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L33' title='ILogger? CADMusicStatusInterface.logger'>33</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L175' title='void CADMusicStatusInterface.MoveMemory(void* dest, void* src, int size)'>175</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L110' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.NewCoverNotification'>110</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L108' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.NewLyricsNotification'>108</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L64' title='event EventHandler? CADMusicStatusInterface.Next'>64</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L58' title='event EventHandler? CADMusicStatusInterface.Pause'>58</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L56' title='event EventHandler? CADMusicStatusInterface.Play'>56</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L141' title='void CADMusicStatusInterface.PlayerStateChanged(PlaybackState newstate)'>141</a> | 73 | 3 :heavy_check_mark: | 0 | 4 | 7 / 4 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L60' title='event EventHandler? CADMusicStatusInterface.PlayPause'>60</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L166' title='long CADMusicStatusInterface.PostMessage(long WndID, long wMsg, long wParam, long lParam)'>166</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L66' title='event EventHandler? CADMusicStatusInterface.Previous'>66</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L23' title='IntPtr CADMusicStatusInterface.PrevProc'>23</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L102' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.RatingChangedNotification'>102</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L96' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.RepeatChangedNotification'>96</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L223' title='string CADMusicStatusInterface.ReplaceNullWithEmptyAndTabsWithSpace(string? input)'>223</a> | 85 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L156' title='long CADMusicStatusInterface.SendMessage(long hwnd, long wMsg, long wParam, CopyDataStruct lParam)'>156</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L159' title='long CADMusicStatusInterface.SendMessage(long hwnd, long wMsg, long wParam, long lParam)'>159</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L70' title='event EventHandler<ulong>? CADMusicStatusInterface.SetPosition'>70</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L76' title='event EventHandler<byte>? CADMusicStatusInterface.SetRating'>76</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L72' title='event EventHandler<RepeatState>? CADMusicStatusInterface.SetRepeat'>72</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L74' title='event EventHandler<bool>? CADMusicStatusInterface.SetShuffle'>74</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L68' title='event EventHandler<byte>? CADMusicStatusInterface.SetVolume'>68</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L169' title='IntPtr CADMusicStatusInterface.SetWindowLongPtr32(IntPtr hWnd, int nIndex, IntPtr dwNewLong)'>169</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L172' title='IntPtr CADMusicStatusInterface.SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong)'>172</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L206' title='IntPtr CADMusicStatusInterface.SetWindowProc(IntPtr hWnd, WndProcDelegate newWndProc)'>206</a> | 82 | 2 :heavy_check_mark: | 0 | 3 | 7 / 2 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L100' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.ShuffleChangedNotification'>100</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L98' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.ShutdownNotiifcation'>98</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L538' title='string CADMusicStatusInterface.SLeft(string value, int maxLength)'>538</a> | 80 | 3 :heavy_check_mark: | 0 | 3 | 10 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L112' title='void CADMusicStatusInterface.StartIPC()'>112</a> | 87 | 1 :heavy_check_mark: | 0 | 1 | 7 / 4 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L94' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.StateChangedNotification'>94</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L62' title='event EventHandler? CADMusicStatusInterface.Stop'>62</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L120' title='void CADMusicStatusInterface.StopIPC()'>120</a> | 89 | 1 :heavy_check_mark: | 0 | 1 | 5 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L133' title='void CADMusicStatusInterface.TrackChangedNotification(Song? newtrack)'>133</a> | 73 | 3 :heavy_check_mark: | 0 | 4 | 7 / 4 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L42' title='Version? CADMusicStatusInterface.Version'>42</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L18' title='int CADMusicStatusInterface.WM_COPYDATA'>18</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L15' title='int CADMusicStatusInterface.WM_USER'>15</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L26' title='CADMusicStatusInterface.CADMusicStatusInterface()'>26</a> | 80 | 1 :heavy_check_mark: | 0 | 4 | 7 / 4 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L17' title='string CADMusicStatusInterface.arglpWindowName'>17</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L178' title='void CADMusicStatusInterface.cadRegister()'>178</a> | 56 | 6 :heavy_check_mark: | 0 | 5 | 28 / 15 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L510' title='void CADMusicStatusInterface.cadSendLyrics()'>510</a> | 63 | 5 :heavy_check_mark: | 0 | 6 | 12 / 8 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L230' title='void CADMusicStatusInterface.cadSendSongInfo()'>230</a> | 47 | 14 :x: | 0 | 9 | 50 / 24 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L572' title='void CADMusicStatusInterface.cadShutdown()'>572</a> | 73 | 3 :heavy_check_mark: | 0 | 3 | 7 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L281' title='IntPtr CADMusicStatusInterface.CallbackMsgs(IntPtr Hwnd, int wMsg, IntPtr wparam, IntPtr lparam)'>281</a> | 25 | 71 :exploding_head: | 0 | 10 | 228 / 83 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L163' title='long CADMusicStatusInterface.CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hwnd, long msg, IntPtr wParam, IntPtr lParam)'>163</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 3 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L151' title='void CADMusicStatusInterface.CopyMemory(object hpvDest, object hpvSource, long cbCopy)'>151</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L107' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.CurrentLyricsNotification'>107</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L105' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.CurrentTrackNotification'>105</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L37' title='string CADMusicStatusInterface.Description'>37</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 2 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L127' title='void CADMusicStatusInterface.Dispose()'>127</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 6 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L550' title='void CADMusicStatusInterface.Dispose(bool disposing)'>550</a> | 80 | 3 :heavy_check_mark: | 0 | 4 | 8 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L20' title='bool CADMusicStatusInterface.disposedValue'>20</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L154' title='long CADMusicStatusInterface.FindWindow(string? lpClassName, string lpWindowName)'>154</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L81' title='event Func<Song>? CADMusicStatusInterface.GetCurrentTrack'>81</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L83' title='event Func<ulong>? CADMusicStatusInterface.GetDuration'>83</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L93' title='event Func<string>? CADMusicStatusInterface.GetLyrics'>93</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L85' title='event Func<ulong>? CADMusicStatusInterface.GetPosition'>85</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L89' title='event Func<RepeatState>? CADMusicStatusInterface.GetRepeat'>89</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L91' title='event Func<bool>? CADMusicStatusInterface.GetShuffle'>91</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L87' title='event Func<PlaybackState>? CADMusicStatusInterface.GetState'>87</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L79' title='event Func<byte>? CADMusicStatusInterface.GetVolume'>79</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L14' title='int CADMusicStatusInterface.GWL_WNDPROC'>14</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L22' title='List<GCHandle> CADMusicStatusInterface.Handles'>22</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L215' title='void CADMusicStatusInterface.HookMsg(IntPtr hwnd)'>215</a> | 78 | 1 :heavy_check_mark: | 0 | 5 | 8 / 3 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L35' title='string CADMusicStatusInterface.Name'>35</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L40' title='WrappedStream? CADMusicStatusInterface.Icon'>40</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L559' title='void CADMusicStatusInterface.InitializeComponent()'>559</a> | 79 | 1 :heavy_check_mark: | 0 | 2 | 10 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L523' title='void CADMusicStatusInterface.InterProcessComms(IntPtr lParam)'>523</a> | 65 | 2 :heavy_check_mark: | 0 | 3 | 15 / 8 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L45' title='string CADMusicStatusInterface.Licenses'>45</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L47' title='List<Tuple<Uri, URLType>>? CADMusicStatusInterface.Links'>47</a> | 98 | 2 :heavy_check_mark: | 0 | 6 | 9 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L34' title='ILogger? CADMusicStatusInterface.logger'>34</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L176' title='void CADMusicStatusInterface.MoveMemory(void* dest, void* src, int size)'>176</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L111' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.NewCoverNotification'>111</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L109' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.NewLyricsNotification'>109</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L65' title='event EventHandler? CADMusicStatusInterface.Next'>65</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L59' title='event EventHandler? CADMusicStatusInterface.Pause'>59</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L57' title='event EventHandler? CADMusicStatusInterface.Play'>57</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L142' title='void CADMusicStatusInterface.PlayerStateChanged(PlaybackState newstate)'>142</a> | 73 | 3 :heavy_check_mark: | 0 | 4 | 7 / 4 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L61' title='event EventHandler? CADMusicStatusInterface.PlayPause'>61</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L167' title='long CADMusicStatusInterface.PostMessage(long WndID, long wMsg, long wParam, long lParam)'>167</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L67' title='event EventHandler? CADMusicStatusInterface.Previous'>67</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L24' title='IntPtr CADMusicStatusInterface.PrevProc'>24</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L103' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.RatingChangedNotification'>103</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L97' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.RepeatChangedNotification'>97</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L224' title='string CADMusicStatusInterface.ReplaceNullWithEmptyAndTabsWithSpace(string? input)'>224</a> | 85 | 2 :heavy_check_mark: | 0 | 2 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L157' title='long CADMusicStatusInterface.SendMessage(long hwnd, long wMsg, long wParam, CopyDataStruct lParam)'>157</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L160' title='long CADMusicStatusInterface.SendMessage(long hwnd, long wMsg, long wParam, long lParam)'>160</a> | 88 | 1 :heavy_check_mark: | 0 | 2 | 2 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L71' title='event EventHandler<ulong>? CADMusicStatusInterface.SetPosition'>71</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L77' title='event EventHandler<byte>? CADMusicStatusInterface.SetRating'>77</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L73' title='event EventHandler<RepeatState>? CADMusicStatusInterface.SetRepeat'>73</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L75' title='event EventHandler<bool>? CADMusicStatusInterface.SetShuffle'>75</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L69' title='event EventHandler<byte>? CADMusicStatusInterface.SetVolume'>69</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L170' title='IntPtr CADMusicStatusInterface.SetWindowLongPtr32(IntPtr hWnd, int nIndex, IntPtr dwNewLong)'>170</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L173' title='IntPtr CADMusicStatusInterface.SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong)'>173</a> | 88 | 1 :heavy_check_mark: | 0 | 3 | 2 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L207' title='IntPtr CADMusicStatusInterface.SetWindowProc(IntPtr hWnd, WndProcDelegate newWndProc)'>207</a> | 82 | 2 :heavy_check_mark: | 0 | 3 | 7 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L101' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.ShuffleChangedNotification'>101</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L99' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.ShutdownNotiifcation'>99</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L539' title='string CADMusicStatusInterface.SLeft(string value, int maxLength)'>539</a> | 80 | 3 :heavy_check_mark: | 0 | 3 | 10 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L113' title='void CADMusicStatusInterface.StartIPC()'>113</a> | 87 | 1 :heavy_check_mark: | 0 | 1 | 7 / 4 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L95' title='event EventHandler<IMusicStatusInterface>? CADMusicStatusInterface.StateChangedNotification'>95</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L63' title='event EventHandler? CADMusicStatusInterface.Stop'>63</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L121' title='void CADMusicStatusInterface.StopIPC()'>121</a> | 89 | 1 :heavy_check_mark: | 0 | 1 | 5 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L134' title='void CADMusicStatusInterface.TrackChangedNotification(Song? newtrack)'>134</a> | 73 | 3 :heavy_check_mark: | 0 | 4 | 7 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L43' title='Version? CADMusicStatusInterface.Version'>43</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L19' title='int CADMusicStatusInterface.WM_COPYDATA'>19</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L16' title='int CADMusicStatusInterface.WM_USER'>16</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
 
 <a href="#CADMusicStatusInterface-class-diagram">:link: to `CADMusicStatusInterface` class diagram</a>
 
@@ -3001,9 +3242,9 @@ The `SilverAudioPlayer.CAD` namespace contains 3 named types.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L586' title='int CopyDataStruct.cbData'>586</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L585' title='IntPtr CopyDataStruct.dwData'>585</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L587' title='IntPtr CopyDataStruct.lpData'>587</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L584' title='int CopyDataStruct.cbData'>584</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L583' title='IntPtr CopyDataStruct.dwData'>583</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.CAD/CADMusicStatusInterface.cs#L585' title='IntPtr CopyDataStruct.lpData'>585</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#CADMusicStatusInterface.CopyDataStruct-class-diagram">:link: to `CADMusicStatusInterface.CopyDataStruct` class diagram</a>
 
@@ -3045,7 +3286,7 @@ The *SilverAudioPlayer.Core.csproj* project file contains:
 
 - 1 namespaces.
 - 4 named types.
-- 651 total lines of source code.
+- 653 total lines of source code.
 - Approximately 254 lines of executable code.
 - The highest cyclomatic complexity is 31 :exploding_head:.
 
@@ -3060,7 +3301,7 @@ The *SilverAudioPlayer.Core.csproj* project file contains:
 The `SilverAudioPlayer.Core` namespace contains 4 named types.
 
 - 4 named types.
-- 651 total lines of source code.
+- 653 total lines of source code.
 - Approximately 254 lines of executable code.
 - The highest cyclomatic complexity is 31 :exploding_head:.
 
@@ -3072,73 +3313,74 @@ The `SilverAudioPlayer.Core` namespace contains 4 named types.
 </summary>
 <br>
 
-- The `Logic<T>` contains 61 members.
-- 553 total lines of source code.
+- The `Logic<T>` contains 62 members.
+- 555 total lines of source code.
 - Approximately 223 lines of executable code.
 - The highest cyclomatic complexity is 31 :exploding_head:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L65' title='Logic<T>.Logic(T playercontext)'>65</a> | 62 | 2 :heavy_check_mark: | 0 | 5 | 14 / 13 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L108' title='void Logic<T>.AddMSI(IMusicStatusInterface e)'>108</a> | 60 | 1 :heavy_check_mark: | 0 | 3 | 22 / 19 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L514' title='void Logic<T>.AddSong(Song song, bool expectmore = false)'>514</a> | 64 | 4 :heavy_check_mark: | 0 | 8 | 14 / 9 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L110' title='void Logic<T>.AddMSI(IMusicStatusInterface e)'>110</a> | 60 | 1 :heavy_check_mark: | 0 | 3 | 22 / 19 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L516' title='void Logic<T>.AddSong(Song song, bool expectmore = false)'>516</a> | 64 | 4 :heavy_check_mark: | 0 | 8 | 14 / 9 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L58' title='bool Logic<T>.ChangeAllowed'>58</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L509' title='void Logic<T>.ClearAll()'>509</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L102' title='Song? Logic<T>.CurrentSong'>102</a> | 98 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L530' title='Task Logic<T>.DoSort()'>530</a> | 54 | 13 :x: | 0 | 8 | 25 / 18 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L571' title='IEnumerable<string> Logic<T>.FilterFiles(IEnumerable<string> files)'>571</a> | 70 | 31 :exploding_head: | 0 | 2 | 36 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L566' title='Task<Metadata?>? Logic<T>.GetMetadataFromStream(WrappedStream stream)'>566</a> | 94 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L561' title='IMetadataProvider? Logic<T>.GetMetadataProviderFromStream(WrappedStream stream)'>561</a> | 86 | 2 :heavy_check_mark: | 0 | 5 | 4 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L555' title='IPlay? Logic<T>.GetPlayerFromStream(WrappedStream stream)'>555</a> | 80 | 3 :heavy_check_mark: | 0 | 6 | 5 / 3 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L447' title='void Logic<T>.HandleSongChanging(Song NextSong, bool resetsal = false)'>447</a> | 70 | 1 :heavy_check_mark: | 0 | 4 | 22 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L511' title='void Logic<T>.ClearAll()'>511</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L104' title='Song? Logic<T>.CurrentSong'>104</a> | 98 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L532' title='Task Logic<T>.DoSort()'>532</a> | 54 | 13 :x: | 0 | 8 | 25 / 18 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L573' title='IEnumerable<string> Logic<T>.FilterFiles(IEnumerable<string> files)'>573</a> | 70 | 31 :exploding_head: | 0 | 2 | 36 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L568' title='Task<Metadata?>? Logic<T>.GetMetadataFromStream(WrappedStream stream)'>568</a> | 94 | 2 :heavy_check_mark: | 0 | 6 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L563' title='IMetadataProvider? Logic<T>.GetMetadataProviderFromStream(WrappedStream stream)'>563</a> | 86 | 2 :heavy_check_mark: | 0 | 5 | 4 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L557' title='IPlay? Logic<T>.GetPlayerFromStream(WrappedStream stream)'>557</a> | 80 | 3 :heavy_check_mark: | 0 | 6 | 5 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L449' title='void Logic<T>.HandleSongChanging(Song NextSong, bool resetsal = false)'>449</a> | 70 | 1 :heavy_check_mark: | 0 | 4 | 22 / 6 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L59' title='bool Logic<T>.IsSortRequested'>59</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L90' title='Logger Logic<T>.log'>90</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L322' title='void Logic<T>.MainWindow_Closing(object? sender, CancelEventArgs e)'>322</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L311' title='void Logic<T>.MainWindow_Opened(object? sender, EventArgs e)'>311</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L92' title='Logger Logic<T>.log'>92</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L324' title='void Logic<T>.MainWindow_Closing(object? sender, CancelEventArgs e)'>324</a> | 66 | 3 :heavy_check_mark: | 0 | 6 | 10 / 8 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L313' title='void Logic<T>.MainWindow_Opened(object? sender, EventArgs e)'>313</a> | 76 | 3 :heavy_check_mark: | 0 | 5 | 10 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L88' title='IWillProvideMemory Logic<T>.MemoryProvider'>88</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L82' title='IEnumerable<IMetadataProvider> Logic<T>.MetadataProviders'>82</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L268' title='Song Logic<T>.MusicStatusInterface_GetCurrentTrack()'>268</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L263' title='ulong Logic<T>.MusicStatusInterface_GetDuration()'>263</a> | 88 | 7 :heavy_check_mark: | 0 | 4 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L157' title='ulong Logic<T>.MusicStatusInterface_GetPosition()'>157</a> | 94 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L162' title='RepeatState Logic<T>.MusicStatusInterface_GetRepeat()'>162</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L152' title='bool Logic<T>.MusicStatusInterface_GetShuffle()'>152</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L172' title='PlaybackState Logic<T>.MusicStatusInterface_GetState()'>172</a> | 100 | 3 :heavy_check_mark: | 0 | 4 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L167' title='byte Logic<T>.MusicStatusInterface_GetVolume()'>167</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L278' title='void Logic<T>.MusicStatusInterface_Next(object? sender, EventArgs e)'>278</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L184' title='void Logic<T>.MusicStatusInterface_Pause(object? sender, object e)'>184</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L220' title='void Logic<T>.MusicStatusInterface_Play(object? sender, object e)'>220</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L258' title='void Logic<T>.MusicStatusInterface_PlayPause(object? sender, object e)'>258</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L273' title='void Logic<T>.MusicStatusInterface_Previous(object? sender, EventArgs e)'>273</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L141' title='void Logic<T>.MusicStatusInterface_SetPosition(object? sender, ulong e)'>141</a> | 96 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L146' title='void Logic<T>.MusicStatusInterface_SetRating(object? sender, byte e)'>146</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 5 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L131' title='void Logic<T>.MusicStatusInterface_SetRepeat(object? sender, RepeatState e)'>131</a> | 96 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L136' title='void Logic<T>.MusicStatusInterface_SetVolume(object? sender, byte e)'>136</a> | 92 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L177' title='void Logic<T>.MusicStatusInterface_Stop(object? sender, object e)'>177</a> | 82 | 2 :heavy_check_mark: | 0 | 3 | 6 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L270' title='Song Logic<T>.MusicStatusInterface_GetCurrentTrack()'>270</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L265' title='ulong Logic<T>.MusicStatusInterface_GetDuration()'>265</a> | 88 | 7 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L159' title='ulong Logic<T>.MusicStatusInterface_GetPosition()'>159</a> | 94 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L164' title='RepeatState Logic<T>.MusicStatusInterface_GetRepeat()'>164</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L154' title='bool Logic<T>.MusicStatusInterface_GetShuffle()'>154</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L174' title='PlaybackState Logic<T>.MusicStatusInterface_GetState()'>174</a> | 100 | 3 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L169' title='byte Logic<T>.MusicStatusInterface_GetVolume()'>169</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L280' title='void Logic<T>.MusicStatusInterface_Next(object? sender, EventArgs e)'>280</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L186' title='void Logic<T>.MusicStatusInterface_Pause(object? sender, object e)'>186</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L222' title='void Logic<T>.MusicStatusInterface_Play(object? sender, object e)'>222</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L260' title='void Logic<T>.MusicStatusInterface_PlayPause(object? sender, object e)'>260</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L275' title='void Logic<T>.MusicStatusInterface_Previous(object? sender, EventArgs e)'>275</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L143' title='void Logic<T>.MusicStatusInterface_SetPosition(object? sender, ulong e)'>143</a> | 96 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L148' title='void Logic<T>.MusicStatusInterface_SetRating(object? sender, byte e)'>148</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 5 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L133' title='void Logic<T>.MusicStatusInterface_SetRepeat(object? sender, RepeatState e)'>133</a> | 96 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L138' title='void Logic<T>.MusicStatusInterface_SetVolume(object? sender, byte e)'>138</a> | 92 | 3 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L179' title='void Logic<T>.MusicStatusInterface_Stop(object? sender, object e)'>179</a> | 82 | 2 :heavy_check_mark: | 0 | 3 | 6 / 3 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L57' title='List<IMusicStatusInterface> Logic<T>.musicStatusInterfaces'>57</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L84' title='IEnumerable<IMusicStatusInterface> Logic<T>.MusicStatusInterfaces'>84</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L283' title='void Logic<T>.Next()'>283</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L285' title='void Logic<T>.Next()'>285</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L60' title='Song? Logic<T>.NextSong'>60</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L405' title='void Logic<T>.OutputDevice_PlaybackStopped(object? sender, object o)'>405</a> | 55 | 9 :warning: | 0 | 4 | 41 / 16 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L346' title='void Logic<T>.Pause()'>346</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L333' title='void Logic<T>.Play()'>333</a> | 78 | 3 :heavy_check_mark: | 0 | 3 | 12 / 4 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L92' title='List<MimeType> Logic<T>.PlayableMimes'>92</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L212' title='void Logic<T>.PlaybackStateChangedNotification(PlaybackState s)'>212</a> | 71 | 4 :heavy_check_mark: | 0 | 6 | 11 / 6 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L100' title='IPlay? Logic<T>.Player'>100</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L91' title='T Logic<T>.playerContext'>91</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L249' title='void Logic<T>.PlayPause(bool allowstart)'>249</a> | 80 | 6 :heavy_check_mark: | 0 | 3 | 8 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L407' title='void Logic<T>.OutputDevice_PlaybackStopped(object? sender, object o)'>407</a> | 55 | 9 :warning: | 0 | 4 | 41 / 16 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L348' title='void Logic<T>.Pause()'>348</a> | 93 | 2 :heavy_check_mark: | 0 | 3 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L335' title='void Logic<T>.Play()'>335</a> | 78 | 3 :heavy_check_mark: | 0 | 3 | 12 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L94' title='List<MimeType> Logic<T>.PlayableMimes'>94</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L214' title='void Logic<T>.PlaybackStateChangedNotification(PlaybackState s)'>214</a> | 71 | 4 :heavy_check_mark: | 0 | 6 | 11 / 6 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L102' title='IPlay? Logic<T>.Player'>102</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L93' title='T Logic<T>.playerContext'>93</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L251' title='void Logic<T>.PlayPause(bool allowstart)'>251</a> | 80 | 6 :heavy_check_mark: | 0 | 3 | 8 / 3 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L80' title='IEnumerable<IPlayProvider> Logic<T>.PlayProviders'>80</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L87' title='IEnumerable<IPlayStreamProvider> Logic<T>.PlayStreamProviders'>87</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L297' title='void Logic<T>.Previous()'>297</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L469' title='void Logic<T>.ProcessFiles(IEnumerable<string> files)'>469</a> | 61 | 8 :warning: | 0 | 5 | 20 / 11 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L504' title='void Logic<T>.ProcessStream(WrappedStream stream)'>504</a> | 92 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L490' title='void Logic<T>.ProcessStreams(IEnumerable<WrappedStream> streams)'>490</a> | 67 | 6 :heavy_check_mark: | 0 | 6 | 13 / 7 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L225' title='void Logic<T>.RemoveMSI(IMusicStatusInterface e)'>225</a> | 59 | 1 :heavy_check_mark: | 0 | 3 | 23 / 20 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L396' title='void Logic<T>.RemoveTrack()'>396</a> | 77 | 3 :heavy_check_mark: | 0 | 5 | 8 / 4 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L190' title='void Logic<T>.SendIfStateIsNotNull()'>190</a> | 84 | 3 :heavy_check_mark: | 0 | 3 | 8 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L353' title='void Logic<T>.StartPlaying(bool play = true, bool resetsal = false)'>353</a> | 51 | 9 :warning: | 0 | 8 | 42 / 22 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L299' title='void Logic<T>.Previous()'>299</a> | 68 | 4 :heavy_check_mark: | 0 | 3 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L471' title='void Logic<T>.ProcessFiles(IEnumerable<string> files)'>471</a> | 61 | 8 :warning: | 0 | 5 | 20 / 11 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L506' title='void Logic<T>.ProcessStream(WrappedStream stream)'>506</a> | 92 | 2 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L492' title='void Logic<T>.ProcessStreams(IEnumerable<WrappedStream> streams)'>492</a> | 67 | 6 :heavy_check_mark: | 0 | 6 | 13 / 7 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L227' title='void Logic<T>.RemoveMSI(IMusicStatusInterface e)'>227</a> | 59 | 1 :heavy_check_mark: | 0 | 3 | 23 / 20 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L398' title='void Logic<T>.RemoveTrack()'>398</a> | 77 | 3 :heavy_check_mark: | 0 | 5 | 8 / 4 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L192' title='void Logic<T>.SendIfStateIsNotNull()'>192</a> | 84 | 3 :heavy_check_mark: | 0 | 3 | 8 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L355' title='void Logic<T>.StartPlaying(bool play = true, bool resetsal = false)'>355</a> | 51 | 9 :warning: | 0 | 8 | 42 / 22 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L62' title='bool Logic<T>.StopAutoLoading'>62</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L63' title='CancellationTokenSource? Logic<T>.token'>63</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L203' title='void Logic<T>.TrackChangedNotification(Song? currentSong)'>203</a> | 87 | 2 :heavy_check_mark: | 0 | 5 | 8 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L94' title='byte Logic<T>.Volume'>94</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L205' title='void Logic<T>.TrackChangedNotification(Song? currentSong)'>205</a> | 87 | 2 :heavy_check_mark: | 0 | 5 | 8 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L96' title='byte Logic<T>.Volume'>96</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 5 / 2 |
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Core/Logic.cs#L86' title='IEnumerable<IWakeLockProvider> Logic<T>.WakeLockInterfaces'>86</a> | 100 | 2 :heavy_check_mark: | 0 | 3 | 1 / 0 |
 
 <a href="#Logic&lt;T&gt;-class-diagram">:link: to `Logic&lt;T&gt;` class diagram</a>
@@ -3462,10 +3704,10 @@ The `SilverAudioPlayer.DiscordRP` namespace contains 6 named types.
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L415' title='RememberRichPresenceURLsUsingImgurAndAJsonFile.RememberRichPresenceURLsUsingImgurAndAJsonFile()'>415</a> | 95 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L410' title='MscArtFile[] RememberRichPresenceURLsUsingImgurAndAJsonFile.cached'>410</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L411' title='ApiClient RememberRichPresenceURLsUsingImgurAndAJsonFile.client'>411</a> | 91 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L462' title='void RememberRichPresenceURLsUsingImgurAndAJsonFile.GetCache()'>462</a> | 83 | 3 :heavy_check_mark: | 0 | 1 | 7 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L462' title='void RememberRichPresenceURLsUsingImgurAndAJsonFile.GetCache()'>462</a> | 82 | 3 :heavy_check_mark: | 0 | 1 | 7 / 2 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L420' title='string? RememberRichPresenceURLsUsingImgurAndAJsonFile.GetURL(Song track)'>420</a> | 54 | 8 :warning: | 0 | 5 | 29 / 19 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L412' title='ImageEndpoint RememberRichPresenceURLsUsingImgurAndAJsonFile.imageEndpoint'>412</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L470' title='void RememberRichPresenceURLsUsingImgurAndAJsonFile.SetCache()'>470</a> | 97 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L470' title='void RememberRichPresenceURLsUsingImgurAndAJsonFile.SetCache()'>470</a> | 94 | 1 :heavy_check_mark: | 0 | 1 | 4 / 1 |
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L450' title='string? RememberRichPresenceURLsUsingImgurAndAJsonFile.Upload(byte[] bits)'>450</a> | 74 | 1 :heavy_check_mark: | 0 | 4 | 10 / 5 |
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.DiscordRP/DiscordPlayTracker.cs#L413' title='bool RememberRichPresenceURLsUsingImgurAndAJsonFile.Uploadit'>413</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
 
@@ -3566,6 +3808,331 @@ The `SilverAudioPlayer.DryWetMidi` namespace contains 1 named types.
 
 <a href="#silveraudioplayer-any-playprovider-drywetmidi">:top: back to SilverAudioPlayer.Any.PlayProvider.DryWetMidi</a>
 
+<div id='silveraudioplayer-linux-mpris'></div>
+
+## SilverAudioPlayer.Linux.MPRIS :heavy_check_mark:
+
+The *SilverAudioPlayer.Linux.MPRIS.csproj* project file contains:
+
+- 1 namespaces.
+- 7 named types.
+- 526 total lines of source code.
+- Approximately 109 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+<details>
+<summary>
+  <strong id="silveraudioplayer-linux-mpris">
+    SilverAudioPlayer.Linux.MPRIS :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+The `SilverAudioPlayer.Linux.MPRIS` namespace contains 7 named types.
+
+- 7 named types.
+- 526 total lines of source code.
+- Approximately 109 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+<details>
+<summary>
+  <strong id="imediaplayer2">
+    IMediaPlayer2 :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `IMediaPlayer2` contains 6 members.
+- 10 total lines of source code.
+- Approximately 2 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L16' title='Task<MediaPlayer2Properties> IMediaPlayer2.GetAllAsync()'>16</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L15' title='Task<T> IMediaPlayer2.GetAsync<T>(string prop)'>15</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L14' title='Task IMediaPlayer2.QuitAsync()'>14</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L13' title='Task IMediaPlayer2.RaiseAsync()'>13</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L17' title='Task IMediaPlayer2.SetAsync(string prop, object val)'>17</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L18' title='Task<IDisposable> IMediaPlayer2.WatchPropertiesAsync(Action<PropertyChanges> handler)'>18</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 1 / 0 |
+
+<a href="#IMediaPlayer2-class-diagram">:link: to `IMediaPlayer2` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="iplayer">
+    IPlayer :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `IPlayer` contains 14 members.
+- 18 total lines of source code.
+- Approximately 4 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L148' title='Task<PlayerProperties> IPlayer.GetAllAsync()'>148</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L147' title='Task<T> IPlayer.GetAsync<T>(string prop)'>147</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L137' title='Task IPlayer.NextAsync()'>137</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L145' title='Task IPlayer.OpenUriAsync(string Uri)'>145</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L139' title='Task IPlayer.PauseAsync()'>139</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L142' title='Task IPlayer.PlayAsync()'>142</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L140' title='Task IPlayer.PlayPauseAsync()'>140</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L138' title='Task IPlayer.PreviousAsync()'>138</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L143' title='Task IPlayer.SeekAsync(long Offset)'>143</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L149' title='Task IPlayer.SetAsync(string prop, object val)'>149</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L144' title='Task IPlayer.SetPositionAsync(ObjectPath TrackId, long Position)'>144</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L141' title='Task IPlayer.StopAsync()'>141</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L150' title='Task<IDisposable> IPlayer.WatchPropertiesAsync(Action<PropertyChanges> handler)'>150</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L146' title='Task<IDisposable> IPlayer.WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)'>146</a> | 87 | 1 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+
+<a href="#IPlayer-class-diagram">:link: to `IPlayer` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="mediaplayer2extensions">
+    MediaPlayer2Extensions :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `MediaPlayer2Extensions` contains 7 members.
+- 10 total lines of source code.
+- Approximately 7 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L125' title='Task<bool> MediaPlayer2Extensions.GetCanQuitAsync(IMediaPlayer2 o)'>125</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L126' title='Task<bool> MediaPlayer2Extensions.GetCanRaiseAsync(IMediaPlayer2 o)'>126</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L129' title='Task<string> MediaPlayer2Extensions.GetDesktopEntryAsync(IMediaPlayer2 o)'>129</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L127' title='Task<bool> MediaPlayer2Extensions.GetHasTrackListAsync(IMediaPlayer2 o)'>127</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L128' title='Task<string> MediaPlayer2Extensions.GetIdentityAsync(IMediaPlayer2 o)'>128</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L131' title='Task<string[]> MediaPlayer2Extensions.GetSupportedMimeTypesAsync(IMediaPlayer2 o)'>131</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L130' title='Task<string[]> MediaPlayer2Extensions.GetSupportedUriSchemesAsync(IMediaPlayer2 o)'>130</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+
+<a href="#MediaPlayer2Extensions-class-diagram">:link: to `MediaPlayer2Extensions` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="mediaplayer2properties">
+    MediaPlayer2Properties :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `MediaPlayer2Properties` contains 14 members.
+- 101 total lines of source code.
+- Approximately 16 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L24' title='bool MediaPlayer2Properties._CanQuit'>24</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L38' title='bool MediaPlayer2Properties._CanRaise'>38</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L80' title='string MediaPlayer2Properties._DesktopEntry'>80</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L52' title='bool MediaPlayer2Properties._HasTrackList'>52</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L66' title='string MediaPlayer2Properties._Identity'>66</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L108' title='string[] MediaPlayer2Properties._SupportedMimeTypes'>108</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L94' title='string[] MediaPlayer2Properties._SupportedUriSchemes'>94</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L25' title='bool MediaPlayer2Properties.CanQuit'>25</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L39' title='bool MediaPlayer2Properties.CanRaise'>39</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L81' title='string MediaPlayer2Properties.DesktopEntry'>81</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L53' title='bool MediaPlayer2Properties.HasTrackList'>53</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L67' title='string MediaPlayer2Properties.Identity'>67</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L109' title='string[] MediaPlayer2Properties.SupportedMimeTypes'>109</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L95' title='string[] MediaPlayer2Properties.SupportedUriSchemes'>95</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+
+<a href="#MediaPlayer2Properties-class-diagram">:link: to `MediaPlayer2Properties` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="mpris">
+    MPRIS :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `MPRIS` contains 58 members.
+- 174 total lines of source code.
+- Approximately 37 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L11' title='MPRIS.MPRIS()'>11</a> | 93 | 1 :heavy_check_mark: | 0 | 1 | 7 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L175' title='event EventHandler<IMusicStatusInterface>? MPRIS.CurrentLyricsNotification'>175</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L174' title='event EventHandler<IMusicStatusInterface>? MPRIS.CurrentTrackNotification'>174</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L128' title='string MPRIS.Description'>128</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L19' title='void MPRIS.Dispose()'>19</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L113' title='Task<MediaPlayer2Properties> MPRIS.GetAllAsync()'>113</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L103' title='Task<T> MPRIS.GetAsync<T>(string prop)'>103</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L157' title='event Func<Song>? MPRIS.GetCurrentTrack'>157</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L158' title='event Func<ulong>? MPRIS.GetDuration'>158</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L178' title='event Func<string>? MPRIS.GetLyrics'>178</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L160' title='event Func<ulong>? MPRIS.GetPosition'>160</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L166' title='event Func<RepeatState>? MPRIS.GetRepeat'>166</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L170' title='event Func<bool>? MPRIS.GetShuffle'>170</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L163' title='event Func<PlaybackState>? MPRIS.GetState'>163</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L156' title='event Func<byte>? MPRIS.GetVolume'>156</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L129' title='WrappedStream? MPRIS.Icon'>129</a> | 100 | 2 :heavy_check_mark: | 0 | 2 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L131' title='string MPRIS.Licenses'>131</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L132' title='List<Tuple<Uri, URLType>>? MPRIS.Links'>132</a> | 94 | 2 :heavy_check_mark: | 0 | 6 | 15 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L127' title='string MPRIS.Name'>127</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L177' title='event EventHandler<IMusicStatusInterface>? MPRIS.NewCoverNotification'>177</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L176' title='event EventHandler<IMusicStatusInterface>? MPRIS.NewLyricsNotification'>176</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L153' title='event EventHandler? MPRIS.Next'>153</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L49' title='Task MPRIS.NextAsync()'>49</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L22' title='ObjectPath MPRIS.ObjectPath'>22</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L93' title='Task MPRIS.OpenUriAsync(string Uri)'>93</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L150' title='event EventHandler? MPRIS.Pause'>150</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L59' title='Task MPRIS.PauseAsync()'>59</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L149' title='event EventHandler? MPRIS.Play'>149</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L77' title='Task MPRIS.PlayAsync()'>77</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L45' title='void MPRIS.PlayerStateChanged(PlaybackState newstate)'>45</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L151' title='event EventHandler? MPRIS.PlayPause'>151</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L65' title='Task MPRIS.PlayPauseAsync()'>65</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L154' title='event EventHandler? MPRIS.Previous'>154</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L54' title='Task MPRIS.PreviousAsync()'>54</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L38' title='Task MPRIS.QuitAsync()'>38</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L34' title='Task MPRIS.RaiseAsync()'>34</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L172' title='event EventHandler<IMusicStatusInterface>? MPRIS.RatingChangedNotification'>172</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L165' title='event EventHandler<IMusicStatusInterface>? MPRIS.RepeatChangedNotification'>165</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L83' title='Task MPRIS.SeekAsync(long Offset)'>83</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L118' title='Task MPRIS.SetAsync(string prop, object val)'>118</a> | 100 | 1 :heavy_check_mark: | 0 | 3 | 4 / 1 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L159' title='event EventHandler<ulong>? MPRIS.SetPosition'>159</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L88' title='Task MPRIS.SetPositionAsync(ObjectPath TrackId, long Position)'>88</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L173' title='event EventHandler<byte>? MPRIS.SetRating'>173</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L167' title='event EventHandler<RepeatState>? MPRIS.SetRepeat'>167</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L171' title='event EventHandler<bool>? MPRIS.SetShuffle'>171</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L155' title='event EventHandler<byte>? MPRIS.SetVolume'>155</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L169' title='event EventHandler<IMusicStatusInterface>? MPRIS.ShuffleChangedNotification'>169</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L168' title='event EventHandler<IMusicStatusInterface>? MPRIS.ShutdownNotiifcation'>168</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L108' title='Task<PlayerProperties> MPRIS.GetAllAsync()'>108</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L25' title='void MPRIS.StartIPC()'>25</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 5 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L164' title='event EventHandler<IMusicStatusInterface>? MPRIS.StateChangedNotification'>164</a> | 100 | 0 :heavy_check_mark: | 0 | 3 | 1 / 0 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L152' title='event EventHandler? MPRIS.Stop'>152</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L71' title='Task MPRIS.StopAsync()'>71</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 5 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L31' title='void MPRIS.StopIPC()'>31</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L41' title='void MPRIS.TrackChangedNotification(Song newtrack)'>41</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L130' title='Version? MPRIS.Version'>130</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L123' title='Task<IDisposable> MPRIS.WatchPropertiesAsync(Action<PropertyChanges> handler)'>123</a> | 100 | 1 :heavy_check_mark: | 0 | 6 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/Class1.cs#L98' title='Task<IDisposable> MPRIS.WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)'>98</a> | 89 | 1 :heavy_check_mark: | 0 | 6 | 4 / 2 |
+
+<a href="#MPRIS-class-diagram">:link: to `MPRIS` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="playerextensions">
+    PlayerExtensions :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `PlayerExtensions` contains 15 members.
+- 18 total lines of source code.
+- Approximately 15 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L353' title='Task<bool> PlayerExtensions.GetCanControlAsync(IPlayer o)'>353</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L348' title='Task<bool> PlayerExtensions.GetCanGoNextAsync(IPlayer o)'>348</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L349' title='Task<bool> PlayerExtensions.GetCanGoPreviousAsync(IPlayer o)'>349</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L351' title='Task<bool> PlayerExtensions.GetCanPauseAsync(IPlayer o)'>351</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L350' title='Task<bool> PlayerExtensions.GetCanPlayAsync(IPlayer o)'>350</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L352' title='Task<bool> PlayerExtensions.GetCanSeekAsync(IPlayer o)'>352</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L347' title='Task<double> PlayerExtensions.GetMaximumRateAsync(IPlayer o)'>347</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L343' title='Task<IDictionary<string, object>> PlayerExtensions.GetMetadataAsync(IPlayer o)'>343</a> | 94 | 1 :heavy_check_mark: | 0 | 3 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L346' title='Task<double> PlayerExtensions.GetMinimumRateAsync(IPlayer o)'>346</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L341' title='Task<string> PlayerExtensions.GetPlaybackStatusAsync(IPlayer o)'>341</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L345' title='Task<long> PlayerExtensions.GetPositionAsync(IPlayer o)'>345</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L342' title='Task<double> PlayerExtensions.GetRateAsync(IPlayer o)'>342</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L344' title='Task<double> PlayerExtensions.GetVolumeAsync(IPlayer o)'>344</a> | 94 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L354' title='Task PlayerExtensions.SetRateAsync(IPlayer o, double val)'>354</a> | 93 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L355' title='Task PlayerExtensions.SetVolumeAsync(IPlayer o, double val)'>355</a> | 93 | 1 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+
+<a href="#PlayerExtensions-class-diagram">:link: to `PlayerExtensions` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="playerproperties">
+    PlayerProperties :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `PlayerProperties` contains 26 members.
+- 185 total lines of source code.
+- Approximately 28 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L324' title='bool PlayerProperties._CanControl'>324</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L254' title='bool PlayerProperties._CanGoNext'>254</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L268' title='bool PlayerProperties._CanGoPrevious'>268</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L296' title='bool PlayerProperties._CanPause'>296</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L282' title='bool PlayerProperties._CanPlay'>282</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L310' title='bool PlayerProperties._CanSeek'>310</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L240' title='double PlayerProperties._MaximumRate'>240</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L184' title='IDictionary<string, object> PlayerProperties._Metadata'>184</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L226' title='double PlayerProperties._MinimumRate'>226</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L156' title='string PlayerProperties._PlaybackStatus'>156</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L212' title='long PlayerProperties._Position'>212</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L170' title='double PlayerProperties._Rate'>170</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L198' title='double PlayerProperties._Volume'>198</a> | 93 | 0 :heavy_check_mark: | 0 | 0 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L325' title='bool PlayerProperties.CanControl'>325</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L255' title='bool PlayerProperties.CanGoNext'>255</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L269' title='bool PlayerProperties.CanGoPrevious'>269</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L297' title='bool PlayerProperties.CanPause'>297</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L283' title='bool PlayerProperties.CanPlay'>283</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L311' title='bool PlayerProperties.CanSeek'>311</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L241' title='double PlayerProperties.MaximumRate'>241</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L185' title='IDictionary<string, object> PlayerProperties.Metadata'>185</a> | 98 | 2 :heavy_check_mark: | 0 | 1 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L227' title='double PlayerProperties.MinimumRate'>227</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L157' title='string PlayerProperties.PlaybackStatus'>157</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L213' title='long PlayerProperties.Position'>213</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L171' title='double PlayerProperties.Rate'>171</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Linux.MPRIS/instance1214.DBus.cs#L199' title='double PlayerProperties.Volume'>199</a> | 98 | 2 :heavy_check_mark: | 0 | 0 | 12 / 2 |
+
+<a href="#PlayerProperties-class-diagram">:link: to `PlayerProperties` class diagram</a>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
+</details>
+
+</details>
+
+<a href="#silveraudioplayer-linux-mpris">:top: back to SilverAudioPlayer.Linux.MPRIS</a>
+
 <div id='silveraudioplayer-any-metadatasource-z440atlcore'></div>
 
 ## SilverAudioPlayer.Any.MetadataSource.Z440AtlCore :heavy_check_mark:
@@ -3573,24 +4140,24 @@ The `SilverAudioPlayer.DryWetMidi` namespace contains 1 named types.
 The *SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj* project file contains:
 
 - 1 namespaces.
-- 3 named types.
-- 134 total lines of source code.
-- Approximately 47 lines of executable code.
+- 4 named types.
+- 171 total lines of source code.
+- Approximately 62 lines of executable code.
 - The highest cyclomatic complexity is 3 :heavy_check_mark:.
 
 <details>
 <summary>
-  <strong id="silveraudioplayer-metadatasource-z440atlcore">
-    SilverAudioPlayer.MetadataSource.Z440AtlCore :heavy_check_mark:
+  <strong id="silveraudioplayer-any-metadatasource-z440atlcore">
+    SilverAudioPlayer.Any.MetadataSource.Z440AtlCore :heavy_check_mark:
   </strong>
 </summary>
 <br>
 
-The `SilverAudioPlayer.MetadataSource.Z440AtlCore` namespace contains 3 named types.
+The `SilverAudioPlayer.Any.MetadataSource.Z440AtlCore` namespace contains 4 named types.
 
-- 3 named types.
-- 134 total lines of source code.
-- Approximately 47 lines of executable code.
+- 4 named types.
+- 171 total lines of source code.
+- Approximately 62 lines of executable code.
 - The highest cyclomatic complexity is 3 :heavy_check_mark:.
 
 <details>
@@ -3601,29 +4168,31 @@ The `SilverAudioPlayer.MetadataSource.Z440AtlCore` namespace contains 3 named ty
 </summary>
 <br>
 
-- The `AtlCoreFileMetadataProvider` contains 12 members.
-- 91 total lines of source code.
-- Approximately 24 lines of executable code.
+- The `AtlCoreFileMetadataProvider` contains 14 members.
+- 110 total lines of source code.
+- Approximately 32 lines of executable code.
 - The highest cyclomatic complexity is 3 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L17' title='AtlCoreFileMetadataProvider.AtlCoreFileMetadataProvider()'>17</a> | 77 | 1 :heavy_check_mark: | 0 | 4 | 8 / 4 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L14' title='bool AtlCoreFileMetadataProvider.AllowMidi'>14</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L87' title='bool AtlCoreFileMetadataProvider.CanGetMetadata(WrappedStream stream)'>87</a> | 77 | 3 :heavy_check_mark: | 0 | 3 | 6 / 3 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L15' title='List<IConfigurableElement> AtlCoreFileMetadataProvider.ConfigurableElements'>15</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L32' title='string AtlCoreFileMetadataProvider.Description'>32</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L26' title='List<IConfigurableElement> AtlCoreFileMetadataProvider.GetElements()'>26</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L94' title='Task<Metadata?> AtlCoreFileMetadataProvider.GetMetadata(WrappedStream stream)'>94</a> | 85 | 1 :heavy_check_mark: | 0 | 7 | 6 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L34' title='WrappedStream? AtlCoreFileMetadataProvider.Icon'>34</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L39' title='string AtlCoreFileMetadataProvider.Licenses'>39</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 35 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L75' title='List<Tuple<Uri, URLType>>? AtlCoreFileMetadataProvider.Links'>75</a> | 96 | 2 :heavy_check_mark: | 0 | 7 | 11 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L31' title='string AtlCoreFileMetadataProvider.Name'>31</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L37' title='Version? AtlCoreFileMetadataProvider.Version'>37</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L18' title='AtlCoreFileMetadataProvider.AtlCoreFileMetadataProvider()'>18</a> | 70 | 2 :heavy_check_mark: | 0 | 7 | 18 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L106' title='bool AtlCoreFileMetadataProvider.CanGetMetadata(WrappedStream stream)'>106</a> | 77 | 3 :heavy_check_mark: | 0 | 3 | 6 / 3 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L15' title='ObjectToRemember AtlCoreFileMetadataProvider.ConfigObject'>15</a> | 93 | 0 :heavy_check_mark: | 0 | 3 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L14' title='List<IConfigurableElement> AtlCoreFileMetadataProvider.ConfigurableElements'>14</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L50' title='string AtlCoreFileMetadataProvider.Description'>50</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L36' title='bool AtlCoreFileMetadataProvider.GetAllowedMidi()'>36</a> | 81 | 2 :heavy_check_mark: | 0 | 3 | 8 / 3 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L44' title='List<IConfigurableElement> AtlCoreFileMetadataProvider.GetElements()'>44</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L113' title='Task<Metadata?> AtlCoreFileMetadataProvider.GetMetadata(WrappedStream stream)'>113</a> | 85 | 1 :heavy_check_mark: | 0 | 7 | 6 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L52' title='WrappedStream? AtlCoreFileMetadataProvider.Icon'>52</a> | 100 | 2 :heavy_check_mark: | 0 | 5 | 2 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L57' title='string AtlCoreFileMetadataProvider.Licenses'>57</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 35 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L93' title='List<Tuple<Uri, URLType>>? AtlCoreFileMetadataProvider.Links'>93</a> | 96 | 2 :heavy_check_mark: | 0 | 7 | 11 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L49' title='string AtlCoreFileMetadataProvider.Name'>49</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L16' title='ObjectToRemember[] AtlCoreFileMetadataProvider.ObjectsToRememberForMe'>16</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadataProvider.cs#L55' title='Version? AtlCoreFileMetadataProvider.Version'>55</a> | 100 | 2 :heavy_check_mark: | 0 | 4 | 1 / 2 |
 
 <a href="#AtlCoreFileMetadataProvider-class-diagram">:link: to `AtlCoreFileMetadataProvider` class diagram</a>
 
-<a href="#silveraudioplayer-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.MetadataSource.Z440AtlCore</a>
+<a href="#silveraudioplayer-any-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</a>
 
 </details>
 
@@ -3642,12 +4211,12 @@ The `SilverAudioPlayer.MetadataSource.Z440AtlCore` namespace contains 3 named ty
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadata.cs#L8' title='AtlCoreMetadata.AtlCoreMetadata(Track theTrack)'>8</a> | 60 | 1 :heavy_check_mark: | 0 | 5 | 18 / 17 |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadata.cs#L27' title='Track AtlCoreMetadata.OGInfo'>27</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadata.cs#L9' title='AtlCoreMetadata.AtlCoreMetadata(Track theTrack)'>9</a> | 60 | 1 :heavy_check_mark: | 0 | 5 | 18 / 17 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/AtlCoreMetadata.cs#L28' title='Track AtlCoreMetadata.OGInfo'>28</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
 
 <a href="#AtlCoreMetadata-class-diagram">:link: to `AtlCoreMetadata` class diagram</a>
 
-<a href="#silveraudioplayer-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.MetadataSource.Z440AtlCore</a>
+<a href="#silveraudioplayer-any-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</a>
 
 </details>
 
@@ -3671,7 +4240,34 @@ The `SilverAudioPlayer.MetadataSource.Z440AtlCore` namespace contains 3 named ty
 
 <a href="#ATLCOREPicture-class-diagram">:link: to `ATLCOREPicture` class diagram</a>
 
-<a href="#silveraudioplayer-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.MetadataSource.Z440AtlCore</a>
+<a href="#silveraudioplayer-any-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="zatlcoreconfig">
+    ZAtlCoreConfig :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ZAtlCoreConfig` contains 5 members.
+- 14 total lines of source code.
+- Approximately 7 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/ZAtlCoreConfig.cs#L21' title='bool ZAtlCoreConfig._AllowedRead'>21</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/ZAtlCoreConfig.cs#L23' title='bool ZAtlCoreConfig.AllowedToRead'>23</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/ZAtlCoreConfig.cs#L15' title='void ZAtlCoreConfig.PropertyChanged(object e, PropertyChangedEventArgs a)'>15</a> | 93 | 2 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Event | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/ZAtlCoreConfig.cs#L25' title='event PropertyChangedEventHandler? ZAtlCoreConfig.PropertyChanged'>25</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.MetadataSource.Z440AtlCore/ZAtlCoreConfig.cs#L20' title='bool ZAtlCoreConfig.ReadMidiMetadata'>20</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 2 / 3 |
+
+<a href="#ZAtlCoreConfig-class-diagram">:link: to `ZAtlCoreConfig` class diagram</a>
+
+<a href="#silveraudioplayer-any-metadatasource-z440atlcore">:top: back to SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</a>
 
 </details>
 
@@ -4065,77 +4661,11 @@ The `SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers` namespace contains 3 nam
 
 The *SilverAudioPlayer.Shared.csproj* project file contains:
 
-- 3 namespaces.
-- 41 named types.
-- 968 total lines of source code.
-- Approximately 147 lines of executable code.
+- 2 namespaces.
+- 46 named types.
+- 1,008 total lines of source code.
+- Approximately 151 lines of executable code.
 - The highest cyclomatic complexity is 15 :exploding_head:.
-
-<details>
-<summary>
-  <strong id="silverconfig-cobaltextensions">
-    SilverConfig.CobaltExtensions :radioactive:
-  </strong>
-</summary>
-<br>
-
-The `SilverConfig.CobaltExtensions` namespace contains 2 named types.
-
-- 2 named types.
-- 57 total lines of source code.
-- Approximately 17 lines of executable code.
-- The highest cyclomatic complexity is 11 :radioactive:.
-
-<details>
-<summary>
-  <strong id="commentxmlconfigreadernotifywhenchangedt">
-    CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt; :radioactive:
-  </strong>
-</summary>
-<br>
-
-- The `CommentXmlConfigReaderNotifyWhenChanged<T>` contains 3 members.
-- 49 total lines of source code.
-- Approximately 17 lines of executable code.
-- The highest cyclomatic complexity is 11 :radioactive:.
-
-| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
-| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L17' title='void CommentXmlConfigReaderNotifyWhenChanged<T>.Dispose()'>17</a> | 96 | 2 :heavy_check_mark: | 0 | 4 | 4 / 1 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L15' title='List<FileSystemWatcher> CommentXmlConfigReaderNotifyWhenChanged<T>.fileSystemWatchers'>15</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L22' title='T? CommentXmlConfigReaderNotifyWhenChanged<T>.Read(string path)'>22</a> | 55 | 11 :radioactive: | 0 | 7 | 38 / 15 |
-
-<a href="#CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt;-class-diagram">:link: to `CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt;` class diagram</a>
-
-<a href="#silverconfig-cobaltextensions">:top: back to SilverConfig.CobaltExtensions</a>
-
-</details>
-
-<details>
-<summary>
-  <strong id="iletnotify">
-    ILetNotify :heavy_check_mark:
-  </strong>
-</summary>
-<br>
-
-- The `ILetNotify` contains 2 members.
-- 5 total lines of source code.
-- Approximately 0 lines of executable code.
-- The highest cyclomatic complexity is 1 :heavy_check_mark:.
-
-| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
-| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L8' title='bool ILetNotify.AllowedToRead'>8</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 1 / 0 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L9' title='void ILetNotify.Invoke(object e, PropertyChangedEventArgs a)'>9</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
-
-<a href="#ILetNotify-class-diagram">:link: to `ILetNotify` class diagram</a>
-
-<a href="#silverconfig-cobaltextensions">:top: back to SilverConfig.CobaltExtensions</a>
-
-</details>
-
-</details>
 
 <details>
 <summary>
@@ -4459,12 +4989,37 @@ The `SilverAudioPlayer.Shared.ConfigScreen` namespace contains 12 named types.
 </summary>
 <br>
 
-The `SilverAudioPlayer.Shared` namespace contains 27 named types.
+The `SilverAudioPlayer.Shared` namespace contains 34 named types.
 
-- 27 named types.
-- 783 total lines of source code.
-- Approximately 113 lines of executable code.
+- 34 named types.
+- 880 total lines of source code.
+- Approximately 134 lines of executable code.
 - The highest cyclomatic complexity is 15 :exploding_head:.
+
+<details>
+<summary>
+  <strong id="commentxmlconfigreadernotifywhenchangedt">
+    CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt; :radioactive:
+  </strong>
+</summary>
+<br>
+
+- The `CommentXmlConfigReaderNotifyWhenChanged<T>` contains 3 members.
+- 49 total lines of source code.
+- Approximately 17 lines of executable code.
+- The highest cyclomatic complexity is 11 :radioactive:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L13' title='void CommentXmlConfigReaderNotifyWhenChanged<T>.Dispose()'>13</a> | 96 | 2 :heavy_check_mark: | 0 | 4 | 4 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L11' title='List<FileSystemWatcher> CommentXmlConfigReaderNotifyWhenChanged<T>.fileSystemWatchers'>11</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/CommentXmlConfigReaderNotifyWhenChanged.cs#L18' title='T? CommentXmlConfigReaderNotifyWhenChanged<T>.Read(string path)'>18</a> | 55 | 11 :radioactive: | 0 | 7 | 38 / 15 |
+
+<a href="#CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt;-class-diagram">:link: to `CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt;` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
 
 <details>
 <summary>
@@ -4484,6 +5039,53 @@ The `SilverAudioPlayer.Shared` namespace contains 27 named types.
 | Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/HttpClient.cs#L5' title='HttpClient HttpClient.Client'>5</a> | 93 | 0 :heavy_check_mark: | 0 | 1 | 1 / 1 |
 
 <a href="#HttpClient-class-diagram">:link: to `HttpClient` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="iamonceagainaskingyouforyourmemory">
+    IAmOnceAgainAskingYouForYourMemory :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `IAmOnceAgainAskingYouForYourMemory` contains 1 members.
+- 4 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L12' title='ObjectToRemember[] IAmOnceAgainAskingYouForYourMemory.ObjectsToRememberForMe'>12</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+
+<a href="#IAmOnceAgainAskingYouForYourMemory-class-diagram">:link: to `IAmOnceAgainAskingYouForYourMemory` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="icanbetoldthatapartofmeischanged">
+    ICanBeToldThatAPartOfMeIsChanged :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ICanBeToldThatAPartOfMeIsChanged` contains 2 members.
+- 5 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L17' title='bool ICanBeToldThatAPartOfMeIsChanged.AllowedToRead'>17</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L16' title='void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object sender, PropertyChangedEventArgs e)'>16</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+
+<a href="#ICanBeToldThatAPartOfMeIsChanged-class-diagram">:link: to `ICanBeToldThatAPartOfMeIsChanged` class diagram</a>
 
 <a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
 
@@ -4534,6 +5136,29 @@ The `SilverAudioPlayer.Shared` namespace contains 27 named types.
 | Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IPlugin.cs#L20' title='Version? ICodeInformation.Version'>20</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
 
 <a href="#ICodeInformation-class-diagram">:link: to `ICodeInformation` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="ihaveconfigfileswithknownlocations">
+    IHaveConfigFilesWithKnownLocations :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `IHaveConfigFilesWithKnownLocations` contains 1 members.
+- 4 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IHaveConfigFilesWithKnownLocations.cs#L5' title='string[] IHaveConfigFilesWithKnownLocations.KnownConfigFileLocations'>5</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+
+<a href="#IHaveConfigFilesWithKnownLocations-class-diagram">:link: to `IHaveConfigFilesWithKnownLocations` class diagram</a>
 
 <a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
 
@@ -4823,6 +5448,53 @@ The `SilverAudioPlayer.Shared` namespace contains 27 named types.
 
 <details>
 <summary>
+  <strong id="iwillprovidememory">
+    IWillProvideMemory :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `IWillProvideMemory` contains 2 members.
+- 5 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L44' title='void IWillProvideMemory.MakeSureAllIsWell()'>44</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L43' title='void IWillProvideMemory.RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember)'>43</a> | 100 | 1 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+
+<a href="#IWillProvideMemory-class-diagram">:link: to `IWillProvideMemory` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="iwilltellyouwhereistoretheconfigs">
+    IWillTellYouWhereIStoreTheConfigs :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `IWillTellYouWhereIStoreTheConfigs` contains 1 members.
+- 4 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L39' title='string IWillTellYouWhereIStoreTheConfigs.GetConfig(Guid id)'>39</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+
+<a href="#IWillTellYouWhereIStoreTheConfigs-class-diagram">:link: to `IWillTellYouWhereIStoreTheConfigs` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
+
+<details>
+<summary>
   <strong id="logger">
     Logger :heavy_check_mark:
   </strong>
@@ -4925,6 +5597,31 @@ The `SilverAudioPlayer.Shared` namespace contains 27 named types.
 | Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/Song.cs#L151' title='string MimeTypeExtensions.RealMimeTypeToFakeMimeType(MimeType realmime)'>151</a> | 97 | 1 :heavy_check_mark: | 0 | 2 | 4 / 1 |
 
 <a href="#MimeTypeExtensions-class-diagram">:link: to `MimeTypeExtensions` class diagram</a>
+
+<a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="objecttoremember">
+    ObjectToRemember :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ObjectToRemember` contains 3 members.
+- 18 total lines of source code.
+- Approximately 4 lines of executable code.
+- The highest cyclomatic complexity is 4 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L21' title='ObjectToRemember.ObjectToRemember(Guid id, object value)'>21</a> | 73 | 4 :heavy_check_mark: | 0 | 5 | 12 / 4 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L34' title='Guid ObjectToRemember.Id'>34</a> | 100 | 2 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Property | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.Shared/IAmOnceAgainAskingYouForYourMemory.cs#L35' title='object ObjectToRemember.Value'>35</a> | 100 | 2 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+
+<a href="#ObjectToRemember-class-diagram">:link: to `ObjectToRemember` class diagram</a>
 
 <a href="#silveraudioplayer-shared">:top: back to SilverAudioPlayer.Shared</a>
 
@@ -6182,6 +6879,145 @@ The `SilverAudioPlayer.Windows.PlatformHelper.Win` namespace contains 2 named ty
 
 <a href="#silveraudioplayer-windows-platformhelper-win">:top: back to SilverAudioPlayer.Windows.PlatformHelper.Win</a>
 
+<div id='silveraudioplayer-wpf'></div>
+
+## SilverAudioPlayer.WPF :exploding_head:
+
+The *SilverAudioPlayer.WPF.csproj* project file contains:
+
+- 1 namespaces.
+- 4 named types.
+- 346 total lines of source code.
+- Approximately 93 lines of executable code.
+- The highest cyclomatic complexity is 19 :exploding_head:.
+
+<details>
+<summary>
+  <strong id="silveraudioplayer-wpf">
+    SilverAudioPlayer.WPF :exploding_head:
+  </strong>
+</summary>
+<br>
+
+The `SilverAudioPlayer.WPF` namespace contains 4 named types.
+
+- 4 named types.
+- 346 total lines of source code.
+- Approximately 93 lines of executable code.
+- The highest cyclomatic complexity is 19 :exploding_head:.
+
+<details>
+<summary>
+  <strong id="app">
+    App :question:
+  </strong>
+</summary>
+<br>
+
+- The `App` contains 0 members.
+- 6 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 0 :question:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+
+<a href="#App-class-diagram">:link: to `App` class diagram</a>
+
+<a href="#silveraudioplayer-wpf">:top: back to SilverAudioPlayer.WPF</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="mainwindow">
+    MainWindow :exploding_head:
+  </strong>
+</summary>
+<br>
+
+- The `MainWindow` contains 13 members.
+- 245 total lines of source code.
+- Approximately 92 lines of executable code.
+- The highest cyclomatic complexity is 19 :exploding_head:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L177' title='MainWindow.MainWindow()'>177</a> | 38 | 19 :exploding_head: | 0 | 20 | 148 / 60 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L131' title='CompositionHost MainWindow.Container'>131</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L326' title='void MainWindow.ListView_DragOver(object sender, DragEventArgs e)'>326</a> | 86 | 3 :heavy_check_mark: | 0 | 2 | 7 / 2 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L334' title='void MainWindow.ListView_Drop(object sender, DragEventArgs e)'>334</a> | 71 | 3 :heavy_check_mark: | 0 | 4 | 13 / 6 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L363' title='void MainWindow.ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)'>363</a> | 85 | 2 :heavy_check_mark: | 0 | 5 | 7 / 2 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L133' title='Logic<MainWindowContext> MainWindow.Logic'>133</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L349' title='void MainWindow.PauseClick(object sender, RoutedEventArgs e)'>349</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L353' title='void MainWindow.PB_MouseUp(object sender, MouseButtonEventArgs e)'>353</a> | 72 | 2 :heavy_check_mark: | 0 | 4 | 9 / 5 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L348' title='void MainWindow.PlayClick(object sender, RoutedEventArgs e)'>348</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L137' title='void MainWindow.SndThrd(CancellationToken e)'>137</a> | 60 | 11 :radioactive: | 0 | 6 | 40 / 13 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L350' title='void MainWindow.StopClick(object sender, RoutedEventArgs e)'>350</a> | 100 | 1 :heavy_check_mark: | 0 | 4 | 1 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L136' title='Thread? MainWindow.th'>136</a> | 100 | 0 :heavy_check_mark: | 0 | 2 | 1 / 0 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L134' title='CancellationTokenSource? MainWindow.token'>134</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+
+<a href="#MainWindow-class-diagram">:link: to `MainWindow` class diagram</a>
+
+<a href="#silveraudioplayer-wpf">:top: back to SilverAudioPlayer.WPF</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="mainwindowcontext">
+    MainWindowContext :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `MainWindowContext` contains 3 members.
+- 67 total lines of source code.
+- Approximately 1 lines of executable code.
+- The highest cyclomatic complexity is 2 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L65' title='string MainWindowContext._Title'>65</a> | 100 | 0 :heavy_check_mark: | 0 | 0 | 1 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L67' title='MainWindowContext.MainWindowContext(MainWindow mw)'>67</a> | 92 | 2 :heavy_check_mark: | 0 | 4 | 26 / 1 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L61' title='MainWindow MainWindowContext.mainWindow'>61</a> | 100 | 0 :heavy_check_mark: | 0 | 1 | 1 / 0 |
+
+<a href="#MainWindowContext-class-diagram">:link: to `MainWindowContext` class diagram</a>
+
+<a href="#silveraudioplayer-wpf">:top: back to SilverAudioPlayer.WPF</a>
+
+</details>
+
+<details>
+<summary>
+  <strong id="providersreturnednullexception">
+    ProvidersReturnedNullException :heavy_check_mark:
+  </strong>
+</summary>
+<br>
+
+- The `ProvidersReturnedNullException` contains 4 members.
+- 21 total lines of source code.
+- Approximately 0 lines of executable code.
+- The highest cyclomatic complexity is 1 :heavy_check_mark:.
+
+| Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L41' title='ProvidersReturnedNullException.ProvidersReturnedNullException()'>41</a> | 100 | 1 :heavy_check_mark: | 0 | 0 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L45' title='ProvidersReturnedNullException.ProvidersReturnedNullException(string message)'>45</a> | 100 | 1 :heavy_check_mark: | 0 | 1 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L49' title='ProvidersReturnedNullException.ProvidersReturnedNullException(string message, Exception inner)'>49</a> | 98 | 1 :heavy_check_mark: | 0 | 2 | 3 / 0 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayer.WPF/MainWindow.xaml.cs#L53' title='ProvidersReturnedNullException.ProvidersReturnedNullException(SerializationInfo info, StreamingContext context)'>53</a> | 98 | 1 :heavy_check_mark: | 0 | 3 | 5 / 0 |
+
+<a href="#ProvidersReturnedNullException-class-diagram">:link: to `ProvidersReturnedNullException` class diagram</a>
+
+<a href="#silveraudioplayer-wpf">:top: back to SilverAudioPlayer.WPF</a>
+
+</details>
+
+</details>
+
+<a href="#silveraudioplayer-wpf">:top: back to SilverAudioPlayer.WPF</a>
+
 <div id='silveraudioplayerbuilder'></div>
 
 ## SilverAudioPlayerBuilder :heavy_check_mark:
@@ -6190,7 +7026,7 @@ The *SilverAudioPlayerBuilder.csproj* project file contains:
 
 - 1 namespaces.
 - 3 named types.
-- 137 total lines of source code.
+- 139 total lines of source code.
 - Approximately 46 lines of executable code.
 - The highest cyclomatic complexity is 7 :heavy_check_mark:.
 
@@ -6205,7 +7041,7 @@ The *SilverAudioPlayerBuilder.csproj* project file contains:
 The `SilverAudioPlayerBuilder` namespace contains 3 named types.
 
 - 3 named types.
-- 137 total lines of source code.
+- 139 total lines of source code.
 - Approximately 46 lines of executable code.
 - The highest cyclomatic complexity is 7 :heavy_check_mark:.
 
@@ -6242,16 +7078,16 @@ The `SilverAudioPlayerBuilder` namespace contains 3 named types.
 <br>
 
 - The `MainWindow` contains 4 members.
-- 96 total lines of source code.
+- 98 total lines of source code.
 - Approximately 40 lines of executable code.
 - The highest cyclomatic complexity is 7 :heavy_check_mark:.
 
 | Member kind | Line number | Maintainability index | Cyclomatic complexity | Depth of inheritance | Class coupling | Lines of source / executable code |
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L28' title='MainWindow.MainWindow()'>28</a> | 48 | 7 :heavy_check_mark: | 0 | 7 | 55 / 29 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L27' title='Dictionary<string, CheckBox> MainWindow.CheckBoxes'>27</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
-| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L84' title='void MainWindow.DOIT_Click(object? sender, RoutedEventArgs e)'>84</a> | 63 | 4 :heavy_check_mark: | 0 | 10 | 24 / 9 |
-| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L15' title='Dictionary<string, string> MainWindow.Modules'>15</a> | 80 | 0 :heavy_check_mark: | 0 | 2 | 11 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L30' title='MainWindow.MainWindow()'>30</a> | 48 | 7 :heavy_check_mark: | 0 | 7 | 55 / 29 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L29' title='Dictionary<string, CheckBox> MainWindow.CheckBoxes'>29</a> | 93 | 0 :heavy_check_mark: | 0 | 2 | 1 / 1 |
+| Method | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L86' title='void MainWindow.DOIT_Click(object? sender, RoutedEventArgs e)'>86</a> | 63 | 4 :heavy_check_mark: | 0 | 10 | 24 / 9 |
+| Field | <a href='https://github.com/thesilvercraft/SilverAudioPlayer/blob/master/SilverAudioPlayerBuilder/MainWindow.axaml.cs#L15' title='Dictionary<string, string> MainWindow.Modules'>15</a> | 79 | 0 :heavy_check_mark: | 0 | 2 | 13 / 1 |
 
 <a href="#MainWindow-class-diagram">:link: to `MainWindow` class diagram</a>
 
@@ -7832,6 +8668,46 @@ class CRCBase<T>{
 
 ```
 
+<div id="-class-diagram"></div>
+
+##### `` class diagram
+
+```mermaid
+classDiagram
+IEquatable~~ <|--  : implements
+class {
+}
+
+```
+
+<div id="ObjectClass-class-diagram"></div>
+
+##### `ObjectClass` class diagram
+
+```mermaid
+classDiagram
+class ObjectClass{
+}
+
+```
+
+<div id="SilverConfigMemoryProvider-class-diagram"></div>
+
+##### `SilverConfigMemoryProvider` class diagram
+
+```mermaid
+classDiagram
+IWillTellYouWhereIStoreTheConfigs <|-- SilverConfigMemoryProvider : implements
+class SilverConfigMemoryProvider{
+    -List<ObjectClass> Classes
+    -string basedir
+    +MakeSureAllIsWell() void
+    +RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember) void
+    +GetConfig(Guid id) string
+}
+
+```
+
 <div id="MidiMetadata-class-diagram"></div>
 
 ##### `MidiMetadata` class diagram
@@ -7860,6 +8736,78 @@ class MidiMetadataProvider{
     +List<Tuple<Uri, URLType>>? Links
     +CanGetMetadata(WrappedStream stream) bool
     +GetMetadata(WrappedStream stream) Task<Metadata?>
+}
+
+```
+
+<div id="ChromeCastPlayer-class-diagram"></div>
+
+##### `ChromeCastPlayer` class diagram
+
+```mermaid
+classDiagram
+class ChromeCastPlayer{
+    -IMediaChannel? mediaChannel
+    -MediaStatus? state
+    -ContentProviderBuilder? content
+    -IServerHost? server
+    +.ctor(WrappedStream stream, Sender sender, IReceiver chromecast) ChromeCastPlayer
+    +MediaChannel_StatusChanged(object? sender, EventArgs e) void
+    +getIPv4(string chromecast) string?
+    +GetMediaChannelStatus() MediaStatus?
+    +ChannelCount() uint?
+    +GetBitsPerSample() uint?
+    +GetPlaybackState() PlaybackState?
+    +GetPosition() TimeSpan
+    +GetSampleRate() long?
+    +Length() TimeSpan?
+    +Pause() void
+    +Play() void
+    +Resume() void
+    +SetPosition(TimeSpan position) void
+    +SetVolume(byte volume) void
+    +Stop() void
+}
+
+```
+
+<div id="ChromeCastPlayProvider-class-diagram"></div>
+
+##### `ChromeCastPlayProvider` class diagram
+
+```mermaid
+classDiagram
+IAmOnceAgainAskingYouForYourMemory <|-- ChromeCastPlayProvider : implements
+class ChromeCastPlayProvider{
+    -ObjectToRemember[] _ObjectsToRememberForMe
+    +IReadOnlyList<MimeType>? SupportedMimes
+    +IPlayProviderListner ProviderListner
+    +string Name
+    +string Description
+    +WrappedStream? Icon
+    +Version? Version
+    +string Licenses
+    +List<Tuple<Uri, URLType>>? Links
+    +ObjectToRemember[] ObjectsToRememberForMe
+    +.ctor() ChromeCastPlayProvider
+    +CanPlayFile(WrappedStream stream) bool
+    +GetPlayer(WrappedStream stream) IPlay?
+    +OnStartup() Task
+}
+
+```
+
+<div id="ChromeCastSettings-class-diagram"></div>
+
+##### `ChromeCastSettings` class diagram
+
+```mermaid
+classDiagram
+ICanBeToldThatAPartOfMeIsChanged <|-- ChromeCastSettings : implements
+class ChromeCastSettings{
+    +Guid ChromeCast
+    +bool AllowedToRead
+    +PropertyChanged(object sender, PropertyChangedEventArgs e) void
 }
 
 ```
@@ -8138,13 +9086,13 @@ class App{
 
 ```mermaid
 classDiagram
-ILetNotify <|-- Config : implements
+ICanBeToldThatAPartOfMeIsChanged <|-- Config : implements
 class Config{
     -bool _AllowedRead
     +RepeatState LoopType
     +byte Volume
     +bool AllowedToRead
-    +Invoke(object e, PropertyChangedEventArgs a) void
+    +PropertyChanged(object e, PropertyChangedEventArgs a) void
 }
 
 ```
@@ -8235,7 +9183,8 @@ class InfoPRecord{
     +ICodeInformation Item
     +bool Configurable
     +bool IsPlayStreamProvider
-    +.ctor(string Name, string Description, Version? Version, IImage? Icon, string Licenses, ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider) InfoPRecord
+    +bool IsAskingMemoryProvider
+    +.ctor(string Name, string Description, Version? Version, IImage? Icon, string Licenses, ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider) InfoPRecord
 }
 
 ```
@@ -8277,7 +9226,7 @@ class LyricsView{
 classDiagram
 class MainWindow{
     -Config config
-    -string ConfigPath
+    -string ConfigPath$
     -MainWindowContext dc
     -bool en
     -bool en2
@@ -8468,6 +9417,7 @@ class SAPAvaloniaListner{
 
 ```mermaid
 classDiagram
+IHaveConfigFilesWithKnownLocations <|-- SAPAvaloniaPlayerEnviroment : implements
 class SAPAvaloniaPlayerEnviroment{
     +string Name
     +string Description
@@ -8475,6 +9425,7 @@ class SAPAvaloniaPlayerEnviroment{
     +Version? Version
     +List<Tuple<Uri, URLType>>? Links
     +string Licenses
+    +string[] KnownConfigFileLocations
 }
 
 ```
@@ -8508,6 +9459,7 @@ class Settings{
     +OpenBrowser(string url)$ void
     +ElementDoubleTapped(object _, RoutedEventArgs args) void
     +ConfigureClick(object button, RoutedEventArgs args) void
+    +OpenConfigFileClick(object button, RoutedEventArgs args) void
     +PlayProviderClick(object button, RoutedEventArgs args) void
     +GetHumanName(URLType type)$ string
     +GetHumanerName(URLType type)$ string
@@ -8587,7 +9539,6 @@ class CADMusicStatusInterface{
     +SLeft(string value, int maxLength)$ string
     +Dispose(bool disposing) void
     +InitializeComponent() void
-    +CADMusicStatusInterface_Load(object sender, EventArgs e) void
     +cadShutdown() void
 }
 
@@ -8636,6 +9587,7 @@ class Logic<T>{
     +IEnumerable<IMusicStatusInterface> MusicStatusInterfaces
     +IEnumerable<IWakeLockProvider> WakeLockInterfaces
     +IEnumerable<IPlayStreamProvider> PlayStreamProviders
+    +IWillProvideMemory MemoryProvider
     +Logger log
     +T playerContext
     +List<MimeType> PlayableMimes
@@ -8908,6 +9860,199 @@ class MidiPlayer{
 
 ```
 
+<div id="IMediaPlayer2-class-diagram"></div>
+
+##### `IMediaPlayer2` class diagram
+
+```mermaid
+classDiagram
+IDBusObject <|-- IMediaPlayer2 : implements
+class IMediaPlayer2{
+    +RaiseAsync()* Task
+    +QuitAsync()* Task
+    +GetAsync<T>(string prop)* Task<T>
+    +GetAllAsync()* Task<MediaPlayer2Properties>
+    +SetAsync(string prop, object val)* Task
+    +WatchPropertiesAsync(Action<PropertyChanges> handler)* Task<IDisposable>
+}
+
+```
+
+<div id="IPlayer-class-diagram"></div>
+
+##### `IPlayer` class diagram
+
+```mermaid
+classDiagram
+IDBusObject <|-- IPlayer : implements
+class IPlayer{
+    +NextAsync()* Task
+    +PreviousAsync()* Task
+    +PauseAsync()* Task
+    +PlayPauseAsync()* Task
+    +StopAsync()* Task
+    +PlayAsync()* Task
+    +SeekAsync(long Offset)* Task
+    +SetPositionAsync(ObjectPath TrackId, long Position)* Task
+    +OpenUriAsync(string Uri)* Task
+    +WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)* Task<IDisposable>
+    +GetAsync<T>(string prop)* Task<T>
+    +GetAllAsync()* Task<PlayerProperties>
+    +SetAsync(string prop, object val)* Task
+    +WatchPropertiesAsync(Action<PropertyChanges> handler)* Task<IDisposable>
+}
+
+```
+
+<div id="MediaPlayer2Extensions-class-diagram"></div>
+
+##### `MediaPlayer2Extensions` class diagram
+
+```mermaid
+classDiagram
+class MediaPlayer2Extensions{
+    +GetCanQuitAsync(IMediaPlayer2 o)$ Task<bool>
+    +GetCanRaiseAsync(IMediaPlayer2 o)$ Task<bool>
+    +GetHasTrackListAsync(IMediaPlayer2 o)$ Task<bool>
+    +GetIdentityAsync(IMediaPlayer2 o)$ Task<string>
+    +GetDesktopEntryAsync(IMediaPlayer2 o)$ Task<string>
+    +GetSupportedUriSchemesAsync(IMediaPlayer2 o)$ Task<string[]>
+    +GetSupportedMimeTypesAsync(IMediaPlayer2 o)$ Task<string[]>
+}
+
+```
+
+<div id="MediaPlayer2Properties-class-diagram"></div>
+
+##### `MediaPlayer2Properties` class diagram
+
+```mermaid
+classDiagram
+class MediaPlayer2Properties{
+    -bool _CanQuit
+    -bool _CanRaise
+    -bool _HasTrackList
+    -string _Identity
+    -string _DesktopEntry
+    -string[] _SupportedUriSchemes
+    -string[] _SupportedMimeTypes
+    +bool CanQuit
+    +bool CanRaise
+    +bool HasTrackList
+    +string Identity
+    +string DesktopEntry
+    +string[] SupportedUriSchemes
+    +string[] SupportedMimeTypes
+}
+
+```
+
+<div id="MPRIS-class-diagram"></div>
+
+##### `MPRIS` class diagram
+
+```mermaid
+classDiagram
+IMediaPlayer2 <|-- MPRIS : implements
+IPlayer <|-- MPRIS : implements
+class MPRIS{
+    +ObjectPath ObjectPath
+    +string Name
+    +string Description
+    +WrappedStream? Icon
+    +Version? Version
+    +string Licenses
+    +List<Tuple<Uri, URLType>>? Links
+    +.ctor() MPRIS
+    +Dispose() void
+    +StartIPC() void
+    +StopIPC() void
+    +RaiseAsync() Task
+    +QuitAsync() Task
+    +TrackChangedNotification(Song newtrack) void
+    +PlayerStateChanged(PlaybackState newstate) void
+    +NextAsync() Task
+    +PreviousAsync() Task
+    +PauseAsync() Task
+    +PlayPauseAsync() Task
+    +StopAsync() Task
+    +PlayAsync() Task
+    +SeekAsync(long Offset) Task
+    +SetPositionAsync(ObjectPath TrackId, long Position) Task
+    +OpenUriAsync(string Uri) Task
+    +WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null) Task<IDisposable>
+    +GetAsync<T>(string prop) Task<T>
+    +GetAllAsync() Task<PlayerProperties>
+    +GetAllAsync() Task<MediaPlayer2Properties>
+    +SetAsync(string prop, object val) Task
+    +WatchPropertiesAsync(Action<PropertyChanges> handler) Task<IDisposable>
+}
+
+```
+
+<div id="PlayerExtensions-class-diagram"></div>
+
+##### `PlayerExtensions` class diagram
+
+```mermaid
+classDiagram
+class PlayerExtensions{
+    +GetPlaybackStatusAsync(IPlayer o)$ Task<string>
+    +GetRateAsync(IPlayer o)$ Task<double>
+    +GetMetadataAsync(IPlayer o)$ Task<IDictionary<string, object>>
+    +GetVolumeAsync(IPlayer o)$ Task<double>
+    +GetPositionAsync(IPlayer o)$ Task<long>
+    +GetMinimumRateAsync(IPlayer o)$ Task<double>
+    +GetMaximumRateAsync(IPlayer o)$ Task<double>
+    +GetCanGoNextAsync(IPlayer o)$ Task<bool>
+    +GetCanGoPreviousAsync(IPlayer o)$ Task<bool>
+    +GetCanPlayAsync(IPlayer o)$ Task<bool>
+    +GetCanPauseAsync(IPlayer o)$ Task<bool>
+    +GetCanSeekAsync(IPlayer o)$ Task<bool>
+    +GetCanControlAsync(IPlayer o)$ Task<bool>
+    +SetRateAsync(IPlayer o, double val)$ Task
+    +SetVolumeAsync(IPlayer o, double val)$ Task
+}
+
+```
+
+<div id="PlayerProperties-class-diagram"></div>
+
+##### `PlayerProperties` class diagram
+
+```mermaid
+classDiagram
+class PlayerProperties{
+    -string _PlaybackStatus
+    -double _Rate
+    -IDictionary<string, object> _Metadata
+    -double _Volume
+    -long _Position
+    -double _MinimumRate
+    -double _MaximumRate
+    -bool _CanGoNext
+    -bool _CanGoPrevious
+    -bool _CanPlay
+    -bool _CanPause
+    -bool _CanSeek
+    -bool _CanControl
+    +string PlaybackStatus
+    +double Rate
+    +IDictionary<string, object> Metadata
+    +double Volume
+    +long Position
+    +double MinimumRate
+    +double MaximumRate
+    +bool CanGoNext
+    +bool CanGoPrevious
+    +bool CanPlay
+    +bool CanPause
+    +bool CanSeek
+    +bool CanControl
+}
+
+```
+
 <div id="AtlCoreFileMetadataProvider-class-diagram"></div>
 
 ##### `AtlCoreFileMetadataProvider` class diagram
@@ -8915,9 +10060,11 @@ class MidiPlayer{
 ```mermaid
 classDiagram
 IAmConfigurable <|-- AtlCoreFileMetadataProvider : implements
+IAmOnceAgainAskingYouForYourMemory <|-- AtlCoreFileMetadataProvider : implements
 class AtlCoreFileMetadataProvider{
-    -bool AllowMidi
     -List<IConfigurableElement> ConfigurableElements
+    -ObjectToRemember ConfigObject
+    +ObjectToRemember[] ObjectsToRememberForMe
     +string Name
     +string Description
     +WrappedStream? Icon
@@ -8925,6 +10072,7 @@ class AtlCoreFileMetadataProvider{
     +string Licenses
     +List<Tuple<Uri, URLType>>? Links
     +.ctor() AtlCoreFileMetadataProvider
+    +GetAllowedMidi() bool
     +GetElements() List<IConfigurableElement>
     +CanGetMetadata(WrappedStream stream) bool
     +GetMetadata(WrappedStream stream) Task<Metadata?>
@@ -8954,6 +10102,22 @@ classDiagram
 class ATLCOREPicture{
     -PictureInfo info
     +.ctor(PictureInfo i) ATLCOREPicture
+}
+
+```
+
+<div id="ZAtlCoreConfig-class-diagram"></div>
+
+##### `ZAtlCoreConfig` class diagram
+
+```mermaid
+classDiagram
+ICanBeToldThatAPartOfMeIsChanged <|-- ZAtlCoreConfig : implements
+class ZAtlCoreConfig{
+    -bool _AllowedRead
+    +bool ReadMidiMetadata
+    +bool AllowedToRead
+    +PropertyChanged(object e, PropertyChangedEventArgs a) void
 }
 
 ```
@@ -9135,34 +10299,6 @@ class WaveFileReaderWrapper{
 
 ```
 
-<div id="CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt;-class-diagram"></div>
-
-##### `CommentXmlConfigReaderNotifyWhenChanged<T>` class diagram
-
-```mermaid
-classDiagram
-IDisposable <|-- CommentXmlConfigReaderNotifyWhenChanged<T> : implements
-class CommentXmlConfigReaderNotifyWhenChanged<T>{
-    -List<FileSystemWatcher> fileSystemWatchers
-    +Dispose() void
-    +Read(string path) T?
-}
-
-```
-
-<div id="ILetNotify-class-diagram"></div>
-
-##### `ILetNotify` class diagram
-
-```mermaid
-classDiagram
-class ILetNotify{
-    +bool AllowedToRead*
-    +Invoke(object e, PropertyChangedEventArgs a)* void
-}
-
-```
-
 <div id="IAmConfigurable-class-diagram"></div>
 
 ##### `IAmConfigurable` class diagram
@@ -9338,6 +10474,21 @@ class SimpleTextBox{
 
 ```
 
+<div id="CommentXmlConfigReaderNotifyWhenChanged&lt;T&gt;-class-diagram"></div>
+
+##### `CommentXmlConfigReaderNotifyWhenChanged<T>` class diagram
+
+```mermaid
+classDiagram
+IDisposable <|-- CommentXmlConfigReaderNotifyWhenChanged<T> : implements
+class CommentXmlConfigReaderNotifyWhenChanged<T>{
+    -List<FileSystemWatcher> fileSystemWatchers
+    +Dispose() void
+    +Read(string path) T?
+}
+
+```
+
 <div id="HttpClient-class-diagram"></div>
 
 ##### `HttpClient` class diagram
@@ -9346,6 +10497,31 @@ class SimpleTextBox{
 classDiagram
 class HttpClient{
     -HttpClient Client$
+}
+
+```
+
+<div id="IAmOnceAgainAskingYouForYourMemory-class-diagram"></div>
+
+##### `IAmOnceAgainAskingYouForYourMemory` class diagram
+
+```mermaid
+classDiagram
+class IAmOnceAgainAskingYouForYourMemory{
+    +ObjectToRemember[] ObjectsToRememberForMe*
+}
+
+```
+
+<div id="ICanBeToldThatAPartOfMeIsChanged-class-diagram"></div>
+
+##### `ICanBeToldThatAPartOfMeIsChanged` class diagram
+
+```mermaid
+classDiagram
+class ICanBeToldThatAPartOfMeIsChanged{
+    +bool AllowedToRead*
+    +PropertyChanged(object sender, PropertyChangedEventArgs e)* void
 }
 
 ```
@@ -9374,6 +10550,18 @@ class ICodeInformation{
     +Version? Version*
     +string Licenses*
     +List<Tuple<Uri, URLType>>? Links*
+}
+
+```
+
+<div id="IHaveConfigFilesWithKnownLocations-class-diagram"></div>
+
+##### `IHaveConfigFilesWithKnownLocations` class diagram
+
+```mermaid
+classDiagram
+class IHaveConfigFilesWithKnownLocations{
+    +string[] KnownConfigFileLocations*
 }
 
 ```
@@ -9528,6 +10716,31 @@ class IWakeLockProvider{
 
 ```
 
+<div id="IWillProvideMemory-class-diagram"></div>
+
+##### `IWillProvideMemory` class diagram
+
+```mermaid
+classDiagram
+class IWillProvideMemory{
+    +RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember)* void
+    +MakeSureAllIsWell()* void
+}
+
+```
+
+<div id="IWillTellYouWhereIStoreTheConfigs-class-diagram"></div>
+
+##### `IWillTellYouWhereIStoreTheConfigs` class diagram
+
+```mermaid
+classDiagram
+class IWillTellYouWhereIStoreTheConfigs{
+    +GetConfig(Guid id)* string
+}
+
+```
+
 <div id="Logger-class-diagram"></div>
 
 ##### `Logger` class diagram
@@ -9588,6 +10801,20 @@ class Metadata{
 classDiagram
 class MimeTypeExtensions{
     +RealMimeTypeToFakeMimeType(MimeType realmime)$ string
+}
+
+```
+
+<div id="ObjectToRemember-class-diagram"></div>
+
+##### `ObjectToRemember` class diagram
+
+```mermaid
+classDiagram
+class ObjectToRemember{
+    +Guid Id
+    +object Value
+    +.ctor(Guid id, object value) ObjectToRemember
 }
 
 ```
@@ -10325,6 +11552,70 @@ class Win32WakeLock{
     +WakeLock() void
     +UnWakeLock() void
     +SetThreadExecutionState(ExecutionState esFlags)$ ExecutionState
+}
+
+```
+
+<div id="App-class-diagram"></div>
+
+##### `App` class diagram
+
+```mermaid
+classDiagram
+class App{
+}
+
+```
+
+<div id="MainWindow-class-diagram"></div>
+
+##### `MainWindow` class diagram
+
+```mermaid
+classDiagram
+class MainWindow{
+    -CompositionHost Container
+    -Logic<MainWindowContext> Logic
+    -CancellationTokenSource? token
+    -Thread? th
+    +SndThrd(CancellationToken e) void
+    +.ctor() MainWindow
+    +ListView_DragOver(object sender, DragEventArgs e) void
+    +ListView_Drop(object sender, DragEventArgs e) void
+    +PlayClick(object sender, RoutedEventArgs e) void
+    +PauseClick(object sender, RoutedEventArgs e) void
+    +StopClick(object sender, RoutedEventArgs e) void
+    +PB_MouseUp(object sender, MouseButtonEventArgs e) void
+    +ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) void
+}
+
+```
+
+<div id="MainWindowContext-class-diagram"></div>
+
+##### `MainWindowContext` class diagram
+
+```mermaid
+classDiagram
+class MainWindowContext{
+    -MainWindow mainWindow
+    -string _Title
+    +.ctor(MainWindow mw) MainWindowContext
+}
+
+```
+
+<div id="ProvidersReturnedNullException-class-diagram"></div>
+
+##### `ProvidersReturnedNullException` class diagram
+
+```mermaid
+classDiagram
+class ProvidersReturnedNullException{
+    +.ctor() ProvidersReturnedNullException
+    +.ctor(string message) ProvidersReturnedNullException
+    +.ctor(string message, Exception inner) ProvidersReturnedNullException
+    +.ctor(SerializationInfo info, StreamingContext context) ProvidersReturnedNullException
 }
 
 ```
