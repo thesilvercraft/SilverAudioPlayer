@@ -11,7 +11,6 @@ using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
-using SilverMagicBytes;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
