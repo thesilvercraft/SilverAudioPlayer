@@ -73,9 +73,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Linux.MPR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.ChromeCast", "SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj", "{3CB2D488-3820-493F-B5EE-4FE261CFA170}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Win.PlayProvider.NAudio", "SilverAudioPlayer.NAudio\SilverAudioPlayer.Win.PlayProvider.NAudio.csproj", "{01F909CB-4EC3-4F7B-9926-C563765F3A4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.PlayProvider.NAudio", "SilverAudioPlayer.NAudio\SilverAudioPlayer.Windows.PlayProvider.NAudio.csproj", "{01F909CB-4EC3-4F7B-9926-C563765F3A4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayProvider.libVLC", "SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj", "{BB5CBBE8-25C2-4510-8116-6737D25155BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.libVLC", "SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj", "{BB5CBBE8-25C2-4510-8116-6737D25155BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
