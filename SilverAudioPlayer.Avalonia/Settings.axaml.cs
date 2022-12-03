@@ -209,6 +209,10 @@ public partial class Settings : Window
 
         LaunchActionsWindow launchActionsWindow = new();
         List<SAction> actions = new();
+        if(element.Item.Links==null)
+        {
+            return;
+        }
         foreach (var z in element.Item.Links)
         {
             actions.Add(new SAction

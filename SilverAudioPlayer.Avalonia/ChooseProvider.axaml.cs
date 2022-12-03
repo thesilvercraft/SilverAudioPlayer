@@ -1,8 +1,6 @@
 using Avalonia.Controls;
-using Avalonia.Controls.Selection;
 using DynamicData;
 using SilverAudioPlayer.Shared;
-using Swordfish.NET.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;

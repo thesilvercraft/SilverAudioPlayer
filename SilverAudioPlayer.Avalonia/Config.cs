@@ -16,6 +16,7 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     public byte Volume { get; set; } = 70;
 
     [XmlIgnore] public bool AllowedToRead => _AllowedRead;
+    public SerializableDictionary<string, string> PreferedPlayers { get; set; } = new();
 
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {

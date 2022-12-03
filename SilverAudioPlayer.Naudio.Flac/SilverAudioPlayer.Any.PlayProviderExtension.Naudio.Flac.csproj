@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="../SilverAudioPlayer.targets"/>
+    <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NAudio.Flac\NAudio.Flac.csproj"/>
-        <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj"/>
+        <ProjectReference Include="..\NAudio.Flac\NAudio.Flac.csproj" />
+        <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Win.PlayProvider.NAudio.csproj" />
     </ItemGroup>
 
 </Project>

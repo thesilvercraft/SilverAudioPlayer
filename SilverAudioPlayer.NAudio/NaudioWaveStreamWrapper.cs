@@ -52,7 +52,7 @@ public class NaudioWaveStreamWrapper : IPlayProvider
         "A player that wraps around NAudio (https://github.com/naudio/NAudio) and plays audio files that derive from PCM (or WAV). MP3 is provided using https://github.com/naudio/NLayer";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(NaudioWaveStreamWrapper).Assembly,
-        "SilverAudioPlayer.Any.PlayProvider.NAudio.NAudioLogo.png");
+        "SilverAudioPlayer.Win.PlayProvider.NAudio.NAudioLogo.png");
 
     public Version? Version => typeof(NaudioWaveStreamWrapper).Assembly.GetName().Version;
 

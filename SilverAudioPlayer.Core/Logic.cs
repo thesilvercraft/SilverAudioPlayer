@@ -269,7 +269,7 @@ public class Logic<T> where T : PlayerContext
         return (ulong?)Player?.Length()?.TotalSeconds ?? (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 2;
     }
 
-    private Song MusicStatusInterface_GetCurrentTrack()
+    private Song? MusicStatusInterface_GetCurrentTrack()
     {
         return CurrentSong;
     }
@@ -373,23 +373,22 @@ public class Logic<T> where T : PlayerContext
 
         if (Player == null)
         {
-            playerContext?.ShowMessageBox("Error", "I do not know how to play " + CurrentSong.URI);
+            playerContext?.ShowMessageBox?.Invoke("Error", "I do not know how to play " + CurrentSong.URI);
             return;
         }
 
         Log.Information("Got player of type {PlayerType}", Player.GetType());
 
-        Task.Run(() => TrackChangedNotification(CurrentSong));
+        var trackchangedtask = Task.Run(() => TrackChangedNotification(CurrentSong));
         if (play)
         {
             Player.SetVolume(Volume);
             Player.Play();
             SendIfStateIsNotNull();
             Player.TrackEnd += OutputDevice_PlaybackStopped;
-            playerContext.ResetUIScrollBar();
-
-            if (Player?.Length() is TimeSpan totalusable) playerContext.SetScrollBarTextTo(totalusable);
-            playerContext.HandleLateStageMetadataAndScrollBar();
+            playerContext?.ResetUIScrollBar?.Invoke();
+            if (Player?.Length() is TimeSpan totalusable) playerContext?.SetScrollBarTextTo?.Invoke(totalusable);
+            playerContext?.HandleLateStageMetadataAndScrollBar?.Invoke();
         }
 
         if (resetsal) StopAutoLoading = false;

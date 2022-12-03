@@ -72,7 +72,7 @@
         <ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
         <ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.csproj" Condition="$(DefineConstants.Contains('NAFLAC'))" />
         <ProjectReference Include="..\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis.csproj" Condition="$(DefineConstants.Contains('NAVORB'))" />
-        <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
+        <ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Win.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
         <ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
         <ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
         <ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />

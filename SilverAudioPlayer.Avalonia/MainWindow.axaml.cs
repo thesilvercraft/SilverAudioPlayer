@@ -33,8 +33,10 @@ public class MainWindowContext : PlayerContext
     public MainWindowContext(MainWindow mw)
     {
         mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
-        Selection = new SelectionModel<Song>();
-        Selection.SingleSelect = false;
+        Selection = new SelectionModel<Song>
+        {
+            SingleSelect = false
+        };
         GradientStops defPBStops = new()
         {
             new(KnownColor.Coral.ToColor(), 0),
@@ -142,18 +144,20 @@ public partial class MainWindow : Window
                 if (config.LoopType != lt)
                 {
                     config.LoopType = lt;
-                    dc.RaisePropertyChanged(nameof(dc.LoopType));
                     config._AllowedRead = false;
                     reader.Write(config, ConfigPath);
                     config._AllowedRead = true;
                 }
+                dc?.RaisePropertyChanged(nameof(dc.LoopType));
+
             },
             GetLoopType = () => config.LoopType,
             VolumeChanged = vol =>
             {
                 config.Volume = vol;
                 Player?.SetVolume(vol);
-                if (config._AllowedRead)
+                dc?.RaisePropertyChanged(nameof(dc.Volume));
+                if (config.Volume != vol && config._AllowedRead)
                 {
                     config._AllowedRead = false;
                     reader.Write(config, ConfigPath);
@@ -233,9 +237,9 @@ public partial class MainWindow : Window
                         return y;
                     }
                 }
-                if(preferredplayerfortype.TryGetValue(m.MimeType.Common, out var v))
+                if(config.PreferedPlayers.TryGetValue(m.MimeType.Common, out var v))
                 {
-                    var y = x.FirstOrDefault(x => x.GetType() == v);
+                    var y = x.FirstOrDefault(x => x.GetType().FullName == v);
                     if (y != null)
                     {
                         return y;
@@ -245,13 +249,23 @@ public partial class MainWindow : Window
                      ChooseProvider w = new();
                      w.SetProviders(x);
                      await w.ShowDialog(this);
-                    if(w.SetAsDefaultIfPresent==true)
+                    if(w.SetAsDefaultIfPresent == true)
                     {
-                        preferredplayer = w.Selected.GetType();
+                        preferredplayer = w.Selected?.GetType();
                     }
-                    if(w.SetAsDefaultForFileType ==true)
+                    if(w.SetAsDefaultForFileType == true)
                     {
-                        preferredplayerfortype.AddOrUpdate(m.MimeType.Common, w.Selected.GetType(), (_, _) => w.Selected.GetType());
+                        if (config.PreferedPlayers.ContainsKey(m.MimeType.Common))
+                        {
+                            config.PreferedPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
+                        }
+                        else
+                        {
+                            config.PreferedPlayers.Add(m.MimeType.Common, w.Selected?.GetType().FullName);
+                        }
+                        config._AllowedRead = false;
+                        reader.Write(config, ConfigPath);
+                        config._AllowedRead = true;
                     }
                      return w.Selected;
                  });
@@ -259,6 +273,7 @@ public partial class MainWindow : Window
              
             }  
         };
+        config.PropertyChanged += Config_PropertyChanged;
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
         ob.Subscribe(x => dc.Title = x.Value);
         DataContext = dc;
@@ -269,8 +284,26 @@ public partial class MainWindow : Window
         RepeatButton.Click += RepeatButton_Click;
         this.DoAfterInitTasksF();
     }
+
+    private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if(sender == reader)
+        {
+            switch (e.PropertyName)
+            {
+                case "LoopType":
+                    dc?.SetLoopType?.Invoke(config.LoopType);
+                    break;
+                case "Volume":
+                    dc?.VolumeChanged?.Invoke(config.Volume);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     Type? preferredplayer;
-    ConcurrentDictionary<string, Type?> preferredplayerfortype=new();
 
     public Logic<MainWindowContext> Logic { get; set; }
 
@@ -312,13 +345,17 @@ public partial class MainWindow : Window
         }
         else if (c is SolidColorBrush scb)
         {
-            dc.GradientStops = new GradientStops();
-            dc.GradientStops.Add(new GradientStop(scb.Color, 0));
+            dc.GradientStops = new GradientStops
+            {
+                new GradientStop(scb.Color, 0)
+            };
         }
         else
         {
-            dc.GradientStops = new GradientStops();
-            dc.GradientStops.Add(new GradientStop(KnownColor.Coral.ToColor(), 0));
+            dc.GradientStops = new GradientStops
+            {
+                new GradientStop(KnownColor.Coral.ToColor(), 0)
+            };
         }
     }
 
@@ -523,8 +560,12 @@ Loop mode: {LoopType}", Logic.StopAutoLoading, CurrentSong, dc.LoopType);
         Logic.StopAutoLoading = false;
     }
 
-    private void DragOver(object sender, DragEventArgs e)
+    private void DragOver(object sender, DragEventArgs? e)
     {
+        if (e == null)
+        {
+            return;
+        }
         if (e.Source is Control c && c.Name == "MoveTarget")
             e.DragEffects &= DragDropEffects.Move;
         else if (e.Data.Contains(DataFormats.FileNames) || e.Data.Contains("UniformResourceLocatorW"))
@@ -533,14 +574,32 @@ Loop mode: {LoopType}", Logic.StopAutoLoading, CurrentSong, dc.LoopType);
             e.DragEffects = DragDropEffects.None;
     }
 
-    private void Drop(object sender, DragEventArgs e)
+    private void Drop(object sender, DragEventArgs? e)
     {
+        if(e==null)
+        {
+            return;
+        }
         if (e.Source is Control c && c.Name == "MoveTarget")
             e.DragEffects &= DragDropEffects.Move;
         else
             e.DragEffects &= DragDropEffects.Copy;
-        if (e.Data.Contains(DataFormats.FileNames)) Logic.ProcessFiles(e!.Data.GetFileNames());
-        if (e.Data.Contains("UniformResourceLocatorW")) Logic.ProcessFiles(new[] { e!.Data.GetText() });
+        if (e.Data.Contains(DataFormats.FileNames))
+        {
+            var files = e!.Data.GetFileNames();
+            if(files!=null)
+            {
+                Logic.ProcessFiles(files);
+            }
+        }
+        if (e.Data.Contains("UniformResourceLocatorW"))
+        {
+            var url = e!.Data!.GetText();
+            if(!string.IsNullOrEmpty(url))
+            {
+                Logic.ProcessFiles(new[] { url });
+            }
+        }
     }
 
     public void ClearAll(object sender, RoutedEventArgs e)

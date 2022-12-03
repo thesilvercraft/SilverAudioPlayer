@@ -8,12 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GenHTTP.Core" Version="6.4.0" />
-    <PackageReference Include="GoogleCast" Version="1.7.0" />
+    <PackageReference Include="LibVLCSharp" Version="3.6.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="VlcIcon.svg" />
+    <EmbeddedResource Include="VlcIcon.svg" />
   </ItemGroup>
 
 </Project>

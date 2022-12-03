@@ -8,5 +8,5 @@
 internal partial class Interop
 {
     private const string LibcLibrary = "libc";
-    private const string AlsaLibrary = "libasound";
+    private const string AlsaLibrary = "libasound.so.2";
 }

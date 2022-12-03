@@ -27,17 +27,20 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
             foreach (var obj in objectsToRemember)
             {
                 var loc = Path.Combine(basedir, obj.Id.ToString() + ".xml");
-                var t = obj.Value.GetType();
+                var t = obj.Value?.GetType();
+                if(t==null)
+                {
+                    continue;
+                }
                 Type genericType = typeof(CommentXmlConfigReaderNotifyWhenChanged<>).MakeGenericType(new[] { t });
                 var reader = Activator.CreateInstance(genericType);
-                if(reader.GetType() == genericType)
+                if (reader != null && genericType!=null && reader.GetType() == genericType)
                 {
                     if(!File.Exists(loc))
                     {
-                      genericType.GetMethod("Write").Invoke(reader, new object[] { obj.Value, loc });
-
+                        genericType?.GetMethod("Write")?.Invoke(reader, new object[] { obj.Value, loc });
                     }
-                    var x = genericType.GetMethod("Read").Invoke(reader, new object[] { loc });
+                    var x = genericType?.GetMethod("Read")?.Invoke(reader, new object[] { loc });
                     obj.Value = x;
                     if(obj.Value is INotifyPropertyChanged y)
                     {
@@ -45,7 +48,7 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
                         {
                             if(x == obj.Value && obj.Value is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
                             {
-                                genericType.GetMethod("Write").Invoke(reader, new object[] {obj.Value, loc });
+                                genericType?.GetMethod("Write")?.Invoke(reader, new object[] {obj.Value, loc });
                             }
                         };
                     }

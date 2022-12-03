@@ -3,7 +3,6 @@
 public interface IMusicStatusInterface : IDisposable, ICodeInformation
 {
     void StartIPC();
-
     void StopIPC();
 
     event EventHandler Play;
@@ -22,7 +21,7 @@ public interface IMusicStatusInterface : IDisposable, ICodeInformation
 
     event Func<byte> GetVolume;
 
-    event Func<Song> GetCurrentTrack;
+    event Func<Song?> GetCurrentTrack;
 
     event Func<ulong> GetDuration;
 

@@ -19,7 +19,7 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
     {
         var c = base.Read(path);
         var fp = Path.GetFullPath(path);
-        var fpdir = Path.GetDirectoryName(fp);
+        var fpdir = Path.GetDirectoryName(fp)??"";
         var fpnm = Path.GetFileName(fp);
 
         FileSystemWatcher j = new()

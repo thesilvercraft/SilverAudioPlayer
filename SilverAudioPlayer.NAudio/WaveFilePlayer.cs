@@ -19,7 +19,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             outputDevice = new WaveOutEvent();
         else
-            outputDevice = new AlsaOutput();
+            //outputDevice = new SharpPlayerOutput();
         outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
     }
 

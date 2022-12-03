@@ -14,7 +14,7 @@ public class AlsaOutput : IWavePlayer, IDisposable
     private IWaveProvider source;
     private CancellationTokenSource stoptoken = new();
     private MemoryStream stream;
-    private WaveFileWriter writer;
+    private WaveFileWriter? writer;
 
     /// <summary>
     ///     Constructs a new WaveRecorder

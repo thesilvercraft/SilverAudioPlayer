@@ -236,6 +236,7 @@ namespace SilverAudioPlayer.WPF
                 },
                 HandleLateStageMetadataAndScrollBar = () =>
                 {
+                    th ??= new Thread(() => SndThrd(token.Token));
                     th.Start();
 
                     if (Logic.CurrentSong?.Metadata != null)
@@ -320,7 +321,7 @@ namespace SilverAudioPlayer.WPF
             Logic.log = logger;
             //Logic.ProcessFiles(desktop.Args);
             InitializeComponent();
-            Logic.MainWindow_Opened(null, null);
+            Logic.MainWindow_Opened(null, EventArgs.Empty);
         }
 
         private void ListView_DragOver(object sender, DragEventArgs e)

@@ -5,8 +5,6 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Shared", "SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj", "{27C3AB0D-6A16-4171-AA05-0673F38A4650}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.NAudio", "SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj", "{ADABB162-038F-4391-9794-924DB1B385B1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NAudio.Flac", "NAudio.Flac\NAudio.Flac.csproj", "{8E300BBC-DE83-49C4-B8A9-36CF71423E16}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac", "SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.csproj", "{86A77925-4230-41B9-B388-7D5336DA3395}"
@@ -73,7 +71,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MemoryProviders", "MemoryPr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Linux.MPRIS", "SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj", "{D05583D8-1CA0-4A21-9ACB-34B39D79BD11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayProvider.ChromeCast", "SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj", "{3CB2D488-3820-493F-B5EE-4FE261CFA170}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.ChromeCast", "SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj", "{3CB2D488-3820-493F-B5EE-4FE261CFA170}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Win.PlayProvider.NAudio", "SilverAudioPlayer.NAudio\SilverAudioPlayer.Win.PlayProvider.NAudio.csproj", "{01F909CB-4EC3-4F7B-9926-C563765F3A4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayProvider.libVLC", "SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj", "{BB5CBBE8-25C2-4510-8116-6737D25155BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,22 +105,6 @@ Global
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Release|x64.Build.0 = Release|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Release|x86.ActiveCfg = Release|Any CPU
 		{27C3AB0D-6A16-4171-AA05-0673F38A4650}.Release|x86.Build.0 = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|arm64.Build.0 = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|x64.Build.0 = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Debug|x86.Build.0 = Debug|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|arm64.ActiveCfg = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|arm64.Build.0 = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|x64.ActiveCfg = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|x64.Build.0 = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|x86.ActiveCfg = Release|Any CPU
-		{ADABB162-038F-4391-9794-924DB1B385B1}.Release|x86.Build.0 = Release|Any CPU
 		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E300BBC-DE83-49C4-B8A9-36CF71423E16}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -455,12 +441,43 @@ Global
 		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x64.Build.0 = Release|Any CPU
 		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x86.ActiveCfg = Release|Any CPU
 		{3CB2D488-3820-493F-B5EE-4FE261CFA170}.Release|x86.Build.0 = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|arm64.Build.0 = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|x64.Build.0 = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Debug|x86.Build.0 = Debug|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|arm64.ActiveCfg = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|arm64.Build.0 = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|x64.ActiveCfg = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|x64.Build.0 = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|x86.ActiveCfg = Release|Any CPU
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B}.Release|x86.Build.0 = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|arm64.Build.0 = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|x64.Build.0 = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Debug|x86.Build.0 = Debug|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|arm64.ActiveCfg = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|arm64.Build.0 = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x64.ActiveCfg = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x64.Build.0 = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{ADABB162-038F-4391-9794-924DB1B385B1} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 		{8E300BBC-DE83-49C4-B8A9-36CF71423E16} = {0C596BB7-D172-4367-BA85-27F93C05AF86}
 		{86A77925-4230-41B9-B388-7D5336DA3395} = {69EE5B9E-C2CC-49C5-A36C-6E91DEC1E4F1}
 		{F2421D96-C459-4F38-97ED-7185C51FD184} = {DA365F63-3B6D-4763-890A-1A4785A0ABCB}
@@ -482,6 +499,8 @@ Global
 		{2AA65A54-969E-4277-AD8B-7A89104DE7E0} = {340B55A0-8AA9-4CD0-8345-2F307DED4DA1}
 		{D05583D8-1CA0-4A21-9ACB-34B39D79BD11} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
 		{3CB2D488-3820-493F-B5EE-4FE261CFA170} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
+		{01F909CB-4EC3-4F7B-9926-C563765F3A4B} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
+		{BB5CBBE8-25C2-4510-8116-6737D25155BD} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}
