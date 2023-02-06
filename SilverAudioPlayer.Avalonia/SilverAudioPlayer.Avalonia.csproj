@@ -124,7 +124,7 @@
 		<PackageReference Include="Clowd.Clipboard.Avalonia" Version="1.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="ReactiveUI" Version="18.4.1" />
+		<PackageReference Include="ReactiveUI" Version="18.4.20" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
