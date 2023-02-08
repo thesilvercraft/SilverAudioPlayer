@@ -77,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.libVLC", "SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj", "{BB5CBBE8-25C2-4510-8116-6737D25155BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayStreamProvider.VideoLib", "SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj", "{2EA1DED2-16FA-40CD-B220-C982AA2C251E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -473,6 +475,22 @@ Global
 		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x64.Build.0 = Release|Any CPU
 		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x86.ActiveCfg = Release|Any CPU
 		{BB5CBBE8-25C2-4510-8116-6737D25155BD}.Release|x86.Build.0 = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|arm64.Build.0 = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|x64.Build.0 = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Debug|x86.Build.0 = Debug|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|arm64.ActiveCfg = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|arm64.Build.0 = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|x64.ActiveCfg = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|x64.Build.0 = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|x86.ActiveCfg = Release|Any CPU
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -501,6 +519,7 @@ Global
 		{3CB2D488-3820-493F-B5EE-4FE261CFA170} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 		{01F909CB-4EC3-4F7B-9926-C563765F3A4B} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
 		{BB5CBBE8-25C2-4510-8116-6737D25155BD} = {8C664489-419F-4B51-A8A8-1C36F3D9909C}
+		{2EA1DED2-16FA-40CD-B220-C982AA2C251E} = {19B951F3-56FD-4DAC-BA15-3D54A84997ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

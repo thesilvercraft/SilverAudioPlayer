@@ -76,11 +76,11 @@
 
 		<!--System Media Transport Controls - windows 10+-->
 
-  	    <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
+  	    <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
 
 		<!--CD Art Display - windows 7+-->
 
-        <DefineConstants>$(DefineConstants)CAD</DefineConstants>
+        <!--<DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
 
 
 		<!--LINUX ONLY-->
@@ -101,6 +101,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 

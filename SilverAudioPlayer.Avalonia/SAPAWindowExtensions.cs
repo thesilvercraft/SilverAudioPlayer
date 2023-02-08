@@ -16,17 +16,18 @@ namespace SilverAudioPlayer.Avalonia
             new(Color.FromUInt32(0x7F6969ff), 0),
             new(Color.FromUInt32(0x7F696969), 1)
         };
+        public static LinearGradientBrush defBrush = new LinearGradientBrush
+        {
+            GradientStops = defBGStops
+        };
         public static void DoAfterInitTasksF(this Window w)
         {
             if(WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks")==true)
             {
                 return;
             }
-            var b = new LinearGradientBrush
-            {
-                GradientStops = defBGStops
-            };
-            w.DoAfterInitTasks(true, b);
+           
+            w.DoAfterInitTasks(true, defBrush);
         }
     }
 }

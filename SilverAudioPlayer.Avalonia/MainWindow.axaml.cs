@@ -15,10 +15,12 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SkiaSharp;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -42,12 +44,12 @@ public class MainWindowContext : PlayerContext
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         };
-        _pbForeGround = WindowExtensions.envBackend.GetString("SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
-        if (_pbForeGround is LinearGradientBrush lgb)
+        PBForeground = WindowExtensions.envBackend.GetString("SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
+        if (PBForeground is LinearGradientBrush lgb)
         {
             GradientStops = lgb.GradientStops;
         }
-        else if (_pbForeGround is SolidColorBrush scb)
+        else if (PBForeground is SolidColorBrush scb)
         {
             GradientStops = new GradientStops
             {
@@ -61,6 +63,7 @@ public class MainWindowContext : PlayerContext
                 new GradientStop(KnownColor.Coral.ToColor(), 0)
             };
         }
+        
     }
 
     public IBrush PBForeground
@@ -195,17 +198,60 @@ public partial class MainWindow : Window
                             try
                             {
                                 var memstream = new MemoryStream(buffer);
-                                Dispatcher.UIThread.InvokeAsync(() => Image.Source = new Bitmap(memstream));
+                                Dispatcher.UIThread.InvokeAsync(() =>
+                                {
+                                    var bmp = new Bitmap(memstream);
+                                     Image.Source = bmp;
+                                     MemoryStream blur = new();
+                                     if (WindowExtensions.envBackend.GetString("SAPAlbumArtBg")?.ToLower()!="disable")
+                                     {
+                                         using var wrbmp =SKBitmap.Decode(memstream.ToArray());
+                                         var info = new SKImageInfo(wrbmp.Info.Width,wrbmp.Info.Height);
+                                         using (var surface = SKSurface.Create(info))
+                                         {
+                                             var canvas = surface.Canvas;
+                                             using (var paint = new SKPaint())
+                                             {
+                                                 paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                                                 paint.ColorFilter =
+                                                     SKColorFilter.CreateColorMatrix(new float[]
+                                                     {
+                                                         1, 0, 0, 0, 0,
+                                                         0, 1, 0, 0, 0,
+                                                         0, 0, 1, 0, 0,
+                                                         0, 0, 0, 0.25f, 0
+                                                     });
+                                                 canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
+                                             }
+                                             surface.Snapshot().Encode(SKEncodedImageFormat.Png,76).AsStream().CopyTo(blur);
+                                             blur.Position = 0;
+                                         }
+                                         var imgbrsh = new ImageBrush(new Bitmap(blur));
+                                         imgbrsh.Stretch = Stretch.UniformToFill;
+                                         Background = imgbrsh;
+                                     }
+                                     
+                                });
                             }
                             catch (Exception ex)
                             {
                                 //We have more important things to do than having our app crashed
                                 Log.Error(ex, "Error loading image into main window");
                             }
+                        
                     }
                     else
                     {
-                        Dispatcher.UIThread.InvokeAsync(() => Image.Source = null);
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+
+                            Image.Source = null;
+                            if (WindowExtensions.envBackend.GetString("SAPAlbumArtBg")?.ToLower() != "disable")
+                            {
+                                Background = WindowExtensions.envBackend.GetString("SAPColor")
+                                    .ParseBackground(def: SAPAWindowExtensions.defBrush);
+                            }
+                        });
                     }
                 }
             },
@@ -282,7 +328,8 @@ public partial class MainWindow : Window
         ShowAppInfo = this.FindControl<MenuItem>("ShowAppInfo");
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-        this.DoAfterInitTasksF();
+        TransparencyLevelHint = WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
+        Background = WindowExtensions.envBackend.GetString("SAPColor").ParseBackground(def: SAPAWindowExtensions.defBrush);
     }
 
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -595,6 +642,14 @@ Loop mode: {LoopType}", Logic.StopAutoLoading, CurrentSong, dc.LoopType);
         if (e.Data.Contains("UniformResourceLocatorW"))
         {
             var url = e!.Data!.GetText();
+            var psps = Logic.PlayStreamProviders.Where(x =>
+                x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url)));
+            if (psps.Count() != 0)
+            {
+                ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url));
+                return;
+            }
+
             if(!string.IsNullOrEmpty(url))
             {
                 Logic.ProcessFiles(new[] { url });
