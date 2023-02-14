@@ -34,6 +34,7 @@
 							<Button  IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
 
 							<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
+                            <Button  IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
 
 						</StackPanel>
 

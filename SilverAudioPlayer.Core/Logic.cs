@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Composition;
+using System.Diagnostics;
 using FuzzySharp;
+using FuzzySharp.Extensions;
 using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Shared;
@@ -21,7 +23,7 @@ public class PlayerContext : ReactiveObject
     public Action? HandleLateStageMetadataAndScrollBar = null;
     public Action? ResetUIScrollBar = null;
     public Action<RepeatState>? SetLoopType;
-    public Action<string,string>? ShowMessageBox;
+    public Action<string, string>? ShowMessageBox;
     public Action<TimeSpan> SetScrollBarTextTo = null;
     public Action<byte>? VolumeChanged;
     public Func<IList<Song>>? GetQueue;
@@ -42,7 +44,11 @@ public class PlayerContext : ReactiveObject
     public Song? CurrentSong
     {
         get => _CurrentSong;
-        set => this.RaiseAndSetIfChanged(ref _CurrentSong, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _CurrentSong, value); // Somehow does not work with ProcessFiles
+            _CurrentSong = value;
+        }
     }
 
     public RepeatState LoopType
@@ -75,7 +81,8 @@ public class Logic<T> where T : PlayerContext
         playerContext.SetLoopType ??= lt => playerContext.RaiseAndSetIfChanged(ref playerContext._LoopType, lt);
         ConcurrentObservableCollection<Song> _queue = new();
         playercontext.GetQueue ??= () => _queue;
-        ChoosePlayProvider ??= (x,_) => Task.FromResult(x.FirstOrDefault());
+
+        ChoosePlayProvider ??= (x, _) => Task.FromResult(x.FirstOrDefault());
     }
 
     [ImportMany] public IEnumerable<IPlayProvider> PlayProviders { get; set; }
@@ -86,10 +93,12 @@ public class Logic<T> where T : PlayerContext
 
     [ImportMany] public IEnumerable<IWakeLockProvider> WakeLockInterfaces { get; set; }
     [ImportMany] public IEnumerable<IPlayStreamProvider> PlayStreamProviders { get; set; }
+    [ImportMany] public IEnumerable<ISyncPlugin> SyncPlugins { get; set; }
+
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
 
 
-    public Func<IEnumerable<IPlayProvider>,WrappedStream, Task<IPlayProvider?>> ChoosePlayProvider { get; set; }
+    public Func<IEnumerable<IPlayProvider>, WrappedStream, Task<IPlayProvider?>> ChoosePlayProvider { get; set; }
 
     public Logger log { get; set; }
     public T playerContext { get; set; }
@@ -103,11 +112,7 @@ public class Logic<T> where T : PlayerContext
 
     public IPlay? Player { get; set; }
 
-    public Song? CurrentSong
-    {
-        get => playerContext.CurrentSong;
-        set => playerContext.CurrentSong = value;
-    }
+
 
     public void AddMSI(IMusicStatusInterface e)
     {
@@ -203,7 +208,7 @@ public class Logic<T> where T : PlayerContext
     /// <summary>
     ///     Lets music status interfaces know about a track change
     /// </summary>
-    /// <param name="currentSong">The new track</param>
+    /// <param name="playerContext.CurrentSong">The new track</param>
     public void TrackChangedNotification(Song? currentSong)
     {
         Parallel.ForEach(musicStatusInterfaces, msI => msI?.TrackChangedNotification(currentSong!));
@@ -266,12 +271,12 @@ public class Logic<T> where T : PlayerContext
 
     private ulong MusicStatusInterface_GetDuration()
     {
-        return (ulong?)Player?.Length()?.TotalSeconds ?? (ulong?)(CurrentSong?.Metadata?.Duration / 1000) ?? 2;
+        return (ulong?)Player?.Length()?.TotalSeconds ?? (ulong?)(playerContext.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
     }
 
     private Song? MusicStatusInterface_GetCurrentTrack()
     {
-        return CurrentSong;
+        return playerContext.CurrentSong;
     }
 
     private void MusicStatusInterface_Previous(object? sender, EventArgs e)
@@ -288,7 +293,7 @@ public class Logic<T> where T : PlayerContext
     {
         if (ChangeAllowed)
         {
-            var a = playerContext.Queue.IndexOf(CurrentSong);
+            var a = playerContext.Queue.IndexOf(playerContext.CurrentSong);
             if (a != -1 && a + 1 < playerContext.Queue.Count)
             {
                 ChangeAllowed = false;
@@ -302,7 +307,7 @@ public class Logic<T> where T : PlayerContext
     {
         if (ChangeAllowed)
         {
-            var a = playerContext.Queue.IndexOf(CurrentSong);
+            var a = playerContext.Queue.IndexOf(playerContext.CurrentSong);
             if (a != -1 && a - 1 >= 0)
             {
                 ChangeAllowed = false;
@@ -353,14 +358,13 @@ public class Logic<T> where T : PlayerContext
         SendIfStateIsNotNull();
     }
 
-    [TimingAdvice]
     public async void StartPlaying(bool play = true, bool resetsal = false)
     {
-        if (CurrentSong == null)
+        if (playerContext.CurrentSong == null)
         {
             if (playerContext.Queue.Count > 0)
             {
-                CurrentSong = playerContext.Queue[0];
+                playerContext.CurrentSong = playerContext.Queue[0];
             }
             else
             {
@@ -369,17 +373,17 @@ public class Logic<T> where T : PlayerContext
             }
         }
 
-        Player = await GetPlayerFromStream(CurrentSong.Stream);
+        Player = await GetPlayerFromStream(playerContext.CurrentSong.Stream);
 
         if (Player == null)
         {
-            playerContext?.ShowMessageBox?.Invoke("Error", "I do not know how to play " + CurrentSong.URI);
+            playerContext?.ShowMessageBox?.Invoke("Error", "I do not know how to play " + playerContext.CurrentSong.URI);
             return;
         }
 
         Log.Information("Got player of type {PlayerType}", Player.GetType());
 
-        var trackchangedtask = Task.Run(() => TrackChangedNotification(CurrentSong));
+        var trackchangedtask = Task.Run(() => TrackChangedNotification(playerContext.CurrentSong));
         if (play)
         {
             Player.SetVolume(Volume);
@@ -394,7 +398,6 @@ public class Logic<T> where T : PlayerContext
         if (resetsal) StopAutoLoading = false;
     }
 
-    [TimingAdvice]
     public void RemoveTrack()
     {
         Player?.Stop();
@@ -403,22 +406,21 @@ public class Logic<T> where T : PlayerContext
         Thread.Sleep(30);
     }
 
-    [TimingAdvice]
     public void OutputDevice_PlaybackStopped(object? sender, object o)
     {
         Log.Information(@"Output device playback stopped
 StopAutoLoading: {StopAutoLoading}
 Current song: {CurrentSong}
-Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
+Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContext.LoopType);
 
         if (playerContext.LoopType == RepeatState.One && !StopAutoLoading)
         {
             //Loop
             StartPlaying();
         }
-        else if (CurrentSong != null && !StopAutoLoading)
+        else if (playerContext.CurrentSong != null && !StopAutoLoading)
         {
-            var a = playerContext.Queue.IndexOf(CurrentSong);
+            var a = playerContext.Queue.IndexOf(playerContext.CurrentSong);
             if (a != -1)
             {
                 if (a + 1 < playerContext.Queue.Count)
@@ -445,27 +447,14 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         StopAutoLoading = false;
     }
 
-    [TimingAdvice]
-    public void HandleSongChanging(Song NextSong, bool resetsal = false)
+    public void HandleSongChanging(Song nextSong, bool resetsal = false)
     {
         Log.Information("StopAutoLoading set to true in HandleSongChanging");
         StopAutoLoading = true;
-        /*var curr = playerContext.Queue.IndexOf(CurrentSong);
-        var next = playerContext.Queue.IndexOf(NextSong);
-        if (next == -1)
-        {
-            Log.Information("!!!!!!! NEXT is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSongURI}\nCurrentSong.Guid is {CurrentSong}\nCurrentSong.URI is {CurrentSongURI}", NextSong.Guid, NextSong.URI, CurrentSong?.Guid, CurrentSong?.URI);
-        }
-        else
-        {*/
-        CurrentSong = NextSong;
+        playerContext.CurrentSong = nextSong;
+        Debug.Assert(playerContext.CurrentSong == nextSong);
         RemoveTrack();
         StartPlaying(resetsal: resetsal);
-        /*}
-        if (curr == -1)
-        {
-            Log.Information("!!!!!!! CURR is NULL in HSC !!!!!!!!\nNextSong.Guid is {NextSong}\nNextSong.URI is {NextSongURI}\nCurrentSong.Guid is {CurrentSong}\nCurrentSong.URI is {CurrentSongURI}", NextSong.Guid, NextSong.URI, CurrentSong?.Guid, CurrentSong?.URI);
-        }*/
     }
 
     public void ProcessFiles(IEnumerable<string> files)
@@ -528,7 +517,6 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         });
     }
 
-    [TimingAdvice]
     public async Task DoSort()
     {
         await Task.Delay(200);
@@ -551,6 +539,7 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         Log.Information("Sorted through {Count} songs", sng.Count);
         playerContext.Queue.Clear();
         playerContext.Queue.AddRange(sng);
+        playerContext.Queue = playerContext.Queue;
         IsSortRequested = false;
     }
 
@@ -559,14 +548,11 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
         return (await ChoosePlayProvider(PlayProviders?.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream);
     }
 
-    public IMetadataProvider? GetMetadataProviderFromStream(WrappedStream stream)
-    {
-        return MetadataProviders?.FirstOrDefault(x => x.CanGetMetadata(stream));
-    }
 
-    public Task<Metadata?>? GetMetadataFromStream(WrappedStream stream)
+
+    public async Task<Metadata?>? GetMetadataFromStream(WrappedStream stream)
     {
-        return GetMetadataProviderFromStream(stream)?.GetMetadata(stream);
+        return new MetadataCombo(MetadataProviders?.Where(x => x.CanGetMetadata(stream)).Select(async x => (await x.GetMetadata(stream))).Select(t => t.Result).Where(i => i != null).ToList());
     }
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
@@ -604,5 +590,49 @@ Loop mode: {LoopType}", StopAutoLoading, CurrentSong, playerContext.LoopType);
             || x.EndsWith(".webp")
             || x.EndsWith(".spotdl-cache")
         ));
+    }
+
+    public List<Song> GetQueueCopy()
+    {
+        return playerContext.Queue.ToList();
+    }
+}
+
+public class MetadataCombo : Metadata
+{
+    public MetadataCombo()
+    {
+
+    }
+
+    public IReadOnlyCollection<Metadata> OriginalMetadatas { get; }
+    public MetadataCombo(IReadOnlyCollection<Metadata> metadatas)
+    {
+        OriginalMetadatas = metadatas;
+        Title = metadatas.Select(x => x.Title).MaxN(1).First();
+        Artist = metadatas.Select(x => x.Artist).MaxN(1).First();
+        Album = metadatas.Select(x => x.Album).MaxN(1).First();
+        Genre = metadatas.Select(x => x.Genre).MaxN(1).First();
+        Year = ((int?)metadatas.Select(x => x.Year).Where(x => x is not 9999 or 0 or null).Average());
+        TrackNumber = metadatas.Select(x => x.TrackNumber).MaxBy(x => x is not null);
+        Duration = metadatas.Select(x => x.Duration).MaxBy(x => x is not null);
+        Bitrate = metadatas.Select(x => x.Bitrate).MaxBy(x => x is not null);
+        SampleRate = metadatas.Select(x => x.SampleRate).MaxBy(x => x is not null);
+        Channels = metadatas.Select(x => x.Channels).MaxBy(x => x is not null);
+        Pictures = metadatas.Select(x => x.Pictures).MaxBy(x => x?.Count);
+        Lyrics = metadatas.Select(x => x.Lyrics).MaxBy(x => !string.IsNullOrEmpty(x));
+        SyncedLyrics = metadatas.Select(x => x.SyncedLyrics).MaxBy(x => x.Count);
+        if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrEmpty(Lyrics) && (Lyrics[0] == '['))
+        {
+            //There is a chance that the unsynced lyrics are actually synced, lets try and read them
+
+            try
+            {
+                var s = global::Opportunity.LrcParser.Lyrics.Parse(Lyrics);
+                SyncedLyrics = s.Lyrics.Lines.Select(x => new LyricPhrase((int)(x.Timestamp.Ticks / TimeSpan.TicksPerMillisecond), x.Content + "\n")).ToList();
+            }
+            catch { }
+        }
+        DiscNumber = metadatas.Select(x => x.DiscNumber).MaxBy(x => x is not null);
     }
 }

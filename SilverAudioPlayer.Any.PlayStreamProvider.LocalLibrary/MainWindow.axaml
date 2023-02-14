@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.MainWindow"
+        Title="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary" ExtendClientAreaToDecorationsHint="True">
+    <Grid Margin="25,5,5,5" ColumnDefinitions="*,*" RowDefinitions="25,100,*">
+            <StackPanel Grid.Row="1" DockPanel.Dock="Top">
+                <Button Click="LoadNewFolder">Add new folder</Button>
+                <Button Click="AddEntireScreen">Add all songs from this screen</Button>
+            </StackPanel>
+            <ListBox Grid.Column="0" Grid.Row="2" Background="Transparent" Items="{Binding WrappedAlbums}" Name="LB"
+                     Margin="0 20" DoubleTapped="LB_OnDoubleTapped" SelectionMode="Single">
+                <ListBox.DataTemplates>
+                    <DataTemplate>
+                        <StackPanel Spacing="5" Width="200">
+                            <Border CornerRadius="10" ClipToBounds="True">
+                                <Panel Background="Transparent">
+                                    <Image Width="200" Stretch="Uniform" Source="{Binding Cover}" />
+                                    <Panel Height="200"
+                                           IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNull}}">
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Text="{Binding Name}" />
+                                    </Panel>
+                                </Panel>
+                            </Border>
+                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" />
+                            <TextBlock Text="{Binding AlbumArtist}" HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.DataTemplates>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+            </ListBox>
+        <ListBox Grid.Column="1" Grid.Row="2" Background="Transparent" Items="{Binding WrappedSongs}" Name="RB"
+                 Margin="0 20" DoubleTapped="RB_OnDoubleTapped" SelectionMode="Single">
+            <ListBox.DataTemplates>
+                <DataTemplate>
+                    <StackPanel Spacing="5" Width="200">
+                        <Border CornerRadius="10" ClipToBounds="True">
+                            <Panel Background="Transparent">
+                                <Image Width="200" Stretch="Uniform" Source="{Binding Cover}" />
+                                <Panel Height="200"
+                                       IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNull}}">
+                                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Text="{Binding Name}" />
+                                </Panel>
+                            </Panel>
+                        </Border>
+                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding AlbumArtist}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.DataTemplates>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+    </Grid>
+</Window>

@@ -15,7 +15,6 @@ public partial class Gui : Window
 {
     private readonly GuiBinding g;
     private readonly JellyFinHelper helper;
-    private readonly JellyFinPlayStreamProvider jellyFinPlayStreamProvider;
 
     public Gui()
     {
@@ -30,9 +29,10 @@ public partial class Gui : Window
         LB.DoubleTapped += LB_DoubleTapped;
     }
 
-    public Gui(JellyFinPlayStreamProvider jellyFinPlayStreamProvider) : this()
+    private IPlayStreamProviderListener ProviderListner;
+    public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
     {
-        this.jellyFinPlayStreamProvider = jellyFinPlayStreamProvider;
+        ProviderListner = jellyFinPlayStreamProvider;
         helper = new JellyFinHelper();
     }
 
@@ -51,7 +51,7 @@ public partial class Gui : Window
         {
             var ws = await helper.GetStream(song.dto);
 
-            jellyFinPlayStreamProvider.ProviderListner.LoadSong(ws);
+            ProviderListner.LoadSong(ws);
         }
     }
 
@@ -96,7 +96,7 @@ public partial class Gui : Window
             }
             else
             {
-                jellyFinPlayStreamProvider.ProviderListner.LoadSong(await helper.GetStream(si.dto));
+                ProviderListner.LoadSong(await helper.GetStream(si.dto));
             }
         }
     }

@@ -23,7 +23,6 @@
                                     CornerRadius="{TemplateBinding CornerRadius}">
 								<Panel>
 									<Border Name="PART_Indicator"
-                                            Background="{TemplateBinding Foreground}"
                                             IsVisible="{Binding !IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}">
 										<Border.Background>
 											<LinearGradientBrush StartPoint="0,0"

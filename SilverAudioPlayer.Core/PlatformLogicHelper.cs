@@ -12,7 +12,6 @@ public static class PlatformLogicHelper
             .Where(x => x != null);
     }
 
-    [TimingAdvice]
     public static void LoadAssemblies(ref List<Assembly> assemblies)
     {
         var ExtensionsExists = Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Extensions"));

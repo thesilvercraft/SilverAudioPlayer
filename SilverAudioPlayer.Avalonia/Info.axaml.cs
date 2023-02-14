@@ -29,19 +29,20 @@ public partial class Info : Window
     {
         MainWindow = mainWindow;
         List<ICodeInformation> info = new();
-        info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x));
-        info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
-        info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
-        info.AddRange(mainWindow.Logic.WakeLockInterfaces.Select(x => x));
-        info.AddRange(mainWindow.Logic.PlayStreamProviders.Select(x => x));
+        info.AddRange(mainWindow.Logic.PlayProviders);
+        info.AddRange(mainWindow.Logic.MusicStatusInterfaces);
+        info.AddRange(mainWindow.Logic.MetadataProviders);
+        info.AddRange(mainWindow.Logic.WakeLockInterfaces);
+        info.AddRange(mainWindow.Logic.PlayStreamProviders);
+        info.AddRange(mainWindow.Logic.PlayStreamProviders);
+        info.AddRange(mainWindow.Logic.SyncPlugins);
         var ir = Settings.GetInfoRecords(info);
-        SAPAvaloniaPlayerEnviroment sap = new();
         DataContext = new
         {
-            Title = "About " + sap.Name,
-            ProductName = sap.Name,
-            ProductDescription = sap.Description,
-            ProductIcon = Settings.DecodeImage(sap.Icon,200),
+            Title = "About " + mainWindow.Env.Name,
+            ProductName = mainWindow.Env.Name,
+            ProductDescription = mainWindow.Env.Description,
+            ProductIcon = Settings.DecodeImage(mainWindow.Env.Icon,200),
             Items = ir.Item1,
             LicenseText = ir.Item2
         };

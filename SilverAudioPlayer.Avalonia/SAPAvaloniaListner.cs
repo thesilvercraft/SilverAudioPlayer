@@ -1,46 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Avalonia;
 
-internal class SAPAvaloniaListner : IPlayStreamProviderListner
+
+
+public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener
 {
     private readonly MainWindow mainWindow;
 
-    public SAPAvaloniaListner(MainWindow mainWindow)
+    public SapAvaloniaPlayerEnviroment(MainWindow mainWindow)
     {
         this.mainWindow = mainWindow;
     }
 
-    public IPlayerEnviroment GetEnviroment()
-    {
-        return new SAPAvaloniaPlayerEnviroment();
-    }
-
     public void LoadSong(WrappedStream s)
     {
-        mainWindow.Logic.ProcessStream(s);
+        Dispatcher.UIThread.Post(()=>mainWindow.Logic.ProcessStream(s));
+    }
+
+    public void ProcessFiles(IEnumerable<string> files)
+    {
+        mainWindow.Logic.ProcessFiles(files);
     }
 
     public void LoadSongs(IEnumerable<WrappedStream> streams)
     {
-        mainWindow.Logic.ProcessStreams(streams);
+        Dispatcher.UIThread.Post(()=>mainWindow.Logic.ProcessStreams(streams));
     }
-}
 
-public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWithKnownLocations
-{
+
+
     public string Name => "SilverAudioPlayer.Avalonia";
 
     public string Description => "AvaloniaUI (https://github.com/AvaloniaUI/Avalonia) UI for SilverAudioPlayer";
 
-    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SAPAvaloniaPlayerEnviroment).Assembly,
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SapAvaloniaPlayerEnviroment).Assembly,
         "SilverAudioPlayer.Avalonia.icon.svg");
 
-    public Version? Version => typeof(SAPAvaloniaPlayerEnviroment).Assembly.GetName().Version;
+    public Version? Version => typeof(SapAvaloniaPlayerEnviroment).Assembly.GetName().Version;
 
     public List<Tuple<Uri, URLType>>? Links => new()
     {
@@ -53,6 +56,18 @@ public class SAPAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWi
         new Tuple<Uri, URLType>(new Uri("https://github.com/AvaloniaUI/Avalonia"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://docs.avaloniaui.net/"), URLType.LibraryDocumentation)
     };
+
+    public Task<Metadata?>? GetMetadataAsync(WrappedStream stream)
+    {
+        return mainWindow.Logic.GetMetadataFromStream(stream);
+    }
+
+
+    public async Task<List<Song>?> GetQueue()
+    {
+        //TODO ASK USER BEFORE GIVING OVER QUEUE
+        return mainWindow.Logic.GetQueueCopy();
+    }
 
     public string Licenses => @"Avalonia
 The MIT License (MIT)

@@ -6,14 +6,13 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 [Export(typeof(IPlayStreamProvider))]
 public class JellyFinPlayStreamProvider : IPlayStreamProvider
 {
-    private readonly Gui gui;
+    private Gui gui;
 
-    public JellyFinPlayStreamProvider()
+    public void Use(IPlayStreamProviderListener env)
     {
-        gui = new Gui(this);
+        gui = new Gui(env);
+        gui.Show();
     }
-
-    public IPlayStreamProviderListner ProviderListner { get; set; }
 
     public string Name => "SilverAudioPlayer Stream Provider for Jellyfin ALPHA";
 
@@ -72,9 +71,5 @@ SOFTWARE.";
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/jellyfin/jellyfin-sdk-csharp"), URLType.LibraryCode)
     };
-
-    public void ShowGui()
-    {
-        gui.Show();
-    }
+    
 }

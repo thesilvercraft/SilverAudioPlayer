@@ -26,7 +26,7 @@ using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
 
 namespace SilverAudioPlayer.Avalonia;
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
-    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider);
+    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin);
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -47,6 +47,7 @@ public partial class Settings : Window
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
+        this.mainWindow = mainWindow;
 
         TransparencyDown.SelectedItem =
             WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
@@ -54,17 +55,16 @@ public partial class Settings : Window
         ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
         List<ICodeInformation> info = new();
-        info.AddRange(mainWindow.Logic.PlayProviders.Select(x => x));
-        info.AddRange(mainWindow.Logic.MusicStatusInterfaces.Select(x => x));
-        info.AddRange(mainWindow.Logic.MetadataProviders.Select(x => x));
-        info.AddRange(mainWindow.Logic.WakeLockInterfaces.Select(x => x));
-        info.AddRange(mainWindow.Logic.PlayStreamProviders.Select(x => x));
-
-        info.Add(new SAPAvaloniaPlayerEnviroment());
+        info.AddRange(mainWindow.Logic.PlayProviders);
+        info.AddRange(mainWindow.Logic.MusicStatusInterfaces);
+        info.AddRange(mainWindow.Logic.MetadataProviders);
+        info.AddRange(mainWindow.Logic.WakeLockInterfaces);
+        info.AddRange(mainWindow.Logic.PlayStreamProviders);
+        info.AddRange(mainWindow.Logic.SyncPlugins);
+        info.Add(mainWindow.Env);
         var ir = GetInfoRecords(info);
         DataContext = new SettingsDC() { Items = ir.Item1 };
 
-        this.mainWindow = mainWindow;
     }
     public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
     {
@@ -83,7 +83,8 @@ public partial class Settings : Window
                 item,
                 item is IAmConfigurable,
                 item is IPlayStreamProvider,
-                item is IAmOnceAgainAskingYouForYourMemory
+                item is IAmOnceAgainAskingYouForYourMemory,
+                item is ISyncPlugin
             ));
             licenses.AppendLine(item.Licenses);
         }
@@ -173,15 +174,19 @@ public partial class Settings : Window
     public void PlayProviderClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y != null && y.DataContext is InfoPRecord record && record.IsPlayStreamProvider)
+        if (y is not { DataContext: InfoPRecord record } ||
+            record is { IsPlayStreamProvider: false, IsSyncPlugin: false }) return;
+        switch (record.Item)
         {
-            if (record.Item is IPlayStreamProvider configurable)
-            {
-                configurable.ProviderListner = new SAPAvaloniaListner(mainWindow);
-                configurable.ShowGui();
-            }
+            case IPlayStreamProvider configurable:
+                configurable.Use(mainWindow.Env);
+                break;
+            case ISyncPlugin syncPlugin:
+                syncPlugin.Use(mainWindow.Env);
+                break;
         }
     }
+    
     public static string GetHumanName(URLType type)
     {
         return type switch
@@ -237,11 +242,22 @@ public partial class Settings : Window
                 ActionName = "Use",
                 ActionToInvoke = () =>
                 {
-                    streamProvider.ProviderListner = new SAPAvaloniaListner(mainWindow);
-                    streamProvider.ShowGui();
+                    streamProvider.Use(mainWindow.Env);
                 }
             });
         }
+        else if (element.Item is ISyncPlugin syncPlugin)
+        {
+            actions.Add(new SAction
+            {
+                ActionName = "Sync",
+                ActionToInvoke = () =>
+                {
+                    syncPlugin.Use(mainWindow.Env);
+                }
+            });
+        }
+        
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }

@@ -61,6 +61,10 @@
 		<!--NAudio + Naudio.Vorbis-->
 
 		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
+		<!--Local library POC-->
+		
+<!--		<DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
+		
 
 		<!--Discord (alpha)-->
 
@@ -86,6 +90,8 @@
 		<!--LINUX ONLY-->
 		<!--MPRIS DBUS STUFF - linux - pre POC -->
 		<!--<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>-->
+		<!-- Linux sync plugin - LINUX - POC -->
+<!--		<DefineConstants>$(DefineConstants)LSync</DefineConstants>-->
 	</PropertyGroup>
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -101,11 +107,14 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))"/>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Linux.Sync\SilverAudioPlayer.Linux.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />
+		
 		<ProjectReference Include="..\SilverAudioPlayer.Win.PlayProviderExtension.Naudio.MediaFoundation\SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation.csproj" Condition="$(DefineConstants.Contains('NA'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj" Condition="$(DefineConstants.Contains('JF'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
@@ -125,14 +134,14 @@
 		<PackageReference Include="Clowd.Clipboard.Avalonia" Version="1.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="ReactiveUI" Version="18.4.1" />
+		<PackageReference Include="ReactiveUI" Version="18.4.20" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="Svg.Skia" Version="0.5.18" />
 		<PackageReference Include="System.Composition" Version="7.0.0" />
-		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.17.4" Condition="$(DefineConstants.Contains('VLC'))" />
-		<PackageReference Include="XamlNameReferenceGenerator" Version="1.4.2" />
+		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" Condition="$(DefineConstants.Contains('VLC'))" />
+		<PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
 		<PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="8.2.0" />
 	</ItemGroup>

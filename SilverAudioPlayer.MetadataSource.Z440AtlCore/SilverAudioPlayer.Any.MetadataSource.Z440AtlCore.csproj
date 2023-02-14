@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <Import Project="../SilverAudioPlayer.targets"/>
+    <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
@@ -9,20 +9,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="ZATLMetadata.png"/>
+        <None Remove="ZATLMetadata.png" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="ZATLMetadata.png"/>
+        <EmbeddedResource Include="ZATLMetadata.png" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Composition" Version="6.0.0"/>
-        <PackageReference Include="z440.atl.core" Version="4.13.0"/>
+        <PackageReference Include="System.Composition" Version="6.0.0" />
+        <PackageReference Include="z440.atl.core" Version="4.19.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
 
 </Project>

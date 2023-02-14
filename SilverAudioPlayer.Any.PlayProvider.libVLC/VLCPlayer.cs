@@ -10,14 +10,17 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
         public VLCPlayer(MediaPlayer mp)
         {
             this.mp = mp;
-            mp.EndReached += Mp_EndReached;
+            mp.Stopped += Mp_Stopped;
         }
 
-        private void Mp_EndReached(object? sender, EventArgs e)
+        private void Mp_Stopped(object? sender, EventArgs e)
         {
             TrackEnd?.Invoke(sender, e);
+            mp.Stopped -= Mp_Stopped;
+
         }
 
+    
         public event EventHandler<object> TrackEnd;
         public event EventHandler<object> TrackPause;
 

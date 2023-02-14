@@ -23,6 +23,12 @@ public class AtlCoreMetadata : Metadata
         Lyrics = theTrack.Lyrics.UnsynchronizedLyrics;
         SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text)).ToList();
         DiscNumber = theTrack.DiscNumber;
+
+        if (string.IsNullOrEmpty(theTrack.Lyrics.UnsynchronizedLyrics) && SyncedLyrics.Count==0)
+        {
+            
+        }
+        
     }
 
     public Track OGInfo { get; init; }

@@ -21,6 +21,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SkiaSharp;
+using Swordfish.NET.Collections;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -31,7 +32,7 @@ public class MainWindowContext : PlayerContext
     private IBrush _pbForeGround;
 
     private string _Title;
-
+    public ConcurrentObservableCollection<Song> _queue = new();
     public MainWindowContext(MainWindow mw)
     {
         mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
@@ -104,7 +105,7 @@ public partial class MainWindow : Window
     public Config config;
     public static string ConfigPath = Path.Combine(AppContext.BaseDirectory, "Configs", "SilverAudioPlayer.Config.xml");
     private readonly MainWindowContext dc;
-
+    public SapAvaloniaPlayerEnviroment Env { get;  } 
     private bool en;
     private bool en2;
     private MetadataView? metadataView;
@@ -138,6 +139,7 @@ public partial class MainWindow : Window
         mainListBox.PointerReleased += TreeView_PointerReleased;
         mainListBox.PointerPressed += TreeView_PointerPressed1;
         reader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
+        Env = new SapAvaloniaPlayerEnviroment(this);
         if (!File.Exists(ConfigPath)) reader.Write(new Config(), ConfigPath);
         config = reader.Read(ConfigPath) ?? new Config();
         dc = new MainWindowContext(this)
@@ -154,6 +156,7 @@ public partial class MainWindow : Window
                 dc?.RaisePropertyChanged(nameof(dc.LoopType));
 
             },
+           
             GetLoopType = () => config.LoopType,
             VolumeChanged = vol =>
             {
@@ -267,6 +270,13 @@ public partial class MainWindow : Window
                     window.ShowDialog(this);
                 });
             }
+        };
+        dc.GetQueue = () => dc._queue;
+        dc.SetQueue = (q) =>
+        {
+            var n = new ConcurrentObservableCollection<Song>(q);
+            dc.RaiseAndSetIfChanged(ref dc._queue, n, "Queue");
+            dc._queue = n;
         };
         Logic = new Logic<MainWindowContext>(dc)
         { 
@@ -555,7 +565,6 @@ public partial class MainWindow : Window
             }
     }
 
-    [TimingAdvice]
     public void RemoveTrack()
     {
         Dispatcher.UIThread.InvokeAsync(() => Title = "SilverAudioPlayer");
@@ -565,7 +574,6 @@ public partial class MainWindow : Window
         Thread.Sleep(30);
     }
 
-    [TimingAdvice]
     private void OutputDevice_PlaybackStopped(object? sender, object o)
     {
         Logic.log.Information(@"Output device playback stopped
@@ -643,10 +651,10 @@ Loop mode: {LoopType}", Logic.StopAutoLoading, CurrentSong, dc.LoopType);
         {
             var url = e!.Data!.GetText();
             var psps = Logic.PlayStreamProviders.Where(x =>
-                x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url)));
+                x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url),Env));
             if (psps.Count() != 0)
             {
-                ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url));
+                ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync( new(url),Env);
                 return;
             }
 

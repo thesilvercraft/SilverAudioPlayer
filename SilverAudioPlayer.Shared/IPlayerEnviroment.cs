@@ -5,4 +5,5 @@
 /// </summary>
 public interface IPlayerEnviroment : ICodeInformation
 {
+    public Task<Metadata?>? GetMetadataAsync(WrappedStream stream);
 }
