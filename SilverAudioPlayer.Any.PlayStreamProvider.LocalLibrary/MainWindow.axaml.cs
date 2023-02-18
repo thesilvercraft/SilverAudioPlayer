@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
+using SilverCraft.AvaloniaUtils;
 using Swordfish.NET.Collections;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
@@ -78,7 +79,11 @@ public partial class MainWindow : Window
         DataContext = _binding;
         LB = this.FindControl<ListBox>("LB");
         RB = this.FindControl<ListBox>("RB");
-
+        if(WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks")==true)
+        {
+            return;
+        }
+        this.DoAfterInitTasks(true);
     }
     private void AddEntireScreen(object? sender, RoutedEventArgs e)
     {

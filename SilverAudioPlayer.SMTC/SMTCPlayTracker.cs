@@ -89,11 +89,11 @@ public class SMTCPlayTracker : IMusicStatusInterface
         TimeLineTimer = new(interval: 1000);
         TimeLineTimer.Elapsed += (s, e) =>
         {
-            if (GetState != null && GetCurrentTrack != null && GetPosition != null)
+            if (Env.GetState != null && Env.GetCurrentTrack != null && Env.GetPosition != null)
             {
-                var state = GetState();
-                var track = GetCurrentTrack();
-                var pos = GetPosition();
+                var state = Env.GetState();
+                var track = Env.GetCurrentTrack();
+                var pos = Env.GetPosition();
                 UpdateTimeline(state, track, pos);
                 if (state != PlaybackState.Playing && state != PlaybackState.Buffering) TimeLineTimer.Stop();
             }
@@ -175,69 +175,14 @@ public class SMTCPlayTracker : IMusicStatusInterface
         GC.SuppressFinalize(this);
     }
 
-    public event EventHandler Play;
-
-    public event EventHandler Pause;
-
-    public event EventHandler PlayPause;
-
-    public event EventHandler Stop;
-
-    public event EventHandler Next;
-
-    public event EventHandler Previous;
-
-    public event EventHandler<byte> SetVolume;
-
-    public event Func<byte> GetVolume;
-
-    public event Func<Song> GetCurrentTrack;
-
-    public event Func<ulong> GetDuration;
-
-    public event EventHandler<ulong> SetPosition;
-
-    public event Func<ulong> GetPosition;
-
-    public event Func<PlaybackState> GetState;
-
-    public event EventHandler<IMusicStatusInterface> StateChangedNotification;
-
-    public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
-
-    public event Func<RepeatState> GetRepeat;
-
-    public event EventHandler<RepeatState> SetRepeat;
-
-    public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
-
-    public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
-
-    public event Func<bool> GetShuffle;
-
-    public event EventHandler<bool> SetShuffle;
-
-    public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
-
-    public event EventHandler<byte> SetRating;
-
-    public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
-
-    public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
-
-    public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
-
-    public event EventHandler<IMusicStatusInterface> NewCoverNotification;
-
-    public event Func<string> GetLyrics;
-
+   
     private void UpdateTimeline(PlaybackState state, Song track, ulong pos)
     {
         if (DISABLE) return;
         var timelineProperties = new SystemMediaTransportControlsTimelineProperties();
-        if (track != null && GetDuration != null)
+        if (track != null && Env.GetDuration != null)
         {
-            var dur = GetDuration();
+            var dur = Env.GetDuration();
             timelineProperties.StartTime = TimeSpan.FromSeconds(0);
             timelineProperties.MinSeekTime = TimeSpan.FromSeconds(0);
             timelineProperties.EndTime = TimeSpan.FromSeconds(dur);
@@ -252,7 +197,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
         PlaybackPositionChangeRequestedEventArgs args)
     {
         if (DISABLE) return;
-        SetPosition?.Invoke(this, (ulong)args.RequestedPlaybackPosition.TotalSeconds);
+        Env.SetPosition((ulong)args.RequestedPlaybackPosition.TotalSeconds);
+
     }
 
     private void SystemControls_AutoRepeatModeChangeRequested(SystemMediaTransportControls sender,
@@ -267,45 +213,41 @@ public class SMTCPlayTracker : IMusicStatusInterface
             _ => RepeatState.None
         };
         sender.AutoRepeatMode = args.RequestedAutoRepeatMode;
-        SetRepeat?.Invoke(this, a);
+        Env.SetRepeat(a);
     }
 
     private void SystemControls_ShuffleEnabledChangeRequested(SystemMediaTransportControls sender,
         ShuffleEnabledChangeRequestedEventArgs args)
     {
         if (DISABLE) return;
-        SetShuffle?.Invoke(this, args.RequestedShuffleEnabled);
+        Env.SetShuffle(args.RequestedShuffleEnabled);
+
     }
 
     private void PlayOrResume()
     {
-        switch (GetState())
+        switch (Env.GetState())
         {
             case PlaybackState.Stopped:
             case PlaybackState.Paused:
-                Play?.Invoke(this, EventArgs.Empty);
-                break;
-        }
+                          Env.Play();
 
-        ;
+            break;
+        }
     }
 
     private void PauseOrResume()
     {
-        switch (GetState())
+        switch (Env.GetState())
         {
             case PlaybackState.Playing:
-
-                Pause?.Invoke(this, EventArgs.Empty);
+                Env.Pause();
                 break;
             case PlaybackState.Stopped:
             case PlaybackState.Paused:
-
-                Play?.Invoke(this, EventArgs.Empty);
+                Env.Play();
                 break;
         }
-
-        ;
     }
 
     private void SystemControls_ButtonPressed(SystemMediaTransportControls sender,
@@ -323,15 +265,15 @@ public class SMTCPlayTracker : IMusicStatusInterface
                 break;
 
             case SystemMediaTransportControlsButton.Stop:
-                Stop?.Invoke(this, EventArgs.Empty);
+                Env.Stop();
                 break;
 
             case SystemMediaTransportControlsButton.Next:
-                Next?.Invoke(this, EventArgs.Empty);
+                Env.Next();
                 break;
 
             case SystemMediaTransportControlsButton.Previous:
-                Previous?.Invoke(this, EventArgs.Empty);
+                Env.Previous();
                 break;
         }
     }
@@ -354,5 +296,15 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
             disposedValue = true;
         }
+    }
+    IMusicStatusInterfaceListener Env;
+
+    public void StartIPC(IMusicStatusInterfaceListener listener)
+    {
+        Env = listener;
+    }
+
+    public void StopIPC(IMusicStatusInterfaceListener listener)
+    {
     }
 }

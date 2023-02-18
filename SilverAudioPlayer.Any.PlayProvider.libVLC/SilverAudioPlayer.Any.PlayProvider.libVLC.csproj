@@ -1,23 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="../SilverAudioPlayer.targets"/>
+	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="LibVLCSharp" Version="3.6.7" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="LibVLCSharp" Version="3.6.7" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="VlcIcon.svg" />
-    <EmbeddedResource Include="VlcIcon.svg" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="VlcIcon.svg" />
+		<EmbeddedResource Include="VlcIcon.svg" />
+	</ItemGroup>
 
 </Project>

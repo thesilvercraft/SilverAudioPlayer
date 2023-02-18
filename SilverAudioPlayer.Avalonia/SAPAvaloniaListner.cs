@@ -4,15 +4,28 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Avalonia;
 
 
 
-public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener
+public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener, IMusicStatusInterfaceListener, IMusicStatusInterfaceListenerAdmin
 {
     private readonly MainWindow mainWindow;
+
+    public event EventHandler<Song> TrackChangedNotification;
+    public event EventHandler<PlaybackState> PlayerStateChanged;
+    public event EventHandler<IMusicStatusInterface> StateChangedNotification;
+    public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
+    public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
+    public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
+    public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
+    public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
+    public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
+    public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
+    public event EventHandler<IMusicStatusInterface> NewCoverNotification;
 
     public SapAvaloniaPlayerEnviroment(MainWindow mainWindow)
     {
@@ -67,6 +80,120 @@ public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWi
     {
         //TODO ASK USER BEFORE GIVING OVER QUEUE
         return mainWindow.Logic.GetQueueCopy();
+    }
+
+    public void Play()
+    {
+        mainWindow.Logic.Play();
+    }
+
+    public void Pause()
+    {
+        mainWindow.Logic.Pause();
+
+    }
+
+    public void PlayPause()
+    {
+        mainWindow.Logic.PlayPause(true);
+
+    }
+
+    public void Stop()
+    {
+        mainWindow.RemoveTrack();
+    }
+
+    public void Next()
+    {
+        mainWindow.Logic.Next();
+    }
+
+    public void Previous()
+    {
+        mainWindow.Logic.Previous();
+    }
+
+    public void SetVolume(byte volume)
+    {
+        mainWindow.dc.Volume= volume;
+    }
+
+    public byte GetVolume()
+    {
+        return mainWindow.dc.Volume;
+    }
+
+    public Song? GetCurrentTrack()
+    {
+        return mainWindow.dc.CurrentSong;
+    }
+
+    public ulong GetDuration()
+    {
+        return (ulong?)mainWindow.Player?.Length()?.TotalSeconds ?? (ulong?)(mainWindow.dc.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
+
+    }
+
+    public void SetPosition(ulong position)
+    {
+        mainWindow.Player?.SetPosition(TimeSpan.FromSeconds(position));
+
+    }
+
+    public ulong GetPosition()
+    {
+        return (ulong)(mainWindow.Player?.GetPosition().TotalSeconds ?? 1);
+
+    }
+
+    public PlaybackState GetState()
+    {
+        return mainWindow.Player?.GetPlaybackState() ?? PlaybackState.Stopped;
+
+    }
+
+    public RepeatState GetRepeat()
+    {
+        return mainWindow.dc.LoopType;
+    }
+
+    public void SetRepeat(RepeatState state)
+    {
+        mainWindow.dc.LoopType = state;
+
+    }
+
+    public bool GetShuffle()
+    {
+        return false;
+    }
+
+    public void SetShuffle(bool shuffle)
+    {
+    }
+
+    public void SetRating(byte rating)
+    {
+        //A music player should probably not edit the metadata of the music it plays
+        //If someone thinks otherwise feel free to add code to this method
+    }
+
+
+    public string GetLyrics()
+    {
+        return mainWindow.dc.CurrentSong.Metadata.Lyrics;
+    }
+
+    void IMusicStatusInterfaceListenerAdmin.TrackChangedNotification(Song? currentSong)
+    {
+        TrackChangedNotification?.Invoke(this,currentSong);
+    }
+
+    void IMusicStatusInterfaceListenerAdmin.PlayerStateChanged(PlaybackState state)
+    {
+        PlayerStateChanged?.Invoke(this, state);
+
     }
 
     public string Licenses => @"Avalonia

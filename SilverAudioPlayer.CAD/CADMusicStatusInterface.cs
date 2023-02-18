@@ -54,75 +54,10 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             URLType.LibraryDocumentation)
     };
 
-    public event EventHandler? Play;
 
-    public event EventHandler? Pause;
 
-    public event EventHandler? PlayPause;
+   
 
-    public event EventHandler? Stop;
-
-    public event EventHandler? Next;
-
-    public event EventHandler? Previous;
-
-    public event EventHandler<byte>? SetVolume;
-
-    public event EventHandler<ulong>? SetPosition;
-
-    public event EventHandler<RepeatState>? SetRepeat;
-
-    public event EventHandler<bool>? SetShuffle;
-
-    public event EventHandler<byte>? SetRating;
-
-    public event Func<byte>? GetVolume;
-
-    public event Func<Song>? GetCurrentTrack;
-
-    public event Func<ulong>? GetDuration;
-
-    public event Func<ulong>? GetPosition;
-
-    public event Func<PlaybackState>? GetState;
-
-    public event Func<RepeatState>? GetRepeat;
-
-    public event Func<bool>? GetShuffle;
-
-    public event Func<string>? GetLyrics;
-
-    public event EventHandler<IMusicStatusInterface>? StateChangedNotification;
-
-    public event EventHandler<IMusicStatusInterface>? RepeatChangedNotification;
-
-    public event EventHandler<IMusicStatusInterface>? ShutdownNotiifcation;
-
-    public event EventHandler<IMusicStatusInterface>? ShuffleChangedNotification;
-
-    public event EventHandler<IMusicStatusInterface>? RatingChangedNotification;
-
-    public event EventHandler<IMusicStatusInterface>? CurrentTrackNotification;
-
-    public event EventHandler<IMusicStatusInterface>? CurrentLyricsNotification;
-
-    public event EventHandler<IMusicStatusInterface>? NewLyricsNotification;
-
-    public event EventHandler<IMusicStatusInterface>? NewCoverNotification;
-
-    public void StartIPC()
-    {
-        Text = "SilverAudioPlayerIPC";
-        HookMsg(Handle);
-        cadRegister();
-        Show();
-    }
-
-    public void StopIPC()
-    {
-        cadShutdown();
-        Invoke(() => { Dispose(); });
-    }
 
     public void Dispose()
     {
@@ -232,7 +167,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         CopyDataStruct cdCopyData;
         string strTemp;
 
-        var song = GetCurrentTrack != null ? GetCurrentTrack() : null;
+        var song = Env.GetCurrentTrack != null ? Env.GetCurrentTrack() : null;
         if (song == null) return;
         const string vbTab = "\t";
         var ThWnd = FindWindow(null, arglpWindowName);
@@ -291,19 +226,19 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             {
                 if (lp_id == 128)
                 {
-                    SetRepeat?.Invoke(this, wp_id == 1 ? RepeatState.One : RepeatState.None);
+                    Env.SetRepeat( wp_id == 1 ? RepeatState.One : RepeatState.None);
                     logger?.Debug("SET Repeat: {wp_id}", wp_id);
                 }
 
                 if (lp_id == 141)
                 {
-                    SetShuffle?.Invoke(this, wp_id == 1);
+                    Env.SetShuffle( wp_id == 1);
                     logger?.Debug("SET Shuffle: {wp_id}", wp_id);
                 }
 
                 if (lp_id == 114)
                 {
-                    SetPosition?.Invoke(this, (ulong)wp_id);
+                        Env.SetPosition( (ulong)wp_id);
                     logger?.Debug("SET Song position: {wp_id}", wp_id);
 
                     return new IntPtr(CallbackMsgsRet);
@@ -311,7 +246,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                 if (lp_id == 108)
                 {
-                    SetVolume?.Invoke(this, (byte)wp_id);
+                        Env.SetVolume((byte)wp_id);
                     logger?.Debug("SET Volume: {wp_id}", wp_id);
                 }
 
@@ -319,7 +254,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                 {
                     void SetRatingI(byte val)
                     {
-                        SetRating?.Invoke(this, val);
+                        Env.SetRating(val);
                         logger?.Debug("SET RATING: {val}", val);
                     }
 
@@ -372,39 +307,39 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                             case 101:
                             {
                                 logger?.Debug("TOGGLE: PLAY/PAUSE");
-                                PlayPause?.Invoke(this, EventArgs.Empty);
+                                Env.PlayPause();
                                 break;
                             }
 
                             case 103:
                             {
                                 logger?.Debug("TOGGLE: Stop");
-                                Stop?.Invoke(this, EventArgs.Empty);
+                                Env.Stop();
                                 break;
                             }
 
                             case 104:
                             {
                                 logger?.Debug("TOGGLE: NEXT");
-                                Next?.Invoke(this, EventArgs.Empty);
-                                if (GetCurrentTrack != null && TrackChangedNotification != null)
-                                    TrackChangedNotification(GetCurrentTrack());
+                                Env.Next();
+                                if (Env.GetCurrentTrack != null && TrackChangedNotification != null)
+                                    TrackChangedNotification(Env.GetCurrentTrack());
                                 break;
                             }
 
                             case 105:
                             {
                                 logger?.Debug("TOGGLE: PREVIOUS");
-                                Previous?.Invoke(this, EventArgs.Empty);
-                                if (GetCurrentTrack != null && TrackChangedNotification != null)
-                                    TrackChangedNotification(GetCurrentTrack());
+                                            Env.Previous();
+                                if (Env.GetCurrentTrack != null && TrackChangedNotification != null)
+                                    TrackChangedNotification(Env.GetCurrentTrack());
                                 break;
                             }
 
                             case 109:
                             {
-                                if (GetVolume != null)
-                                    CallbackMsgsRet = GetVolume();
+                                if (Env.GetVolume != null)
+                                    CallbackMsgsRet = Env.GetVolume();
                                 else
                                     CallbackMsgsRet = 70;
                                 logger?.Debug("GET: VOLUME, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
@@ -421,8 +356,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                             case 113:
                             {
-                                if (GetDuration != null)
-                                    CallbackMsgsRet = (long)GetDuration();
+                                if (Env.GetDuration != null)
+                                    CallbackMsgsRet = (long)Env.GetDuration();
                                 else
                                     CallbackMsgsRet = 0;
                                 logger?.Debug("GET: SONGDUR, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
@@ -431,8 +366,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                             case 122:
                             {
-                                if (GetPosition != null)
-                                    CallbackMsgsRet = (long)GetPosition();
+                                if (Env.GetPosition != null)
+                                    CallbackMsgsRet = (long)Env.GetPosition();
                                 else
                                     CallbackMsgsRet = 0;
                                 logger?.Debug("GET: SONGPOS, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
@@ -440,8 +375,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
                             }
                             case 125:
                             {
-                                if (GetState != null)
-                                    CallbackMsgsRet = GetState() switch
+                                if (Env.GetState != null)
+                                    CallbackMsgsRet = Env.GetState() switch
                                     {
                                         PlaybackState.Playing => 2,
                                         PlaybackState.Paused => 1,
@@ -456,8 +391,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                             case 130:
                             {
-                                if (GetRepeat != null)
-                                    CallbackMsgsRet = GetRepeat() switch
+                                if (Env.GetRepeat != null)
+                                    CallbackMsgsRet = Env.GetRepeat() switch
                                     {
                                         RepeatState.None => 0,
                                         RepeatState.One => 1,
@@ -472,8 +407,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                             case 140:
                             {
-                                if (GetShuffle != null)
-                                    CallbackMsgsRet = GetShuffle() ? 1 : 0;
+                                if (Env.GetShuffle != null)
+                                    CallbackMsgsRet = Env.GetShuffle() ? 1 : 0;
                                 else
                                     CallbackMsgsRet = 0;
                                 logger?.Debug("GET: SHUFFLESTATUS, RETURN {CallbackMsgsRet}", CallbackMsgsRet);
@@ -512,7 +447,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         CopyDataStruct cdCopyData;
         var strTemp = "";
         var ThWnd = FindWindow(null, arglpWindowName);
-        var ct = GetCurrentTrack != null ? GetCurrentTrack() : null;
+        var ct = Env.GetCurrentTrack != null ? Env.GetCurrentTrack() : null;
         if (ct?.Metadata != null && !string.IsNullOrEmpty(ct.Metadata.Lyrics)) strTemp = ct.Metadata.Lyrics;
         cdCopyData.dwData = new IntPtr(702);
         cdCopyData.cbData = Encoding.Unicode.GetByteCount(strTemp);
@@ -575,6 +510,22 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
         logger?.Debug("cadShutdown, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 129);
         logger?.Debug("cadShutdown, return of 129 {e}", e);
+    }
+    IMusicStatusInterfaceListener Env;
+    public void StartIPC(IMusicStatusInterfaceListener listener)
+    {
+        Text = "SilverAudioPlayerIPC";
+        HookMsg(Handle);
+        cadRegister();
+        Show();
+        Env = listener;
+    }
+
+    public void StopIPC(IMusicStatusInterfaceListener listener)
+    {
+
+        cadShutdown();
+        Invoke(() => { Dispose(); });
     }
 
     [StructLayout(LayoutKind.Sequential)]

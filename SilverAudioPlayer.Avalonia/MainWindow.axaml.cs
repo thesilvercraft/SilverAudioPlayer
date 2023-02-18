@@ -104,7 +104,7 @@ public partial class MainWindow : Window
 {
     public Config config;
     public static string ConfigPath = Path.Combine(AppContext.BaseDirectory, "Configs", "SilverAudioPlayer.Config.xml");
-    private readonly MainWindowContext dc;
+    public readonly MainWindowContext dc;
     public SapAvaloniaPlayerEnviroment Env { get;  } 
     private bool en;
     private bool en2;
@@ -454,13 +454,13 @@ public partial class MainWindow : Window
 
     private void MainWindow_Opened(object? sender, EventArgs e)
     {
-        Logic.MainWindow_Opened(sender, e);
+        Logic.MainWindow_Opened(Env);
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
     {
         Logic.StopAutoLoading = true;
-        Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMSI(dangthing));
+        Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMSI(dangthing, Env));
         if (Player != null) Player.TrackEnd -= OutputDevice_PlaybackStopped;
         Logic.StopAutoLoading = true;
         Player?.Stop();
@@ -504,25 +504,19 @@ public partial class MainWindow : Window
         Player?.SetPosition(at);
     }
 
-    private void PauseButton_Click(object? sender, RoutedEventArgs e)
+    private void PauseButton_Click(object? x, RoutedEventArgs y)
     {
-        Pause();
+        Logic.Pause();
     }
 
-    private void PlayButton_Click(object? sender, RoutedEventArgs e)
-    {
-        Play();
-    }
-
-    private void Play()
+    private void PlayButton_Click(object? x, RoutedEventArgs y)
     {
         Logic.Play();
     }
 
-    private void Pause()
-    {
-        Logic.Pause();
-    }
+   
+
+    
 
     private void SndThrd(CancellationToken e)
     {

@@ -62,10 +62,8 @@
 
 		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 		<!--Local library POC-->
+        <!--<DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
 		
-<!--		<DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
-		
-
 		<!--Discord (alpha)-->
 
 		<!--<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>-->
@@ -80,7 +78,10 @@
 
 		<!--System Media Transport Controls - windows 10+-->
 
-  	    <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
+  	   <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
+		<!--Fortnite - windows (POC)-->
+
+		<DefineConstants>$(DefineConstants)FRT</DefineConstants>
 
 		<!--CD Art Display - windows 7+-->
 
@@ -91,7 +92,7 @@
 		<!--MPRIS DBUS STUFF - linux - pre POC -->
 		<!--<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>-->
 		<!-- Linux sync plugin - LINUX - POC -->
-<!--		<DefineConstants>$(DefineConstants)LSync</DefineConstants>-->
+    	<!--<DefineConstants>$(DefineConstants)LSync</DefineConstants>-->
 	</PropertyGroup>
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -107,7 +108,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))"/>
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
@@ -127,6 +128,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj"   Condition="$(DefineConstants.Contains('FRT'))"/>
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
 	</ItemGroup>
 	<ItemGroup>

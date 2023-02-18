@@ -28,10 +28,13 @@ if you know how to implement a better linux IWavePlayer for naudio please consid
 > **Warning**
 > The current as is implementation of `SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound` may lead to hearing loss, please consider lowering your system's output volume before extensive testing on your part. YOU HAVE BEEN WARNED  
 
+Instead of using the NAudio playprovider you can now use the libvlc one.
+
+If you know how to use MPRIS / DBUS in c# please consider improving `SilverAudioPlayer.Linux.MPRIS` as the current implementation does not even show up in QDBusViewer
 ## Ways to install
-### Github releases
+### Github releases (windows builds only)
 You could grab the latest release from [github releases](https://github.com/thesilvercraft/SilverAudioPlayer/releases) and write it down in a directory that is writable by the program (UI/Plugin settings are stored where the program is stored right now, maybe next release that will be changed)  
-### Scoop
+### Scoop (windows builds only)
 You could also install it via [the silvercraft scoop bucket](https://github.com/thesilvercraft/SilverCraftBucket) by using:  
 `scoop bucket add silvercraft https://github.com/thesilvercraft/SilverCraftBucket`  
 `scoop install silveraudioplayer`  
@@ -43,10 +46,11 @@ And compile it yourself (that's why open source is good)
 Before compiling it yourself consider editing `SilverAudioPlayer.Avalonia.csproj`  
 In visual studio you can comment out features you dont want by selecting their `<DefineConstraints>` line and using CTRL+K+C  
 ## What do you mean modular?
-Modular means different things for different people but in this case modular would be defined as having code devided up into multiple optional components all housing important code but as previously mentioned are fully optional.
-You don't want the awful Jellyfin integration code (I'm critising my code, jellyfin for the most part is awsome)? Remove its module  
+Modular means different things for different people but in this case modular would be defined as having code divided up into multiple optional components all housing important code but as previously mentioned are fully optional.
+You don't want the awful Jellyfin integration code (I'm critising my code, jellyfin for the most part is awesome)? Remove its module  
 You don't want to be able to play midis? Remove the midi module  
 You don't want to be able to play flacs? Remove the flac decoder  
+You don't want to indirectly support google's duopoly by having the chromecast module? Remove it
 You don't want to be able to do anything with the player? Remove the player  
 
 ## Versioning
@@ -55,7 +59,7 @@ I make no promises.
 To sum it up where a.b.c.d are the version digits, if a is changed something major API breaking has happened you will have to modify your code to a large extent,  
 if b is changed something might break your code but it probably won't update regardless,  
 if c is changed you probably don't have to worry at all,   
-changes in d shouldn't be noticable at all.  
+changes in d shouldn't be noticeable at all.  
 
 ## Module creation
 Follow the [plugin guide](https://github.com/thesilvercraft/SilverAudioPlayer/wiki/Create-a-new-plugin) (and let me know if any issues arise), for now attempt installing [SilverAudioPlayer.Shared](https://www.nuget.org/packages/SilverAudioPlayer.Shared/) to a class library containing a class that implements one of:

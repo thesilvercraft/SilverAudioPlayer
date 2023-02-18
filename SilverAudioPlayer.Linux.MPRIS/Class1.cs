@@ -1,6 +1,7 @@
 ﻿using SilverAudioPlayer.Shared;
 using Tmds.DBus;
 using System.Composition;
+using System.Diagnostics;
 
 
 namespace SilverAudioPlayer.Linux.MPRIS
@@ -12,7 +13,20 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
             Task.Run(async ()=>
             {
-                await Connection.System.RegisterObjectAsync(this);
+                try
+                {
+                    var connection = new Connection(Address.Session!);
+
+                    await connection.ConnectAsync();
+
+                    await connection.RegisterObjectAsync(this);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                    throw;
+                }
+             
             });
         }
 
@@ -92,38 +106,62 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         public Task OpenUriAsync(string Uri)
         {
-            throw new NotImplementedException();
+            //TODO
+            return Task.CompletedTask;
         }
 
-        public Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)
+        private Action<long> OnSeeked;
+        public async Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)
         {
-            throw new NotImplementedException();
+            OnSeeked = handler;
+            return this;
         }
 
-        public Task<T> GetAsync<T>(string prop)
+
+        public Task<object> GetAsync(string prop)
         {
-            throw new NotImplementedException();
+            Debug.WriteLine(prop);
+            return null;
         }
 
         Task<PlayerProperties> IPlayer.GetAllAsync()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new PlayerProperties()
+            {
+PlaybackStatus = GetState().ToString(),
+Rate = 1,
+MaximumRate = 1,
+MinimumRate = 1,
+CanControl = true,
+CanPause = true,
+CanPlay = true,
+CanGoNext = true,
+CanGoPrevious = true,
+CanSeek = true,
+            });
         }
 
         public Task<MediaPlayer2Properties> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new MediaPlayer2Properties()
+            {
+                HasTrackList = true
+            });
         }
 
         public Task SetAsync(string prop, object val)
         {
-            throw new NotImplementedException();
         }
 
-        public Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler)
+        public void StartIPC(IMusicStatusInterfaceListener listener)
+        {
+        }
+
+        public void StopIPC(IMusicStatusInterfaceListener listener)
         {
             throw new NotImplementedException();
         }
+
         public string Name => "MPRIS Linux MSI";
         public string Description => "Interface with linux dbus for native music controls";
         public WrappedStream? Icon => null;
@@ -146,36 +184,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         };
         
 
-        public event EventHandler? Play;
-        public event EventHandler? Pause;
-        public event EventHandler? PlayPause;
-        public event EventHandler? Stop;
-        public event EventHandler? Next;
-        public event EventHandler? Previous;
-        public event EventHandler<byte>? SetVolume;
-        public event Func<byte>? GetVolume;
-        public event Func<Song>? GetCurrentTrack;
-        public event Func<ulong>? GetDuration;
-        public event EventHandler<ulong>? SetPosition;
-        public event Func<ulong>? GetPosition;
-      
-
-        public event Func<PlaybackState>? GetState;
-        public event EventHandler<IMusicStatusInterface>? StateChangedNotification;
-        public event EventHandler<IMusicStatusInterface>? RepeatChangedNotification;
-        public event Func<RepeatState>? GetRepeat;
-        public event EventHandler<RepeatState>? SetRepeat;
-        public event EventHandler<IMusicStatusInterface>? ShutdownNotiifcation;
-        public event EventHandler<IMusicStatusInterface>? ShuffleChangedNotification;
-        public event Func<bool>? GetShuffle;
-        public event EventHandler<bool>? SetShuffle;
-        public event EventHandler<IMusicStatusInterface>? RatingChangedNotification;
-        public event EventHandler<byte>? SetRating;
-        public event EventHandler<IMusicStatusInterface>? CurrentTrackNotification;
-        public event EventHandler<IMusicStatusInterface>? CurrentLyricsNotification;
-        public event EventHandler<IMusicStatusInterface>? NewLyricsNotification;
-        public event EventHandler<IMusicStatusInterface>? NewCoverNotification;
-        public event Func<string>? GetLyrics;
+       
 
      
     }

@@ -12,10 +12,9 @@ namespace SilverAudioPlayer.Linux.MPRIS
     {
         Task RaiseAsync();
         Task QuitAsync();
-        Task<T> GetAsync<T>(string prop);
+        Task<object> GetAsync(string prop);
         Task<MediaPlayer2Properties> GetAllAsync();
         Task SetAsync(string prop, object val);
-        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
     }
 
     [Dictionary]
@@ -122,13 +121,13 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
     static class MediaPlayer2Extensions
     {
-        public static Task<bool> GetCanQuitAsync(this IMediaPlayer2 o) => o.GetAsync<bool>("CanQuit");
-        public static Task<bool> GetCanRaiseAsync(this IMediaPlayer2 o) => o.GetAsync<bool>("CanRaise");
-        public static Task<bool> GetHasTrackListAsync(this IMediaPlayer2 o) => o.GetAsync<bool>("HasTrackList");
-        public static Task<string> GetIdentityAsync(this IMediaPlayer2 o) => o.GetAsync<string>("Identity");
-        public static Task<string> GetDesktopEntryAsync(this IMediaPlayer2 o) => o.GetAsync<string>("DesktopEntry");
-        public static Task<string[]> GetSupportedUriSchemesAsync(this IMediaPlayer2 o) => o.GetAsync<string[]>("SupportedUriSchemes");
-        public static Task<string[]> GetSupportedMimeTypesAsync(this IMediaPlayer2 o) => o.GetAsync<string[]>("SupportedMimeTypes");
+        public static async Task<bool> GetCanQuitAsync(this IMediaPlayer2 o) => (bool)await o.GetAsync("CanQuit");
+        public static async Task<bool> GetCanRaiseAsync(this IMediaPlayer2 o) => (bool)await o.GetAsync("CanRaise");
+        public static async Task<bool> GetHasTrackListAsync(this IMediaPlayer2 o) => (bool)await o.GetAsync("HasTrackList");
+        public static async Task<string> GetIdentityAsync(this IMediaPlayer2 o) => (string)await o.GetAsync("Identity");
+        public static async Task<string> GetDesktopEntryAsync(this IMediaPlayer2 o) => (string)await o.GetAsync("DesktopEntry");
+        public static async Task<string[]> GetSupportedUriSchemesAsync(this IMediaPlayer2 o) => (string[])await o.GetAsync("SupportedUriSchemes");
+        public static async Task<string[]> GetSupportedMimeTypesAsync(this IMediaPlayer2 o) => (string[])await o.GetAsync("SupportedMimeTypes");
     }
 
     [DBusInterface("org.mpris.MediaPlayer2.Player")]
@@ -144,10 +143,9 @@ namespace SilverAudioPlayer.Linux.MPRIS
         Task SetPositionAsync(ObjectPath TrackId, long Position);
         Task OpenUriAsync(string Uri);
         Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null);
-        Task<T> GetAsync<T>(string prop);
+        Task<object> GetAsync(string prop);
         Task<PlayerProperties> GetAllAsync();
         Task SetAsync(string prop, object val);
-        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
     }
 
     [Dictionary]
@@ -338,19 +336,19 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
     static class PlayerExtensions
     {
-        public static Task<string> GetPlaybackStatusAsync(this IPlayer o) => o.GetAsync<string>("PlaybackStatus");
-        public static Task<double> GetRateAsync(this IPlayer o) => o.GetAsync<double>("Rate");
-        public static Task<IDictionary<string, object>> GetMetadataAsync(this IPlayer o) => o.GetAsync<IDictionary<string, object>>("Metadata");
-        public static Task<double> GetVolumeAsync(this IPlayer o) => o.GetAsync<double>("Volume");
-        public static Task<long> GetPositionAsync(this IPlayer o) => o.GetAsync<long>("Position");
-        public static Task<double> GetMinimumRateAsync(this IPlayer o) => o.GetAsync<double>("MinimumRate");
-        public static Task<double> GetMaximumRateAsync(this IPlayer o) => o.GetAsync<double>("MaximumRate");
-        public static Task<bool> GetCanGoNextAsync(this IPlayer o) => o.GetAsync<bool>("CanGoNext");
-        public static Task<bool> GetCanGoPreviousAsync(this IPlayer o) => o.GetAsync<bool>("CanGoPrevious");
-        public static Task<bool> GetCanPlayAsync(this IPlayer o) => o.GetAsync<bool>("CanPlay");
-        public static Task<bool> GetCanPauseAsync(this IPlayer o) => o.GetAsync<bool>("CanPause");
-        public static Task<bool> GetCanSeekAsync(this IPlayer o) => o.GetAsync<bool>("CanSeek");
-        public static Task<bool> GetCanControlAsync(this IPlayer o) => o.GetAsync<bool>("CanControl");
+        public static async Task<string> GetPlaybackStatusAsync(this IPlayer o) => (string)await o.GetAsync("PlaybackStatus");
+        public static async Task<double> GetRateAsync(this IPlayer o) => (double)await o.GetAsync("Rate");
+        public static async Task<IDictionary<string, object>> GetMetadataAsync(this IPlayer o) =>(IDictionary<string, object>)await o.GetAsync("Metadata");
+        public static async Task<double> GetVolumeAsync(this IPlayer o) => (double)await o.GetAsync("Volume");
+        public static async Task<long> GetPositionAsync(this IPlayer o) => (long)await o.GetAsync("Position");
+        public static async Task<double> GetMinimumRateAsync(this IPlayer o) => (double)await o.GetAsync("MinimumRate");
+        public static async Task<double> GetMaximumRateAsync(this IPlayer o) => (double)await o.GetAsync("MaximumRate");
+        public static async Task<bool> GetCanGoNextAsync(this IPlayer o) => (bool)await o.GetAsync("CanGoNext");
+        public static async  Task<bool> GetCanGoPreviousAsync(this IPlayer o) => (bool)await o.GetAsync("CanGoPrevious");
+        public static async Task<bool> GetCanPlayAsync(this IPlayer o) => (bool)await o.GetAsync("CanPlay");
+        public static async Task<bool> GetCanPauseAsync(this IPlayer o) => (bool)await o.GetAsync("CanPause");
+        public static async Task<bool> GetCanSeekAsync(this IPlayer o) => (bool)await o.GetAsync("CanSeek");
+        public static async Task<bool> GetCanControlAsync(this IPlayer o) =>  (bool)await o.GetAsync("CanControl");
         public static Task SetRateAsync(this IPlayer o, double val) => o.SetAsync("Rate", val);
         public static Task SetVolumeAsync(this IPlayer o, double val) => o.SetAsync("Volume", val);
     }

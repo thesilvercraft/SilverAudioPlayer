@@ -138,62 +138,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
         return ConfigurableElements;
     }
 
-    public event EventHandler Play;
-
-    public event EventHandler Pause;
-
-    public event EventHandler PlayPause;
-
-    public event EventHandler Stop;
-
-    public event EventHandler Next;
-
-    public event EventHandler Previous;
-
-    public event EventHandler<byte> SetVolume;
-
-    public event Func<byte> GetVolume;
-
-    public event Func<Song> GetCurrentTrack;
-
-    public event Func<ulong> GetDuration;
-
-    public event EventHandler<ulong> SetPosition;
-
-    public event Func<ulong> GetPosition;
-
-    public event Func<PlaybackState> GetState;
-
-    public event EventHandler<IMusicStatusInterface> StateChangedNotification;
-
-    public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
-
-    public event Func<RepeatState> GetRepeat;
-
-    public event EventHandler<RepeatState> SetRepeat;
-
-    public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
-
-    public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
-
-    public event Func<bool> GetShuffle;
-
-    public event EventHandler<bool> SetShuffle;
-
-    public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
-
-    public event EventHandler<byte> SetRating;
-
-    public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
-
-    public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
-
-    public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
-
-    public event EventHandler<IMusicStatusInterface> NewCoverNotification;
-
-    public event Func<string> GetLyrics;
-
+    
     public void Dispose()
     {
     }
@@ -207,18 +152,18 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
                 break;
 
             case PlaybackState.Playing:
-                if (GetCurrentTrack != null)
+                if (Env.GetCurrentTrack != null)
                 {
-                    var ct = GetCurrentTrack();
+                    var ct = Env.GetCurrentTrack();
                     SPlay(ct.URI, ct);
                 }
 
                 break;
 
             case PlaybackState.Paused:
-                if (GetCurrentTrack != null)
+                if (Env.GetCurrentTrack != null)
                 {
-                    var ct = GetCurrentTrack();
+                    var ct = Env.GetCurrentTrack();
                     SPause(ct.URI, ct);
                 }
 
@@ -229,22 +174,14 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
         }
     }
 
-    public void StartIPC()
-    {
-        client.Initialize();
-    }
-
+ 
     public void TrackChangedNotification(Song newtrack)
     {
         ChangeSong(newtrack.URI, newtrack);
     }
 
-    public void StopIPC()
-    {
-        Debug.WriteLine("disable called");
-        client.Deinitialize();
-        client.Dispose();
-    }
+  
+
 
     public string Name => "Discord RP";
 
@@ -397,6 +334,19 @@ SilverAudioPlayer.DiscordRP
         {
             Debug.WriteLine(ex.Message);
         }
+    }
+    IMusicStatusInterfaceListener Env;
+    public void StartIPC(IMusicStatusInterfaceListener listener)
+    {
+        Env = listener;
+        client.Initialize();
+    }
+
+    public void StopIPC(IMusicStatusInterfaceListener listener)
+    {
+        Debug.WriteLine("disable called");
+        client.Deinitialize();
+        client.Dispose();
     }
 }
 

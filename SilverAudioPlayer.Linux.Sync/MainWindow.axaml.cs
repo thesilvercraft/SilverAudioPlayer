@@ -13,6 +13,8 @@ using Avalonia.Threading;
 using SilverAudioPlayer.Shared;
 using Splat.ModeDetection;
 using Humanizer;
+using SilverCraft.AvaloniaUtils;
+
 namespace SilverAudioPlayer.Linux.Sync;
 
 public class Device
@@ -40,7 +42,11 @@ public partial class MainWindow : Window
         DeviceBox = this.FindControl<ComboBox>("DeviceBox");
         TextBox = this.FindControl<TextBox>("TextBox");
         RefreshDevices();
-        
+        if(WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks")==true)
+        {
+            return;
+        }
+        this.DoAfterInitTasks(true);
     }
 
     private ISyncEnvironmentListener env;

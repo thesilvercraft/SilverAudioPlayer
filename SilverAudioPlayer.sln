@@ -77,13 +77,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProvider.libVLC", "SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj", "{BB5CBBE8-25C2-4510-8116-6737D25155BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayStreamProvider.VideoLib", "SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj", "{2EA1DED2-16FA-40CD-B220-C982AA2C251E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayStreamProvider.VideoLib", "SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj", "{2EA1DED2-16FA-40CD-B220-C982AA2C251E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Linux.Sync", "SilverAudioPlayer.Linux.Sync\SilverAudioPlayer.Linux.Sync.csproj", "{FE479F6E-F967-4713-AC36-9DC9A5E0A186}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Linux.Sync", "SilverAudioPlayer.Linux.Sync\SilverAudioPlayer.Linux.Sync.csproj", "{FE479F6E-F967-4713-AC36-9DC9A5E0A186}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sync", "Sync", "{66C83E1E-DA8E-4470-AD8C-E7F79816FC44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary", "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj", "{7171C7ED-EF48-4700-8F07-FE3CC2C44E7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary", "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj", "{7171C7ED-EF48-4700-8F07-FE3CC2C44E7F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio", "SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj", "{41984572-D6E8-4FDC-BFBB-21331C5A615B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -529,6 +531,22 @@ Global
 		{7171C7ED-EF48-4700-8F07-FE3CC2C44E7F}.Release|x64.Build.0 = Release|Any CPU
 		{7171C7ED-EF48-4700-8F07-FE3CC2C44E7F}.Release|x86.ActiveCfg = Release|Any CPU
 		{7171C7ED-EF48-4700-8F07-FE3CC2C44E7F}.Release|x86.Build.0 = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|arm64.Build.0 = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|x64.Build.0 = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Debug|x86.Build.0 = Debug|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|arm64.ActiveCfg = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|arm64.Build.0 = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|x64.ActiveCfg = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|x64.Build.0 = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|x86.ActiveCfg = Release|Any CPU
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -560,6 +578,7 @@ Global
 		{2EA1DED2-16FA-40CD-B220-C982AA2C251E} = {19B951F3-56FD-4DAC-BA15-3D54A84997ED}
 		{FE479F6E-F967-4713-AC36-9DC9A5E0A186} = {66C83E1E-DA8E-4470-AD8C-E7F79816FC44}
 		{7171C7ED-EF48-4700-8F07-FE3CC2C44E7F} = {19B951F3-56FD-4DAC-BA15-3D54A84997ED}
+		{41984572-D6E8-4FDC-BFBB-21331C5A615B} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

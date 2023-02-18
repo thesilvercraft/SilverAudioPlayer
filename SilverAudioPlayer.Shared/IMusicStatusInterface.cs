@@ -2,58 +2,70 @@
 
 public interface IMusicStatusInterface : IDisposable, ICodeInformation
 {
-    void StartIPC();
-    void StopIPC();
+    void StartIPC(IMusicStatusInterfaceListener listener);
+    void StopIPC(IMusicStatusInterfaceListener listener);
 
-    event EventHandler Play;
 
-    event EventHandler Pause;
 
-    event EventHandler PlayPause;
+   
+}
+public interface IMusicStatusInterfaceListenerAdmin: IMusicStatusInterfaceListener
+{
+    public void TrackChangedNotification(Song? currentSong);
+    public void PlayerStateChanged(PlaybackState state);
+}
+public interface IMusicStatusInterfaceListener : IPlayerEnviroment
+{
 
-    event EventHandler Stop;
+     void Play();
 
-    event EventHandler Next;
+    void Pause();
 
-    event EventHandler Previous;
+    void PlayPause();
 
-    event EventHandler<byte> SetVolume;
+    void Stop();
 
-    event Func<byte> GetVolume;
+    void Next();
 
-    event Func<Song?> GetCurrentTrack;
+    void Previous();
 
-    event Func<ulong> GetDuration;
+    void SetVolume(byte volume);
 
-    event EventHandler<ulong> SetPosition;
+    byte GetVolume();
 
-    event Func<ulong> GetPosition;
+    Song? GetCurrentTrack();
 
-    void TrackChangedNotification(Song newtrack);
+    ulong GetDuration();
 
-    void PlayerStateChanged(PlaybackState newstate);
+    void SetPosition(ulong position);
 
-    event Func<PlaybackState> GetState;
+    ulong GetPosition();
+
+    event EventHandler<Song> TrackChangedNotification;
+
+    event EventHandler<PlaybackState> PlayerStateChanged;
+
+    PlaybackState GetState();
 
     event EventHandler<IMusicStatusInterface> StateChangedNotification;
 
     event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
 
-    event Func<RepeatState> GetRepeat;
+    RepeatState GetRepeat();
 
-    event EventHandler<RepeatState> SetRepeat;
+    void  SetRepeat(RepeatState state);
 
     event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
 
     event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
 
-    event Func<bool> GetShuffle;
+    bool GetShuffle();
 
-    event EventHandler<bool> SetShuffle;
+    void SetShuffle(bool shuffle);
 
     event EventHandler<IMusicStatusInterface> RatingChangedNotification;
 
-    event EventHandler<byte> SetRating;
+    void  SetRating (byte rating);
 
     event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
 
@@ -63,5 +75,5 @@ public interface IMusicStatusInterface : IDisposable, ICodeInformation
 
     event EventHandler<IMusicStatusInterface> NewCoverNotification;
 
-    event Func<string> GetLyrics;
+    string GetLyrics();
 }

@@ -113,88 +113,15 @@ public class Logic<T> where T : PlayerContext
     public IPlay? Player { get; set; }
 
 
-
-    public void AddMSI(IMusicStatusInterface e)
+    IMusicStatusInterfaceListenerAdmin MusicStatusInterface;
+    public void AddMSI(IMusicStatusInterface e, IMusicStatusInterfaceListenerAdmin musicStatusInterface)
     {
         musicStatusInterfaces.Add(e);
-        e.Play += MusicStatusInterface_Play;
-        e.Pause += MusicStatusInterface_Pause;
-        e.Stop += MusicStatusInterface_Stop;
-        e.PlayPause += MusicStatusInterface_PlayPause;
-        e.Next += MusicStatusInterface_Next;
-        e.Previous += MusicStatusInterface_Previous;
-        e.GetCurrentTrack += MusicStatusInterface_GetCurrentTrack;
-        e.GetDuration += MusicStatusInterface_GetDuration;
-        e.GetPosition += MusicStatusInterface_GetPosition;
-        e.SetPosition += MusicStatusInterface_SetPosition;
-        e.GetShuffle += MusicStatusInterface_GetShuffle;
-        e.GetState += MusicStatusInterface_GetState;
-        e.GetVolume += MusicStatusInterface_GetVolume;
-        e.SetVolume += MusicStatusInterface_SetVolume;
-        e.GetRepeat += MusicStatusInterface_GetRepeat;
-        e.SetRating += MusicStatusInterface_SetRating;
-        e.SetRepeat += MusicStatusInterface_SetRepeat;
-        e.StartIPC();
+        MusicStatusInterface = musicStatusInterface;
+        e.StartIPC(musicStatusInterface);
     }
 
-    private void MusicStatusInterface_SetRepeat(object? sender, RepeatState e)
-    {
-        playerContext.LoopType = e;
-    }
-
-    private void MusicStatusInterface_SetVolume(object? sender, byte e)
-    {
-        if (e <= 100) Player?.SetVolume(e);
-    }
-
-    private void MusicStatusInterface_SetPosition(object? sender, ulong e)
-    {
-        Player?.SetPosition(TimeSpan.FromSeconds(e));
-    }
-
-    private void MusicStatusInterface_SetRating(object? sender, byte e)
-    {
-        //A music player should probably not edit the metadata of the music it plays
-        //If someone thinks otherwise feel free to add code to this method
-    }
-
-    private bool MusicStatusInterface_GetShuffle()
-    {
-        return false;
-    }
-
-    private ulong MusicStatusInterface_GetPosition()
-    {
-        return (ulong)(Player?.GetPosition().TotalSeconds ?? 1);
-    }
-
-    private RepeatState MusicStatusInterface_GetRepeat()
-    {
-        return playerContext.LoopType;
-    }
-
-    private byte MusicStatusInterface_GetVolume()
-    {
-        return Volume;
-    }
-
-    private PlaybackState MusicStatusInterface_GetState()
-    {
-        return Player?.GetPlaybackState() ?? PlaybackState.Stopped;
-    }
-
-    private void MusicStatusInterface_Stop(object? sender, object e)
-    {
-        StopAutoLoading = true;
-        Player?.Stop();
-        SendIfStateIsNotNull();
-    }
-
-    private void MusicStatusInterface_Pause(object? sender, object e)
-    {
-        Player?.Pause();
-        SendIfStateIsNotNull();
-    }
+ 
 
     private void SendIfStateIsNotNull()
     {
@@ -211,7 +138,7 @@ public class Logic<T> where T : PlayerContext
     /// <param name="playerContext.CurrentSong">The new track</param>
     public void TrackChangedNotification(Song? currentSong)
     {
-        Parallel.ForEach(musicStatusInterfaces, msI => msI?.TrackChangedNotification(currentSong!));
+        MusicStatusInterface?.TrackChangedNotification(currentSong!);
     }
 
     /// <summary>
@@ -220,37 +147,19 @@ public class Logic<T> where T : PlayerContext
     /// <param name="s">The new Playstate</param>
     public void PlaybackStateChangedNotification(PlaybackState s)
     {
-        Parallel.ForEach(musicStatusInterfaces, msI => msI?.PlayerStateChanged(s));
+        MusicStatusInterface?.PlayerStateChanged(s);
+
         if (s == PlaybackState.Stopped)
             Parallel.ForEach(WakeLockInterfaces, msI => msI.UnWakeLock());
         else if (s == PlaybackState.Playing) Parallel.ForEach(WakeLockInterfaces, msI => msI.WakeLock());
     }
 
-    private void MusicStatusInterface_Play(object? sender, object e)
-    {
-        Play();
-    }
+ 
 
-    public void RemoveMSI(IMusicStatusInterface e)
+    public void RemoveMSI(IMusicStatusInterface e, IMusicStatusInterfaceListener musicStatusInterface)
     {
-        e.Play -= MusicStatusInterface_Play;
-        e.Pause -= MusicStatusInterface_Pause;
-        e.Stop -= MusicStatusInterface_Stop;
-        e.Next -= MusicStatusInterface_Next;
-        e.Previous -= MusicStatusInterface_Previous;
-        e.GetCurrentTrack -= MusicStatusInterface_GetCurrentTrack;
-        e.GetDuration -= MusicStatusInterface_GetDuration;
-        e.GetState -= MusicStatusInterface_GetState;
-        e.GetVolume -= MusicStatusInterface_GetVolume;
-        e.GetRepeat -= MusicStatusInterface_GetRepeat;
-        e.GetPosition -= MusicStatusInterface_GetPosition;
-        e.GetShuffle -= MusicStatusInterface_GetShuffle;
-        e.SetRating -= MusicStatusInterface_SetRating;
-        e.SetPosition -= MusicStatusInterface_SetPosition;
-        e.SetVolume -= MusicStatusInterface_SetVolume;
-        e.PlayPause -= MusicStatusInterface_PlayPause;
-        e.SetRepeat -= MusicStatusInterface_SetRepeat;
-        e.StopIPC();
+
+        e.StopIPC(musicStatusInterface);
         e.Dispose();
         musicStatusInterfaces.Remove(e);
     }
@@ -264,32 +173,11 @@ public class Logic<T> where T : PlayerContext
         else if (allowstart) Play();
     }
 
-    private void MusicStatusInterface_PlayPause(object? sender, object e)
-    {
-        PlayPause(true);
-    }
 
-    private ulong MusicStatusInterface_GetDuration()
-    {
-        return (ulong?)Player?.Length()?.TotalSeconds ?? (ulong?)(playerContext.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
-    }
 
-    private Song? MusicStatusInterface_GetCurrentTrack()
-    {
-        return playerContext.CurrentSong;
-    }
 
-    private void MusicStatusInterface_Previous(object? sender, EventArgs e)
-    {
-        Previous();
-    }
-
-    private void MusicStatusInterface_Next(object? sender, EventArgs e)
-    {
-        Next();
-    }
-
-    private void Next()
+  
+    public void Next()
     {
         if (ChangeAllowed)
         {
@@ -303,7 +191,7 @@ public class Logic<T> where T : PlayerContext
         }
     }
 
-    private void Previous()
+    public void Previous()
     {
         if (ChangeAllowed)
         {
@@ -317,27 +205,18 @@ public class Logic<T> where T : PlayerContext
         }
     }
 
-    public void MainWindow_Opened(object? sender, EventArgs e)
+    public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin MusicStatusInterface)
     {
         if (MusicStatusInterfaces?.Any() == true)
             Parallel.ForEach(MusicStatusInterfaces, dangthing =>
             {
                 var a = dangthing;
                 GC.KeepAlive(a);
-                AddMSI(a);
+                AddMSI(a, MusicStatusInterface);
             });
     }
 
-    private void MainWindow_Closing(object? sender, CancelEventArgs e)
-    {
-        StopAutoLoading = true;
-        Parallel.ForEach(MusicStatusInterfaces.ToArray(), dangthing => RemoveMSI(dangthing));
-        if (Player != null) Player.TrackEnd -= OutputDevice_PlaybackStopped;
-        StopAutoLoading = true;
-        Player?.Stop();
-        Player = null;
-        Environment.Exit(0);
-    }
+   
 
     public void Play()
     {
