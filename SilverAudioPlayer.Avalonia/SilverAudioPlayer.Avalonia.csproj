@@ -143,7 +143,7 @@
 		<PackageReference Include="Svg.Skia" Version="0.5.18" />
 		<PackageReference Include="System.Composition" Version="7.0.0" />
 		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" Condition="$(DefineConstants.Contains('VLC'))" />
-		<PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+		<PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
 		<PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="8.2.0" />
 	</ItemGroup>
