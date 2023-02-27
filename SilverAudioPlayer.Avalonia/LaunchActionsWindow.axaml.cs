@@ -36,7 +36,7 @@ public partial class LaunchActionsWindow : Window
         this.DoAfterInitTasksF();
     }
 
-    public void ElementDoubleTapped(object _, RoutedEventArgs args)
+    public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
     {
         ((SAction?)LB.SelectedItem)?.Invoke();
     }

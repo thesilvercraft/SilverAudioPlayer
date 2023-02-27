@@ -5,8 +5,11 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayerBuilder.MainWindow"
         Title="SilverAudioPlayerBuilder" ExtendClientAreaToDecorationsHint="True">
-	<Grid Margin="5 25 5 5" Name="MainGrid">
-		
+	<Grid Margin="5 5 5 5" RowDefinitions="30, *">
+		<TextBlock FontSize="30" FontStyle="Italic" FontWeight="ExtraBold">Build a SilverAudioPlayer</TextBlock>
+		<Grid Name="MainGrid" Grid.Row="1">
+			
+		</Grid>
 	</Grid>
 </Window>
  

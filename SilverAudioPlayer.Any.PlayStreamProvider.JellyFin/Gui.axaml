@@ -4,6 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.Gui"
+		xmlns:local="using:SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"
+		
         Title="SilverAudioPlayer Provider for JellyFin ALPHA" ExtendClientAreaToDecorationsHint="True">
     <Grid Margin="25,5,5,5">
         <DockPanel>
@@ -14,7 +16,7 @@
             <ListBox Background="Transparent" DockPanel.Dock="Bottom" Items="{Binding SearchResults}" Name="LB"
                      Margin="0 20">
                 <ListBox.DataTemplates>
-                    <DataTemplate>
+                    <DataTemplate DataType="{x:Type local:WrappedDto}">
                         <StackPanel Spacing="5" Width="200">
                             <Border CornerRadius="10" ClipToBounds="True">
                                 <Panel Background="Transparent">

@@ -8,6 +8,11 @@ public static class MagicByteCombos
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0xFF, 0xFB),
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0xFF, 0xF3),
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0xFF, 0xF2),
+        
+        new MagicByteComboWithMimeType(KnownMimes.Mp4Mime, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D),
+        new MagicByteComboWithMimeType(KnownMimes.MpegMime, 0x47),
+        new MagicByteComboWithMimeType(KnownMimes.Mp2Mime, 0x00, 0x00, 0x01, 0xBA),
+
         new MagicByteComboWithMimeType(KnownMimes.FLACMime, 0x66, 0x4C, 0x61, 0x43),
         new MagicByteComboWithMimeType(KnownMimes.MidMime, 0x4D, 0x54, 0x68, 0x64),
         new MagicByteComboWithMimeType(KnownMimes.WAVMime, 0x52, 0x49, 0x46, 0x46, null, null, null, null, 0x57, 0x41,

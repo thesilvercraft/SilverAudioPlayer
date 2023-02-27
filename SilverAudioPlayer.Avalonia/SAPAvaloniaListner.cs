@@ -44,10 +44,13 @@ public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWi
 
     public void LoadSongs(IEnumerable<WrappedStream> streams)
     {
-        Dispatcher.UIThread.Post(()=>mainWindow.Logic.ProcessStreams(streams));
+       mainWindow.Logic.ProcessStreams(streams);
     }
 
-
+    public IEnumerable<string> FilterFiles(IEnumerable<string> files)
+    {
+        return mainWindow.Logic.FilterFiles(files);
+    }
 
     public string Name => "SilverAudioPlayer.Avalonia";
 
@@ -149,7 +152,13 @@ public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWi
 
     public PlaybackState GetState()
     {
-        return mainWindow.Player?.GetPlaybackState() ?? PlaybackState.Stopped;
+        var x = mainWindow.Player?.GetPlaybackState();
+        if(x != null)
+        {
+            return (PlaybackState)x;
+
+        }
+        return  PlaybackState.Stopped;
 
     }
 

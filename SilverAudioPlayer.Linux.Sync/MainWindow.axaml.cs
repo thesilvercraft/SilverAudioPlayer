@@ -164,8 +164,8 @@ public partial class MainWindow : Window
                 proc.Start();
                 proc.BeginOutputReadLine();
                 proc.BeginErrorReadLine();
-                proc.OutputDataReceived += (s, e) =>    Dispatcher.UIThread.InvokeAsync(() => TextBox.Text +=e.Data+"\n"); ;
-                proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() => TextBox.Text +=e.Data +"\n");
+               // proc.OutputDataReceived += (s, e) =>    Dispatcher.UIThread.InvokeAsync(() => TextBox.Text +=e.Data+"\n"); ;
+                //proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() => TextBox.Text +=e.Data +"\n");
                 
                 await proc.WaitForExitAsync();
             }

@@ -6,4 +6,5 @@ public interface IPlayStreamProviderListener: IPlayerEnviroment
     public void ProcessFiles(IEnumerable<string> files);
 
     void LoadSongs(IEnumerable<WrappedStream> streams);
+    IEnumerable<string> FilterFiles(IEnumerable<string> files);
 }

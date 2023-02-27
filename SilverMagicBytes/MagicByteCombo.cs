@@ -12,16 +12,15 @@ public class MagicByteCombo
     public bool Match(Stream s, long offset)
     {
         if (s.CanSeek) s.Position = offset;
-        for (var i = 0; i < Combo.Length; i++)
-            if (Combo[i] != null)
+        foreach (var t in Combo)
+            if (t != null)
             {
-                if (s.ReadByte() != Combo[i]!.Value) return false;
+                if (s.ReadByte() != t.Value) return false;
             }
             else
             {
                 s.ReadByte();
             }
-
         return true;
     }
 }

@@ -51,14 +51,7 @@ public partial class PictureViewer : Window
 
     private void Copy(object? sender, RoutedEventArgs e)
     {
-#if WINDOWS
-            if(Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-            Clowd.Clipboard.ClipboardAvalonia.Empty();
-                using var memstream = new MemoryStream(pictures[pos].Data);
-            Clowd.Clipboard.ClipboardAvalonia.SetImage(new Bitmap(memstream));
-            }
-#endif
+
     }
 }
 

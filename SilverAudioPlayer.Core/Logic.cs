@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Composition;
 using System.Diagnostics;
+using Avalonia.Collections;
 using FuzzySharp;
 using FuzzySharp.Extensions;
 using ReactiveUI;
@@ -126,6 +127,7 @@ public class Logic<T> where T : PlayerContext
     private void SendIfStateIsNotNull()
     {
         var state = Player?.GetPlaybackState();
+        Debug.Assert(state != null);
         if (state != null)
             PlaybackStateChangedNotification(state.Value);
         else
@@ -148,7 +150,6 @@ public class Logic<T> where T : PlayerContext
     public void PlaybackStateChangedNotification(PlaybackState s)
     {
         MusicStatusInterface?.PlayerStateChanged(s);
-
         if (s == PlaybackState.Stopped)
             Parallel.ForEach(WakeLockInterfaces, msI => msI.UnWakeLock());
         else if (s == PlaybackState.Playing) Parallel.ForEach(WakeLockInterfaces, msI => msI.WakeLock());
@@ -235,6 +236,7 @@ public class Logic<T> where T : PlayerContext
     {
         Player?.Pause();
         SendIfStateIsNotNull();
+
     }
 
     public async void StartPlaying(bool play = true, bool resetsal = false)
@@ -280,6 +282,7 @@ public class Logic<T> where T : PlayerContext
     public void RemoveTrack()
     {
         Player?.Stop();
+        SendIfStateIsNotNull();
         Player = null;
         token?.Cancel();
         Thread.Sleep(30);
@@ -343,16 +346,33 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
             var onefile = files.Count() == 1;
             if (onefile && Directory.Exists(files.First()))
             {
-                files = Directory.GetFiles(files.First());
+                files = FilterFiles(Directory.GetFiles(files.First(), "*", SearchOption.AllDirectories));
                 onefile = false;
             }
 
             files = FilterFiles(files);
-            foreach (var file in files) AddSong(new Song(file, file, Guid.NewGuid()), !onefile);
-            if (!onefile && !IsSortRequested)
+            foreach (var path in files)
+            {
+                
+                if(File.Exists(path))
+                {
+                    AddSong(new Song(path, path, Guid.NewGuid()), !onefile);
+                }
+                else if (Directory.Exists(path))
+                {
+                    var files2 = FilterFiles(Directory.GetFiles(path, "*", SearchOption.AllDirectories));
+                   
+                 foreach (var file in files2)
+                    {
+                        AddSong(new Song(file, file, Guid.NewGuid()), !onefile);
+
+                    }
+                }
+            }
+            if (!IsSortRequested)
             {
                 IsSortRequested = true;
-                Task.Run(() => DoSort());
+                var sortTask = Task.Run(async () => await DoSort());
             }
         }
     }
@@ -366,7 +386,7 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
             if (!onefile && !IsSortRequested)
             {
                 IsSortRequested = true;
-                Task.Run(() => DoSort());
+                var sortTask = Task.Run(async () => await DoSort());
             }
         }
     }
@@ -381,19 +401,18 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
         playerContext.Queue.Clear();
     }
 
-    private void AddSong(Song song, bool expectmore = false)
+    private  void AddSong(Song song, bool expectmore = false)
     {
-        Task.Run(async () =>
-        {
-            song.Metadata ??= await GetMetadataFromStream(song.Stream);
-            if (song == null) throw new Exception();
+       
+            song.Metadata ??= Task.Run(async () => await GetMetadataFromStream(song.Stream)).GetAwaiter().GetResult();
+            if (song == null) return;
             playerContext.Queue.Add(song);
             if (!expectmore && !IsSortRequested)
             {
                 IsSortRequested = true;
-                var sortTask = Task.Run(() => DoSort());
+                var sortTask = Task.Run(async () => await DoSort());
             }
-        });
+       
     }
 
     public async Task DoSort()
@@ -416,9 +435,17 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
         }
 
         Log.Information("Sorted through {Count} songs", sng.Count);
-        playerContext.Queue.Clear();
-        playerContext.Queue.AddRange(sng);
-        playerContext.Queue = playerContext.Queue;
+        if (playerContext.Queue is AvaloniaList<Song> list)
+        {
+            playerContext.Queue = new AvaloniaList<Song>(sng);
+        }
+        else
+        {
+            //huh, what, ok lets try at least something
+            playerContext.Queue.Clear();
+            playerContext.Queue.AddRange(sng);
+       }
+        
         IsSortRequested = false;
     }
 
@@ -461,13 +488,15 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
             || x.EndsWith(".log")
             || x.EndsWith(".gif")
             || x.EndsWith(".cue")
-            || x.EndsWith(".m3u")
             || x.EndsWith(".fpl")
             || x.EndsWith(".htm")
             || x.EndsWith(".pkf")
             || x.EndsWith(".db")
             || x.EndsWith(".webp")
             || x.EndsWith(".spotdl-cache")
+            || x.EndsWith(".log")
+            || x.EndsWith(".accurip")
+
         ));
     }
 
@@ -488,10 +517,10 @@ public class MetadataCombo : Metadata
     public MetadataCombo(IReadOnlyCollection<Metadata> metadatas)
     {
         OriginalMetadatas = metadatas;
-        Title = metadatas.Select(x => x.Title).MaxN(1).First();
-        Artist = metadatas.Select(x => x.Artist).MaxN(1).First();
-        Album = metadatas.Select(x => x.Album).MaxN(1).First();
-        Genre = metadatas.Select(x => x.Genre).MaxN(1).First();
+        Title = metadatas.Select(x => x.Title).MaxN(1).FirstOrDefault();
+        Artist = metadatas.Select(x => x.Artist).MaxN(1).FirstOrDefault();
+        Album = metadatas.Select(x => x.Album).MaxN(1).FirstOrDefault();
+        Genre = metadatas.Select(x => x.Genre).MaxN(1).FirstOrDefault();
         Year = ((int?)metadatas.Select(x => x.Year).Where(x => x is not 9999 or 0 or null).Average());
         TrackNumber = metadatas.Select(x => x.TrackNumber).MaxBy(x => x is not null);
         Duration = metadatas.Select(x => x.Duration).MaxBy(x => x is not null);

@@ -14,19 +14,23 @@ namespace SilverAudioPlayerBuilder
     {
         public Dictionary<string, string> Modules = new()
         {
-            {"JF","JellyFin support" },
-            {"DWMID","DryWetMidi" },
-            {"ZATL","Z440AtlCore" },
-            {"NA","NAudio" },
-            {"*NA*FLAC","NAudio.Flac" },
-            {"*NA*VORB","NAudio.Vorbis" },
-            {"DISCRD","Discord" },
-            {"SMTC","System Media Transport Controls - windows 10+" },
-            {"CAD","CD Art Display - windows 7+" },
-            {"MPRIS","Linux DBus music status - LINUX - pre POC" },
-            {"CAST","for support Google Chrome Cast®™️ - POC" },
+            {"JF","JellyFin support, musiclibrary" },
+            {"DWMID","DryWetMidi, player, playback on Windows" },
+            {"ZATL","Z440AtlCore, metadata provider" },
+            {"VLC","libVLC, player, Beta" },
+            {"NA", "NAudio, player, partially broken" },
+            {"LLib","Local library, musiclibrary, Proof-Of-Concept" },
+            {"*NA*FLAC","NAudio.Flac, extends NAudio with FLAC support" },
+            {"*NA*VORB","NAudio.Vorbis, extends NAudio with Vorbis (OGG) support" },
+            {"DISCRD","Discord, status interface, Alpha" },
+            {"SMTC","System Media Transport Controls, Windows 10+" },
+            {"CAD","CD Art Display, Windows 7+" },
+            {"MPRIS","Linux DBus, music status, Proof-Of-Concept, nearly empty code" },
+            {"LSync","Linux, sync, Proof-Of-Concept, calls ffmpeg to convert files to mp3's that it stores on a given drive" },
+            {"CAST","Chromecast player, Proof-Of-Concept" },
+            {"FRT","Fortnite Car, music status, radio volume changer (Proof-Of-Concept)" },
         };
-        Dictionary<string,CheckBox> CheckBoxes = new Dictionary<string,CheckBox>();
+        Dictionary<string,CheckBox> CheckBoxes = new();
         public MainWindow()
         {
             InitializeComponent();
@@ -39,7 +43,9 @@ namespace SilverAudioPlayerBuilder
             {
                 var checkbox = new CheckBox
                 {
-                    Content = module.Value
+                    Content = module.Value,
+                    FontSize=20,
+                    FontWeight=Avalonia.Media.FontWeight.DemiBold,
                 };
                 
                 if (module.Key.Contains('*'))
@@ -102,8 +108,12 @@ namespace SilverAudioPlayerBuilder
             }
             else
             {
-                Process.Start(new ProcessStartInfo() { FileName = "cmd", Arguments = $"/k "+cmd, CreateNoWindow = false });
-                //Process.Start("explorer.exe", Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "bin", "Release"));
+               var process= Process.Start(new ProcessStartInfo() { FileName = "cmd", Arguments = $"/k " + cmd, CreateNoWindow = false });
+                //process.WaitForExit();
+               //if (process.ExitCode==0)
+               // {
+                //    Process.Start("explorer.exe", Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "bin", "Release"));
+                //}
             }
 
         }

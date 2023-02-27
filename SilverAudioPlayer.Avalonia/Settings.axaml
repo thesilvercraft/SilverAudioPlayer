@@ -7,40 +7,48 @@
         Title="Settings"
         ExtendClientAreaToDecorationsHint="True"
 		Icon="/icon.ico">
-    <Grid RowDefinitions="25,30,30,30,30,30,*" ColumnDefinitions="*,*" Margin="5">
-        <TextBlock Grid.Row="0" Text="Settings" Margin="5" />
-        <Button Grid.Row="1" Click="RegisterClick">Register/Unregister in registry</Button>
-        <Button Grid.Row="2" Click="ToggleTransparency">Toggle transparency</Button>
-        <ComboBox Name="TransparencyDown" Grid.Row="2" Grid.Column="1" Items="{Binding TransparencyTypes}" />
-        <AutoCompleteBox Grid.Row="3" Grid.Column="1" Name="ColorBox" Items="{Binding AutoSuggestColours}" />
-        <Button Grid.Row="3" Click="ChangeColor">Change window color</Button>
-        <AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBoxPB" Items="{Binding AutoSuggestColours}" />
-        <Button Grid.Row="4" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
-		<TextBlock Grid.Row="5" Text="Plugins:" FontSize="25" Margin="5" />
+	<ScrollViewer>
+		<Grid RowDefinitions="25,200, 30,30,30,30,30,*" ColumnDefinitions="*,*" Margin="5">
+			<TextBlock Grid.Row="0" Text="Settings" Margin="5" />
+			<Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
+				<TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductName}" FontSize="50" Margin="5" />
+				<TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="25" Margin="5" />
+				<Image Source="{Binding ProductIcon}" Grid.Column="0" Grid.RowSpan="3" Width="200" Height="200" />
+				<Button Grid.Row="0" Grid.Column="2" Click="LicenseInfo">License</Button>
+			</Grid>
+			<Button Grid.Row="2" Click="RegisterClick">Register/Unregister in registry</Button>
+			<Button Grid.Row="3" Click="ToggleTransparency">Toggle transparency</Button>
+			<ComboBox Name="TransparencyDown" Grid.Row="3" Grid.Column="1" Items="{Binding TransparencyTypes}" />
+			<AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBox" Items="{Binding AutoSuggestColours}" />
+			<Button Grid.Row="4" Click="ChangeColor">Change window color</Button>
+			<AutoCompleteBox Grid.Row="5" Grid.Column="1" Name="ColorBoxPB" Items="{Binding AutoSuggestColours}" />
+			<Button Grid.Row="5" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
+			<TextBlock Grid.Row="6" Text="Plugins:" FontSize="25" Margin="5" />
 
-		<ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="6"
-                 DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
-                            <TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
-                            <TextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
-                        </StackPanel>
-                        <Image Source="{Binding Icon}" Grid.Column="0" />
-						<StackPanel Orientation="Horizontal" Grid.Column="1"  HorizontalAlignment="Right">
-							<Button  IsVisible="{Binding Configurable}" Click="ConfigureClick">🔧Configure</Button>
-							<Button  IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
+			<ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="7"
+					 DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
+							<StackPanel Grid.Column="1">
+								<TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
+								<TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
+								<TextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
+							</StackPanel>
+							<Image Source="{Binding Icon}" Grid.Column="0" />
+							<StackPanel Orientation="Horizontal" Grid.Column="1"  HorizontalAlignment="Right">
+								<Button  IsVisible="{Binding Configurable}" Click="ConfigureClick">🔧Configure</Button>
+								<Button  IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
 
-							<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
-                            <Button  IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
+								<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
+								<Button  IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
 
-						</StackPanel>
+							</StackPanel>
 
-					</Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</Grid>
+	</ScrollViewer>
 </Window>

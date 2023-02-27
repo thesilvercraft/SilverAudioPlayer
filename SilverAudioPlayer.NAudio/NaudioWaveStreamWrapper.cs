@@ -62,7 +62,7 @@ public class NaudioWaveStreamWrapper : IPlayProvider
             new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.NAudio"),
             URLType.Code),
         new Tuple<Uri, URLType>(
-            new Uri($"https://www.nuget.org/packages/Naudio/{typeof(WaveFilePlayer).Assembly.GetName().Version}"),
+            new Uri($"https://www.nuget.org/packages/Naudio/{typeof(WaveOutEvent).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(
             new Uri($"https://www.nuget.org/packages/NLayer/{typeof(MpegFile).Assembly.GetName().Version}"),
@@ -155,7 +155,7 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
         if (CanPlayFile(stream))
         {
             var player = new WaveFilePlayer();
-            player.LoadFromProvider(NaudioWaveStreamWrapperTypeHolder.Get().GetStream(stream));
+            player.LoadStream(stream);
             return player;
         }
 

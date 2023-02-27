@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Composition;
 using System.Diagnostics;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
@@ -44,13 +45,16 @@ public class WrappedAlbum :WrappedShowable
 }
 public class WrappedSong :WrappedShowable
 {
-    public WrappedSong(Metadata meta, string url)
+    public WrappedSong(Metadata meta, string url, ref Dictionary<string, Bitmap> bitmaps)
     {
         if (meta.Pictures is not (null or { Count: 0 }))
         {
-            Cover = Bitmap.DecodeToHeight(new MemoryStream(meta.Pictures.First().Data), 400);
+            if (!bitmaps.TryGetValue(meta.Pictures.First().Hash, out _Cover))
+            {
+                _Cover = Bitmap.DecodeToHeight(new MemoryStream(meta.Pictures.First().Data), 400);
+                bitmaps.Add(meta.Pictures.First().Hash, _Cover);
+            }
         }
-
         Url = url;
         Metadata = meta;
     }
@@ -58,7 +62,9 @@ public class WrappedSong :WrappedShowable
     public Metadata Metadata;
     public string Name => Metadata.Title;
     public int? TrackNumber => Metadata.TrackNumber;
-    public Bitmap? Cover { get;  }
+    public Bitmap? Cover => _Cover;
+    public Bitmap? _Cover;
+
     public string AlbumArtist => Metadata.Artist;
 }
 public class GuiBinding :ReactiveObject
@@ -88,13 +94,13 @@ public partial class MainWindow : Window
     private void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
    
-            Env.LoadSongs(_binding.WrappedSongs.OrderBy(x => x.TrackNumber).Select(song=>new WrappedFileStream (song.Url)).ToList()); //TODO GET SORTED PROPERLY
+            Env.LoadSongs(_binding.WrappedSongs.Select(song=>new WrappedFileStream (song.Url)).ToList()); //TODO GET SORTED PROPERLY
     }
     public MainWindow(IPlayStreamProviderListener env) :this()
     {
         Env = env;
     }
-
+    Dictionary<string, Bitmap> bitmaps = new();
     public async Task ProcessFileAsync(string file)
     {
         try
@@ -105,14 +111,18 @@ public partial class MainWindow : Window
                 var album=_binding.WrappedAlbums.FirstOrDefault(x => x.Name == meta.Album);
                 if (album != null)
                 {
-                    album.Songs.Add(new WrappedSong(meta,file));
+                    album.Songs.Add(new WrappedSong(meta,file, ref bitmaps));
                 }
                 else
                 {
                     Bitmap? cover=null;
                     if (meta.Pictures is not (null or { Count: 0 }))
                     {
-                        cover = Bitmap.DecodeToHeight(new MemoryStream(meta.Pictures.First().Data), 400);
+                        if(!bitmaps.TryGetValue(meta.Pictures.First().Hash, out cover))
+                        {
+                            cover = Bitmap.DecodeToHeight(new MemoryStream(meta.Pictures.First().Data), 400);
+                            bitmaps.Add(meta.Pictures.First().Hash, cover);
+                        }
                     }
                     _binding.WrappedAlbums.Add(new()
                     {
@@ -135,14 +145,16 @@ public partial class MainWindow : Window
         if (f != null)
         {
             var files =Directory.GetFiles(f, "*", SearchOption.AllDirectories);
-            foreach (var file in files)
+            foreach(var file in Env.FilterFiles(files))
             {
                 await ProcessFileAsync(file);
+
             }
+
         }
     }
 
-    private void RB_OnDoubleTapped(object? sender, RoutedEventArgs e)
+    private void RB_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (RB.SelectedItem is WrappedSong ws)
         {
@@ -150,7 +162,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void LB_OnDoubleTapped(object? sender, RoutedEventArgs e)
+    private void LB_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (LB.SelectedItem is WrappedAlbum wa)
         {

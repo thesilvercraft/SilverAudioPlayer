@@ -12,8 +12,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Jellyfin.Sdk" Version="2022.6.11" />
-        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="8.2.0" />
+        <PackageReference Include="Jellyfin.Sdk" Version="2023.2.18-unstable.202302180046" />
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.0-prerelease" />
     </ItemGroup>
     <ItemGroup>
         <!--This helps with theme dll-s trimming.
@@ -23,11 +23,11 @@
         <TrimmableAssembly Include="Avalonia.Themes.Default" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+        <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
     </ItemGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
 	</ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />

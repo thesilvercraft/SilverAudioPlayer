@@ -17,7 +17,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
         {
             TrackEnd?.Invoke(sender, e);
             mp.Stopped -= Mp_Stopped;
-
         }
 
     
@@ -46,7 +45,8 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
                 VLCState.Stopped => PlaybackState.Stopped,
                 VLCState.Ended => PlaybackState.Stopped,
                 VLCState.Error => PlaybackState.Stopped,
-                _ => PlaybackState.Stopped,
+                _ => throw new NotSupportedException()
+
             };
         }
 
@@ -76,8 +76,11 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 
         public void Pause()
         {
-            mp.Pause();
-            TrackPause?.Invoke(this, EventArgs.Empty);
+            if(mp.State != VLCState.Paused)
+            {
+                mp.Pause();
+                TrackPause?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void Play()

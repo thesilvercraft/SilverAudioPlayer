@@ -39,9 +39,11 @@ public class SMTCPlayTracker : IMusicStatusInterface
             URLType.LibraryDocumentation)
     };
 
-    public void PlayerStateChanged(PlaybackState newstate)
+    public void PlayerStateChanged(object obj, PlaybackState newstate)
     {
         if (DISABLE) return;
+        Debug.Assert(newstate != null);
+
         if (_systemMediaTransportControls != null)
             switch (newstate)
             {
@@ -51,7 +53,6 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
                 case PlaybackState.Playing:
                     _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Playing;
-                    TimeLineTimer.Start();
                     break;
 
                 case PlaybackState.Paused:
@@ -60,61 +61,12 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
                 case PlaybackState.Buffering:
                     _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Changing;
-                    TimeLineTimer.Start();
                     break;
             }
     }
 
-    public void StartIPC()
-    {
-        if (DISABLE) return;
-        _mediaPlayer = new MediaPlayer();
-        _mediaPlayer.CommandManager.IsEnabled = true;
-        _systemMediaTransportControls = _mediaPlayer.SystemMediaTransportControls;
-        _systemMediaTransportControls.IsEnabled = true;
-        _systemMediaTransportControls.IsNextEnabled = true;
-        _systemMediaTransportControls.IsPauseEnabled = true;
-        _systemMediaTransportControls.IsPlayEnabled = true;
-        _systemMediaTransportControls.IsPreviousEnabled = true;
-        _systemMediaTransportControls.IsStopEnabled = true;
-        _systemMediaTransportControls.IsRewindEnabled = false;
-        _systemMediaTransportControls.IsFastForwardEnabled = false;
-        _systemMediaTransportControls.ShuffleEnabled = true;
-        _mediaPlayer.IsLoopingEnabled = false;
 
-        _systemMediaTransportControls.ButtonPressed += SystemControls_ButtonPressed;
-        _systemMediaTransportControls.ShuffleEnabledChangeRequested += SystemControls_ShuffleEnabledChangeRequested;
-        _systemMediaTransportControls.AutoRepeatModeChangeRequested += SystemControls_AutoRepeatModeChangeRequested;
-        _systemMediaTransportControls.PlaybackPositionChangeRequested += SystemControls_PlaybackPositionChangeRequested;
-        TimeLineTimer = new(interval: 1000);
-        TimeLineTimer.Elapsed += (s, e) =>
-        {
-            if (Env.GetState != null && Env.GetCurrentTrack != null && Env.GetPosition != null)
-            {
-                var state = Env.GetState();
-                var track = Env.GetCurrentTrack();
-                var pos = Env.GetPosition();
-                UpdateTimeline(state, track, pos);
-                if (state != PlaybackState.Playing && state != PlaybackState.Buffering) TimeLineTimer.Stop();
-            }
-            else
-            {
-                TimeLineTimer.Stop();
-            }
-        };
-        TimeLineTimer.Start();
-    }
 
-    public void StopIPC()
-    {
-        if (DISABLE) return;
-        _mediaPlayer?.Dispose();
-        _systemMediaTransportControls = null;
-        TimeLineTimer.Dispose();
-        foreach (var file in TempFiles)
-            if (File.Exists(file))
-                File.Delete(file);
-    }
 
     public string Name => "SystemMediaTransportControls" + (DISABLE ? " (DISABLED)" : "");
 
@@ -125,7 +77,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     public string Licenses => "SilverAudioPlayer.SMTC\nThis program is free software: you can redistribute it and/or modify\r\n    it under the terms of the GNU General Public License as published by\r\n    the Free Software Foundation, either version 3 of the License, or\r\n    (at your option) any later version.\r\n\r\n    This program is distributed in the hope that it will be useful,\r\n    but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n    GNU General Public License for more details.\r\n\r\n    You should have received a copy of the GNU General Public License\r\n    along with this program.  If not, see <https://www.gnu.org/licenses/>";
 
-    public async void TrackChangedNotification(Song newtrack)
+    public async void TrackChangedNotification(object obj, Song newtrack)
     {
         if (DISABLE) return;
         if (_systemMediaTransportControls != null && newtrack != null)
@@ -175,12 +127,12 @@ public class SMTCPlayTracker : IMusicStatusInterface
         GC.SuppressFinalize(this);
     }
 
-   
+
     private void UpdateTimeline(PlaybackState state, Song track, ulong pos)
     {
         if (DISABLE) return;
         var timelineProperties = new SystemMediaTransportControlsTimelineProperties();
-        if (track != null && Env.GetDuration != null)
+        if (track != null)
         {
             var dur = Env.GetDuration();
             timelineProperties.StartTime = TimeSpan.FromSeconds(0);
@@ -230,9 +182,9 @@ public class SMTCPlayTracker : IMusicStatusInterface
         {
             case PlaybackState.Stopped:
             case PlaybackState.Paused:
-                          Env.Play();
+                Env.Play();
 
-            break;
+                break;
         }
     }
 
@@ -302,9 +254,51 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
+        Env.TrackChangedNotification += TrackChangedNotification;
+        Env.PlayerStateChanged += PlayerStateChanged;
+        if (DISABLE) return;
+        _mediaPlayer = new MediaPlayer();
+        _mediaPlayer.CommandManager.IsEnabled = true;
+        _systemMediaTransportControls = _mediaPlayer.SystemMediaTransportControls;
+        _systemMediaTransportControls.IsEnabled = true;
+        _systemMediaTransportControls.IsNextEnabled = true;
+        _systemMediaTransportControls.IsPauseEnabled = true;
+        _systemMediaTransportControls.IsPlayEnabled = true;
+        _systemMediaTransportControls.IsPreviousEnabled = true;
+        _systemMediaTransportControls.IsStopEnabled = true;
+        _systemMediaTransportControls.IsRewindEnabled = false;
+        _systemMediaTransportControls.IsFastForwardEnabled = false;
+        _systemMediaTransportControls.ShuffleEnabled = true;
+        _mediaPlayer.IsLoopingEnabled = false;
+
+        _systemMediaTransportControls.ButtonPressed += SystemControls_ButtonPressed;
+        _systemMediaTransportControls.ShuffleEnabledChangeRequested += SystemControls_ShuffleEnabledChangeRequested;
+        _systemMediaTransportControls.AutoRepeatModeChangeRequested += SystemControls_AutoRepeatModeChangeRequested;
+        _systemMediaTransportControls.PlaybackPositionChangeRequested += SystemControls_PlaybackPositionChangeRequested;
+        TimeLineTimer = new(interval: 1000);
+        TimeLineTimer.Elapsed += (s, e) =>
+        {
+            var state = Env.GetState();
+            var track = Env.GetCurrentTrack();
+            var pos = Env.GetPosition();
+            UpdateTimeline(state, track, pos);
+        };
+        TimeLineTimer.Start();
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
+        if (DISABLE) return;
+        TimeLineTimer.Stop();
+        Env.TrackChangedNotification -= TrackChangedNotification;
+        Env.PlayerStateChanged -= PlayerStateChanged;
+
+        _mediaPlayer?.Dispose();
+        _systemMediaTransportControls = null;
+        TimeLineTimer.Dispose();
+        foreach (var file in TempFiles)
+            if (File.Exists(file))
+                File.Delete(file);
     }
+
 }

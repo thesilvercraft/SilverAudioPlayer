@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="using:SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.MainWindow"
         Title="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary" ExtendClientAreaToDecorationsHint="True">
@@ -13,7 +14,7 @@
             <ListBox Grid.Column="0" Grid.Row="2" Background="Transparent" Items="{Binding WrappedAlbums}" Name="LB"
                      Margin="0 20" DoubleTapped="LB_OnDoubleTapped" SelectionMode="Single">
                 <ListBox.DataTemplates>
-                    <DataTemplate>
+                    <DataTemplate DataType="{x:Type local:WrappedShowable}">
                         <StackPanel Spacing="5" Width="200">
                             <Border CornerRadius="10" ClipToBounds="True">
                                 <Panel Background="Transparent">
@@ -39,7 +40,7 @@
         <ListBox Grid.Column="1" Grid.Row="2" Background="Transparent" Items="{Binding WrappedSongs}" Name="RB"
                  Margin="0 20" DoubleTapped="RB_OnDoubleTapped" SelectionMode="Single">
             <ListBox.DataTemplates>
-                <DataTemplate>
+                <DataTemplate DataType="{x:Type local:WrappedShowable}">
                     <StackPanel Spacing="5" Width="200">
                         <Border CornerRadius="10" ClipToBounds="True">
                             <Panel Background="Transparent">

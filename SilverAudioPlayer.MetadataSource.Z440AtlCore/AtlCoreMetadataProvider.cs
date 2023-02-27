@@ -31,7 +31,7 @@ public class AtlCoreFileMetadataProvider : IMetadataProvider,
                 },
                 GetChecked = () => GetAllowedMidi()
                 }
-            };
+        };
     }
     bool GetAllowedMidi()
     {

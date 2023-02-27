@@ -63,9 +63,14 @@ public partial class Settings : Window
         info.AddRange(mainWindow.Logic.SyncPlugins);
         info.Add(mainWindow.Env);
         var ir = GetInfoRecords(info);
-        DataContext = new SettingsDC() { Items = ir.Item1 };
-
+        DataContext = new SettingsDC() { Items = ir.Item1,
+            ProductName = mainWindow.Env.Name,
+            ProductDescription = mainWindow.Env.Description,
+            ProductIcon = ir.Item1.Last().Icon,
+        };
+        Legalese = ir.Item2;
     }
+    string Legalese;
     public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
     {
         ObservableCollection<InfoPRecord> infop = new();
@@ -124,7 +129,7 @@ public partial class Settings : Window
             throw new NotSupportedException("Os not supported");
     }
 
-    public void ElementDoubleTapped(object _, RoutedEventArgs args)
+    public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
     {
         var y = (InfoPRecord?)CapBox.SelectedItem;
         ShowElementActionWindow(y, mainWindow);
@@ -165,7 +170,7 @@ public partial class Settings : Window
                             }
                         });
                     }
-                         launchActionsWindow.AddActions(actions);
+                    launchActionsWindow.AddActions(actions);
                     launchActionsWindow.Show();
                 }
             }
@@ -341,13 +346,28 @@ public partial class Settings : Window
                 RemoveFromReg();
         }
     }
+    private void LicenseInfo(object? sender, RoutedEventArgs e)
+    {
+        var w = new Window();
+        TextBox tb = new()
+        {
+            IsReadOnly = true,
+            Text = Legalese,
+            VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch,
+            HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch
+        };
+        w.Content = tb;
+        w.DoAfterInitTasksF();
+        w.Show();
 
+    }
     private void ToggleTransparency(object? sender, RoutedEventArgs e)
     {
         bool SapTransparency = !(WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true);
         Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency",SapTransparency));
         WindowExtensions.OnStyleChange(this, new(SapTransparency, null, null));
     }
+    
     public static readonly GradientStops defPBStops = new()
     {
         new(KnownColor.Coral.ToColor(), 0),
@@ -417,4 +437,7 @@ public class SettingsDC
         KnownColor.LightYellow, KnownColor.Ivory, KnownColor.White
     };
     public ObservableCollection<InfoPRecord> Items { get; set; }
+    public string ProductName { get; internal set; }
+    public string ProductDescription { get; internal set; }
+    public IImage? ProductIcon { get; internal set; }
 }

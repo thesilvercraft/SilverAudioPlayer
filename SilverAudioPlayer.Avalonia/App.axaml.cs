@@ -156,7 +156,6 @@ public class App : Application
 
     private static void ChangeTheme(bool dark)
     {
-        Current.Styles.Add(new FluentTheme(new Uri("avares://Avalonia.Themes.Default/DefaultTheme.xaml"))
-            { Mode = dark ? FluentThemeMode.Dark : FluentThemeMode.Light });
+        Current.Styles.Add(new FluentTheme());
     }
 }

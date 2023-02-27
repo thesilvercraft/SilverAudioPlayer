@@ -101,7 +101,7 @@ public partial class MetadataView : Window
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void IMG_DoubleTapped(object? sender, RoutedEventArgs e)
+    private void IMG_DoubleTapped(object? sender, global::Avalonia.Input.TappedEventArgs e)
     {
         PictureViewer pv = new(s?.Metadata?.Pictures);
 

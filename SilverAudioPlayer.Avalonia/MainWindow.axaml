@@ -5,6 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="1440" d:DesignHeight="900"
         x:Class="SilverAudioPlayer.Avalonia.MainWindow"
         xmlns:local="clr-namespace:SilverAudioPlayer.Avalonia;assembly=SilverAudioPlayer.Avalonia"
+        xmlns:shared="using:SilverAudioPlayer.Shared"
         Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
         ExtendClientAreaToDecorationsHint="True">
 	<Window.Resources>
@@ -65,13 +66,7 @@
 
 
 	<Grid RowDefinitions="25,260,*" Margin="5">
-		<Menu Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Top">
-			<MenuItem Header="_About" Height="0">
-				<MenuItem x:Name="ShowAppInfo" Command="{Binding RunTheThing}" Header="_Info" HotKey="F1" />
-				<MenuItem x:Name="ShowLyrics" Command="{Binding LyricsView}" Header="_Lyrics" HotKey="F3" />
-			</MenuItem>
-		</Menu>
-		<TextBlock Grid.Row="0" Text="{Binding Title}" Margin="5" />
+		<TextBlock Text="{Binding Title}" Margin="5" />
 		<Border Grid.Row="1">
 			<Grid ColumnDefinitions="256,*">
 				<Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
@@ -111,8 +106,8 @@
 					</ContextMenu>
 				</ListBox.ContextMenu>
 
-				<ListBox.ItemTemplate>
-					<DataTemplate >
+				<ListBox.DataTemplates>
+					<DataTemplate DataType="{x:Type shared:Song}">
 						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" PointerPressed="TreeView_PointerPressed1" >
 							<TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
 								<TextBlock.Text>
@@ -140,7 +135,7 @@
 						</Grid>
 
 					</DataTemplate>
-				</ListBox.ItemTemplate>
+				</ListBox.DataTemplates>
 			</ListBox>
 		
 	</Grid>

@@ -16,11 +16,9 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public WaveFilePlayer()
     {
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             outputDevice = new WaveOutEvent();
-        else
             //outputDevice = new SharpPlayerOutput();
-        outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
+
     }
 
     public byte Volume { get; set; } = 70;
@@ -42,7 +40,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public void Stop()
     {
-        outputDevice.Stop();
+        outputDevice?.Stop();
         outputDevice?.Dispose();
     }
 
@@ -133,7 +131,15 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
             audioFile = new AudioFileReader(wf.URL);
         }
 
-        DoStuffAfterFile();
+        if (outputDevice == null)
+            outputDevice = new WaveOutEvent
+            {
+                Volume = Volume / 100f
+            };
+        else
+            outputDevice.Stop();
+        outputDevice.Init(audioFile);
+        outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
     }
 
     private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
@@ -141,12 +147,6 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
         TrackEnd?.Invoke(sender, e);
     }
 
-    public void LoadFromProvider(WaveStream? provider)
-    {
-        audioFile = provider;
-        Decoder = provider?.GetType()?.FullName;
-        DoStuffAfterFile();
-    }
 
     /* public virtual void LoadFile(string file)
      {
@@ -171,13 +171,6 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     internal void DoStuffAfterFile()
     {
-        if (outputDevice == null)
-            outputDevice = new WaveOutEvent
-            {
-                Volume = Volume / 100f
-            };
-        else
-            outputDevice.Stop();
-        outputDevice.Init(audioFile);
+       
     }
 }

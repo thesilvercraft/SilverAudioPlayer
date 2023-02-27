@@ -62,7 +62,7 @@
 
 		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 		<!--Local library POC-->
-        <!--<DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
+        <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		
 		<!--Discord (alpha)-->
 
@@ -78,14 +78,14 @@
 
 		<!--System Media Transport Controls - windows 10+-->
 
-  	   <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
+        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
 		<!--Fortnite - windows (POC)-->
 
 		<DefineConstants>$(DefineConstants)FRT</DefineConstants>
 
 		<!--CD Art Display - windows 7+-->
 
-        <!--<DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
+        <DefineConstants>$(DefineConstants)CAD</DefineConstants>
 
 
 		<!--LINUX ONLY-->
@@ -102,7 +102,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview5" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
@@ -128,24 +128,24 @@
 		<ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj"   Condition="$(DefineConstants.Contains('FRT'))"/>
+		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj" Condition="$(DefineConstants.Contains('FRT'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.Svg.Skia" Version="0.10.18" />
-		<PackageReference Include="Clowd.Clipboard.Avalonia" Version="1.0.1" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview5" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview5" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="ReactiveUI" Version="18.4.20" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
+		<PackageReference Include="ReactiveUI" Version="18.4.22" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="3.5.0-dev-00370" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="Svg.Skia" Version="0.5.18" />
+		<PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
+		<PackageReference Include="Svg.Skia" Version="0.6.0-preview5" />
 		<PackageReference Include="System.Composition" Version="7.0.0" />
 		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" Condition="$(DefineConstants.Contains('VLC'))" />
-		<PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
-		<PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="8.2.0" />
+		<PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview5" />
+		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.0-prerelease" />
 	</ItemGroup>
 
 </Project>

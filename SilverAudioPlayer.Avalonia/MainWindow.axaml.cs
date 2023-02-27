@@ -22,6 +22,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using SkiaSharp;
 using Swordfish.NET.Collections;
+using System.Collections.ObjectModel;
+using Avalonia.Collections;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -32,7 +34,7 @@ public class MainWindowContext : PlayerContext
     private IBrush _pbForeGround;
 
     private string _Title;
-    public ConcurrentObservableCollection<Song> _queue = new();
+    public AvaloniaList<Song> queue = new();
     public MainWindowContext(MainWindow mw)
     {
         mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
@@ -87,11 +89,6 @@ public class MainWindowContext : PlayerContext
         set => this.RaiseAndSetIfChanged(ref _GradientStops, value);
     }
 
-    public void RunTheThing()
-    {
-        Info i = new(mainWindow);
-        i.Show();
-    }
 
     public void LyricsView()
     {
@@ -271,12 +268,26 @@ public partial class MainWindow : Window
                 });
             }
         };
-        dc.GetQueue = () => dc._queue;
+        dc.GetQueue = () => dc.queue;
         dc.SetQueue = (q) =>
         {
-            var n = new ConcurrentObservableCollection<Song>(q);
-            dc.RaiseAndSetIfChanged(ref dc._queue, n, "Queue");
-            dc._queue = n;
+            Dispatcher.UIThread.Post(() => {
+                if (q is AvaloniaList<Song> l)
+                {
+                    dc.queue = l;
+                    dc.RaisePropertyChanged("Queue");
+                    
+                }
+                else
+                {
+                    var n = new AvaloniaList<Song>(q);
+                    dc.queue = n;
+                    dc.RaisePropertyChanged("Queue");
+                }
+
+            });
+           
+         
         };
         Logic = new Logic<MainWindowContext>(dc)
         { 
@@ -335,7 +346,6 @@ public partial class MainWindow : Window
         DataContext = dc;
         //var ob3 = config.ObservableForProperty(x => x.Volume, skipInitial: true);
         // ob3.Subscribe(x => { Player?.SetVolume(x.GetValue()); dc.RaisePropertyChanged(nameof(dc.V)); });
-        ShowAppInfo = this.FindControl<MenuItem>("ShowAppInfo");
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
         TransparencyLevelHint = WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
@@ -461,7 +471,7 @@ public partial class MainWindow : Window
     {
         Logic.StopAutoLoading = true;
         Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMSI(dangthing, Env));
-        if (Player != null) Player.TrackEnd -= OutputDevice_PlaybackStopped;
+        if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
         Logic.StopAutoLoading = true;
         Player?.Stop();
         Player = null;
@@ -568,46 +578,7 @@ public partial class MainWindow : Window
         Thread.Sleep(30);
     }
 
-    private void OutputDevice_PlaybackStopped(object? sender, object o)
-    {
-        Logic.log.Information(@"Output device playback stopped
-StopAutoLoading: {StopAutoLoading}
-Current song: {CurrentSong}
-Loop mode: {LoopType}", Logic.StopAutoLoading, CurrentSong, dc.LoopType);
-
-        if (dc.LoopType == RepeatState.One && !Logic.StopAutoLoading)
-        {
-            //Loop
-            Logic.StartPlaying();
-        }
-        else if (CurrentSong != null && !Logic.StopAutoLoading)
-        {
-            var a = dc.Queue.IndexOf(CurrentSong);
-            if (a != -1)
-            {
-                if (a + 1 < dc.Queue.Count)
-                {
-                    Logic.HandleSongChanging(dc.Queue[a + 1], true);
-                }
-                else if (dc.LoopType == RepeatState.Queue)
-                {
-                    Logic.HandleSongChanging(dc.Queue[0], true);
-                }
-                else
-                {
-                    Logic.log.Information("RemoveTrack in PlaybackStopped");
-                    RemoveTrack();
-                }
-            }
-            else if (Logic.NextSong != null)
-            {
-                Logic.HandleSongChanging(Logic.NextSong, true);
-                Logic.NextSong = null;
-            }
-        }
-
-        Logic.StopAutoLoading = false;
-    }
+  
 
     private void DragOver(object sender, DragEventArgs? e)
     {

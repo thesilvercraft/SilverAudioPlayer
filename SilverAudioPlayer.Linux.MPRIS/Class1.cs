@@ -36,15 +36,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         public ObjectPath ObjectPath { get; } = new ObjectPath("/org/mpris/MediaPlayer2");
 
       
-        public void StartIPC()
-        {
-            
-
-        }
-
-        public void StopIPC()
-        {
-        }
+       
         public async Task RaiseAsync()
         {
         }
@@ -62,35 +54,37 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         public Task NextAsync()
         {
-            throw new NotImplementedException();
+            Env.Next();
+            return Task.CompletedTask;
         }
 
         public Task PreviousAsync()
         {
-            throw new NotImplementedException();
+            Env.Previous();
+            return Task.CompletedTask;
         }
 
         public Task PauseAsync()
         {
-            Pause?.Invoke(this,EventArgs.Empty);
+            Env.Pause();
             return Task.CompletedTask;
         }
 
         public Task PlayPauseAsync()
         {
-            PlayPause?.Invoke(this,EventArgs.Empty);
+            Env.PlayPause();
             return Task.CompletedTask;
         }
 
         public Task StopAsync()
         {
-            Stop?.Invoke(this,EventArgs.Empty);
+            Env.Stop();
             return Task.CompletedTask;
         }
 
         public Task PlayAsync()
         {
-            Play?.Invoke(this,EventArgs.Empty);
+            Env.Play();
             return Task.CompletedTask;
         }
 
@@ -128,7 +122,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
             return Task.FromResult(new PlayerProperties()
             {
-PlaybackStatus = GetState().ToString(),
+PlaybackStatus = Env.GetState().ToString(),
 Rate = 1,
 MaximumRate = 1,
 MinimumRate = 1,
@@ -151,15 +145,17 @@ CanSeek = true,
 
         public Task SetAsync(string prop, object val)
         {
+            return Task.CompletedTask;
         }
 
+        private IMusicStatusInterfaceListener Env;
         public void StartIPC(IMusicStatusInterfaceListener listener)
         {
+            Env = listener;
         }
 
         public void StopIPC(IMusicStatusInterfaceListener listener)
         {
-            throw new NotImplementedException();
         }
 
         public string Name => "MPRIS Linux MSI";

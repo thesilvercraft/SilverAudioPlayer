@@ -16,7 +16,9 @@ public static class KnownMimes
     public static readonly MimeType AACMime = new AACMime();
     public static readonly MimeType OctetMime = new OctetMime();
     public static readonly MimeType SVGMime = new SVGMime();
-
+    public static readonly MimeType Mp4Mime = new Mp4Mime();
+    public static readonly MimeType MpegMime = new MpegMime();
+    public static readonly MimeType Mp2Mime = new Mp2Mime();
 
     public static readonly List<MimeType> KnownMimeTypes = new()
     {
@@ -30,8 +32,11 @@ public static class KnownMimes
         JPGMime,
         OGGMime,
         AACMime,
+        SVGMime,
+        Mp4Mime,
+        MpegMime,
+        Mp2Mime,
         OctetMime,
-        SVGMime
     };
 
     public static MimeType? GetKnownMimeByName(string Mime)
@@ -56,6 +61,24 @@ public class SVGMime : MimeType
 public class Mp3Mime : CompressedAudioMime
 {
     public Mp3Mime() : base("audio/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".mp3" })
+    {
+    }
+}
+public class Mp4Mime : CompressedVideoMime
+{
+    public Mp4Mime() : base("video/mp4", CompressionType.Lossy, Array.Empty<string>(), new[] { ".mp4" })
+    {
+    }
+}
+public class MpegMime : CompressedVideoMime
+{
+    public MpegMime() : base("video/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".ts", ".tsv", ".tsa", ".mpg", ".mpeg" })
+    {
+    }
+}
+public class Mp2Mime : CompressedVideoMime
+{
+    public Mp2Mime() : base("video/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".m2p", ".vob", ".mpg", ".mpeg" })
     {
     }
 }
@@ -125,6 +148,23 @@ public class AudioMime : MimeType
     }
 }
 
+public class VideoMime : MimeType
+{
+    public VideoMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
+        alternativeTypes, fileExtensions)
+    {
+    }
+}
+public class CompressedVideoMime : VideoMime, ICompression
+{
+    public CompressedVideoMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
+        string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+    {
+        this.CompressionType = CompressionType;
+    }
+
+    public CompressionType CompressionType { get; set; }
+}
 public class ImageMime : MimeType
 {
     public ImageMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
@@ -140,7 +180,7 @@ public class OctetMime : MimeType
     }
 }
 
-public class CompressedImageMime : MimeType, ICompression
+public class CompressedImageMime : ImageMime, ICompression
 {
     public CompressedImageMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
         string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)

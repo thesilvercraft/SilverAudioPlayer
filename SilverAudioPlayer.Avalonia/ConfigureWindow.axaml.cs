@@ -23,7 +23,7 @@ public partial class ConfigureWindow : Window
                 Content = checkBox.Content,
                 IsChecked = checkBox.Toggled
             };
-            cb.Checked += (x, y) => checkBox.Toggled = (bool)cb.IsChecked;
+            cb.IsCheckedChanged += (x, y) => checkBox.Toggled = (bool)cb.IsChecked;
             return cb;
         }
 
@@ -34,7 +34,10 @@ public partial class ConfigureWindow : Window
                 Text = textBox.Content,
                 Watermark = textBox.Placeholder
             };
-            tb.TextInput += (x, y) => textBox.Content = tb.Text;
+            tb.TextChanged += (x, y) =>
+            {
+                textBox.Content = tb.Text;
+            };
             return tb;
         }
 

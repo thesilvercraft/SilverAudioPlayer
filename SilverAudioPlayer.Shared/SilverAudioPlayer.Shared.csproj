@@ -20,10 +20,10 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ReactiveUI" Version="18.4.20" />
+        <PackageReference Include="ReactiveUI" Version="18.4.22" />
         <PackageReference Include="Serilog" Version="2.12.0" />
         <PackageReference Include="SilverCraft.SilverConfig" Version="1.0.3" />
-        <PackageReference Include="System.Composition" Version="6.0.0" />
+        <PackageReference Include="System.Composition" Version="7.0.0" />
         <!--<PackageReference Include="VideoLibrary" Version="3.2.2" />-->
     </ItemGroup>
 
