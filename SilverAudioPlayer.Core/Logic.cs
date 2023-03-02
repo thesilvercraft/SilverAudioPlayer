@@ -65,7 +65,7 @@ public class Logic<T> where T : PlayerContext
     private bool ChangeAllowed = true;
     private bool IsSortRequested;
     public Song? NextSong;
-
+    public Stack<Song> SongHistory = new(26);
     public bool StopAutoLoading;
     private readonly CancellationTokenSource? token = new();
 
@@ -127,7 +127,7 @@ public class Logic<T> where T : PlayerContext
     private void SendIfStateIsNotNull()
     {
         var state = Player?.GetPlaybackState();
-        Debug.Assert(state != null);
+       // Debug.Assert(state != null);
         if (state != null)
             PlaybackStateChangedNotification(state.Value);
         else
@@ -140,7 +140,7 @@ public class Logic<T> where T : PlayerContext
     /// <param name="playerContext.CurrentSong">The new track</param>
     public void TrackChangedNotification(Song? currentSong)
     {
-        MusicStatusInterface?.TrackChangedNotification(currentSong!);
+        MusicStatusInterface?.FireTrackChangedNotification(currentSong!);
     }
 
     /// <summary>
@@ -149,7 +149,7 @@ public class Logic<T> where T : PlayerContext
     /// <param name="s">The new Playstate</param>
     public void PlaybackStateChangedNotification(PlaybackState s)
     {
-        MusicStatusInterface?.PlayerStateChanged(s);
+        MusicStatusInterface?.FirePlayerStateChanged(s);
         if (s == PlaybackState.Stopped)
             Parallel.ForEach(WakeLockInterfaces, msI => msI.UnWakeLock());
         else if (s == PlaybackState.Playing) Parallel.ForEach(WakeLockInterfaces, msI => msI.WakeLock());
@@ -333,6 +333,7 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
     {
         Log.Information("StopAutoLoading set to true in HandleSongChanging");
         StopAutoLoading = true;
+        SongHistory.Push(playerContext.CurrentSong);
         playerContext.CurrentSong = nextSong;
         Debug.Assert(playerContext.CurrentSong == nextSong);
         RemoveTrack();
@@ -456,7 +457,7 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
 
 
 
-    public async Task<Metadata?>? GetMetadataFromStream(WrappedStream stream)
+    public async Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream)
     {
         return new MetadataCombo(MetadataProviders?.Where(x => x.CanGetMetadata(stream)).Select(async x => (await x.GetMetadata(stream))).Select(t => t.Result).Where(i => i != null).ToList());
     }
@@ -506,30 +507,30 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
     }
 }
 
-public class MetadataCombo : Metadata
+public class MetadataCombo : IMetadata
 {
     public MetadataCombo()
     {
 
     }
 
-    public IReadOnlyCollection<Metadata> OriginalMetadatas { get; }
-    public MetadataCombo(IReadOnlyCollection<Metadata> metadatas)
+    public IReadOnlyCollection<IMetadata> OriginalMetadatas { get; private set; }
+    public MetadataCombo(IReadOnlyCollection<IMetadata> metadatas)
     {
         OriginalMetadatas = metadatas;
-        Title = metadatas.Select(x => x.Title).MaxN(1).FirstOrDefault();
-        Artist = metadatas.Select(x => x.Artist).MaxN(1).FirstOrDefault();
-        Album = metadatas.Select(x => x.Album).MaxN(1).FirstOrDefault();
-        Genre = metadatas.Select(x => x.Genre).MaxN(1).FirstOrDefault();
-        Year = ((int?)metadatas.Select(x => x.Year).Where(x => x is not 9999 or 0 or null).Average());
-        TrackNumber = metadatas.Select(x => x.TrackNumber).MaxBy(x => x is not null);
-        Duration = metadatas.Select(x => x.Duration).MaxBy(x => x is not null);
-        Bitrate = metadatas.Select(x => x.Bitrate).MaxBy(x => x is not null);
-        SampleRate = metadatas.Select(x => x.SampleRate).MaxBy(x => x is not null);
-        Channels = metadatas.Select(x => x.Channels).MaxBy(x => x is not null);
-        Pictures = metadatas.Select(x => x.Pictures).MaxBy(x => x?.Count);
-        Lyrics = metadatas.Select(x => x.Lyrics).MaxBy(x => !string.IsNullOrEmpty(x));
-        SyncedLyrics = metadatas.Select(x => x.SyncedLyrics).MaxBy(x => x.Count);
+        Title =OriginalMetadatas.Select(x => x.Title).MaxN(1).FirstOrDefault();
+        Artist = OriginalMetadatas.Select(x => x.Artist).MaxN(1).FirstOrDefault();
+        Album = OriginalMetadatas.Select(x => x.Album).MaxN(1).FirstOrDefault();
+        Genre = OriginalMetadatas.Select(x => x.Genre).MaxN(1).FirstOrDefault();
+        Year = ((int?)OriginalMetadatas.Select(x => x.Year).Where(x => x is not 9999 or 0 or null).Average());
+        TrackNumber = OriginalMetadatas.Select(x => x.TrackNumber).MaxBy(x => x is not null);
+        Duration = OriginalMetadatas.Select(x => x.Duration).MaxBy(x => x is not null);
+        Bitrate = OriginalMetadatas.Select(x => x.Bitrate).MaxBy(x => x is not null);
+        SampleRate = OriginalMetadatas.Select(x => x.SampleRate).MaxBy(x => x is not null);
+        Channels = OriginalMetadatas.Select(x => x.Channels).MaxBy(x => x is not null);
+     
+        Lyrics = OriginalMetadatas.Select(x => x.Lyrics).MaxBy(x => !string.IsNullOrEmpty(x));
+        SyncedLyrics = OriginalMetadatas.Select(x => x.SyncedLyrics).MaxBy(x => x.Count);
         if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrEmpty(Lyrics) && (Lyrics[0] == '['))
         {
             //There is a chance that the unsynced lyrics are actually synced, lets try and read them
@@ -543,4 +544,33 @@ public class MetadataCombo : Metadata
         }
         DiscNumber = metadatas.Select(x => x.DiscNumber).MaxBy(x => x is not null);
     }
+
+    public string? Title { get; }
+    public string? Artist { get; }
+    public string? Album { get; }
+    public string? Genre { get; }
+    public int? Year { get; }
+    public ulong? Bitrate { get; }
+    public ulong? SampleRate { get; }
+    public uint? Channels { get; }
+    public int? TrackNumber { get; }
+    public int? DiscNumber { get; }
+    public string[]? Comments { get; }
+    public double? Duration { get; }
+    public string? Lyrics { get; }
+    public IList<LyricPhrase>? SyncedLyrics { get; }
+    public IReadOnlyList<IPicture>? Pictures => OriginalMetadatas.Select(x => x.Pictures).MaxBy(x => x?.Count);
+
+    public void Dispose()
+    {
+        var metadatas = OriginalMetadatas.ToList();
+        while (metadatas.Count > 0)
+        {
+            metadatas[0].Dispose();
+            metadatas.RemoveAt(0);
+        }
+        GC.SuppressFinalize(this);
+    }
+
+    
 }

@@ -110,10 +110,8 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;
     }
 
-    public Task<Metadata?> GetMetadata(WrappedStream stream)
+    public Task<IMetadata?> GetMetadata(WrappedStream stream)
     {
-        using var s = stream.GetStream();
-        return Task.FromResult(
-            (Metadata?)new AtlCoreMetadata(new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType())));
+        return Task.FromResult((IMetadata?)new AtlCoreMetadata(stream));
     }
 }

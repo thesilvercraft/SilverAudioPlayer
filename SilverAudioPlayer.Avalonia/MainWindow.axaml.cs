@@ -24,6 +24,8 @@ using SkiaSharp;
 using Swordfish.NET.Collections;
 using System.Collections.ObjectModel;
 using Avalonia.Collections;
+using Avalonia.Platform.Storage;
+using DynamicData;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -35,6 +37,7 @@ public class MainWindowContext : PlayerContext
 
     private string _Title;
     public AvaloniaList<Song> queue = new();
+
     public MainWindowContext(MainWindow mw)
     {
         mainWindow = mw ?? throw new ArgumentNullException(nameof(mw));
@@ -47,7 +50,8 @@ public class MainWindowContext : PlayerContext
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         };
-        PBForeground = WindowExtensions.envBackend.GetString("SAPPBColor").ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
+        PBForeground = WindowExtensions.envBackend.GetString("SAPPBColor")
+            .ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
         if (PBForeground is LinearGradientBrush lgb)
         {
             GradientStops = lgb.GradientStops;
@@ -66,7 +70,6 @@ public class MainWindowContext : PlayerContext
                 new GradientStop(KnownColor.Coral.ToColor(), 0)
             };
         }
-        
     }
 
     public IBrush PBForeground
@@ -100,9 +103,12 @@ public class MainWindowContext : PlayerContext
 public partial class MainWindow : Window
 {
     public Config config;
-    public static string ConfigPath = Path.Combine(AppContext.BaseDirectory, "Configs", "SilverAudioPlayer.Config.xml");
+
+    public static readonly string ConfigPath =
+        Path.Combine(AppContext.BaseDirectory, "Configs", "SilverAudioPlayer.Config.xml");
+
     public readonly MainWindowContext dc;
-    public SapAvaloniaPlayerEnviroment Env { get;  } 
+    public SapAvaloniaPlayerEnviroment Env { get; }
     private bool en;
     private bool en2;
     private MetadataView? metadataView;
@@ -150,10 +156,10 @@ public partial class MainWindow : Window
                     reader.Write(config, ConfigPath);
                     config._AllowedRead = true;
                 }
-                dc?.RaisePropertyChanged(nameof(dc.LoopType));
 
+                dc?.RaisePropertyChanged(nameof(dc.LoopType));
             },
-           
+
             GetLoopType = () => config.LoopType,
             VolumeChanged = vol =>
             {
@@ -188,76 +194,93 @@ public partial class MainWindow : Window
                 th.Start();
                 if (CurrentSong?.Metadata != null)
                 {
-                    if (CurrentSong.Metadata.Title != null)
-                        Dispatcher.UIThread.InvokeAsync(() =>
-                            Title = CurrentSong.TitleOrURL() + " - SilverAudioPlayer");
-                    if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+                    Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        var buffer = CurrentSong.Metadata.Pictures[0].Data;
-                        if (buffer != null)
-                            try
-                            {
-                                var memstream = new MemoryStream(buffer);
-                                Dispatcher.UIThread.InvokeAsync(() =>
-                                {
-                                    var bmp = new Bitmap(memstream);
-                                     Image.Source = bmp;
-                                     MemoryStream blur = new();
-                                     if (WindowExtensions.envBackend.GetString("SAPAlbumArtBg")?.ToLower()!="disable")
-                                     {
-                                         using var wrbmp =SKBitmap.Decode(memstream.ToArray());
-                                         var info = new SKImageInfo(wrbmp.Info.Width,wrbmp.Info.Height);
-                                         using (var surface = SKSurface.Create(info))
-                                         {
-                                             var canvas = surface.Canvas;
-                                             using (var paint = new SKPaint())
-                                             {
-                                                 paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                                                 paint.ColorFilter =
-                                                     SKColorFilter.CreateColorMatrix(new float[]
-                                                     {
-                                                         1, 0, 0, 0, 0,
-                                                         0, 1, 0, 0, 0,
-                                                         0, 0, 1, 0, 0,
-                                                         0, 0, 0, 0.25f, 0
-                                                     });
-                                                 canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
-                                             }
-                                             surface.Snapshot().Encode(SKEncodedImageFormat.Png,76).AsStream().CopyTo(blur);
-                                             blur.Position = 0;
-                                         }
-                                         var imgbrsh = new ImageBrush(new Bitmap(blur));
-                                         imgbrsh.Stretch = Stretch.UniformToFill;
-                                         Background = imgbrsh;
-                                     }
-                                     
-                                });
-                            }
-                            catch (Exception ex)
-                            {
-                                //We have more important things to do than having our app crashed
-                                Log.Error(ex, "Error loading image into main window");
-                            }
-                        
-                    }
-                    else
-                    {
-                        Dispatcher.UIThread.InvokeAsync(() =>
+                        if (CurrentSong.Metadata.Title != null)
                         {
+                            Title = CurrentSong.TitleOrURL() + " - SilverAudioPlayer";
+                        }
 
-                            Image.Source = null;
-                            if (WindowExtensions.envBackend.GetString("SAPAlbumArtBg")?.ToLower() != "disable")
+                        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+                        {
+                            if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong))
                             {
-                                Background = WindowExtensions.envBackend.GetString("SAPColor")
-                                    .ParseBackground(def: SAPAWindowExtensions.defBrush);
+                                if (lastsong != null && CurrentSong.Metadata.Pictures.Count != 0 &&
+                                    lastsong?.Metadata?.Pictures.Count != 0 && CurrentSong.Metadata.Pictures[0].Hash ==
+                                    lastsong?.Metadata?.Pictures[0]?.Hash)
+                                {
+                                    return;
+                                }
                             }
-                        });
-                    }
+
+                            var buffer = CurrentSong.Metadata.Pictures[0].Data;
+                            if (buffer != null)
+                            {
+                                try
+                                {
+                                    var memstream = new MemoryStream(buffer);
+                                    var bmp = new Bitmap(memstream);
+                                    Image.Source = bmp;
+                                    using MemoryStream blur = new();
+                                    if (config.DisableAlbumArtBlur) return;
+                                    using var wrbmp = SKBitmap.Decode(memstream.ToArray());
+                                    var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
+                                    using (var surface = SKSurface.Create(info))
+                                    {
+                                        var canvas = surface.Canvas;
+                                        using (var paint = new SKPaint())
+                                        {
+                                            paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                                            paint.ColorFilter =
+                                                SKColorFilter.CreateColorMatrix(new float[]
+                                                {
+                                                    1, 0, 0, 0, 0,
+                                                    0, 1, 0, 0, 0,
+                                                    0, 0, 1, 0, 0,
+                                                    0, 0, 0, 0.25f, 0
+                                                });
+                                            canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
+                                        }
+                                        surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
+                                            .CopyTo(blur);
+                                        blur.Position = 0;
+                                    }
+                                    var imgbrsh = new ImageBrush(new Bitmap(blur))
+                                    {
+                                        Stretch = Stretch.UniformToFill
+                                    };
+                                    var s = Background;
+                                    Background = imgbrsh;
+                                    if (s is IDisposable x)
+                                    {
+                                        x.Dispose();
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    //We have more important things to do than having our app crashed
+                                    Log.Error(ex, "Error loading image into main window");
+                                }
+                            }
+
+
+                            else
+                            {
+                                Image.Source = null;
+                                if (!config.DisableAlbumArtBlur)
+                                {
+                                    Background = WindowExtensions.envBackend.GetString("SAPColor")
+                                        .ParseBackground(def: SAPAWindowExtensions.defBrush);
+                                }
+                            }
+                        }
+                    });
                 }
             },
             ShowMessageBox = (s, s1) =>
             {
-                Dispatcher.UIThread.InvokeAsync(() => {
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
                     var window = new MessageBox(s, s1)
                     {
                         Title = "Error",
@@ -271,12 +294,12 @@ public partial class MainWindow : Window
         dc.GetQueue = () => dc.queue;
         dc.SetQueue = (q) =>
         {
-            Dispatcher.UIThread.Post(() => {
+            Dispatcher.UIThread.Post(() =>
+            {
                 if (q is AvaloniaList<Song> l)
                 {
                     dc.queue = l;
                     dc.RaisePropertyChanged("Queue");
-                    
                 }
                 else
                 {
@@ -284,27 +307,27 @@ public partial class MainWindow : Window
                     dc.queue = n;
                     dc.RaisePropertyChanged("Queue");
                 }
-
             });
-           
-         
         };
         Logic = new Logic<MainWindowContext>(dc)
-        { 
-            ChoosePlayProvider= async (x,m) => {
-                if(x.Count()<2)
+        {
+            ChoosePlayProvider = async (x, m) =>
+            {
+                if (x.Count() < 2)
                 {
                     return x.FirstOrDefault();
                 }
-                if(preferredplayer!=null )
+
+                if (preferredplayer != null)
                 {
-                    var y=x.FirstOrDefault(x=>x.GetType()==preferredplayer);
-                    if(y!=null)
+                    var y = x.FirstOrDefault(x => x.GetType() == preferredplayer);
+                    if (y != null)
                     {
                         return y;
                     }
                 }
-                if(config.PreferedPlayers.TryGetValue(m.MimeType.Common, out var v))
+
+                if (config.PreferedPlayers.TryGetValue(m.MimeType.Common, out var v))
                 {
                     var y = x.FirstOrDefault(x => x.GetType().FullName == v);
                     if (y != null)
@@ -312,15 +335,18 @@ public partial class MainWindow : Window
                         return y;
                     }
                 }
-                return await Dispatcher.UIThread.InvokeAsync(async () => {
-                     ChooseProvider w = new();
-                     w.SetProviders(x);
-                     await w.ShowDialog(this);
-                    if(w.SetAsDefaultIfPresent == true)
+
+                return await Dispatcher.UIThread.InvokeAsync(async () =>
+                {
+                    ChooseProvider w = new();
+                    w.SetProviders(x);
+                    await w.ShowDialog(this);
+                    if (w.SetAsDefaultIfPresent == true)
                     {
                         preferredplayer = w.Selected?.GetType();
                     }
-                    if(w.SetAsDefaultForFileType == true)
+
+                    if (w.SetAsDefaultForFileType == true)
                     {
                         if (config.PreferedPlayers.ContainsKey(m.MimeType.Common))
                         {
@@ -330,31 +356,31 @@ public partial class MainWindow : Window
                         {
                             config.PreferedPlayers.Add(m.MimeType.Common, w.Selected?.GetType().FullName);
                         }
+
                         config._AllowedRead = false;
                         reader.Write(config, ConfigPath);
                         config._AllowedRead = true;
                     }
-                     return w.Selected;
-                 });
-                
-             
-            }  
+
+                    return w.Selected;
+                });
+            }
         };
         config.PropertyChanged += Config_PropertyChanged;
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
         ob.Subscribe(x => dc.Title = x.Value);
         DataContext = dc;
-        //var ob3 = config.ObservableForProperty(x => x.Volume, skipInitial: true);
-        // ob3.Subscribe(x => { Player?.SetVolume(x.GetValue()); dc.RaisePropertyChanged(nameof(dc.V)); });
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-        TransparencyLevelHint = WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
-        Background = WindowExtensions.envBackend.GetString("SAPColor").ParseBackground(def: SAPAWindowExtensions.defBrush);
+        TransparencyLevelHint = WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ??
+                                WindowTransparencyLevel.AcrylicBlur;
+        Background = WindowExtensions.envBackend.GetString("SAPColor")
+            .ParseBackground(def: SAPAWindowExtensions.defBrush);
     }
 
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if(sender == reader)
+        if (sender == reader)
         {
             switch (e.PropertyName)
             {
@@ -497,7 +523,6 @@ public partial class MainWindow : Window
     {
         if (CurrentSong != null)
         {
-            //metadataView?.Close();
             metadataView = new MetadataView();
             metadataView.LoadSong(CurrentSong);
             metadataView.Show();
@@ -524,9 +549,6 @@ public partial class MainWindow : Window
         Logic.Play();
     }
 
-   
-
-    
 
     private void SndThrd(CancellationToken e)
     {
@@ -558,7 +580,8 @@ public partial class MainWindow : Window
 
                 Thread.Sleep(70);
             }
-            else if (Player?.GetPlaybackState() == PlaybackState.Paused || Player?.GetPlaybackState() == PlaybackState.Buffering)
+            else if (Player?.GetPlaybackState() == PlaybackState.Paused ||
+                     Player?.GetPlaybackState() == PlaybackState.Buffering)
             {
                 //uses 12% of cpu when paused if removed lmao
                 Thread.Sleep(270);
@@ -578,7 +601,6 @@ public partial class MainWindow : Window
         Thread.Sleep(30);
     }
 
-  
 
     private void DragOver(object sender, DragEventArgs? e)
     {
@@ -586,6 +608,7 @@ public partial class MainWindow : Window
         {
             return;
         }
+
         if (e.Source is Control c && c.Name == "MoveTarget")
             e.DragEffects &= DragDropEffects.Move;
         else if (e.Data.Contains(DataFormats.FileNames) || e.Data.Contains("UniformResourceLocatorW"))
@@ -596,10 +619,11 @@ public partial class MainWindow : Window
 
     private void Drop(object sender, DragEventArgs? e)
     {
-        if(e==null)
+        if (e == null)
         {
             return;
         }
+
         if (e.Source is Control c && c.Name == "MoveTarget")
             e.DragEffects &= DragDropEffects.Move;
         else
@@ -607,23 +631,24 @@ public partial class MainWindow : Window
         if (e.Data.Contains(DataFormats.FileNames))
         {
             var files = e!.Data.GetFileNames();
-            if(files!=null)
+            if (files != null)
             {
                 Logic.ProcessFiles(files);
             }
         }
+
         if (e.Data.Contains("UniformResourceLocatorW"))
         {
             var url = e!.Data!.GetText();
             var psps = Logic.PlayStreamProviders.Where(x =>
-                x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url),Env));
-            if (psps.Count() != 0)
+                x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url), Env));
+            if (psps.Any())
             {
-                ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync( new(url),Env);
+                ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url), Env);
                 return;
             }
 
-            if(!string.IsNullOrEmpty(url))
+            if (!string.IsNullOrEmpty(url))
             {
                 Logic.ProcessFiles(new[] { url });
             }
@@ -632,35 +657,62 @@ public partial class MainWindow : Window
 
     public void ClearAll(object sender, RoutedEventArgs e)
     {
-        dc.Queue.Clear();
+        var delList = dc.Queue.ToList();
+        foreach (var track in delList)
+        {
+            if (dc.CurrentSong != track)
+            {
+                track.Dispose();
+            }
+
+            dc.Queue.Remove(track);
+        }
     }
 
     public async void AddFilee(object sender, RoutedEventArgs e)
     {
-        var fileDialogFilters = new List<FileDialogFilter>
+        var af = Logic.PlayableMimes.Select(x => x.Common).ToList();
+        af.AddRange(Logic.PlayableMimes.SelectMany(y => y.AlternativeTypes));
+        var fileDialogFilters = new List<FilePickerFileType>
         {
-            new()
+            new("Audio Files")
             {
-                Name = "Audio Files",
-                Extensions = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-                    .SelectMany(x => x.FileExtensions.Select(y => y.TrimStart('.'))).ToList()
+                Patterns = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
+                    .SelectMany(x => x.FileExtensions.Select(y => "*" + y)).ToList(),
+                MimeTypes = af
             },
-            new() { Name = "Everything else", Extensions = { "*" } }
+            new("Everything else")
+                { Patterns = new List<string>() { "*" }, MimeTypes = new List<string>() { "application/octet-stream" } }
         };
         foreach (var mime in Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0))
-            fileDialogFilters.Add(new FileDialogFilter
-            {
-                Name = mime.FileExtensions[0].ToUpper() + " Files",
-                Extensions = mime.FileExtensions.Select(y => y.TrimStart('.')).ToList()
-            });
-        OpenFileDialog fd = new()
         {
-            Title = "Add file or files to the queue",
-            AllowMultiple = true,
-            Filters = fileDialogFilters
-        };
-        var a = await fd.ShowAsync(this);
-        if (a != null) Logic.ProcessFiles(a);
+            fileDialogFilters.Add(new(mime.FileExtensions[0].ToUpper() + " Files")
+            {
+                MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(),
+                Patterns = mime.FileExtensions.Select(x => "*" + x).ToList()
+            });
+        }
+
+        var u = config.DialogStartLoc;
+        IStorageFolder? musicfolder = null;
+        if (!string.IsNullOrEmpty(u))
+        {
+            if (Enum.TryParse<WellKnownFolder>(u, out var folder))
+            {
+                musicfolder = await StorageProvider.TryGetWellKnownFolder(folder);
+            }
+            else
+            {
+                musicfolder = await StorageProvider.TryGetFolderFromPath(u);
+            }
+        }
+
+        var a = await StorageProvider.OpenFilePickerAsync(new()
+        {
+            AllowMultiple = true, Title = "Add a file or files to the queue", FileTypeFilter = fileDialogFilters,
+            SuggestedStartLocation = musicfolder
+        });
+        if (a != null) Logic.ProcessFiles(a.Select(x => x.Path.LocalPath));
     }
 
     public void RemoveSelected(object sender, RoutedEventArgs e)
@@ -683,6 +735,11 @@ public partial class MainWindow : Window
                     Logic.log.Information("NextSong is set to null");
                     Logic.NextSong = null;
                 }
+            }
+
+            if (dc.CurrentSong != selected)
+            {
+                selected.Dispose();
             }
 
             dc.Queue.Remove(selected);

@@ -163,6 +163,11 @@ public class WrappedStreamImplementedByOneRealOne : WrappedStream
     {
         return RealStream;
     }
+
+    public override void Dispose()
+    {
+        RealStream.Dispose();
+    }
 }
 
 public class WrappedJellyFinStream : WrappedStream, IDisposable
@@ -193,7 +198,7 @@ public class WrappedJellyFinStream : WrappedStream, IDisposable
     public override MimeType MimeType => _MimeType;
     private MimeType _MimeType { get; set; }
 
-    public void Dispose()
+    public override void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(true);

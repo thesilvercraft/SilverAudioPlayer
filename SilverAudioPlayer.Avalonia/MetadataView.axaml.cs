@@ -51,11 +51,12 @@ public partial class MetadataView : Window
         }
     }
 
-    private void ProcessSubProperties(object thing, Field parentfield, int allowedlength = 6)
+    private void ProcessSubProperties(object thing, Field parentfield, int allowedlength = 7)
     {
         if (allowedlength == 0) return;
         if (thing is string) return;
-        if (thing is IList tlist)
+        
+        if (thing is IList tlist )
         {
             var c = tlist.Count;
             if (c > 200) c = 200;

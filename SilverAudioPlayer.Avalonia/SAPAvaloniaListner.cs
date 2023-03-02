@@ -11,21 +11,12 @@ namespace SilverAudioPlayer.Avalonia;
 
 
 
-public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener, IMusicStatusInterfaceListener, IMusicStatusInterfaceListenerAdmin
+public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin
 {
     private readonly MainWindow mainWindow;
 
     public event EventHandler<Song> TrackChangedNotification;
     public event EventHandler<PlaybackState> PlayerStateChanged;
-    public event EventHandler<IMusicStatusInterface> StateChangedNotification;
-    public event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
-    public event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
-    public event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
-    public event EventHandler<IMusicStatusInterface> RatingChangedNotification;
-    public event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
-    public event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
-    public event EventHandler<IMusicStatusInterface> NewLyricsNotification;
-    public event EventHandler<IMusicStatusInterface> NewCoverNotification;
 
     public SapAvaloniaPlayerEnviroment(MainWindow mainWindow)
     {
@@ -73,7 +64,7 @@ public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWi
         new Tuple<Uri, URLType>(new Uri("https://docs.avaloniaui.net/"), URLType.LibraryDocumentation)
     };
 
-    public Task<Metadata?>? GetMetadataAsync(WrappedStream stream)
+    public Task<IMetadata?>? GetMetadataAsync(WrappedStream stream)
     {
         return mainWindow.Logic.GetMetadataFromStream(stream);
     }
@@ -194,15 +185,14 @@ public class SapAvaloniaPlayerEnviroment : IPlayerEnviroment, IHaveConfigFilesWi
         return mainWindow.dc.CurrentSong.Metadata.Lyrics;
     }
 
-    void IMusicStatusInterfaceListenerAdmin.TrackChangedNotification(Song? currentSong)
+    public void FireTrackChangedNotification(Song? currentSong)
     {
         TrackChangedNotification?.Invoke(this,currentSong);
     }
 
-    void IMusicStatusInterfaceListenerAdmin.PlayerStateChanged(PlaybackState state)
+    public void FirePlayerStateChanged(PlaybackState state)
     {
         PlayerStateChanged?.Invoke(this, state);
-
     }
 
     public string Licenses => @"Avalonia

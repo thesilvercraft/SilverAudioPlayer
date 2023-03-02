@@ -11,7 +11,7 @@ namespace SilverAudioPlayer.Avalonia;
 
 public partial class PictureViewer : Window
 {
-    private readonly IReadOnlyList<Picture>? pictures;
+    private readonly IReadOnlyList<IPicture>? pictures;
     private int pos;
     private readonly DContext x;
 
@@ -21,7 +21,7 @@ public partial class PictureViewer : Window
         this.DoAfterInitTasksF();
     }
 
-    public PictureViewer(IReadOnlyList<Picture>? pictures) : this()
+    public PictureViewer(IReadOnlyList<IPicture>? pictures) : this()
     {
         this.pictures = pictures;
         using var memstream = new MemoryStream(pictures[0].Data);

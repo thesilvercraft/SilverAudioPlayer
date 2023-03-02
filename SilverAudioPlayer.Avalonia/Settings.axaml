@@ -7,7 +7,7 @@
         Title="Settings"
         ExtendClientAreaToDecorationsHint="True"
 		Icon="/icon.ico">
-	<ScrollViewer>
+	<ScrollViewer Margin="0,25,0,0">
 		<Grid RowDefinitions="25,200, 30,30,30,30,30,*" ColumnDefinitions="*,*" Margin="5">
 			<TextBlock Grid.Row="0" Text="Settings" Margin="5" />
 			<Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >

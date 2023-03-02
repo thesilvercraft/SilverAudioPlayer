@@ -150,30 +150,24 @@ public partial class Settings : Window
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y != null && y.DataContext is InfoPRecord record && record.IsAskingMemoryProvider)
+        if (y != null && y.DataContext is InfoPRecord record && record.IsAskingMemoryProvider && record.Item is IAmOnceAgainAskingYouForYourMemory configurable && mainWindow.Logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
         {
-            if (record.Item is IAmOnceAgainAskingYouForYourMemory configurable)
+            LaunchActionsWindow launchActionsWindow = new();
+            List<SAction> actions = new();
+            foreach (var ob in configurable.ObjectsToRememberForMe)
             {
-                if(mainWindow.Logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
+                var m = l.GetConfig(ob.Id);
+                actions.Add(new SAction
                 {
-                    LaunchActionsWindow launchActionsWindow = new();
-                    List<SAction> actions = new();
-                    foreach(var ob in configurable.ObjectsToRememberForMe)
+                    ActionName = "Open " + m,
+                    ActionToInvoke = () =>
                     {
-                        var m = l.GetConfig(ob.Id);
-                        actions.Add(new SAction
-                        {
-                            ActionName = "Open "+m,
-                            ActionToInvoke = () =>
-                            {
-                                OpenBrowser(m);
-                            }
-                        });
+                        OpenBrowser(m);
                     }
-                    launchActionsWindow.AddActions(actions);
-                    launchActionsWindow.Show();
-                }
+                });
             }
+            launchActionsWindow.AddActions(actions);
+            launchActionsWindow.Show();
         }
     }
     public void PlayProviderClick(object button, RoutedEventArgs args)
@@ -363,7 +357,7 @@ public partial class Settings : Window
     }
     private void ToggleTransparency(object? sender, RoutedEventArgs e)
     {
-        bool SapTransparency = !(WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true);
+        bool SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
         Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency",SapTransparency));
         WindowExtensions.OnStyleChange(this, new(SapTransparency, null, null));
     }

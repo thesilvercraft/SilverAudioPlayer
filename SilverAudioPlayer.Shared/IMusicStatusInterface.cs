@@ -7,17 +7,17 @@ public interface IMusicStatusInterface : IDisposable, ICodeInformation
 
 
 
-   
+
 }
-public interface IMusicStatusInterfaceListenerAdmin: IMusicStatusInterfaceListener
+public interface IMusicStatusInterfaceListenerAdmin : IMusicStatusInterfaceListener
 {
-    public void TrackChangedNotification(Song? currentSong);
-    public void PlayerStateChanged(PlaybackState state);
+    public void FireTrackChangedNotification(Song? currentSong);
+    public void FirePlayerStateChanged(PlaybackState state);
 }
 public interface IMusicStatusInterfaceListener : IPlayerEnviroment
 {
 
-     void Play();
+    void Play();
 
     void Pause();
 
@@ -47,33 +47,24 @@ public interface IMusicStatusInterfaceListener : IPlayerEnviroment
 
     PlaybackState GetState();
 
-    event EventHandler<IMusicStatusInterface> StateChangedNotification;
 
-    event EventHandler<IMusicStatusInterface> RepeatChangedNotification;
 
     RepeatState GetRepeat();
 
-    void  SetRepeat(RepeatState state);
+    void SetRepeat(RepeatState state);
 
-    event EventHandler<IMusicStatusInterface> ShutdownNotiifcation;
 
-    event EventHandler<IMusicStatusInterface> ShuffleChangedNotification;
 
     bool GetShuffle();
 
     void SetShuffle(bool shuffle);
 
-    event EventHandler<IMusicStatusInterface> RatingChangedNotification;
 
-    void  SetRating (byte rating);
+    void SetRating(byte rating);
 
-    event EventHandler<IMusicStatusInterface> CurrentTrackNotification;
 
-    event EventHandler<IMusicStatusInterface> CurrentLyricsNotification;
 
-    event EventHandler<IMusicStatusInterface> NewLyricsNotification;
 
-    event EventHandler<IMusicStatusInterface> NewCoverNotification;
 
     string GetLyrics();
 }

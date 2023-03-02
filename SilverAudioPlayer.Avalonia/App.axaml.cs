@@ -54,15 +54,7 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    [SupportedOSPlatform("windows10.1709")]
-    public static bool GetThemePreference(bool fallback = false)
-    {
-        var reg = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-        if (reg != null) return reg.GetValue("AppsUseLightTheme") is int theme && theme == 0;
-        return fallback;
-    }
-
-
+    
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -92,13 +84,7 @@ public class App : Application
             var mw = new MainWindow();
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
-            if (WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true)
-            {
-                if (OperatingSystem.IsWindowsVersionAtLeast(10, 1709))
-                    ChangeTheme(GetThemePreference(true));
-                else
-                    ChangeTheme(WindowExtensions.envBackend.GetByte("LIGHTTHEME") != 1);
-            }
+           
 
             List<Assembly> assemblies = new();
             PlatformLogicHelper.LoadAssemblies(ref assemblies);
@@ -127,6 +113,10 @@ public class App : Application
                     if (playprovider != null)
                         await playprovider.OnStartup();
             });
+            if (canProvideMemory && mw is IAmOnceAgainAskingYouForYourMemory mainwindowMemory)
+            {
+                mw.Logic.MemoryProvider.RegisterObjectsToRemember(mainwindowMemory.ObjectsToRememberForMe);
+            }
             foreach (var provider in mw.Logic.MetadataProviders)
             {
                 if(canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
@@ -154,8 +144,5 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static void ChangeTheme(bool dark)
-    {
-        Current.Styles.Add(new FluentTheme());
-    }
+    
 }

@@ -40,8 +40,8 @@ public class MidiMetadataProvider : IMetadataProvider
         return stream.MimeType == KnownMimes.MidMime;
     }
 
-    public Task<Metadata?> GetMetadata(WrappedStream stream)
+    public Task<IMetadata?> GetMetadata(WrappedStream stream)
     {
-        return Task.FromResult((Metadata?)new MidiMetadata(MidiFile.Read(stream.GetStream())));
+        return Task.FromResult((IMetadata?)new MidiMetadata(MidiFile.Read(stream.GetStream())));
     }
 }

@@ -143,7 +143,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
     {
     }
 
-    public void PlayerStateChanged(PlaybackState newstate)
+    public void PlayerStateChanged(object e, PlaybackState newstate)
     {
         switch (newstate)
         {
@@ -175,7 +175,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
     }
 
  
-    public void TrackChangedNotification(Song newtrack)
+    public void TrackChangedNotification(object e, Song newtrack)
     {
         ChangeSong(newtrack.URI, newtrack);
     }
@@ -340,11 +340,15 @@ SilverAudioPlayer.DiscordRP
     {
         Env = listener;
         client.Initialize();
+        listener.PlayerStateChanged += PlayerStateChanged;
+        listener.TrackChangedNotification += TrackChangedNotification;
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
         Debug.WriteLine("disable called");
+        listener.PlayerStateChanged -= PlayerStateChanged;
+        listener.TrackChangedNotification -= TrackChangedNotification;
         client.Deinitialize();
         client.Dispose();
     }

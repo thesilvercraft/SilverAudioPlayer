@@ -3,17 +3,24 @@ using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
-public class ATLCOREPicture : Picture
+public class ATLCOREPicture : IPicture
 {
-    public readonly PictureInfo info;
+    public  PictureInfo info;
 
     public ATLCOREPicture(PictureInfo i)
     {
         info = i;
-        Data = i.PictureData;
-        Description = i.Description;
-        MimeType = i.MimeType;
-        PicType = (PictureType?)i.PicType;
-        Hash = i.PictureHash.ToString();
     }
+
+    public void Dispose()
+    {
+        info = null;
+    }
+
+    public string? Description => info.Description;
+    public string? MimeType => info.MimeType;
+    public byte[]? Data => info.PictureData;
+    public ulong Position { get; }
+    public PictureType? PicType => (PictureType?)info.PicType;
+    public string? Hash => info.PictureHash.ToString();
 }

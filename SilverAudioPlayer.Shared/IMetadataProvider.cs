@@ -2,12 +2,36 @@
 
 public interface IMetadataProvider : ICodeInformation
 {
-    public Task<Metadata?> GetMetadata(WrappedStream stream);
+    public Task<IMetadata?> GetMetadata(WrappedStream stream);
 
     public bool CanGetMetadata(WrappedStream stream);
 }
 
-public abstract class Metadata
+public interface IMetadata : IDisposable
+{
+    public string? Title { get;  }
+    public string? Artist { get;  }
+    public string? Album { get;  }
+    public string? Genre { get;  }
+    public int? Year { get;  }
+    public ulong? Bitrate { get;  }
+    public ulong? SampleRate { get;  }
+    public uint? Channels { get;  }
+
+    public int? TrackNumber { get;  }
+    public int? DiscNumber { get;  }
+    public string[]? Comments { get;  }
+
+    /// <summary>
+    ///     duration in milliseconds
+    /// </summary>
+    public double? Duration { get;  }
+
+    public string? Lyrics { get;  }
+    public IList<LyricPhrase>? SyncedLyrics { get;  }
+    public IReadOnlyList<IPicture>? Pictures { get;  }
+}
+public abstract class Metadata :IMetadata
 {
     public string? Title { get; init; }
     public string? Artist { get; init; }
@@ -29,17 +53,32 @@ public abstract class Metadata
 
     public string? Lyrics { get; init; }
     public IList<LyricPhrase>? SyncedLyrics { get; set; }
-    public IReadOnlyList<Picture>? Pictures { get; init; }
+    public IReadOnlyList<IPicture>? Pictures { get; init; }
+    public abstract void Dispose();
 }
 
-public class Picture
+public interface IPicture : IDisposable
+{
+    public string? Description { get;  }
+    public string? MimeType { get;  }
+    public byte[]? Data { get;  }
+    public ulong Position { get;  }
+    public PictureType? PicType { get;  }
+    public string? Hash { get;  }
+}
+public  class Picture :IPicture
 {
     public string? Description { get; init; }
     public string? MimeType { get; init; }
-    public byte[]? Data { get; init; }
+    public byte[]? Data { get;  set; }
     public ulong Position { get; init; }
     public PictureType? PicType { get; set; }
     public string? Hash { get; set; }
+
+    public virtual void Dispose()
+    {
+        Data = null;
+    }
 }
 
 public enum PictureType

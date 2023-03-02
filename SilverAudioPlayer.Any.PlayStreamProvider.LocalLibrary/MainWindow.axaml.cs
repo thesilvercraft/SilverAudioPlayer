@@ -45,7 +45,7 @@ public class WrappedAlbum :WrappedShowable
 }
 public class WrappedSong :WrappedShowable
 {
-    public WrappedSong(Metadata meta, string url, ref Dictionary<string, Bitmap> bitmaps)
+    public WrappedSong(IMetadata meta, string url, ref Dictionary<string, Bitmap> bitmaps)
     {
         if (meta.Pictures is not (null or { Count: 0 }))
         {
@@ -59,7 +59,7 @@ public class WrappedSong :WrappedShowable
         Metadata = meta;
     }
     public string Url { get; }
-    public Metadata Metadata;
+    public IMetadata Metadata;
     public string Name => Metadata.Title;
     public int? TrackNumber => Metadata.TrackNumber;
     public Bitmap? Cover => _Cover;

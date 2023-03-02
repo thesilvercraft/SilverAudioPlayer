@@ -6,7 +6,7 @@ using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 
-public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>
+public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, IDisposable
 {
     //https://reactgo.com/javascript-check-string-url/
     public readonly Regex URLRegex =
@@ -14,9 +14,9 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>
             "^(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ECMAScript);
 
-    private Metadata? _Metadata;
+    private IMetadata? _Metadata;
 
-    public Song(string uri, string name, Guid guid, Metadata? metadata = null)
+    public Song(string uri, string name, Guid guid, IMetadata? metadata = null)
     {
         URI = uri.TrimEnd('\0');
         if (URLRegex.IsMatch(uri))
@@ -39,7 +39,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>
         Metadata = metadata;
     }
 
-    public Song(WrappedStream data, string name, Guid guid, Metadata? metadata = null)
+    public Song(WrappedStream data, string name, Guid guid, IMetadata? metadata = null)
     {
         URI = "";
         Stream = data;
@@ -53,7 +53,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>
     public string Name { get; set; }
     public Guid Guid { get; set; }
 
-    public Metadata? Metadata
+    public IMetadata? Metadata
     {
         get => _Metadata;
         set => this.RaiseAndSetIfChanged(ref _Metadata, value);
@@ -112,6 +112,12 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>
                 ? $"{TrackNo()} {Metadata?.Title} {ArtistAlbumOptional(true)}"
                 : Name;
         return Name;
+    }
+
+    public void Dispose()
+    {
+        _Metadata?.Dispose();
+        Stream?.Dispose();
     }
 }
 

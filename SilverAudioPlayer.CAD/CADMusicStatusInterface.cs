@@ -178,7 +178,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
             var art = song.URI;
             if (song.Metadata.Pictures?.Any() == true)
             {
-                Picture SelectBest(IReadOnlyList<Picture> pictures)
+                IPicture SelectBest(IReadOnlyList<IPicture> pictures)
                 {
                     return pictures.First(x => x != null);
                 }

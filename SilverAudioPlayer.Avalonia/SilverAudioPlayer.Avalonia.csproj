@@ -66,7 +66,7 @@
 		
 		<!--Discord (alpha)-->
 
-		<!--<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
 		
 		<!--ChromeCast (POC)-->
 
@@ -78,14 +78,14 @@
 
 		<!--System Media Transport Controls - windows 10+-->
 
-        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>
+<!--        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
 		<!--Fortnite - windows (POC)-->
 
-		<DefineConstants>$(DefineConstants)FRT</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
 
 		<!--CD Art Display - windows 7+-->
 
-        <DefineConstants>$(DefineConstants)CAD</DefineConstants>
+<!--        <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
 
 
 		<!--LINUX ONLY-->

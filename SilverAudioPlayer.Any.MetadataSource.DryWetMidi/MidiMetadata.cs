@@ -34,5 +34,9 @@ public class MidiMetadata : Metadata
         DiscNumber = 0;
     }
 
-    public MidiFile OGInfo { get; init; }
+    public MidiFile OGInfo { get; set; }
+    public override void Dispose()
+    {
+        OGInfo = null;
+    }
 }
