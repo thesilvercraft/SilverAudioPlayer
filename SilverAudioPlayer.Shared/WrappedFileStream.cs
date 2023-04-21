@@ -30,13 +30,7 @@ public class WrappedFileStream : WrappedRegenerativeStream, IDisposable
 
     public override MimeType MimeType { get; } = KnownMimes.OctetMime;
 
-    public override void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
+    
     private Stream InternalGetStream()
     {
         var Stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -47,16 +41,27 @@ public class WrappedFileStream : WrappedRegenerativeStream, IDisposable
     public override Stream GetStream()
     {
         var Stream = InternalGetStream();
-
         return Stream;
+    }
+
+    public override bool ShouldDisposeStream => true;
+   
+    public override void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        if (disposedValue) return;
-        if (disposing)
             foreach (var stream in Streams.Where(x => x.CanRead))
                 stream.Dispose();
-        disposedValue = true;
     }
+
+    ~WrappedFileStream()
+    {
+        Dispose(false);
+    }
+    
 }

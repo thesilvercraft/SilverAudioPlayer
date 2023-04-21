@@ -9,6 +9,13 @@ namespace SilverAudioPlayer.Linux.MPRIS
     [Export(typeof(IMusicStatusInterface))]
     public class MPRIS :IMusicStatusInterface, IMediaPlayer2,IPlayer
     {
+        public event Action<PropertyChanges> OnPropertiesChanged;
+
+        public Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler)
+        {
+            Debug.WriteLine("Someone cares?");
+            return SignalWatcher.AddAsync(this, nameof(OnPropertiesChanged), handler);
+        }
         public MPRIS()
         {
             Task.Run(async ()=>
@@ -16,10 +23,9 @@ namespace SilverAudioPlayer.Linux.MPRIS
                 try
                 {
                     var connection = new Connection(Address.Session!);
-
                     await connection.ConnectAsync();
-
                     await connection.RegisterObjectAsync(this);
+                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.silveraudioplayer");
                 }
                 catch (Exception e)
                 {
@@ -44,14 +50,8 @@ namespace SilverAudioPlayer.Linux.MPRIS
         public async Task QuitAsync()
         {
         }
-        public void TrackChangedNotification(Song newtrack)
-        {
-        }
 
-        public void PlayerStateChanged(PlaybackState newstate)
-        {
-        }
-
+    
         public Task NextAsync()
         {
             Env.Next();
@@ -100,7 +100,10 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         public Task OpenUriAsync(string Uri)
         {
-            //TODO
+            if (Env is IPlayStreamProviderListener l)
+            {
+                l.ProcessFiles(new []{Uri});
+            }
             return Task.CompletedTask;
         }
 
@@ -111,18 +114,67 @@ namespace SilverAudioPlayer.Linux.MPRIS
             return this;
         }
 
-
-        public Task<object> GetAsync(string prop)
+        string InternalStatus()
         {
-            Debug.WriteLine(prop);
+            return Env?.GetState() switch
+            {
+                PlaybackState.Playing=>"Playing",
+                PlaybackState.Paused => "Paused",
+                _ => "Stopped"
+            };
+        }
+
+
+        public async Task<object> GetAsync(string prop)
+        {
+            switch (prop.ToLowerInvariant())
+            {
+                case "playbackstatus":
+                return InternalStatus();
+                case "canseek": 
+                case "canpause": 
+                case "canplay": 
+                case "cangonext": 
+                case "cangoprevious": 
+                case "cancontrol": 
+                    return true;
+                case "minimumrate": 
+                case "maximumrate": 
+                case "rate": 
+                    return 1;
+                //Metadata
+                case "position":
+                    return (long)Env.GetPositionMilli()*1000;
+                case "volume":
+                    return Env.GetVolume() / 255;
+                case "loopstatus":
+                    return GetLoopStatus();
+                case "identity":
+                    return "SilverAudioPlayer";
+                case "shuffle":
+                    return false;
+                case "metadata":
+                    return new Dictionary<string, object>()
+                    {
+                        {"mpris:length", (long)Env.GetDurationMilli()*1000},
+                        {"mpris:trackid", new ObjectPath("/org/silvercraft/"+Env.GetCurrentTrack().Guid.ToString("N"))}
+                    };
+            }
+            Debug.WriteLine("Failing to answer for "+prop);
+
             return null;
         }
 
+        string GetLoopStatus()
+        {
+            //   LoopStatus None Track Playlist 
+            return  "None";
+        }
         Task<PlayerProperties> IPlayer.GetAllAsync()
         {
             return Task.FromResult(new PlayerProperties()
             {
-PlaybackStatus = Env.GetState().ToString(),
+PlaybackStatus =InternalStatus(),
 Rate = 1,
 MaximumRate = 1,
 MinimumRate = 1,
@@ -139,12 +191,17 @@ CanSeek = true,
         {
             return Task.FromResult(new MediaPlayer2Properties()
             {
-                HasTrackList = true
+                HasTrackList = false,
+                CanQuit = false,
+                CanRaise = false,
+                DesktopEntry = "SilverAudioPlayer",
+                Identity = "SilverAudioPlayer"
             });
         }
 
         public Task SetAsync(string prop, object val)
         {
+            Debug.WriteLine("NOT SETTING "+prop);
             return Task.CompletedTask;
         }
 
@@ -152,6 +209,24 @@ CanSeek = true,
         public void StartIPC(IMusicStatusInterfaceListener listener)
         {
             Env = listener;
+            Env.PlayerStateChanged += PlayerStateChanged;
+            Env.TrackChangedNotification += TrackChanged;
+        }
+        private void TrackChanged(object? sender, Song e)
+        {
+        }
+
+        private void PlayerStateChanged(object? sender, PlaybackState e)
+        {
+            OnPropertiesChanged?.Invoke(new PropertyChanges(new List<KeyValuePair<string,object>>()
+            {
+                new KeyValuePair<string, object>("PlaybackStatus", Env?.GetState() switch
+                {
+                    PlaybackState.Playing=>"Playing",
+                    PlaybackState.Paused => "Paused",
+                    _ => "Stopped"
+                }),
+            }.ToArray()));
         }
 
         public void StopIPC(IMusicStatusInterfaceListener listener)

@@ -17,6 +17,9 @@ public partial class AuthInfoWindow : Window
     public AuthInfoWindow()
     {
         InitializeComponent();
+        Fail = this.FindControl<TextBlock>("Fail");
+        UserName = this.FindControl<TextBox>("UserName");
+        Password = this.FindControl<TextBox>("Password");
 #if DEBUG
         this.AttachDevTools();
 #endif
@@ -28,13 +31,7 @@ public partial class AuthInfoWindow : Window
         this.jellyFinHelper = jellyFinHelper;
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-        Fail = this.FindControl<TextBlock>("Fail");
-        UserName = this.FindControl<TextBox>("UserName");
-        Password = this.FindControl<TextBox>("Password");
-    }
+ 
 
     private async void ButtonClick(object? sender, RoutedEventArgs e)
     {

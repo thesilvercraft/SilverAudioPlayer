@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -76,6 +77,12 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
         return mainWindow.Logic.GetQueueCopy();
     }
 
+    public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
+    {
+        var res = pictures?.Where(x => x.PicType == type);
+        return res?.Any()==true ? res?.First() : pictures?.FirstOrDefault();
+    }
+
     public void Play()
     {
         mainWindow.Logic.Play();
@@ -128,6 +135,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
         return (ulong?)mainWindow.Player?.Length()?.TotalSeconds ?? (ulong?)(mainWindow.dc.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
 
     }
+
 
     public void SetPosition(ulong position)
     {
@@ -194,6 +202,21 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
     {
         PlayerStateChanged?.Invoke(this, state);
     }
+    public ulong GetDurationMilli()
+    {
+        return (ulong?)mainWindow.Player?.Length()?.TotalMilliseconds ?? (ulong?)(mainWindow.dc.CurrentSong?.Metadata?.Duration) ?? 2;
+    }
+
+    public void SetPositionMilli(ulong position)
+    {
+        mainWindow.Player?.SetPosition(TimeSpan.FromMilliseconds(position));
+    }
+
+    public ulong GetPositionMilli()
+    {
+        return (ulong)(mainWindow.Player?.GetPosition().TotalMilliseconds ?? 1);
+    }
+   
 
     public string Licenses => @"Avalonia
 The MIT License (MIT)

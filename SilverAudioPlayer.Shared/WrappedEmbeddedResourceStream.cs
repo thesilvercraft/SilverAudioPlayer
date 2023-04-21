@@ -3,7 +3,7 @@ using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 
-public class WrappedEmbeddedResourceStream : WrappedStream, IDisposable
+public class WrappedEmbeddedResourceStream : WrappedStream
 {
     private readonly Assembly Assembly;
     private bool disposedValue;
@@ -51,6 +51,8 @@ public class WrappedEmbeddedResourceStream : WrappedStream, IDisposable
 
         return Stream;
     }
+
+    public override bool ShouldDisposeStream => true;
 
     protected virtual void Dispose(bool disposing)
     {

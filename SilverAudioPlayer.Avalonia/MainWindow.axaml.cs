@@ -213,17 +213,22 @@ public partial class MainWindow : Window
                                 }
                             }
 
-                            var buffer = CurrentSong.Metadata.Pictures[0].Data;
-                            if (buffer != null)
+                            var imageData = CurrentSong.Metadata.Pictures[0].Data;
+                            if (imageData != null)
                             {
                                 try
                                 {
-                                    var memstream = new MemoryStream(buffer);
-                                    var bmp = new Bitmap(memstream);
+                                    using var imageDataStream = imageData.GetStream();
+                                    var bmp = new Bitmap(imageDataStream);
                                     Image.Source = bmp;
+                                    if (config.DisableAlbumArtBlur)
+                                    {
+                                        return;
+                                    }
+                                 
                                     using MemoryStream blur = new();
-                                    if (config.DisableAlbumArtBlur) return;
-                                    using var wrbmp = SKBitmap.Decode(memstream.ToArray());
+                                    using var stream = imageData.GetStream();
+                                    using var wrbmp = SKBitmap.Decode(stream);
                                     var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
                                     using (var surface = SKSurface.Create(info))
                                     {
@@ -251,10 +256,8 @@ public partial class MainWindow : Window
                                     };
                                     var s = Background;
                                     Background = imgbrsh;
-                                    if (s is IDisposable x)
-                                    {
-                                        x.Dispose();
-                                    }
+                                    var x = s as IDisposable;
+                                    x?.Dispose();
                                 }
                                 catch (Exception ex)
                                 {
@@ -611,7 +614,7 @@ public partial class MainWindow : Window
 
         if (e.Source is Control c && c.Name == "MoveTarget")
             e.DragEffects &= DragDropEffects.Move;
-        else if (e.Data.Contains(DataFormats.FileNames) || e.Data.Contains("UniformResourceLocatorW"))
+        else if (e.Data.Contains(DataFormats.Files) || e.Data.Contains("UniformResourceLocatorW"))
             e.DragEffects = DragDropEffects.Copy;
         else
             e.DragEffects = DragDropEffects.None;
@@ -628,12 +631,12 @@ public partial class MainWindow : Window
             e.DragEffects &= DragDropEffects.Move;
         else
             e.DragEffects &= DragDropEffects.Copy;
-        if (e.Data.Contains(DataFormats.FileNames))
+        if (e.Data.Contains(DataFormats.Files))
         {
-            var files = e!.Data.GetFileNames();
+            var files = e!.Data.GetFiles();
             if (files != null)
             {
-                Logic.ProcessFiles(files);
+                Logic.ProcessFiles(files.Select(x=>x.TryGetLocalPath()));
             }
         }
 
@@ -644,7 +647,7 @@ public partial class MainWindow : Window
                 x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url), Env));
             if (psps.Any())
             {
-                ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url), Env);
+                Task.Run(async () => await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url), Env));
                 return;
             }
 
@@ -699,11 +702,11 @@ public partial class MainWindow : Window
         {
             if (Enum.TryParse<WellKnownFolder>(u, out var folder))
             {
-                musicfolder = await StorageProvider.TryGetWellKnownFolder(folder);
+                musicfolder = await StorageProvider.TryGetWellKnownFolderAsync(folder);
             }
             else
             {
-                musicfolder = await StorageProvider.TryGetFolderFromPath(u);
+                musicfolder = await StorageProvider.TryGetFolderFromPathAsync(u);
             }
         }
 

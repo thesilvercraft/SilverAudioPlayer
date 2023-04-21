@@ -26,6 +26,7 @@ public partial class Gui : Window
         g = new GuiBinding();
         DataContext = g;
         this.DoAfterInitTasks(true);
+        LB = this.FindControl<ListBox>("LB");
         LB.DoubleTapped += LB_DoubleTapped;
     }
 
@@ -82,12 +83,12 @@ public partial class Gui : Window
                 g.SearchResults = new ObservableCollection<WrappedDto>(o);
                 foreach (var u in g.SearchResults)
                 {
-                    var s = await helper.GetImageStream(u.dto);
-                    if (s != null)
-                    {
-                        var strm = s.GetStream();
-                        if (strm != null) u.Cover = Bitmap.DecodeToHeight(strm, 200);
-                    }
+                   // var s = await helper.GetImageStream(u.dto);
+                  ////  var strm = s?.GetStream();
+                   // if (strm != null)
+                  // {
+                      //u.Cover = Bitmap.DecodeToHeight(strm, 200);
+                   // }
                 }
 
                 LB.Items = g.SearchResults;
@@ -101,11 +102,7 @@ public partial class Gui : Window
         }
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-        LB = this.FindControl<ListBox>("LB");
-    }
+    
 }
 
 public class WrappedDto

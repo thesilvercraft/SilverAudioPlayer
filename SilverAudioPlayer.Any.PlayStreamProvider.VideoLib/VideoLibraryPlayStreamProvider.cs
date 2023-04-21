@@ -40,7 +40,7 @@ public class VideoLibraryPlayStreamProvider :IPlayStreamProviderThatSupportsUrls
             given = builder.Uri;
         }
         var youTube = YouTube.Default;
-        var video = await youTube.GetAllVideosAsync(given.ToString());
+        var video =await youTube.GetAllVideosAsync(given.ToString());
         listener.LoadSong(new WrappedHttpStream(video.Where(x => x.AudioBitrate > 1).OrderByDescending(x => x.AudioBitrate).First().Uri));
     }
 }

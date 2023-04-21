@@ -175,7 +175,7 @@ public class ImageMime : MimeType
 
 public class OctetMime : MimeType
 {
-    public OctetMime() : base("application/octet-stream", new[] { "application/binary" }, Array.Empty<string>())
+    public OctetMime() : base("application/octet-stream", new[] { "application/binary" }, new []{".bin"})
     {
     }
 }

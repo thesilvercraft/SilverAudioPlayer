@@ -16,7 +16,7 @@ public interface IMusicStatusInterfaceListenerAdmin : IMusicStatusInterfaceListe
 }
 public interface IMusicStatusInterfaceListener : IPlayerEnviroment
 {
-
+    public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front);
     void Play();
 
     void Pause();
@@ -36,10 +36,15 @@ public interface IMusicStatusInterfaceListener : IPlayerEnviroment
     Song? GetCurrentTrack();
 
     ulong GetDuration();
+    ulong GetDurationMilli();
 
     void SetPosition(ulong position);
 
     ulong GetPosition();
+    ulong GetPositionMilli();
+    void SetPositionMilli(ulong position);
+
+
 
     event EventHandler<Song> TrackChangedNotification;
 

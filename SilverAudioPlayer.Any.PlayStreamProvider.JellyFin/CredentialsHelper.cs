@@ -113,16 +113,38 @@ public class JellyFinHelper
 
     public async Task<WrappedStream> GetStream(BaseItemDto dto)
     {
-        return new WrappedJellyFinStream(audioClient, userDto, dto);
+       // return new WrappedJellyFinStream(audioClient, userDto, dto);
+       var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
+       Debug.WriteLine(goofyah);
+
+        return new WrappedSusHttpStream(() =>
+        {
+            var request = new HttpRequestMessage() {
+                RequestUri = new Uri(goofyah),
+                Method = HttpMethod.Get,
+            };
+            request.Headers.Add("X-Emby-Token",settings.AccessToken);
+            return HttpClient.
+                Client.SendAsync(request);
+        });
     }
 
     public async Task<WrappedStream?> GetImageStream(BaseItemDto dto)
     {
         try
         {
-            var fr = await imageClient.GetItemImageAsync(dto.Id, ImageType.Primary);
-
-            return new WrappedStreamImplementedByOneRealOne(KnownMimes.JPGMime, fr.Stream);
+            var fr =  imageClient.GetItemImageUrl(dto.Id, ImageType.Primary);
+            Debug.WriteLine(fr);
+            return new WrappedSusHttpStream(() =>
+            {
+                var request = new HttpRequestMessage() {
+                    RequestUri = new Uri(fr),
+                    Method = HttpMethod.Get,
+                };
+                request.Headers.Add("X-Emby-Token",settings.AccessToken);
+                return HttpClient.
+                    Client.SendAsync(request);
+            });
         }
         catch
         {
@@ -158,7 +180,7 @@ public class WrappedStreamImplementedByOneRealOne : WrappedStream
     }
 
     public override MimeType MimeType { get; }
-
+    public override bool ShouldDisposeStream => false;
     public override Stream GetStream()
     {
         return RealStream;
@@ -261,6 +283,8 @@ public class WrappedJellyFinStream : WrappedStream, IDisposable
 
         return new FakeMemoryStreamReference(FStream);
     }
+
+    public override bool ShouldDisposeStream => true;
 
     protected virtual void Dispose(bool disposing)
     {

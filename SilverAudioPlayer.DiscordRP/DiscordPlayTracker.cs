@@ -175,7 +175,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
     }
 
  
-    public void TrackChangedNotification(object e, Song newtrack)
+    public void TrackChangedNotification(object e, Song? newtrack)
     {
         ChangeSong(newtrack.URI, newtrack);
     }
@@ -239,7 +239,7 @@ SilverAudioPlayer.DiscordRP
         new Tuple<Uri, URLType>(new Uri("https://github.com/Lachee/discord-rpc-csharp/issues"), URLType.LibraryCode)
     };
 
-    public void ChangeSong(string? loc, Song a)
+    public void ChangeSong(string? loc, Song? a)
     {
         var artistandalbum = $"{a.Metadata?.Album} - {a.Metadata?.Artist}";
         Debug.WriteLine($"cs called {artistandalbum}");
@@ -257,11 +257,11 @@ SilverAudioPlayer.DiscordRP
         return status + " " + message;
     }
 
-    public string? GetAlbumArt(string? loc, Song a)
+    public string? GetAlbumArt(string? loc, Song? a)
     {
         if (richPresenceURLs != null)
         {
-            var url = richPresenceURLs.GetURL(a);
+            var url = richPresenceURLs.GetURL(a, Env);
             if (!string.IsNullOrEmpty(url)) return url;
         }
 
@@ -269,7 +269,7 @@ SilverAudioPlayer.DiscordRP
         return tracks.GetValueOrDefault(artistandalbum, null);
     }
 
-    public void SPause(string? loc, Song a)
+    public void SPause(string? loc, Song? a)
     {
         Debug.WriteLine("Pause called");
 
@@ -287,7 +287,7 @@ SilverAudioPlayer.DiscordRP
         }
     }
 
-    public void SPlay(string? loc, Song a)
+    public void SPlay(string? loc, Song? a)
     {
         Debug.WriteLine("play called");
 
@@ -308,7 +308,6 @@ SilverAudioPlayer.DiscordRP
     public void SStop()
     {
         Debug.WriteLine("stop called");
-
         SetStatus(StoppedTextSState, "Not playing anything", "sap", AppName, StoppedStateRPSMLICN, StoppedTextState);
     }
 
@@ -356,7 +355,7 @@ SilverAudioPlayer.DiscordRP
 
 public interface IRememberRichPresenceURLs
 {
-    string? GetURL(Song track);
+    string? GetURL(Song? track, IMusicStatusInterfaceListener Env);
 }
 
 public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPresenceURLs
@@ -371,45 +370,40 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
         imageEndpoint = new ImageEndpoint(client, HttpClient.Client);
     }
 
-    public string? GetURL(Song track)
+    public string? GetURL(Song? track, IMusicStatusInterfaceListener Env)
     {
         Debug.WriteLine("Geturl");
         GetCache();
         Debug.WriteLine("uplodit " + Uploadit);
-        if (track != null)
-        {
-            var a = track.Metadata?.Pictures?.FirstOrDefault(x => x.Data.Length > 1000);
-            if (a == null) return null;
-            if (cached.Any(x => x.hsh == a.Hash))
-                return cached.First(x => x.hsh == a.Hash).url.Replace("https", "http");
+        var a = Env.GetBestRepresentation(track?.Metadata?.Pictures);
+        if (a == null) return null;
+        if (cached.Any(x => x.hsh == a.Hash))
+            return cached.First(x => x.hsh == a.Hash).url.Replace("https", "http");
+        if (!Uploadit) return null;
+        var res = Upload(a.Data);
+        res = res.Replace("https", "http");
+        cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
+        SetCache();
+        return res;
 
-            if (Uploadit)
-            {
-                Debug.WriteLine("uplodit");
-                var res = Upload(a.Data);
-                res = res.Replace("https", "http");
-                if (res != null)
-                {
-                    cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
-                    SetCache();
-                }
-
-                return res;
-            }
-        }
-
-        return null;
     }
 
-    public virtual string? Upload(byte[] bits)
+    public virtual string? Upload(WrappedStream bits)
     {
-        Debug.WriteLine("uploading " + bits.Length);
-
-
-        var imageUpload = imageEndpoint.UploadImageAsync(new MemoryStream(bits));
-        var res = imageUpload.GetAwaiter().GetResult();
-        Debug.WriteLine(res.Link);
-        return res.Link;
+        var stream = bits.GetStream();
+        try
+        {
+            var imageUpload = imageEndpoint.UploadImageAsync(stream);
+            var res = imageUpload.GetAwaiter().GetResult();
+            return res.Link;
+        }
+        finally
+        {
+            if (bits.ShouldDisposeStream)
+            {
+                stream.Dispose();
+            }
+        }
     }
 
 
@@ -418,7 +412,7 @@ public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPrese
         if (File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs", "musicart.json")))
             cached = JsonSerializer.Deserialize<MscArtFile[]>(
                 File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json")));
-        if (cached == null) cached = Array.Empty<MscArtFile>();
+        cached ??= Array.Empty<MscArtFile>();
     }
 
     private void SetCache()

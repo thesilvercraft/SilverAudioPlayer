@@ -24,8 +24,8 @@ public partial class PictureViewer : Window
     public PictureViewer(IReadOnlyList<IPicture>? pictures) : this()
     {
         this.pictures = pictures;
-        using var memstream = new MemoryStream(pictures[0].Data);
-        x = new DContext { Picture = new Bitmap(memstream) };
+        using var data = pictures[pos].Data.GetStream();
+        x = new DContext { Picture = new Bitmap(data) };
         DataContext = x;
     }
 
@@ -34,8 +34,8 @@ public partial class PictureViewer : Window
         if (pos > 0)
         {
             pos--;
-            using var memstream = new MemoryStream(pictures[pos].Data);
-            x.Picture = new Bitmap(memstream);
+            using var data = pictures[pos].Data.GetStream();
+            x.Picture = new Bitmap(data);
         }
     }
 
@@ -44,8 +44,8 @@ public partial class PictureViewer : Window
         if (pos < pictures.Count - 1)
         {
             pos++;
-            using var memstream = new MemoryStream(pictures[pos].Data);
-            x.Picture = new Bitmap(memstream);
+            using var data = pictures[pos].Data.GetStream();
+            x.Picture = new Bitmap(data);
         }
     }
 

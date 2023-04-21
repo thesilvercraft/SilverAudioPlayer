@@ -44,10 +44,9 @@ public partial class MetadataView : Window
 
     private void MetadataView_Opened(object? sender, EventArgs e)
     {
-        if (s != null && s?.Metadata?.Pictures?.Count > 0 && s?.Metadata?.Pictures[0]?.Data is byte[] b)
+        if (s != null && s?.Metadata?.Pictures?.Count > 0 && s?.Metadata?.Pictures[0]?.Data is WrappedStream b)
         {
-            using var memstream = new MemoryStream(b);
-            dataContext.Bitmaps[0] = new Bitmap(memstream);
+            dataContext.Bitmaps[0] = new Bitmap(b.GetStream());
         }
     }
 

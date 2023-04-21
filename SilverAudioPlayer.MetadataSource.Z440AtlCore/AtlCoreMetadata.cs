@@ -35,7 +35,7 @@ public class AtlCoreMetadata : IMetadata
             {
                 return CachedPicture;
             }
-           return CachedPicture = OGInfo.EmbeddedPictures.Select(x => new ATLCOREPicture(x)).ToList();
+           return CachedPicture = OGInfo?.EmbeddedPictures?.Where(x => x!=null). Select(x => new ATLCOREPicture(x)).ToList();
         }
     }
 

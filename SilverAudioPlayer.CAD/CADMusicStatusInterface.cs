@@ -185,12 +185,19 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
                 if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory, "Art")))
                     Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "Art"));
-                var bestart = SelectBest(song.Metadata.Pictures);
+                var rep = Env.GetBestRepresentation(song.Metadata.Pictures);
 
-                if (!File.Exists(Path.Combine(AppContext.BaseDirectory, "Art", bestart.Hash + ".jpg")))
-                    File.WriteAllBytes(Path.Combine(AppContext.BaseDirectory, "Art", bestart.Hash + ".jpg"),
-                        bestart.Data);
-                art = Path.Combine(AppContext.BaseDirectory, "Art", bestart.Hash + ".jpg");
+                if (!File.Exists(Path.Combine(AppContext.BaseDirectory, "Art", rep.Hash + ".jpg")))
+                {
+                    using var bestart = rep.
+                        Data?.GetStream();
+                    using var fileStream =
+                        new FileStream(Path.Combine(AppContext.BaseDirectory, "Art", rep.Hash + ".jpg"),
+                            FileMode.CreateNew, FileAccess.Write);
+                    bestart.CopyTo(fileStream);
+                }
+                  
+                art = Path.Combine(AppContext.BaseDirectory, "Art", rep.Hash + ".jpg");
             }
 
             strTemp =

@@ -10,8 +10,5 @@ public partial class AlbumView : UserControl
         InitializeComponent();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+  
 }

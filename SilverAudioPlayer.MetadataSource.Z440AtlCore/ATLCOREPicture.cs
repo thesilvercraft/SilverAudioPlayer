@@ -18,9 +18,7 @@ public class ATLCOREPicture : IPicture
     }
 
     public string? Description => info.Description;
-    public string? MimeType => info.MimeType;
-    public byte[]? Data => info.PictureData;
-    public ulong Position { get; }
+    public WrappedStream? Data => new WrappedMemoryStream(info.PictureData);
     public PictureType? PicType => (PictureType?)info.PicType;
     public string? Hash => info.PictureHash.ToString();
 }

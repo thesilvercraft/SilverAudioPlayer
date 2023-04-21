@@ -51,7 +51,8 @@ public class WrappedSong :WrappedShowable
         {
             if (!bitmaps.TryGetValue(meta.Pictures.First().Hash, out _Cover))
             {
-                _Cover = Bitmap.DecodeToHeight(new MemoryStream(meta.Pictures.First().Data), 400);
+                using var stream = (meta.Pictures.First().Data.GetStream());
+                _Cover = Bitmap.DecodeToHeight(stream, 400);
                 bitmaps.Add(meta.Pictures.First().Hash, _Cover);
             }
         }
@@ -118,10 +119,15 @@ public partial class MainWindow : Window
                     Bitmap? cover=null;
                     if (meta.Pictures is not (null or { Count: 0 }))
                     {
-                        if(!bitmaps.TryGetValue(meta.Pictures.First().Hash, out cover))
+                        var firstPicture = meta.Pictures.First();
+                        if(!bitmaps.TryGetValue(firstPicture.Hash, out cover))
                         {
-                            cover = Bitmap.DecodeToHeight(new MemoryStream(meta.Pictures.First().Data), 400);
-                            bitmaps.Add(meta.Pictures.First().Hash, cover);
+                            using var stream = firstPicture.Data.GetStream();
+                            if (stream != null)
+                            {
+                                cover = Bitmap.DecodeToHeight(stream, 400);
+                                bitmaps.Add(firstPicture.Hash, cover);
+                            }
                         }
                     }
                     _binding.WrappedAlbums.Add(new()

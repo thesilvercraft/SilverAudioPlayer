@@ -60,24 +60,21 @@ public abstract class Metadata :IMetadata
 public interface IPicture : IDisposable
 {
     public string? Description { get;  }
-    public string? MimeType { get;  }
-    public byte[]? Data { get;  }
-    public ulong Position { get;  }
+    public WrappedStream? Data { get;  }
     public PictureType? PicType { get;  }
     public string? Hash { get;  }
 }
 public  class Picture :IPicture
 {
     public string? Description { get; init; }
-    public string? MimeType { get; init; }
-    public byte[]? Data { get;  set; }
-    public ulong Position { get; init; }
+    public WrappedStream? Data { get;  set; }
     public PictureType? PicType { get; set; }
     public string? Hash { get; set; }
 
     public virtual void Dispose()
     {
-        Data = null;
+        Data?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
 

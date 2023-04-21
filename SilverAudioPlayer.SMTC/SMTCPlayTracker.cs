@@ -100,11 +100,12 @@ public class SMTCPlayTracker : IMusicStatusInterface
                 if (first != null)
                 {
                     var fullPath = Path.GetTempFileName();
+                    await using var imageData = first.Data.GetStream();
                     FileStream fs = new(fullPath, FileMode.OpenOrCreate);
-                    fs.Write(first.Data);
+                    await imageData.CopyToAsync(fs);
                     fs.Flush();
                     fs.Close();
-                    fs.Dispose();
+                    await fs.DisposeAsync();
                     TempFiles.Add(fullPath);
                     updater.Thumbnail =
                         RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(fullPath));

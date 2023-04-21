@@ -17,8 +17,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Composition" Version="7.0.0" />
-        <PackageReference Include="z440.atl.core" Version="4.20.0" />
+        <PackageReference Include="System.Composition" Version="8.0.0-preview.3.23174.8" />
+        <PackageReference Include="z440.atl.core" Version="4.31.0" />
     </ItemGroup>
 
     <ItemGroup>

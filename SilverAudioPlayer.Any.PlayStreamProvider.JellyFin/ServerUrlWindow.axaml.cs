@@ -16,7 +16,10 @@ public partial class ServerUrlWindow : Window
     public ServerUrlWindow()
     {
         InitializeComponent();
+        Fail = this.FindControl<TextBlock>("Fail");
+        Url = this.FindControl<TextBox>("Url");
 #if DEBUG
+        
         this.AttachDevTools();
 #endif
         this.DoAfterInitTasks(true);
@@ -27,12 +30,7 @@ public partial class ServerUrlWindow : Window
         this.jellyFinHelper = jellyFinHelper;
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-        Fail = this.FindControl<TextBlock>("Fail");
-        Url = this.FindControl<TextBox>("Url");
-    }
+  
 
     private async void ButtonClick(object? sender, RoutedEventArgs e)
     {
