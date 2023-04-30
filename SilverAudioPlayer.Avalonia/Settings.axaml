@@ -39,12 +39,9 @@
 							<StackPanel Orientation="Horizontal" Grid.Column="1"  HorizontalAlignment="Right">
 								<Button  IsVisible="{Binding Configurable}" Click="ConfigureClick">🔧Configure</Button>
 								<Button  IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
-
 								<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
 								<Button  IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
-
 							</StackPanel>
-
 						</Grid>
 					</DataTemplate>
 				</ListBox.ItemTemplate>

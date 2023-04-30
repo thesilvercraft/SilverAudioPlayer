@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace SilverAudioPlayer.Linux.MPRIS
 {
     [Export(typeof(IMusicStatusInterface))]
-    public class MPRIS :IMusicStatusInterface, IMediaPlayer2,IPlayer
+    public class Mpris :IMusicStatusInterface, IMediaPlayer2,IPlayer
     {
         public event Action<PropertyChanges> OnPropertiesChanged;
 
@@ -16,7 +16,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
             Debug.WriteLine("Someone cares?");
             return SignalWatcher.AddAsync(this, nameof(OnPropertiesChanged), handler);
         }
-        public MPRIS()
+        public Mpris()
         {
             Task.Run(async ()=>
             {
@@ -24,8 +24,8 @@ namespace SilverAudioPlayer.Linux.MPRIS
                 {
                     var connection = new Connection(Address.Session!);
                     await connection.ConnectAsync();
+                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.silveraudioplayer.instance"+Environment.ProcessId);
                     await connection.RegisterObjectAsync(this);
-                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.silveraudioplayer");
                 }
                 catch (Exception e)
                 {
@@ -90,11 +90,15 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         public Task SeekAsync(long Offset)
         {
+            Debug.WriteLine("[MPRIS] Failing to SeekAsync");
+
             throw new NotImplementedException();
         }
 
         public Task SetPositionAsync(ObjectPath TrackId, long Position)
         {
+            Debug.WriteLine("[MPRIS] Failing to SetPositionAsync");
+
             throw new NotImplementedException();
         }
 
@@ -154,17 +158,26 @@ namespace SilverAudioPlayer.Linux.MPRIS
                 case "shuffle":
                     return false;
                 case "metadata":
-                    return new Dictionary<string, object>()
-                    {
-                        {"mpris:length", (long)Env.GetDurationMilli()*1000},
-                        {"mpris:trackid", new ObjectPath("/org/silvercraft/"+Env.GetCurrentTrack().Guid.ToString("N"))}
-                    };
+                    return GetMetadata();
             }
-            Debug.WriteLine("Failing to answer for "+prop);
+            Debug.WriteLine("[MPRIS] Failing to answer for "+prop);
 
             return null;
         }
 
+        Dictionary<string, object> GetMetadata()
+        {
+            var track = Env?.GetCurrentTrack();
+            return new Dictionary<string, object>()
+            {
+                {"mpris:length",( (long?)Env?.GetDurationMilli()??10)*1000},
+                {"mpris:trackid", new ObjectPath("/org/silvercraft/t"+track?.Guid.ToString("N"))},
+                {"mpris:artUrl", "http://localhost:36169/albumart"}, 
+                {"xesam:title", track?.Metadata?.Title ?? "nothing"},
+                {"xesam:album", track?.Metadata?.Album ?? "no"},
+                {"xesam:artist", new string[] {track?.Metadata?.Artist??"none"}}
+            };
+        }
         string GetLoopStatus()
         {
             //   LoopStatus None Track Playlist 
@@ -184,6 +197,8 @@ CanPlay = true,
 CanGoNext = true,
 CanGoPrevious = true,
 CanSeek = true,
+Metadata = GetMetadata(),
+
             });
         }
 
@@ -194,14 +209,16 @@ CanSeek = true,
                 HasTrackList = false,
                 CanQuit = false,
                 CanRaise = false,
-                DesktopEntry = "SilverAudioPlayer",
-                Identity = "SilverAudioPlayer"
+                DesktopEntry = "silveraudioplayer",
+                Identity = "SilverAudioPlayer",
+                SupportedUriSchemes = new []{"http","https"},
+                SupportedMimeTypes = new []{"audio/ogg","audio/flac"},
             });
         }
 
         public Task SetAsync(string prop, object val)
         {
-            Debug.WriteLine("NOT SETTING "+prop);
+            Debug.WriteLine("[MPRIS] NOT SETTING "+prop);
             return Task.CompletedTask;
         }
 
@@ -214,13 +231,17 @@ CanSeek = true,
         }
         private void TrackChanged(object? sender, Song e)
         {
+            OnPropertiesChanged?.Invoke(new PropertyChanges(new List<KeyValuePair<string,object>>()
+            {
+                new("Metadata", GetMetadata()),
+            }.ToArray()));
         }
 
         private void PlayerStateChanged(object? sender, PlaybackState e)
         {
             OnPropertiesChanged?.Invoke(new PropertyChanges(new List<KeyValuePair<string,object>>()
             {
-                new KeyValuePair<string, object>("PlaybackStatus", Env?.GetState() switch
+                new("PlaybackStatus", Env?.GetState() switch
                 {
                     PlaybackState.Playing=>"Playing",
                     PlaybackState.Paused => "Paused",
@@ -236,7 +257,7 @@ CanSeek = true,
         public string Name => "MPRIS Linux MSI";
         public string Description => "Interface with linux dbus for native music controls";
         public WrappedStream? Icon => null;
-        public Version? Version => typeof(MPRIS).Assembly.GetName().Version;
+        public Version? Version => typeof(Mpris).Assembly.GetName().Version;
         public string Licenses => "GPL3.0";
         public List<Tuple<Uri, URLType>>? Links => new()
         {

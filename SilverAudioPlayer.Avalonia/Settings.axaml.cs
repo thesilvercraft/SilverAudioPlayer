@@ -48,7 +48,6 @@ public partial class Settings : Window
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
         this.mainWindow = mainWindow;
-
         TransparencyDown.SelectedItem =
             WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
@@ -77,8 +76,7 @@ public partial class Settings : Window
         StringBuilder licenses = new();
         foreach (var item in info)
         {
-            IImage? icon = DecodeImage(item.Icon);
-           
+            var icon = DecodeImage(item.Icon);
             infop.Add(new InfoPRecord(
                 item.Name,
                 item.Description,
@@ -97,23 +95,21 @@ public partial class Settings : Window
     }
     public static IImage? DecodeImage(WrappedStream? stream, int width=80)
     {
-        if (stream != null)
+        if (stream == null) return null;
+        stream.GetStream();
+        Debug.WriteLine(stream.MimeType);
+        if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
         {
-            stream.GetStream();
-            Debug.WriteLine(stream.MimeType);
-            if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
+            return Bitmap.DecodeToWidth(stream.GetStream(), width);
+        }
+        else if (stream.MimeType == KnownMimes.SVGMime)
+        {
+            var img = new SvgImage
             {
-                return Bitmap.DecodeToWidth(stream.GetStream(), width);
-            }
-            else if (stream.MimeType == KnownMimes.SVGMime)
-            {
-                var img = new SvgImage
-                {
-                    Source = new()
-                };
-                img.Source.Load(stream.GetStream());
-                return img;
-            }
+                Source = new()
+            };
+            img.Source.Load(stream.GetStream());
+            return img;
         }
         return null;
     }
@@ -137,38 +133,21 @@ public partial class Settings : Window
     public void ConfigureClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y != null && y.DataContext is InfoPRecord record && record.Configurable)
-        {
-            if (record.Item is IAmConfigurable configurable)
-            {
-                ConfigureWindow cw = new();
-                cw.HandleConfiguration(configurable);
-                cw.Show();
-            }
-        }
+        if (y is not { DataContext: InfoPRecord { Configurable: true } record }) return;
+        if (record.Item is not IAmConfigurable configurable) return;
+        ConfigureWindow cw = new();
+        cw.HandleConfiguration(configurable);
+        cw.Show();
     }
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y != null && y.DataContext is InfoPRecord record && record.IsAskingMemoryProvider && record.Item is IAmOnceAgainAskingYouForYourMemory configurable && mainWindow.Logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
-        {
-            LaunchActionsWindow launchActionsWindow = new();
-            List<SAction> actions = new();
-            foreach (var ob in configurable.ObjectsToRememberForMe)
-            {
-                var m = l.GetConfig(ob.Id);
-                actions.Add(new SAction
-                {
-                    ActionName = "Open " + m,
-                    ActionToInvoke = () =>
-                    {
-                        OpenBrowser(m);
-                    }
-                });
-            }
-            launchActionsWindow.AddActions(actions);
-            launchActionsWindow.Show();
-        }
+        if (y == null || y.DataContext is not InfoPRecord { IsAskingMemoryProvider: true, Item: IAmOnceAgainAskingYouForYourMemory configurable } ||
+            mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
+        LaunchActionsWindow launchActionsWindow = new();
+        var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m => new SAction { ActionName = "Open " + m, ActionToInvoke = () => { OpenBrowser(m); } }).ToList();
+        launchActionsWindow.AddActions(actions);
+        launchActionsWindow.Show();
     }
     public void PlayProviderClick(object button, RoutedEventArgs args)
     {
@@ -212,51 +191,47 @@ public partial class Settings : Window
     {
 
         LaunchActionsWindow launchActionsWindow = new();
-        List<SAction> actions = new();
         if(element.Item.Links==null)
         {
             return;
         }
-        foreach (var z in element.Item.Links)
+        var actions = element.Item.Links.Select(z => new SAction { ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2), ActionToInvoke = () => OpenBrowser(z.Item1.ToString()) }).ToList();
+        switch (element.Item)
         {
-            actions.Add(new SAction
-            { ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2), ActionToInvoke = () => OpenBrowser(z.Item1.ToString()) });
+            case IAmConfigurable configurable:
+                actions.Add(new SAction
+                {
+                    ActionName = "🔧Configure",
+                    ActionToInvoke = () =>
+                    {
+                        ConfigureWindow cw = new();
+                        cw.HandleConfiguration(configurable);
+                        cw.Show();
+                    }
+                });
+                break;
+            case IPlayStreamProvider streamProvider:
+                actions.Add(new SAction
+                {
+                    ActionName = "Use",
+                    ActionToInvoke = () =>
+                    {
+                        streamProvider.Use(mainWindow.Env);
+                    }
+                });
+                break;
+            case ISyncPlugin syncPlugin:
+                actions.Add(new SAction
+                {
+                    ActionName = "Sync",
+                    ActionToInvoke = () =>
+                    {
+                        syncPlugin.Use(mainWindow.Env);
+                    }
+                });
+                break;
+        }
 
-        }
-        if (element.Item is IAmConfigurable configurable)
-            actions.Add(new SAction
-            {
-                ActionName = "🔧Configure",
-                ActionToInvoke = () =>
-                {
-                    ConfigureWindow cw = new();
-                    cw.HandleConfiguration(configurable);
-                    cw.Show();
-                }
-            });
-        if(element.Item is IPlayStreamProvider streamProvider)
-        {
-            actions.Add(new SAction
-            {
-                ActionName = "Use",
-                ActionToInvoke = () =>
-                {
-                    streamProvider.Use(mainWindow.Env);
-                }
-            });
-        }
-        else if (element.Item is ISyncPlugin syncPlugin)
-        {
-            actions.Add(new SAction
-            {
-                ActionName = "Sync",
-                ActionToInvoke = () =>
-                {
-                    syncPlugin.Use(mainWindow.Env);
-                }
-            });
-        }
-        
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }
@@ -267,77 +242,16 @@ public partial class Settings : Window
         WindowExtensions.OnStyleChange.Invoke(this, new(null,null, (WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
                                                              WindowTransparencyLevel.AcrylicBlur));
     }
-
-    public void RegisterInReg()
-    {
-        if (string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty,
-                string.Empty)))
-        {
-            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA", "", "Audio File");
-            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA", "FriendlyTypeName",
-                "Audio File");
-            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Classes\\SilverAudioPlayerA\\shell\\open\\command", "",
-                $"{Environment.ProcessPath} \"%1\"");
-            foreach (var type in mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-                         .SelectMany(x => x.FileExtensions).ToList())
-            {
-                var a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
-                var val = (string?)Registry.GetValue(a, "", "");
-                if (!string.IsNullOrEmpty(val))
-                {
-                    StringBuilder name = new("SAPA.BAK");
-                    var val2 = (string?)Registry.GetValue(a, name.ToString(), "");
-                    while (!string.IsNullOrEmpty(val2))
-                    {
-                        name.Append(".BAK");
-                        val2 = (string?)Registry.GetValue(a, name.ToString(), "");
-                    }
-
-                    Registry.SetValue(a, name.ToString(), val);
-                }
-
-                Registry.SetValue(a, "", "SilverAudioPlayerA");
-            }
-        }
-    }
-
-    public static void DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)
-    {
-        using (var baseKey = RegistryKey.OpenBaseKey(registryHive, RegistryView.Default))
-        {
-            baseKey.DeleteSubKeyTree(fullPathKeyToDelete);
-        }
-    }
-
-    public void RemoveFromReg()
-    {
-        if (!string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty,
-                string.Empty)))
-        {
-            DeleteRegistryFolder(RegistryHive.ClassesRoot, "SilverAudioPlayerA");
-            foreach (var type in mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-                         .SelectMany(x => x.FileExtensions).ToList())
-            {
-                var a = $"HKEY_CURRENT_USER\\Software\\Classes\\{type}";
-                var val = (string?)Registry.GetValue(a, "", "");
-                if (!string.IsNullOrEmpty(val))
-                {
-                    var val2 = (string?)Registry.GetValue(a, "SAPA.BAK", "");
-                    if (!string.IsNullOrEmpty(val2)) Registry.SetValue(a, "", val2);
-                }
-            }
-        }
-    }
-
+    
     private void RegisterClick(object? sender, RoutedEventArgs e)
     {
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+        if (RegistryRegistration.IsReg())
         {
-            if (string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty,
-                    string.Empty)))
-                RegisterInReg();
-            else
-                RemoveFromReg();
+            RegistryRegistration.UnRegisterUrlScheme(mainWindow);
+        }
+        else
+        {
+            RegistryRegistration.RegisterUrlScheme(mainWindow);
         }
     }
     private void LicenseInfo(object? sender, RoutedEventArgs e)
@@ -357,7 +271,7 @@ public partial class Settings : Window
     }
     private void ToggleTransparency(object? sender, RoutedEventArgs e)
     {
-        bool SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
+        var SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
         Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency",SapTransparency));
         WindowExtensions.OnStyleChange(this, new(SapTransparency, null, null));
     }

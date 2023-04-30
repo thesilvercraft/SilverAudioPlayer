@@ -81,7 +81,7 @@
      <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
 		<!--Fortnite - windows (POC)-->
 
-<!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)FRT</DefineConstants>
 
 		<!--CD Art Display - windows 7+-->
 

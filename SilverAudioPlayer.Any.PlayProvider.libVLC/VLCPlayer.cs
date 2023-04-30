@@ -76,11 +76,9 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 
         public void Pause()
         {
-            if(mp.State != VLCState.Paused)
-            {
-                mp.Pause();
-                TrackPause?.Invoke(this, EventArgs.Empty);
-            }
+            if (mp.State == VLCState.Paused) return;
+            mp.Pause();
+            TrackPause?.Invoke(this, EventArgs.Empty);
         }
 
         public void Play()

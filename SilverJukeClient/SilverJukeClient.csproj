@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <OpenApiReference Include="C:\Users\silver\Downloads\swagger.json" CodeGenerator="NSwagCSharp" Namespace="SilverCraft.SilverJuke" ClassName="Juke" Link="OpenAPIs\swagger.json" />
+    <OpenApiReference Include="swagger.json" CodeGenerator="NSwagCSharp" Namespace="SilverCraft.SilverJuke" ClassName="Juke" Link="OpenAPIs\swagger.json" />
   </ItemGroup>
 
   <ItemGroup>

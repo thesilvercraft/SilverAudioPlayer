@@ -1,0 +1,512 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "SilverAudioPlayer.Avalonia",
+    "version": "1.0"
+  },
+  "paths": {
+    "/state": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "GetState",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaybackState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/track": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "GetCurrentTrack",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Song"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/duration": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "GetDuration",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/position": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "GetPosition",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lyrics": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "GetLyrics",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/play": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "Play",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/pause": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "Pause",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/playpause": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "PlayPause",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/next": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "Next",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/previous": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "Previous",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/stop": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "Stop",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/albumart": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "GetBestRepresentation",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/loadfile": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "ProcessFile",
+        "parameters": [
+          {
+            "name": "file",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/loadfiles": {
+      "get": {
+        "tags": [
+          "SilverAudioPlayer.Avalonia"
+        ],
+        "operationId": "ProcessFiles",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExceptionIObservable": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "IMetadata": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "artist": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "album": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "genre": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "year": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          },
+          "bitrate": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "readOnly": true
+          },
+          "sampleRate": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true,
+            "readOnly": true
+          },
+          "channels": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          },
+          "trackNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          },
+          "discNumber": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true,
+            "readOnly": true
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "duration": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "readOnly": true
+          },
+          "lyrics": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "syncedLyrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LyricPhrase"
+            },
+            "nullable": true,
+            "readOnly": true
+          },
+          "pictures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IPicture"
+            },
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IPicture": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/WrappedStream"
+          },
+          "picType": {
+            "$ref": "#/components/schemas/PictureType"
+          },
+          "hash": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IReactiveObjectIReactivePropertyChangedEventArgsIObservable": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "LyricPhrase": {
+        "type": "object",
+        "properties": {
+          "timeStampInMilliSeconds": {
+            "type": "number",
+            "format": "double"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MimeType": {
+        "type": "object",
+        "properties": {
+          "common": {
+            "type": "string",
+            "nullable": true
+          },
+          "alternativeTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "fileExtensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PictureType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          18,
+          19,
+          20,
+          99
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "PlaybackState": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "Song": {
+        "type": "object",
+        "properties": {
+          "changing": {
+            "$ref": "#/components/schemas/IReactiveObjectIReactivePropertyChangedEventArgsIObservable"
+          },
+          "changed": {
+            "$ref": "#/components/schemas/IReactiveObjectIReactivePropertyChangedEventArgsIObservable"
+          },
+          "thrownExceptions": {
+            "$ref": "#/components/schemas/ExceptionIObservable"
+          },
+          "stream": {
+            "$ref": "#/components/schemas/WrappedStream"
+          },
+          "uri": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "guid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/IMetadata"
+          },
+          "trackNoF": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "titleOrURLF": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "WrappedStream": {
+        "type": "object",
+        "properties": {
+          "mimeType": {
+            "$ref": "#/components/schemas/MimeType"
+          },
+          "shouldDisposeStream": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

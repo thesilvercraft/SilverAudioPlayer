@@ -66,13 +66,13 @@ public class Mp3Mime : CompressedAudioMime
 }
 public class Mp4Mime : CompressedVideoMime
 {
-    public Mp4Mime() : base("video/mp4", CompressionType.Lossy, Array.Empty<string>(), new[] { ".mp4" })
+    public Mp4Mime() : base("video/mp4", CompressionType.Lossy, new[] { "audio/mp4" }, new[] { ".mp4" })
     {
     }
 }
 public class MpegMime : CompressedVideoMime
 {
-    public MpegMime() : base("video/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".ts", ".tsv", ".tsa", ".mpg", ".mpeg" })
+    public MpegMime() : base("video/mpeg", CompressionType.Lossy, new[] { "audio/mp2;" }, new[] { ".ts", ".tsv", ".tsa", ".mpg", ".mpeg" })
     {
     }
 }
@@ -105,7 +105,7 @@ public class WAVMime : AudioMime
 
 public class OGGMime : CompressedAudioMime
 {
-    public OGGMime() : base("audio/vorbis", CompressionType.Lossy, Array.Empty<string>(), new[] { ".ogg" })
+    public OGGMime() : base("audio/vorbis", CompressionType.Lossy, new[] { "audio/x-vorbis+ogg", "audio/ogg", "application/ogg" }, new[] { ".ogg" })
     {
     }
 }
