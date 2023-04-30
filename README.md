@@ -20,29 +20,36 @@
 
 
 ## Supported enviroments
-Windows 7 and above (windows 10 recommended, use windows 11 if you want the ability to enable the Mica effect)
-
-## Enviroments not supported as could be
-Linux distributions (the ones dotnet and avalonia run on, with libasound)  
-if you know how to implement a better linux IWavePlayer for naudio please consider improving `SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound` as the current implementation handles playing via conversion to WAV and writing the WAV file in its entirety to libasound the moment it can
+Most platforms that can run dotnet 7, Windows 10 (1607+), Windows 11 (22000+), Most linux distributions (see https://github.com/dotnet/core/blob/main/linux-support.md)
+In addition to the requirements other dependancies may be required to run SilverAudioPlayer on linux (mostly the ones required by AvaloniaUI), some of them include ALSA, DBUS, X11/Wayland(through XWayland).
+SilverAudioPlayer is tested and developed on KDE on an Arch based distribution.
+If you know how to implement a better linux IWavePlayer for naudio please consider improving `SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound` as the current implementation handles playing via conversion to WAV and writing the WAV file in its entirety to libasound the moment it can
 > **Warning**
 > The current as is implementation of `SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound` may lead to hearing loss, please consider lowering your system's output volume before extensive testing on your part. YOU HAVE BEEN WARNED  
 
-Instead of using the NAudio playprovider you can now use the libvlc one.
+Instead of using the NAudio playprovider you can and should use the libvlc one.
 
-If you know how to use MPRIS / DBUS in c# please consider improving `SilverAudioPlayer.Linux.MPRIS` as the current implementation does not even show up in QDBusViewer
+If you know how to use MPRIS / DBUS in c# please consider improving `SilverAudioPlayer.Linux.MPRIS` as the current implementation ~~does not even show up in QDBusViewer~~ does not work in playerctl
+
 ## Ways to install
 ### Github releases (windows builds only)
 You could grab the latest release from [github releases](https://github.com/thesilvercraft/SilverAudioPlayer/releases) and write it down in a directory that is writable by the program (UI/Plugin settings are stored where the program is stored right now, maybe next release that will be changed)  
 ### Scoop (windows builds only)
 You could also install it via [the silvercraft scoop bucket](https://github.com/thesilvercraft/SilverCraftBucket) by using:  
 `scoop bucket add silvercraft https://github.com/thesilvercraft/SilverCraftBucket`  
-`scoop install silveraudioplayer`  
-### Compile it yourself (compiles quickly compared to webbrowsers)
-Or if you're feeling daring grab the sources from github by:
+`scoop install silveraudioplayer`
+### Compile it yourself using the builder GUI
+Grab the sources from github by:
 `git clone https://github.com/thesilvercraft/SilverAudioPlayer.git`  
+`bash GUIBuild.sh`
+![image](https://user-images.githubusercontent.com/46320280/234542618-e66f588a-499f-4ddd-8cd2-71cef63522c5.png)
+
+### Compile it yourself manually (compiles quickly compared to webbrowsers)
+Grab the sources from github by:  
+`git clone https://github.com/thesilvercraft/SilverAudioPlayer.git`  
+`cd SilverAudioPlayer\SilverAudioPlayer.Avalonia`  
 And compile it yourself (that's why open source is good)  
-`dotnet build`
+`dotnet build`  
 Before compiling it yourself consider editing `SilverAudioPlayer.Avalonia.csproj`  
 In visual studio you can comment out features you dont want by selecting their `<DefineConstraints>` line and using CTRL+K+C  
 ## What do you mean modular?
