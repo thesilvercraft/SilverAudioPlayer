@@ -256,7 +256,9 @@ Metadata = GetMetadata(),
 
         public string Name => "MPRIS Linux MSI";
         public string Description => "Interface with linux dbus for native music controls";
-        public WrappedStream? Icon => null;
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(Mpris).Assembly,
+            "SilverAudioPlayer.Linux.MPRIS.Mpris.svg");
+
         public Version? Version => typeof(Mpris).Assembly.GetName().Version;
         public string Licenses => "GPL3.0";
         public List<Tuple<Uri, URLType>>? Links => new()

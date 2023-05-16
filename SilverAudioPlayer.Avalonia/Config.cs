@@ -17,6 +17,7 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     [Comment("Folder suggested to OS when the open file dialog is chosen, can be 'Music','Desktop','Downloads','Pictures','Videos'  (user's special folders), any other valid folder path or nothing, if its nothing the os wont be given a suggested starting point.")]
 
     public string DialogStartLoc { get; set; } = "Music";
+
     public bool DisableAlbumArtBlur { get; set; } = false;
     [XmlIgnore] public bool AllowedToRead => _AllowedRead;
     public SerializableDictionary<string, string> PreferedPlayers { get; set; } = new();

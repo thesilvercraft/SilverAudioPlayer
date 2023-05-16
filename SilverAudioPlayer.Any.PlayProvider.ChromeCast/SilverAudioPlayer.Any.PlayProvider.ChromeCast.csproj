@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="../SilverAudioPlayer.targets"/>
+	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -14,6 +14,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Cast.svg" />
+    <EmbeddedResource Include="Cast.svg" />
   </ItemGroup>
 
 </Project>

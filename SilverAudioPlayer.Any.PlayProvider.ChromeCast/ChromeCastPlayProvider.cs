@@ -44,7 +44,9 @@ namespace SilverAudioPlayer.Any.PlayProvider.ChromeCast
 
         public string Description => "Provides players by spinning up http servers and many other things to chromecast";
 
-        public WrappedStream? Icon => null;
+        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(ChromeCastPlayProvider).Assembly,
+          "SilverAudioPlayer.Any.PlayProvider.ChromeCast.Cast.svg");
+
 
         public Version? Version => typeof(ChromeCastPlayProvider).Assembly.GetName().Version;
 

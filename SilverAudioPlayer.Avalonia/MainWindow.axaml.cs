@@ -179,7 +179,7 @@ public partial class MainWindow : Window
                 Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
                 Dispatcher.UIThread.InvokeAsync(() => LT.Text = TimeSpan.Zero.ToString());
                 token = new CancellationTokenSource();
-                th = new Thread(() => SndThrd(token.Token));
+                th = new Thread(() => SndUpdThrd(token.Token));
             },
             SetScrollBarTextTo = scrl =>
             {
@@ -553,10 +553,10 @@ public partial class MainWindow : Window
     }
 
 
-    private void SndThrd(CancellationToken e)
+    private void SndUpdThrd(CancellationToken e)
     {
         var exit = false;
-
+        Thread.CurrentThread.Name = "SndUpdThrd";
         while (!(e.IsCancellationRequested && exit))
             if (Player?.GetPlaybackState() == PlaybackState.Playing)
             {

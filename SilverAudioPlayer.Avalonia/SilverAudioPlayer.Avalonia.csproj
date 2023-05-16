@@ -43,9 +43,9 @@
 
 		<DefineConstants>$(DefineConstants)JF</DefineConstants>
 
-		<!--DryWetMidi-->
+		<!--DryWetMidi BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
 
-		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>
+		<!--<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
 
 		<!--Z440AtlCore-->
 
@@ -66,39 +66,39 @@
 		
 		<!--Discord (alpha)-->
 
-		<!--<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
 		
 		<!--ChromeCast (POC)-->
 
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
-		<!--VLC (Alpha)-->
+		<!--VLC (Alpha) BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
 
-		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
+		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
 		<!--Windows only-->
 
 		<!--System Media Transport Controls - windows 10+-->
 
-     <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
+<!--     <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
 		<!--Fortnite - windows (POC)-->
 
-		<DefineConstants>$(DefineConstants)FRT</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
 
 		<!--CD Art Display - windows 7+-->
 
-   <!--<DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
+<!--    <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
 
 
 		<!--LINUX ONLY-->
 		<!--MPRIS DBUS STUFF - linux - pre POC -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
-		<!-- Linux sync plugin - LINUX - POC -->
-    	<!--<DefineConstants>$(DefineConstants)LSync</DefineConstants>-->
+		<!-- sync plugin  - POC -->
+    	<DefineConstants>$(DefineConstants)LSync</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<!--<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net6.0-windows7</TargetFramework>-->
+		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net6.0-windows7</TargetFramework>
 		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net6.0-windows10.0.18362.0</TargetFramework>
-		<!--<EnableWindowsTargeting Condition="$(TargetFramework.Contains('windows'))">true</EnableWindowsTargeting>-->
+		<EnableWindowsTargeting Condition="$(TargetFramework.Contains('windows'))">true</EnableWindowsTargeting>
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
@@ -115,7 +115,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Linux.Sync\SilverAudioPlayer.Linux.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.Sync\SilverAudioPlayer.Any.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />
 		
 		<ProjectReference Include="..\SilverAudioPlayer.Win.PlayProviderExtension.Naudio.MediaFoundation\SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation.csproj" Condition="$(DefineConstants.Contains('NA'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj" Condition="$(DefineConstants.Contains('JF'))" />
@@ -134,6 +134,7 @@
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview6" />
 		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview6" />
 		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview6" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-preview.3.23174.8" />
@@ -144,7 +145,6 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
 		<PackageReference Include="Svg.Skia" Version="0.6.0-preview6" />
 		<PackageReference Include="System.Composition" Version="8.0.0-preview.3.23174.8" />
-		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" Condition="$(DefineConstants.Contains('VLC'))" />
 		<PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview6" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.2.1-prerelease" />
 	</ItemGroup>

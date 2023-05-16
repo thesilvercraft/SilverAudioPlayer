@@ -16,20 +16,23 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.0.0-preview6" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview6" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview6" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview6" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
         <PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.2.1-prerelease" />
+        <PackageReference Include="System.Management" Version="7.0.1" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
 
+    
+
     <ItemGroup>
-      <Reference Include="SilverCraft.AvaloniaUtils">
-        <HintPath>..\..\..\..\..\..\home\silver\.nuget\packages\silvercraft.avaloniautils\8.2.0\lib\net6.0\SilverCraft.AvaloniaUtils.dll</HintPath>
-      </Reference>
+      <None Remove="Sync.svg" />
+      <EmbeddedResource Include="Sync.svg" />
     </ItemGroup>
 </Project>
