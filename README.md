@@ -12,10 +12,6 @@
    <a href="https://thesilvercraft.github.io/CompileSAPYourself">
     <image src="https://user-images.githubusercontent.com/46320280/204018350-4ac114f4-096d-4dd6-8e15-4c5d266e09a6.svg" width="24%"/>
    </a>
-
-  <a href="https://discord.gg/hM6euqAtsB">
-    <image src="https://user-images.githubusercontent.com/46320280/204018483-2fcf7902-ae10-4fd7-9140-2e33cc63d99d.svg" width="24%"/>
-  </a>
 </p>
 
 
