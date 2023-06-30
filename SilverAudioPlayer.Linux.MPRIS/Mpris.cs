@@ -148,7 +148,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
                     return 1;
                 //Metadata
                 case "position":
-                    return (long)Env.GetPositionMilli()*1000;
+                    return (long)Env.GetPosition()*1000;
                 case "volume":
                     return Env.GetVolume() / 255;
                 case "loopstatus":
@@ -170,7 +170,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
             var track = Env?.GetCurrentTrack();
             return new Dictionary<string, object>()
             {
-                {"mpris:length",( (long?)Env?.GetDurationMilli()??10)*1000},
+                {"mpris:length",( (long?)Env?.GetDuration()??10)*1000},
                 {"mpris:trackid", new ObjectPath("/org/silvercraft/t"+track?.Guid.ToString("N"))},
                 {"mpris:artUrl", "http://localhost:36169/albumart"}, 
                 {"xesam:title", track?.Metadata?.Title ?? "nothing"},

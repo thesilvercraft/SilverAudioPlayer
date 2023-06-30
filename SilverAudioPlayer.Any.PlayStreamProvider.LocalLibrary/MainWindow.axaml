@@ -11,7 +11,7 @@
                 <Button Click="LoadNewFolder">Add new folder</Button>
                 <Button Click="AddEntireScreen">Add all songs from this screen</Button>
             </StackPanel>
-            <ListBox Grid.Column="0" Grid.Row="2" Background="Transparent" Items="{Binding WrappedAlbums}" Name="LB"
+            <ListBox Grid.Column="0" Grid.Row="2" Background="Transparent" ItemsSource="{Binding WrappedAlbums}" Name="LB"
                      Margin="0 20" DoubleTapped="LB_OnDoubleTapped" SelectionMode="Single">
                 <ListBox.DataTemplates>
                     <DataTemplate DataType="{x:Type local:WrappedShowable}">
@@ -37,7 +37,7 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
-        <ListBox Grid.Column="1" Grid.Row="2" Background="Transparent" Items="{Binding WrappedSongs}" Name="RB"
+        <ListBox Grid.Column="1" Grid.Row="2" Background="Transparent" ItemsSource="{Binding WrappedSongs}" Name="RB"
                  Margin="0 20" DoubleTapped="RB_OnDoubleTapped" SelectionMode="Single">
             <ListBox.DataTemplates>
                 <DataTemplate DataType="{x:Type local:WrappedShowable}">

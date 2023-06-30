@@ -34,42 +34,27 @@ public interface IMusicStatusInterfaceListener : IPlayerEnviroment
     byte GetVolume();
 
     Song? GetCurrentTrack();
-
-    ulong GetDuration();
-    ulong GetDurationMilli();
-
-    void SetPosition(ulong position);
-
-    ulong GetPosition();
-    ulong GetPositionMilli();
-    void SetPositionMilli(ulong position);
-
-
-
+    /// <summary>
+    /// Get the Duration of the current playing media in seconds
+    /// </summary>
+    /// <returns>the Duration of the current playing media in seconds as a double</returns>
+    double GetDuration();
+    /// <summary>
+    /// Set the Position of the current playing media in seconds
+    /// </summary>
+    void SetPosition(double position);
+    /// <summary>
+    /// Get the Position of the current playing media in seconds
+    /// </summary>
+    /// <returns>the Position of the current playing media in seconds as a double</returns>
+    double GetPosition();
     event EventHandler<Song> TrackChangedNotification;
-
     event EventHandler<PlaybackState> PlayerStateChanged;
-
     PlaybackState GetState();
-
-
-
     RepeatState GetRepeat();
-
     void SetRepeat(RepeatState state);
-
-
-
     bool GetShuffle();
-
     void SetShuffle(bool shuffle);
-
-
     void SetRating(byte rating);
-
-
-
-
-
     string GetLyrics();
 }

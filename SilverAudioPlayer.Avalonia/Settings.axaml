@@ -7,25 +7,25 @@
         Title="Settings"
         ExtendClientAreaToDecorationsHint="True"
 		Icon="/icon.ico">
-	<ScrollViewer Margin="0,25,0,0">
-		<Grid RowDefinitions="25,200, 30,30,30,30,30,*" ColumnDefinitions="*,*" Margin="5">
-			<TextBlock Grid.Row="0" Text="Settings" Margin="5" />
-			<Grid Grid.Row="1" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
+	<Grid RowDefinitions="25,*" Name="MainGrid">
+		<TextBlock Grid.Row="0" Text="Settings"/>
+	<ScrollViewer Grid.Row="1">
+		<Grid RowDefinitions="200,30,30,30,30,30,30,*" ColumnDefinitions="*,*">
+			<Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
 				<TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductName}" FontSize="50" Margin="5" />
 				<TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="25" Margin="5" />
 				<Image Source="{Binding ProductIcon}" Grid.Column="0" Grid.RowSpan="3" Width="200" Height="200" />
 				<Button Grid.Row="0" Grid.Column="2" Click="LicenseInfo">License</Button>
 			</Grid>
-			<Button Grid.Row="2" Click="RegisterClick">Register/Unregister in registry</Button>
-			<Button Grid.Row="3" Click="ToggleTransparency">Toggle transparency</Button>
-			<ComboBox Name="TransparencyDown" Grid.Row="3" Grid.Column="1" Items="{Binding TransparencyTypes}" />
-			<AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBox" Items="{Binding AutoSuggestColours}" />
-			<Button Grid.Row="4" Click="ChangeColor">Change window color</Button>
-			<AutoCompleteBox Grid.Row="5" Grid.Column="1" Name="ColorBoxPB" Items="{Binding AutoSuggestColours}" />
-			<Button Grid.Row="5" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
-			<TextBlock Grid.Row="6" Text="Plugins:" FontSize="25" Margin="5" />
-
-			<ListBox Name="CapBox" Items="{Binding Items}" Background="Transparent" Grid.Row="7"
+			<Button Grid.Row="1" Click="RegisterClick">Register/Unregister in registry</Button>
+			<Button Grid.Row="2" Click="ToggleTransparency">Toggle transparency</Button>
+			<ComboBox Name="TransparencyDown" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TransparencyTypes}" />
+			<AutoCompleteBox Grid.Row="3" Grid.Column="1" Name="ColorBox" ItemsSource="{Binding AutoSuggestColours}" />
+			<Button Grid.Row="3" Click="ChangeColor">Change window color</Button>
+			<AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBoxPB" ItemsSource="{Binding AutoSuggestColours}" />
+			<Button Grid.Row="4" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
+			<TextBlock Grid.Row="5" Text="Plugins:" FontSize="25" Margin="5" />
+			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="7"
 					 DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2">
 				<ListBox.ItemTemplate>
 					<DataTemplate>
@@ -48,4 +48,5 @@
 			</ListBox>
 		</Grid>
 	</ScrollViewer>
+	</Grid>
 </Window>

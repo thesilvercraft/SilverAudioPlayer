@@ -5,20 +5,26 @@ namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 public class ATLCOREPicture : IPicture
 {
-    public  PictureInfo info;
-
     public ATLCOREPicture(PictureInfo i)
     {
-        info = i;
+        Cached = SharedMemoryStreamPoolInstance.Instance.GetFromByteArray(i.PictureData);
+        Description = i.Description;
+        PicType = (PictureType?)i.PicType;
+        Reliance = new(Cached);
+        Hash = i.PictureHash.ToString();
     }
 
     public void Dispose()
     {
-        info = null;
+        Cached = null;
+        Reliance?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
-    public string? Description => info.Description;
-    public WrappedStream? Data => new WrappedMemoryStream(info.PictureData);
-    public PictureType? PicType => (PictureType?)info.PicType;
-    public string? Hash => info.PictureHash.ToString();
+    private SharedStream? Cached;
+    private RelianceOnSharedStream? Reliance;
+    public string? Description { get; init; }
+    public WrappedStream? Data => Cached.Stream;
+    public PictureType? PicType { get; init; }
+    public string? Hash { get; set; }
 }

@@ -2,7 +2,7 @@
 
 namespace SilverAudioPlayer.Shared;
 
-public class WrappedHttpStream : WrappedStream, IDisposable
+public class WrappedHttpStream : WrappedRegenerativeStream, IDisposable
 {
     private bool _disposedValue;
 
@@ -71,17 +71,50 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 }
 
 
-public class WrappedSusHttpStream : WrappedStream, IDisposable
+public class WrappedSusHttpStream : WrappedRegenerativeStream, IDisposable
 {
     private bool _disposedValue;
+    private MemoryArrayHolder data = new();
 
-    private Func<Task<HttpResponseMessage>> wayToSend;
+    public WrappedSusHttpStream(string Url) :this(async () => await HttpClient.Client.GetAsync(Url))
+    {
+        
+    }
     public WrappedSusHttpStream( Func<Task<HttpResponseMessage>> wayToSend)
     {
-        this.wayToSend = wayToSend;
+        var content = wayToSend().GetAwaiter().GetResult();
+        var Stream = content.Content.ReadAsStream();
+        byte[] array;
+        if (Stream is MemoryStream m)
+        {
+            array = m.ToArray();
+        }
+        else
+        {
+            using var memstream = new MemoryStream();
+            Stream.CopyTo(memstream);
+            array = memstream.ToArray();
+        }
+
+        data.Bytes = array;
+        //KnownMimes.GetKnownMimeByName(content.Content.Headers.ContentType?.MediaType)
+        MimeType? mt = null;
+        if (mt == null)
+        {
+            var stream2 =new FakedMemoryStream(data);
+            try
+            {
+                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+            }
+            finally
+            {
+                stream2.Dispose();
+            }
+        }
+        _MimeType = mt;
+    
     }
 
-    public List<Stream> Streams { get; set; } = new();
     public override MimeType MimeType => _MimeType;
     private MimeType _MimeType { get; set; }
 
@@ -90,41 +123,9 @@ public class WrappedSusHttpStream : WrappedStream, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
-
-    private Stream InternalGetStream()
-    {
-        var content = wayToSend().GetAwaiter().GetResult();
-        var Stream = content.Content.ReadAsStream();
-        Streams.Add(Stream);
-        return Stream;
-    }
-
     public override Stream GetStream()
     {
-        var content = wayToSend().GetAwaiter().GetResult();
-        var Stream = content.Content.ReadAsStream();
-        Streams.Add(Stream);
-        if (_MimeType != null) return Stream;
-        //KnownMimes.GetKnownMimeByName(content.Content.Headers.ContentType?.MediaType)
-        MimeType? mt = null;
-        if (mt == null)
-        {
-            var stream2 = InternalGetStream();
-            try
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            }
-            finally
-            {
-                stream2.Dispose();
-                Streams.Remove(stream2);
-            }
-        }
-
-        _MimeType = mt;
-
-        return Stream;
+        return new FakedMemoryStream(data);
     }
 
     public override bool ShouldDisposeStream { get; } = true;
@@ -133,8 +134,7 @@ public class WrappedSusHttpStream : WrappedStream, IDisposable
     {
         if (_disposedValue) return;
         if (disposing)
-            foreach (var stream in Streams.Where(x => x.CanRead))
-                stream.Dispose();
+            data = null;
         _disposedValue = true;
     }
 }

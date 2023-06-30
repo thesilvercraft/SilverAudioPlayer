@@ -93,7 +93,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 
         public void SetPosition(TimeSpan position)
         {
-            mp.Position= ((float)position.TotalMilliseconds) / mp.Length;
+            mp.Position = (float)position.TotalMilliseconds / mp.Length;
         }
 
         public void SetVolume(byte volume)

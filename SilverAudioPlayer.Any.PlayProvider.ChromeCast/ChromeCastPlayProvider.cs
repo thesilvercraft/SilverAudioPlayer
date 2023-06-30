@@ -38,7 +38,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.ChromeCast
 
         public IReadOnlyList<MimeType>? SupportedMimes =>new MimeType[] { KnownMimes.AACMime, KnownMimes.WAVMime, KnownMimes.FLACMime,KnownMimes.MP3Mime,KnownMimes.OGGMime };
 
-        public IPlayProviderListner ProviderListner { set => _=value; }
+        public IPlayProviderListner ProviderListener { set => _=value; }
 
         public string Name => "Chromecast play provider - POC";
 

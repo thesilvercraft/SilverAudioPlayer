@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../SilverAudioPlayer.targets" />
-
+	<ItemGroup>
+		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+	</ItemGroup>
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -11,9 +13,7 @@
 		<PackageReference Include="LibVLCSharp" Version="3.7.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-	</ItemGroup>
+
 
 	<ItemGroup>
 		<None Remove="VlcIcon.svg" />

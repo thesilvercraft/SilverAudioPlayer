@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="../SilverAudioPlayer.targets" />
+    <ItemGroup>
+        <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" />
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+    </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="NLayer" Version="1.14.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="cscore.svg" />
+      <EmbeddedResource Include="cscore.svg" />
+    </ItemGroup>
+</Project>

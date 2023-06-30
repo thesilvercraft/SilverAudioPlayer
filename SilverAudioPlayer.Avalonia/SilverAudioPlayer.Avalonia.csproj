@@ -53,14 +53,17 @@
 
 		<!--NAudio-->
 
-		<DefineConstants>$(DefineConstants)NA</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)NA</DefineConstants>-->
 
 		<!--NAudio + Naudio.Flac-->
 
-		<DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>-->
 		<!--NAudio + Naudio.Vorbis-->
 
-		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>-->
+		<!--CSCore-->
+		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
+		
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		
@@ -73,7 +76,7 @@
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
 		<!--VLC (Alpha) BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
 
-		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
+<!--		<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
 		<!--Windows only-->
 
 		<!--System Media Transport Controls - windows 10+-->
@@ -102,12 +105,13 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-preview6" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.CSCore\SilverAudioPlayer.Any.PlayProvider.CSCore.csproj" Condition="$(DefineConstants.Contains('CSCORE'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
@@ -134,19 +138,19 @@
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-preview6" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview6" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview6" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-preview.3.23174.8" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0-preview.3.23174.8" />
-		<PackageReference Include="ReactiveUI" Version="18.4.34" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="4.0.0-dev-00486" />
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-rc1.1" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-rc1.1" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-preview.4.23259.5" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0-preview.4.23259.5" />
+		<PackageReference Include="ReactiveUI" Version="19.2.1" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="7.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
-		<PackageReference Include="Svg.Skia" Version="0.6.0-preview6" />
-		<PackageReference Include="System.Composition" Version="8.0.0-preview.3.23174.8" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview6" />
-		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.2.1-prerelease" />
+		<PackageReference Include="Svg.Skia" Version="0.6.0-rc1.1" />
+		<PackageReference Include="System.Composition" Version="8.0.0-preview.4.23259.5" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.0-rc1.1" />
 	</ItemGroup>
 
 </Project>

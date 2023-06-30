@@ -38,7 +38,6 @@ public class SilverJuke : IMusicStatusInterface
         builder.WebHost.UseUrls("http://localhost:36169");
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
         app = builder.Build();
         if (Debugger.IsAttached)
         {
@@ -47,9 +46,9 @@ public class SilverJuke : IMusicStatusInterface
         }
         app.MapGet("/state", () => listener.GetState()).WithName("GetState");
         app.MapGet("/track", () => listener.GetCurrentTrack()).WithName("GetCurrentTrack");
-        app.MapGet("/duration", () => listener.GetDurationMilli()).WithName("GetDuration");
-        app.MapGet("/position", listener.GetPositionMilli).WithName("GetPosition");
-        app.MapPost("/position", listener.SetPositionMilli).WithName("SetPosition");
+        app.MapGet("/duration", () => listener.GetPosition).WithName("GetDuration");
+        app.MapGet("/position", listener.GetPosition).WithName("GetPosition");
+        app.MapPost("/position", listener.SetPosition).WithName("SetPosition");
         app.MapGet("/lyrics", listener.GetLyrics).WithName("GetLyrics");
         app.MapGet("/play", listener.Play).WithName("Play");
         app.MapGet("/pause", listener.Pause).WithName("Pause");
@@ -78,13 +77,10 @@ public class SilverJuke : IMusicStatusInterface
                 streamProviderListener.ProcessFiles(files.ToList() );
             }).WithName("ProcessFiles");
         }
- 
-        
         Task.Run(() =>
         {
             app.Start();
         });
-
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)

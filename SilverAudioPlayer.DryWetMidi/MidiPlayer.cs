@@ -109,7 +109,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
         return null;
     }
 
-    public IPlayProviderListner ProviderListner
+    public IPlayProviderListner ProviderListener
     {
         set => _ = value;
     }

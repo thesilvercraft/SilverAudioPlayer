@@ -9,7 +9,7 @@
 		Icon="/icon.ico">
 	<Grid RowDefinitions="25,*,25,25" Margin="5">
 		<TextBlock Grid.Row="0">Choose player:</TextBlock>
-		<ListBox Grid.Row="1" Name="CapBox" Items="{Binding playProviders}" Background="Transparent">
+		<ListBox Grid.Row="1" Name="CapBox" ItemsSource="{Binding playProviders}" Background="Transparent">
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">

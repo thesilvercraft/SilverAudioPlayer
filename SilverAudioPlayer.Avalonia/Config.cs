@@ -19,6 +19,7 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     public string DialogStartLoc { get; set; } = "Music";
 
     public bool DisableAlbumArtBlur { get; set; } = false;
+    public float AlbumArtTransparency { get; set; } = 0.25f;
     [XmlIgnore] public bool AllowedToRead => _AllowedRead;
     public SerializableDictionary<string, string> PreferedPlayers { get; set; } = new();
 

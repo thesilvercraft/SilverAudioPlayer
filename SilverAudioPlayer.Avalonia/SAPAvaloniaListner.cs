@@ -83,71 +83,33 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
         return res?.Any()==true ? res?.First() : pictures?.FirstOrDefault();
     }
 
-    public void Play()
-    {
-        mainWindow.Logic.Play();
-    }
+    public void Play() => mainWindow.Logic.Play();
 
-    public void Pause()
-    {
-        mainWindow.Logic.Pause();
+    public void Pause() => mainWindow.Logic.Pause();
 
-    }
+    public void PlayPause() => mainWindow.Logic.PlayPause(true);
 
-    public void PlayPause()
-    {
-        mainWindow.Logic.PlayPause(true);
+    public void Stop() => mainWindow.RemoveTrack();
 
-    }
+    public void Next() => mainWindow.Logic.Next();
 
-    public void Stop()
-    {
-        mainWindow.RemoveTrack();
-    }
+    public void Previous() => mainWindow.Logic.Previous();
 
-    public void Next()
-    {
-        mainWindow.Logic.Next();
-    }
+    public void SetVolume(byte volume) => mainWindow.dc.Volume= volume;
 
-    public void Previous()
-    {
-        mainWindow.Logic.Previous();
-    }
-
-    public void SetVolume(byte volume)
-    {
-        mainWindow.dc.Volume= volume;
-    }
-
-    public byte GetVolume()
-    {
-        return mainWindow.dc.Volume;
-    }
+    public byte GetVolume() => mainWindow.dc.Volume;
 
     public Song? GetCurrentTrack()
     {
         return mainWindow.dc.CurrentSong;
     }
 
-    public ulong GetDuration()
-    {
-        return (ulong?)mainWindow.Player?.Length()?.TotalSeconds ?? (ulong?)(mainWindow.dc.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
-
-    }
+    public double GetDuration() => mainWindow.Player?.Length()?.TotalSeconds ?? (mainWindow.dc.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
 
 
-    public void SetPosition(ulong position)
-    {
-        mainWindow.Player?.SetPosition(TimeSpan.FromSeconds(position));
+    public void SetPosition(double position) => mainWindow.Player?.SetPosition(TimeSpan.FromSeconds(position));
 
-    }
-
-    public ulong GetPosition()
-    {
-        return (ulong)(mainWindow.Player?.GetPosition().TotalSeconds ?? 1);
-
-    }
+    public double GetPosition() => mainWindow.Player?.GetPosition().TotalSeconds ?? 1;
 
     public PlaybackState GetState()
     {
@@ -161,16 +123,9 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
 
     }
 
-    public RepeatState GetRepeat()
-    {
-        return mainWindow.dc.LoopType;
-    }
+    public RepeatState GetRepeat() => mainWindow.dc.LoopType;
 
-    public void SetRepeat(RepeatState state)
-    {
-        mainWindow.dc.LoopType = state;
-
-    }
+    public void SetRepeat(RepeatState state) => mainWindow.dc.LoopType = state;
 
     public bool GetShuffle()
     {
@@ -190,31 +145,23 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
 
     public string GetLyrics()
     {
-        return mainWindow.dc.CurrentSong.Metadata.Lyrics;
+        return mainWindow.dc.CurrentSong?.Metadata?.Lyrics;
     }
 
     public void FireTrackChangedNotification(Song? currentSong)
     {
-        TrackChangedNotification?.Invoke(this,currentSong);
+        Task.Run(() =>
+        {
+            TrackChangedNotification?.Invoke(this,currentSong);
+        });
     }
 
     public void FirePlayerStateChanged(PlaybackState state)
     {
+        Task.Run(() =>
+        {
         PlayerStateChanged?.Invoke(this, state);
-    }
-    public ulong GetDurationMilli()
-    {
-        return (ulong?)mainWindow.Player?.Length()?.TotalMilliseconds ?? (ulong?)(mainWindow.dc.CurrentSong?.Metadata?.Duration) ?? 2;
-    }
-
-    public void SetPositionMilli(ulong position)
-    {
-        mainWindow.Player?.SetPosition(TimeSpan.FromMilliseconds(position));
-    }
-
-    public ulong GetPositionMilli()
-    {
-        return (ulong)(mainWindow.Player?.GetPosition().TotalMilliseconds ?? 1);
+        });
     }
    
 

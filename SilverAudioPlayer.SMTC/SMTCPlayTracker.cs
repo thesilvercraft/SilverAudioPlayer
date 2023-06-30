@@ -42,7 +42,6 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public void PlayerStateChanged(object obj, PlaybackState newstate)
     {
         if (DISABLE) return;
-        Debug.Assert(newstate != null);
 
         if (_systemMediaTransportControls != null)
             switch (newstate)
@@ -129,7 +128,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
     }
 
 
-    private void UpdateTimeline(PlaybackState state, Song track, ulong pos)
+    private void UpdateTimeline(PlaybackState state, Song track, double pos)
     {
         if (DISABLE) return;
         var timelineProperties = new SystemMediaTransportControlsTimelineProperties();

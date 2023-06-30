@@ -8,10 +8,27 @@ public abstract class WrappedStream : IDisposable
 
     public abstract Stream GetStream();
     /// <summary>
-    /// Should the code that got a stream from a GetStream call dispose it after it is no longer needed
+    /// Should the code that got a stream from a GetStream call dispose on it after it is no longer needed
     /// </summary>
     public abstract bool ShouldDisposeStream { get; }
     public abstract void Dispose();
+
+    public void Use(Action<Stream> x)
+    {
+        var s = GetStream();
+        try
+        {
+            x.Invoke(s);
+        }
+        finally
+        {
+            if (ShouldDisposeStream)
+            {
+                s.Dispose();
+            }
+        }
+    }
+    
 }
 
 public abstract class WrappedRegenerativeStream:WrappedStream

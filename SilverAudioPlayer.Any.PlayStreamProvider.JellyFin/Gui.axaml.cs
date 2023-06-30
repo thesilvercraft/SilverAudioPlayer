@@ -2,10 +2,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Jellyfin.Sdk;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
 
@@ -27,7 +29,6 @@ public partial class Gui : Window
         DataContext = g;
         this.DoAfterInitTasks(true);
         LB = this.FindControl<ListBox>("LB");
-        LB.DoubleTapped += LB_DoubleTapped;
     }
 
     private IPlayStreamProviderListener ProviderListner;
@@ -41,89 +42,117 @@ public partial class Gui : Window
     {
         g.SearchResults = new ObservableCollection<WrappedDto>(new List<BaseItemDto>(await helper.GetDefaultItems())
             .OrderBy(x => x.IndexNumber).Select(x => new WrappedDto(x)));
-        LB.Items = g.SearchResults;
-        Debug.WriteLine(g.SearchResults.Count);
+        LB.ItemsSource = g.SearchResults;
         LB.InvalidateVisual();
+    }
+
+    private async void BackButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (back != null)
+        {
+            await SetDtoFolderView(back);
+        }
     }
 
     private async void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
-        foreach (var song in g.SearchResults.Where(x => x.IsFolder != true).OrderBy(x => x.IndexNumber))
-        {
-            var ws = await helper.GetStream(song.dto);
+        Cursor = new Cursor(StandardCursorType.Wait);
+        List<WrappedStream> streams = new();
 
-            ProviderListner.LoadSong(ws);
+        async Task Add(IEnumerable<WrappedDto> dtos)
+        {
+            foreach (var song in dtos.OrderBy(x => x.IndexNumber))
+            {
+                var ws = await helper.GetStream(song.dto);
+                streams.Add(ws);
+            }
         }
+
+        List<Task> tasks = new();
+        var groups = g.SearchResults.GroupBy(x => x.IsFolder);
+        foreach (var group in groups)
+        {
+            if (group.Key==true)
+            {
+                foreach (var folder in group)
+                {
+                    var o = (await helper.GetItemsFromItem(folder.dto)).Select(x => new WrappedDto(x));
+                    tasks.Add(Add(o));
+                }
+            }
+            else
+            {
+                tasks.Add( Add(group));
+            }
+        }
+        await Task.WhenAll(tasks);
+        ProviderListner.LoadSongs(streams);
+        Cursor = Cursor.Default;
     }
 
     private async void Gui_Opened(object? sender, EventArgs e)
     {
-        if (helper != null)
-        {
-            await helper.MakeSureUserLogsIn(this);
-            g.SearchResults =
-                new ObservableCollection<WrappedDto>(
-                    new List<BaseItemDto>(await helper.GetDefaultItems()).Select(x => new WrappedDto(x)));
-            LB.Items = g.SearchResults;
-            Debug.WriteLine(g.SearchResults.Count);
-            LB.InvalidateVisual();
-            LB.DoubleTapped += LB_DoubleTapped;
-        }
+        if (helper == null) return;
+        await Task.Delay(100);
+        await helper.MakeSureUserLogsIn(this);
+        g.SearchResults =
+            new ObservableCollection<WrappedDto>(
+                new List<BaseItemDto>(await helper.GetDefaultItems()).Select(x => new WrappedDto(x)));
+        LB.ItemsSource = g.SearchResults;
+        LB.InvalidateVisual();
+        LB.DoubleTapped += LB_DoubleTapped;
     }
+
+    async Task SetDtoFolderView(WrappedDto si)
+    {
+        Cursor = new Cursor(StandardCursorType.Wait);
+
+        var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
+        g.SearchResults = new ObservableCollection<WrappedDto>(o);
+        foreach (var u in g.SearchResults)
+        {
+            var wrappedStream = await helper.GetImageStream(u.dto);
+            var stream = wrappedStream?.GetStream();
+            try
+            {
+                if (stream != null)
+                {
+                    u.Cover = Bitmap.DecodeToHeight(stream, 200);
+                }
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Error occured while reading bitmap");
+            }
+            finally
+            {
+                if (wrappedStream is { ShouldDisposeStream: true } && stream != null)
+                {
+                    await stream.DisposeAsync();
+                }
+            }
+        }
+
+        LB.ItemsSource = g.SearchResults;
+        LB.InvalidateVisual();
+        back = current;
+        current = si;
+        Cursor = Cursor.Default;
+
+    }
+    private WrappedDto? back;
+    private WrappedDto? current;
 
     private async void LB_DoubleTapped(object? sender, RoutedEventArgs e)
     {
-        if (LB.SelectedItem is WrappedDto si)
+        if (LB.SelectedItem is not WrappedDto si) return;
+        if (si.IsFolder == true)
         {
-            Debug.WriteLine(si);
-            if (si.IsFolder == true)
-            {
-                var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
-
-                g.SearchResults = new ObservableCollection<WrappedDto>(o);
-                foreach (var u in g.SearchResults)
-                {
-                   // var s = await helper.GetImageStream(u.dto);
-                  ////  var strm = s?.GetStream();
-                   // if (strm != null)
-                  // {
-                      //u.Cover = Bitmap.DecodeToHeight(strm, 200);
-                   // }
-                }
-
-                LB.Items = g.SearchResults;
-                Debug.WriteLine(g.SearchResults.Count);
-                LB.InvalidateVisual();
-            }
-            else
-            {
-                ProviderListner.LoadSong(await helper.GetStream(si.dto));
-            }
+            await SetDtoFolderView(si);
+        }
+        else
+        {
+            ProviderListner.LoadSong(await helper.GetStream(si.dto));
         }
     }
-
-    
-}
-
-public class WrappedDto
-{
-    public BaseItemDto dto;
-
-    public WrappedDto(BaseItemDto dto, WrappedStream? ws = null)
-    {
-        this.dto = dto;
-        if (ws != null) Cover = Bitmap.DecodeToHeight(ws.GetStream(), 200);
-    }
-
-    public string Name => dto.Name;
-    public string AlbumArtist => dto.AlbumArtist;
-
-    public bool? IsFolder => dto.IsFolder;
-    public int? IndexNumber => dto.IndexNumber;
-    public Bitmap? Cover { get; set; }
-}
-
-public class GuiBinding
-{
-    public ObservableCollection<WrappedDto> SearchResults { get; set; } = new();
 }

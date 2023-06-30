@@ -70,7 +70,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
 
     public bool Equals(Song? other)
     {
-        return other?.Guid == Guid || other?.URI == URI;
+        return other?.Guid == Guid;
     }
 
     public override bool Equals(object? obj)

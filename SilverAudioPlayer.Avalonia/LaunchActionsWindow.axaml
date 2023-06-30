@@ -8,7 +8,7 @@
         Title="LaunchActionsWindow"
 		Icon="/icon.ico">
     <Grid Margin="5 30 5 5">
-        <ListBox Items="{Binding Actions}" Name="LB" DoubleTapped="ElementDoubleTapped" Background="Transparent">
+        <ListBox ItemsSource="{Binding Actions}" Name="LB" DoubleTapped="ElementDoubleTapped" Background="Transparent">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding ActionName}" />

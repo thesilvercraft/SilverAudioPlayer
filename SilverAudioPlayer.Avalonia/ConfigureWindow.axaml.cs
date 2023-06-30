@@ -45,7 +45,7 @@ public partial class ConfigureWindow : Window
         {
             ComboBox cb = new()
             {
-                Items = dropDown.Options,
+                ItemsSource = dropDown.Options,
                 SelectedItem = dropDown.Selection
             };
             cb.SelectionChanged += (x, y) => dropDown.Selection = (string)cb.SelectedItem;

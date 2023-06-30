@@ -1,13 +1,12 @@
-﻿using System.Composition;
+﻿using System.ComponentModel;
+using System.Composition;
 using System.Diagnostics;
-using System.Text.Json;
+using System.Xml.Serialization;
 using DiscordRPC;
 using DiscordRPC.Logging;
-using Imgur.API.Authentication;
-using Imgur.API.Endpoints;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.ConfigScreen;
-using HttpClient = SilverAudioPlayer.Shared.HttpClient;
+using SilverConfig;
 
 namespace SilverAudioPlayer.DiscordRP;
 
@@ -78,9 +77,29 @@ public class DebugLogger : ILogger
         if (Level <= LogLevel.Error) Debug.WriteLine("ERR : " + message + args);
     }
 }
+public class DiscordPlayTrackerConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
+{
+    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
+    {
+        PropertyChanged?.Invoke(e, a);
+    }
+    [Comment("The uploader to use")]
+    public Uploader Uploader { get; set; } = Uploader.None;
+    [XmlIgnore] public bool _AllowedRead = true;
 
+    [XmlIgnore] public bool AllowedToRead => _AllowedRead;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+}
+
+public enum Uploader
+{
+    None = 0,
+    Catbox =1,
+    Imgur =2
+}
 [Export(typeof(IMusicStatusInterface))]
-public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
+public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
 {
     private const string AppName = "SilverAudioPlayer";
 
@@ -102,11 +121,12 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
 
     private readonly List<IConfigurableElement> ConfigurableElements;
     public IRememberRichPresenceURLs? richPresenceURLs;
+    public ObjectToRemember ConfigObject = new(Guid.Parse("85782940-db9a-404e-9f22-1cea863da536"), new DiscordPlayTrackerConfig());
+    public ObjectToRemember[] ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
 
 
     public DiscordPlayTracker() : this("926595775574712370")
     {
-        richPresenceURLs = new RememberRichPresenceURLsUsingImgurAndAJsonFile { Uploadit = true };
     }
 
     public DiscordPlayTracker(string id)
@@ -119,18 +139,30 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
         client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
         ConfigurableElements = new List<IConfigurableElement>
         {
-            new SimpleCheckBox
+            new SimpleDropDown()
             {
-                GetContent = () => "Allow imgur uploads", Checked = c =>
+                GetOptions = () => new string[] { "None", "Catbox", "Imgur" },
+                GetPlaceholder = ()=>"None",
+                GetSelection = () =>
                 {
-                    if (c && !File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs", "uploadtoimgur")))
-                        File.Create(Path.Combine(AppContext.BaseDirectory,"Configs",  "uploadtoimgur"));
-                    else if (File.Exists(Path.Combine(AppContext.BaseDirectory, "Configs", "uploadtoimgur")))
-                        File.Delete(Path.Combine(AppContext.BaseDirectory, "Configs", "uploadtoimgur"));
+                    if (ConfigObject.Value is DiscordPlayTrackerConfig x)
+                    {
+                        return x.Uploader.ToString();
+                    }
+
+                    return Uploader.None.ToString();
                 },
-                GetChecked = () => File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs",  "uploadtoimgur"))
-            }
+                SetSelection = (s) =>
+                {
+                    if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                    x.Uploader = Enum.Parse<Uploader>(s);
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("Uploader"));
+                }
+            },
+            
         };
+        
+
     }
 
     public List<IConfigurableElement> GetElements()
@@ -179,9 +211,6 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable
     {
         ChangeSong(newtrack.URI, newtrack);
     }
-
-  
-
 
     public string Name => "Discord RP";
 
@@ -241,9 +270,6 @@ SilverAudioPlayer.DiscordRP
 
     public void ChangeSong(string? loc, Song? a)
     {
-        var artistandalbum = $"{a.Metadata?.Album} - {a.Metadata?.Artist}";
-        Debug.WriteLine($"cs called {artistandalbum}");
-
         var bigimage = GetAlbumArt(loc, a);
         SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
             StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
@@ -341,6 +367,20 @@ SilverAudioPlayer.DiscordRP
         client.Initialize();
         listener.PlayerStateChanged += PlayerStateChanged;
         listener.TrackChangedNotification += TrackChangedNotification;
+        if (ConfigObject.Value is not DiscordPlayTrackerConfig t) return;
+        switch (t.Uploader)
+        {
+            case Uploader.None:
+                break;
+            case Uploader.Catbox:
+                richPresenceURLs = new RememberRichPresenceURLsUsingCatboxAndAJsonFile { Uploadit = true };
+                break;
+            case Uploader.Imgur:
+                richPresenceURLs = new RememberRichPresenceUrLsUsingImgurAndAJsonFile { Uploadit = true };
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
@@ -350,74 +390,6 @@ SilverAudioPlayer.DiscordRP
         listener.TrackChangedNotification -= TrackChangedNotification;
         client.Deinitialize();
         client.Dispose();
-    }
-}
-
-public interface IRememberRichPresenceURLs
-{
-    string? GetURL(Song? track, IMusicStatusInterfaceListener Env);
-}
-
-public class RememberRichPresenceURLsUsingImgurAndAJsonFile : IRememberRichPresenceURLs
-{
-    private MscArtFile[] cached;
-    private readonly ApiClient client = new("d169c9264561822", "ce1616d067cb1493bc1df67b53e03660c5c02cc2");
-    private readonly ImageEndpoint imageEndpoint;
-    public bool Uploadit;
-
-    public RememberRichPresenceURLsUsingImgurAndAJsonFile()
-    {
-        imageEndpoint = new ImageEndpoint(client, HttpClient.Client);
-    }
-
-    public string? GetURL(Song? track, IMusicStatusInterfaceListener Env)
-    {
-        Debug.WriteLine("Geturl");
-        GetCache();
-        Debug.WriteLine("uplodit " + Uploadit);
-        var a = Env.GetBestRepresentation(track?.Metadata?.Pictures);
-        if (a == null) return null;
-        if (cached.Any(x => x.hsh == a.Hash))
-            return cached.First(x => x.hsh == a.Hash).url.Replace("https", "http");
-        if (!Uploadit) return null;
-        var res = Upload(a.Data);
-        res = res.Replace("https", "http");
-        cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
-        SetCache();
-        return res;
-
-    }
-
-    public virtual string? Upload(WrappedStream bits)
-    {
-        var stream = bits.GetStream();
-        try
-        {
-            var imageUpload = imageEndpoint.UploadImageAsync(stream);
-            var res = imageUpload.GetAwaiter().GetResult();
-            return res.Link;
-        }
-        finally
-        {
-            if (bits.ShouldDisposeStream)
-            {
-                stream.Dispose();
-            }
-        }
-    }
-
-
-    private void GetCache()
-    {
-        if (File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs", "musicart.json")))
-            cached = JsonSerializer.Deserialize<MscArtFile[]>(
-                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json")));
-        cached ??= Array.Empty<MscArtFile>();
-    }
-
-    private void SetCache()
-    {
-        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json"), JsonSerializer.Serialize(cached));
     }
 }
 

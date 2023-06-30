@@ -33,14 +33,13 @@ public class FileMetadata : IMetadata
            new EnumerationOptions()
                { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true});
 
-       using var hashing = SHA256.Create();
        foreach (var covr in cover)
        {
            WrappedFileStream wfs = new(covr);
            using var imagetohash= wfs.GetStream();
            imagetohash.Position = 0;
                    
-           _internalPictures?.Add(new Picture() { Data = wfs, Hash = Convert.ToHexString(hashing.ComputeHash(imagetohash)) });
+           _internalPictures?.Add(new Picture(wfs));
        }
     }
 

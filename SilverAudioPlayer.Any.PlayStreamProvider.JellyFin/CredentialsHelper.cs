@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Jellyfin.Sdk;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensions.Msal;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using HttpClient = SilverAudioPlayer.Shared.HttpClient;
@@ -23,11 +26,11 @@ public class JellyFinHelper
     private readonly IUserViewsClient userViewsClient;
     private bool validServer;
     private bool validUser;
-
+    private IPublicClientApplication app;
     public JellyFinHelper()
     {
         settings = new SdkClientSettings();
-        settings.ClientVersion = "0";
+        settings.ClientVersion = typeof(JellyFinHelper).Assembly.GetName().Version.ToString();
         settings.ClientName = "SilverAudioPlayer.PlayStreamProvider.JellyFin";
         settings.DeviceName = Environment.MachineName;
         settings.DeviceId = "1";
@@ -39,8 +42,129 @@ public class JellyFinHelper
         itemsClient = new ItemsClient(settings, HttpClient.Client);
         audioClient = new UniversalAudioClient(settings, HttpClient.Client);
         imageClient = new ImageClient(settings, HttpClient.Client);
+        app = PublicClientApplicationBuilder.Create(SilverAudioPlayerJellyfinGuid).Build();
+        Task.Run(async ()=> await MoreLibSecretStuff()).GetAwaiter().GetResult();
     }
 
+    record class LoginInfo(string url, string accessToken, string userId);
+    public async Task MoreLibSecretStuff()
+    {
+            var cacheHelper = await CreateCacheHelperAsync().ConfigureAwait(false);
+
+            // 3. Let the cache helper handle MSAL's cache
+            cacheHelper.RegisterCache(app.UserTokenCache);
+          var storageProperties = new StorageCreationPropertiesBuilder(
+               CacheFileName + ".other_secrets",
+               CacheDir)
+                .WithLinuxKeyring(
+                                   LinuxKeyRingSchema,
+                                   LinuxKeyRingCollection,
+                                   LinuxKeyRingLabel,                                   
+                                   LinuxKeyRingAttr1,
+                                   new KeyValuePair<string, string>("other_secrets", "secret_description"));
+
+            Storage storage = Storage.Create(storageProperties.Build());
+            try
+            {
+                Debug.WriteLine("Reading...");
+                var data = storage.ReadData();
+                var str = Encoding.UTF8.GetString(data);
+                Debug.WriteLine(str);
+                var logininfo = System.Text.Json.JsonSerializer.Deserialize<LoginInfo>(str);
+                if (await TryGetSystemInfoAsync(logininfo.url))
+                {
+                    settings.BaseUrl = logininfo.url;
+                    settings.AccessToken = logininfo.accessToken;
+                    userDto = await userClient.GetUserByIdAsync(Guid.Parse(logininfo.userId));
+                    validUser = true;
+                }
+               
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+          
+
+
+               
+
+            
+    }
+       private static StorageCreationProperties ConfigureSecureStorage(bool usePlaintextFileOnLinux)
+        {
+            if (!usePlaintextFileOnLinux)
+            {
+                return new StorageCreationPropertiesBuilder(
+                                   CacheFileName,
+                                   CacheDir)
+                               .WithLinuxKeyring(
+                                   LinuxKeyRingSchema,
+                                   LinuxKeyRingCollection,
+                                   LinuxKeyRingLabel,
+                                   LinuxKeyRingAttr1,
+                                   LinuxKeyRingAttr2)
+                               .Build();
+            }
+
+            return new StorageCreationPropertiesBuilder(
+                                     CacheFileName + "plaintext", // do not use the same file name so as not to overwrite the encypted version
+                                     CacheDir)
+                                 .WithLinuxUnprotectedFile()
+                                 .Build();
+
+        }
+           private const string TraceSourceName = "SilverCraft.SilverAudioPlayer.JellyFin.CredentialsHelper";
+        private static async Task<MsalCacheHelper> CreateCacheHelperAsync()
+        {
+            StorageCreationProperties storageProperties;
+            MsalCacheHelper cacheHelper;
+            try
+            {
+                storageProperties = ConfigureSecureStorage(usePlaintextFileOnLinux: false);
+                cacheHelper = await MsalCacheHelper.CreateAsync(
+                            storageProperties,
+                            new TraceSource(TraceSourceName))
+                         .ConfigureAwait(false);
+
+                // the underlying persistence mechanism might not be usable
+                // this typically happens on Linux over SSH
+                cacheHelper.VerifyPersistence();
+
+                return cacheHelper;
+            }
+            catch (MsalCachePersistenceException ex)
+            {
+                Console.WriteLine("Cannot persist data securely. ");
+                Console.WriteLine("Details: " + ex);
+
+
+                if (SharedUtilities.IsLinuxPlatform())
+                {
+                    storageProperties = ConfigureSecureStorage(usePlaintextFileOnLinux: true);
+
+                    Console.WriteLine($"Falling back on using a plaintext " +
+                        $"file located at {storageProperties.CacheFilePath} Users are responsible for securing this file!");
+
+                    cacheHelper = await MsalCacheHelper.CreateAsync(
+                           storageProperties,
+                           new TraceSource(TraceSourceName))
+                        .ConfigureAwait(false);
+
+                    return cacheHelper;
+                }
+                throw;
+            }
+        }
+    public const string CacheFileName = "myapp_msal_cache.txt";
+     public readonly static string CacheDir = MsalCacheHelper.UserRootDirectory;
+   const string SilverAudioPlayerJellyfinGuid="0b31c6c7-a28e-432a-8dfb-e34f56186225";
+           public const string LinuxKeyRingSchema = "silvercraft.AudioPlayer.JellyFin";
+        public const string LinuxKeyRingCollection = MsalCacheHelper.LinuxKeyRingDefaultCollection;
+        public const string LinuxKeyRingLabel = "SilverAudioPlayer jellyfin extension";
+        public static readonly KeyValuePair<string, string> LinuxKeyRingAttr1 = new KeyValuePair<string, string>("Version", "1");
+        public static readonly KeyValuePair<string, string> LinuxKeyRingAttr2 = new KeyValuePair<string, string>("ProductGroup", "MyApps");
+   
     public async Task<IReadOnlyList<BaseItemDto>> GetItemsFromItem(BaseItemDto dto)
     {
         var a = await itemsClient.GetItemsByUserIdAsync(userDto.Id, parentId: dto.Id);
@@ -72,6 +196,21 @@ public class JellyFinHelper
             }).ConfigureAwait(false);
             settings.AccessToken = authenticationResult.AccessToken;
             userDto = authenticationResult.User;
+            var logininfo = System.Text.Json.JsonSerializer.Serialize<LoginInfo>(new LoginInfo(settings.BaseUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
+            var storageProperties = new StorageCreationPropertiesBuilder(
+                    CacheFileName + ".other_secrets",
+                    CacheDir)
+                .WithLinuxKeyring(
+                    LinuxKeyRingSchema,
+                    LinuxKeyRingCollection,
+                    LinuxKeyRingLabel,                                   
+                    LinuxKeyRingAttr1,
+                    new KeyValuePair<string, string>("other_secrets", "secret_description"));
+
+            Storage storage = Storage.Create(storageProperties.Build());
+            byte[] secretBytes = Encoding.UTF8.GetBytes(logininfo);
+            Debug.WriteLine("Writing...");
+            storage.WriteData(secretBytes);
             validUser = true;
             return validUser;
         }
@@ -114,13 +253,15 @@ public class JellyFinHelper
     public async Task<WrappedStream> GetStream(BaseItemDto dto)
     {
        // return new WrappedJellyFinStream(audioClient, userDto, dto);
-       var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
-       Debug.WriteLine(goofyah);
-
+      // var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
+      // Debug.WriteLine(goofyah);
+        
+        Uri baseUri = new Uri(settings.BaseUrl);
+        Uri myUri = new Uri(baseUri, $"/Items/{dto.Id}/Download?api_key={settings.AccessToken}");
         return new WrappedSusHttpStream(() =>
         {
             var request = new HttpRequestMessage() {
-                RequestUri = new Uri(goofyah),
+                RequestUri =  myUri,
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("X-Emby-Token",settings.AccessToken);
@@ -134,233 +275,47 @@ public class JellyFinHelper
         try
         {
             var fr =  imageClient.GetItemImageUrl(dto.Id, ImageType.Primary);
-            Debug.WriteLine(fr);
-            return new WrappedSusHttpStream(() =>
-            {
-                var request = new HttpRequestMessage() {
-                    RequestUri = new Uri(fr),
-                    Method = HttpMethod.Get,
-                };
-                request.Headers.Add("X-Emby-Token",settings.AccessToken);
-                return HttpClient.
-                    Client.SendAsync(request);
-            });
+            var request = new HttpRequestMessage() {
+                RequestUri = new Uri(fr),
+                Method = HttpMethod.Get,
+            };
+            request.Headers.Add("X-Emby-Token",settings.AccessToken);
+           var resp= await HttpClient.Client.SendAsync(request);
+           if (resp.IsSuccessStatusCode)
+           {
+               return new WrappedSusHttpStream(() =>
+               {
+                   var request = new HttpRequestMessage() {
+                       RequestUri = new Uri(fr),
+                       Method = HttpMethod.Get,
+                   };
+                   request.Headers.Add("X-Emby-Token",settings.AccessToken);
+                   return HttpClient.
+                       Client.SendAsync(request);
+               });
+           }
         }
         catch
         {
             return null;
         }
+        return null;
+
     }
 
     public async Task<bool> LogIn(Gui gui)
     {
-        if (authwindow == null) authwindow = new AuthInfoWindow(this);
+       authwindow = new AuthInfoWindow(this);
         await authwindow.ShowDialog(gui);
-        Debug.WriteLine("exit window");
         return serverwindow.Success;
     }
 
     public async Task<bool> GetServerUrl(Gui gui)
     {
-        if (serverwindow == null) serverwindow = new ServerUrlWindow(this);
+       serverwindow = new ServerUrlWindow(this);
         await serverwindow.ShowDialog(gui);
-
-        Debug.WriteLine("exit window");
         return serverwindow.Success;
     }
 }
 
-public class WrappedStreamImplementedByOneRealOne : WrappedStream
-{
-    private Stream RealStream;
 
-    public WrappedStreamImplementedByOneRealOne(MimeType mimeType, Stream RealStream)
-    {
-        MimeType = mimeType;
-    }
-
-    public override MimeType MimeType { get; }
-    public override bool ShouldDisposeStream => false;
-    public override Stream GetStream()
-    {
-        return RealStream;
-    }
-
-    public override void Dispose()
-    {
-        RealStream.Dispose();
-    }
-}
-
-public class WrappedJellyFinStream : WrappedStream, IDisposable
-{
-    private readonly IUniversalAudioClient audioClient;
-    private bool disposedValue;
-
-    private BaseItemDto dto;
-    private MemoryStream FStream = new();
-    private Stream rs;
-    private readonly BaseItemDto song;
-    private Thread t;
-    private readonly UserDto userDto;
-
-    public WrappedJellyFinStream(IUniversalAudioClient ac, UserDto user, BaseItemDto baseItemDto)
-    {
-        audioClient = ac;
-        song = baseItemDto;
-        userDto = user;
-
-        userDto = user;
-        audioClient = ac;
-
-        dto = baseItemDto;
-    }
-
-    public List<Stream> Streams { get; set; } = new();
-    public override MimeType MimeType => _MimeType;
-    private MimeType _MimeType { get; set; }
-
-    public override void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void CopyToMS()
-    {
-        try
-        {
-            rs.CopyTo(FStream);
-        }
-        catch
-        {
-        }
-    }
-
-    private Stream InternalGetStream()
-    {
-        var Stream = audioClient
-            .GetUniversalAudioStreamAsync(song.Id, new[] { "flac", "wav", "mp3" }, userId: userDto.Id).GetAwaiter()
-            .GetResult();
-        Streams.Add(Stream.Stream);
-        return Stream.Stream;
-    }
-
-
-    public override Stream GetStream()
-    {
-        var content = audioClient
-            .GetUniversalAudioStreamAsync(song.Id, new[] { "flac", "wav", "mp3" }, userId: userDto.Id).GetAwaiter()
-            .GetResult();
-        var Stream = content.Stream;
-        Streams.Add(Stream);
-
-        var mt = KnownMimes.GetKnownMimeByName(content.Headers["Content-Type"].First());
-        if (mt == null)
-        {
-            var stream2 = InternalGetStream();
-            try
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            }
-            finally
-            {
-                stream2.Dispose();
-                Streams.Remove(stream2);
-            }
-        }
-
-        _MimeType = mt;
-
-        rs = Stream;
-        if (!FStream.CanRead) FStream = new MemoryStream();
-        if (FStream.Length == 0)
-        {
-            t = new Thread(CopyToMS);
-            t.Start();
-        }
-
-        return new FakeMemoryStreamReference(FStream);
-    }
-
-    public override bool ShouldDisposeStream => true;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposedValue)
-        {
-            if (disposing)
-                foreach (var stream in Streams.Where(x => x.CanRead))
-                    stream.Dispose();
-            disposedValue = true;
-        }
-    }
-}
-
-public class FakeMemoryStreamReference : Stream, IDisposable
-{
-    public long FakePos;
-    private MemoryStream Fakestream;
-    private readonly MemoryStream Realstream;
-
-    public FakeMemoryStreamReference(MemoryStream realstream)
-    {
-        Realstream = realstream;
-        Fakestream = new MemoryStream(realstream.ToArray());
-    }
-
-    public override bool CanRead => Fakestream.CanRead;
-
-    public override bool CanSeek => Fakestream.CanSeek;
-
-    public override bool CanWrite => false;
-
-    public override long Length => Fakestream.Length;
-
-    public override long Position
-    {
-        get => Fakestream.Position;
-        set => Fakestream.Position = value;
-    }
-
-    void IDisposable.Dispose()
-    {
-        Fakestream.Dispose();
-        Realstream.Dispose();
-        GC.SuppressFinalize(this);
-        base.Dispose();
-    }
-
-    public override void Flush()
-    {
-        Realstream.Flush();
-    }
-
-    public override int Read(byte[] buffer, int offset, int count)
-    {
-        if (Fakestream.Length != Realstream.Length)
-        {
-            FakePos = Fakestream.Position;
-            Fakestream = new MemoryStream(Realstream.GetBuffer());
-            Fakestream.Position = FakePos;
-        }
-
-        var a = Fakestream.Read(buffer, offset, count);
-        FakePos += a;
-        return a;
-    }
-
-    public override long Seek(long offset, SeekOrigin origin)
-    {
-        return Fakestream.Seek(offset, origin);
-    }
-
-    public override void SetLength(long value)
-    {
-    }
-
-    public override void Write(byte[] buffer, int offset, int count)
-    {
-    }
-}

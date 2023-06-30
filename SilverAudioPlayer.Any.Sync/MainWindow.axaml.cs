@@ -75,7 +75,7 @@ public partial class MainWindow : Window
     public void RefreshDevicesWindows()
     {
         var collection = new ObservableCollection<Device>();
-        DeviceBox.Items = collection;
+        DeviceBox.ItemsSource = collection;
         var driveinfo = DriveInfo.GetDrives();
 
         foreach (var queryObj in driveinfo)
@@ -100,7 +100,7 @@ public partial class MainWindow : Window
     {
         var mtab = File.ReadAllLines("/etc/mtab");
         var collection = new ObservableCollection<Device>();
-        DeviceBox.Items = collection;
+        DeviceBox.ItemsSource = collection;
         var driveinfo = DriveInfo.GetDrives();
 
         foreach (var mount in mtab)

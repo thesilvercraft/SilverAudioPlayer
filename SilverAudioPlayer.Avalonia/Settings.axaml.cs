@@ -38,6 +38,11 @@ public partial class Settings : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
+        MainGrid = this.FindControl<Grid>("MainGrid");
+        if (OperatingSystem.IsLinux())
+        {
+            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
+        }
         this.DoAfterInitTasksF();
     }
     public Settings(MainWindow mainWindow) : this()
@@ -48,24 +53,24 @@ public partial class Settings : Window
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
         this.mainWindow = mainWindow;
-        TransparencyDown.SelectedItem =
-            WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
+      //  TransparencyDown.SelectedItem =
+   //         WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
         ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
         List<ICodeInformation> info = new();
+        info.Add(mainWindow.Env);
         info.AddRange(mainWindow.Logic.PlayProviders);
         info.AddRange(mainWindow.Logic.MusicStatusInterfaces);
         info.AddRange(mainWindow.Logic.MetadataProviders);
         info.AddRange(mainWindow.Logic.WakeLockInterfaces);
         info.AddRange(mainWindow.Logic.PlayStreamProviders);
         info.AddRange(mainWindow.Logic.SyncPlugins);
-        info.Add(mainWindow.Env);
         var ir = GetInfoRecords(info);
         DataContext = new SettingsDC() { Items = ir.Item1,
             ProductName = mainWindow.Env.Name,
             ProductDescription = mainWindow.Env.Description,
-            ProductIcon = ir.Item1.Last().Icon,
+            ProductIcon = ir.Item1.First().Icon,
         };
         Legalese = ir.Item2;
     }
@@ -142,7 +147,7 @@ public partial class Settings : Window
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y == null || y.DataContext is not InfoPRecord { IsAskingMemoryProvider: true, Item: IAmOnceAgainAskingYouForYourMemory configurable } ||
+        if (y is not { DataContext: InfoPRecord { IsAskingMemoryProvider: true, Item: IAmOnceAgainAskingYouForYourMemory configurable } } ||
             mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
         LaunchActionsWindow launchActionsWindow = new();
         var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m => new SAction { ActionName = "Open " + m, ActionToInvoke = () => { OpenBrowser(m); } }).ToList();
@@ -237,10 +242,9 @@ public partial class Settings : Window
     }
     private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",(Enum.GetName((WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
-                                                             WindowTransparencyLevel.AcrylicBlur))));
-        WindowExtensions.OnStyleChange.Invoke(this, new(null,null, (WindowTransparencyLevel?)TransparencyDown.SelectedItem ??
-                                                             WindowTransparencyLevel.AcrylicBlur));
+        Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",TransparencyDown.SelectedItem.ToString() ??
+            WindowTransparencyLevel.AcrylicBlur.ToString()));
+        WindowExtensions.OnStyleChange.Invoke(this, new(null,null, new []{(WindowTransparencyLevel)TransparencyDown.SelectedItem} ));
     }
     
     private void RegisterClick(object? sender, RoutedEventArgs e)
@@ -283,7 +287,8 @@ public partial class Settings : Window
     };
     private void ChangeColorPB(object? sender, RoutedEventArgs e)
     {
-        Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor",ColorBoxPB.Text));
+        var t = ColorBoxPB.Text;
+        Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor",t));
        
         mainWindow.SetPBColor(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
 
@@ -306,7 +311,7 @@ public class SettingsDC
     public WindowTransparencyLevel[] TransparencyTypes { get; set; } =
     {
         WindowTransparencyLevel.None, WindowTransparencyLevel.Transparent, WindowTransparencyLevel.Blur,
-        WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.ForceAcrylicBlur, WindowTransparencyLevel.Mica
+        WindowTransparencyLevel.AcrylicBlur,  WindowTransparencyLevel.Mica
     };
 
     public KnownColor[] AutoSuggestColours { get; set; } =

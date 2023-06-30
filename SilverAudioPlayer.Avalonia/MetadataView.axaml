@@ -16,7 +16,7 @@
 
         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
             <Grid>
-                <TreeView Name="mainTreeView" Items="{Binding ValuePairs}">
+                <TreeView Name="mainTreeView" ItemsSource="{Binding ValuePairs}">
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate ItemsSource="{Binding SubFields}">
                             <Grid ColumnDefinitions="*,*">
