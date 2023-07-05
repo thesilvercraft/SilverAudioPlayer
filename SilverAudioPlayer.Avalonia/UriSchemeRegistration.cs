@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.Win32;
+using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -40,7 +41,7 @@ public static class RegistryRegistration
     {
          File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             ".local/share/applications/silveraudioplayer.desktop"));
-         Process.Start("kdesu", $"rm /usr/share/pixmaps/sap.svg");
+         DoOrAsk("rm /usr/share/pixmaps/sap.svg");
     }
 
     public static void DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)
@@ -82,6 +83,7 @@ public static class RegistryRegistration
 
         return false;
     }
+    [SupportedOSPlatform("linux")]
     public static void RegisterURLSchemeLinux(MainWindow mainWindow)
     {
         var f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
@@ -93,7 +95,6 @@ public static class RegistryRegistration
             playableMimes.AddRange(mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
                 .Select(x => x.Common));
             File.WriteAllText(f, @$"[Desktop Entry]
-[Desktop Entry]
 Comment[en_GB]=The SilverCraft Audio Player
 Comment=The SilverCraft Audio Player
 Path={AppContext.BaseDirectory}
@@ -111,12 +112,27 @@ Terminal=false
 TerminalOptions=
 Type=Application
 X-KDE-Protocols=http,https
-X-KDE-SubstituteUID=false");
+X-KDE-SubstituteUID=false
+Categories=Audio;Midi;Music;");
             using var iconFile = File.OpenWrite("/tmp/sap.svg");
             using var iconSource = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("SilverAudioPlayer.Avalonia.icon.svg");
             iconSource.CopyTo(iconFile);
-            Process.Start("kdesu", "mv /tmp/sap.svg /usr/share/pixmaps/sap.svg");
+            DoOrAsk("mv /tmp/sap.svg /usr/share/pixmaps/sap.svg");
+        }
+    }
+    [SupportedOSPlatform("linux")]
+    static void DoOrAsk(string command)
+    {
+        if (File.Exists("/usr/bin/kdesu"))
+        {
+            Process.Start("kdesu", command);
+        }
+        else
+        {
+            MessageBox m = new("Additional setup required",
+                $"Please run {command} as root in a terminal");
+            m.Show();
         }
     }
 

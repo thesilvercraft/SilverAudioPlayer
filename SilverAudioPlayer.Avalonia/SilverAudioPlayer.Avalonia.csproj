@@ -58,7 +58,7 @@
 		<!--ChromeCast (POC)-->
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
 		<!--VLC (Alpha) BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
-<!--		<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
 <!--       <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
