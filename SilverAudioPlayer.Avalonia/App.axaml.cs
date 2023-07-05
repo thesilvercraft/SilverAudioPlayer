@@ -54,18 +54,22 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
+            if (OperatingSystem.IsLinux())
+            {
+                confdir = Path.Combine(Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"), "SilverAudioPlayer");
+            }
             if (!Directory.Exists(confdir))
             {
                 Directory.CreateDirectory(confdir);
             }
+            ConfigPath.Set(confdir);
             var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(confdir)
                 .AddJsonFile(Path.Combine(confdir, "appsettings.json"), true)
                 .Build();
             var logger = new LoggerConfiguration()

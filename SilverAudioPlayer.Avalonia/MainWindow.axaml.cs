@@ -89,7 +89,7 @@ public partial class MainWindow : Window
     public Config config;
 
     public static readonly string ConfigPath =
-        Path.Combine(AppContext.BaseDirectory, "Configs", "SilverAudioPlayer.Config.xml");
+        Path.Combine(SilverAudioPlayer.Shared.ConfigPath.BasePath, "SilverAudioPlayer.Config.xml");
 
     public readonly MainWindowContext dc;
     public SapAvaloniaPlayerEnviroment Env { get; }

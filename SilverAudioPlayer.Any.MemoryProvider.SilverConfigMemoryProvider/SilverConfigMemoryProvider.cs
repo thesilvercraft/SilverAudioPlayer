@@ -16,7 +16,7 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
         {
         }
         List<ObjectClass> Classes = new();
-        string basedir = Path.Combine(AppContext.BaseDirectory, "Configs", "Pandora");
+        string basedir = Path.Combine(ConfigPath.BasePath, "Pandora");
 
         public void RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember)
         {

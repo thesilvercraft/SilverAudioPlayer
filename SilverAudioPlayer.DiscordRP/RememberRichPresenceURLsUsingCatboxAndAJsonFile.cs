@@ -60,14 +60,14 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
 
     private void GetCache()
     {
-        if (File.Exists(Path.Combine(AppContext.BaseDirectory,"Configs", "musicart.json")))
+        if (File.Exists(Path.Combine(ConfigPath.BasePath, "musicart.json")))
             cached = JsonSerializer.Deserialize<MscArtFile[]>(
-                File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json")));
+                File.ReadAllText(Path.Combine(ConfigPath.BasePath, "musicart.json")));
         cached ??= Array.Empty<MscArtFile>();
     }
 
     private void SetCache()
     {
-        File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "Configs", "musicart.json"), JsonSerializer.Serialize(cached));
+        File.WriteAllText(Path.Combine(ConfigPath.BasePath, "musicart.json"), JsonSerializer.Serialize(cached));
     }
 }
