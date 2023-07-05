@@ -1,0 +1,4 @@
+[submodule "cscore"]
+	path = cscore
+	url = https://github.com/thesilvercraft/cscore
+	branch = netstandard

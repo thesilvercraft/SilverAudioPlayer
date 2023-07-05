@@ -61,7 +61,7 @@ public class App : Application
             var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
             if (OperatingSystem.IsLinux())
             {
-                confdir = Path.Combine(Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"), "SilverAudioPlayer");
+                confdir = Path.Combine(Environment.GetEnvironmentVariable("XDG_CONFIG_HOME")?? Path.Combine(Environment.GetEnvironmentVariable("HOME"),".config"), "SilverAudioPlayer");
             }
             if (!Directory.Exists(confdir))
             {
