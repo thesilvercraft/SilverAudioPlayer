@@ -1,11 +1,11 @@
 ﻿using SilverAudioPlayer.Shared;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using CSCore;
-using CSCore.Codecs;
 using CSCore.Codecs.AIFF;
 using CSCore.Codecs.FLAC;
 using CSCore.Codecs.WAV;
+#if FFMPEG
+using CSCore.Ffmpeg;
+#endif
 using CSCore.SoundOut;
 using SilverMagicBytes;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
@@ -17,12 +17,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
         private ISoundOut? _soundOut;
         private IWaveSource? _waveSource;
         public bool DoFunny { get; set; } = false;
-
         public byte Volume { get; set; } = 70;
-        public string? Decoder { get; private set; }
-
-      
-
         public void Play()
         {
             _soundOut?.Play();
@@ -34,7 +29,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
             if (DoFunny) return;
             _soundOut?.Dispose();
             _waveSource?.Dispose();
-
         }
 
         public void Pause()
@@ -64,16 +58,14 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
             _waveSource.SetPosition(position);
         }
 
-        public PlaybackState? GetPlaybackState()
-        {
-            return _soundOut?.PlaybackState switch
+        public PlaybackState? GetPlaybackState() =>
+            _soundOut?.PlaybackState switch
             {
                 global::CSCore.SoundOut.PlaybackState.Stopped => PlaybackState.Stopped,
                 global::CSCore.SoundOut.PlaybackState.Playing => PlaybackState.Playing,
                 global::CSCore.SoundOut.PlaybackState.Paused => PlaybackState.Paused,
                 _ => throw new NotSupportedException()
             };
-        }
 
         public TimeSpan? Length()
         {
@@ -113,11 +105,19 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
             {
                 _waveSource = new AiffReader(stream.GetStream());
             }
+            #if FFMPEG
+            else
+            {
+                _waveSource= new FfmpegDecoder(stream.GetStream());
+            }
+            #else 
             else if (stream.MimeType == KnownMimes.MP3Mime || stream.MimeType == KnownMimes.Mp2Mime ||
                      stream.MimeType == KnownMimes.MpegMime)
             {
                 _waveSource = new NLayerReader(stream.GetStream());
             }
+#endif
+            
             if (_soundOut == null)
             {
                 _soundOut = new ALSoundOut() { Latency = 100 };

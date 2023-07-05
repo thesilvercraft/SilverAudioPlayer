@@ -22,7 +22,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     private readonly List<GCHandle> Handles = new();
 
     private IntPtr PrevProc;
-
+    public bool IsStarted => _IsStarted;
+    private bool _IsStarted;
     public CADMusicStatusInterface()
     {
         InitializeComponent();
@@ -68,6 +69,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void TrackChangedNotification(Song? newtrack)
     {
+        if (!_IsStarted) return;
+
         var ThWnd = FindWindow(null, arglpWindowName);
         logger?.Debug("TrackChangedNotification, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 123);
@@ -76,6 +79,8 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void PlayerStateChanged(PlaybackState newstate)
     {
+        if (!_IsStarted) return;
+
         var ThWnd = FindWindow(null, arglpWindowName);
         logger?.Debug("PlayerStateChanged, window found {ThWnd}", ThWnd);
         var e = SendMessage(ThWnd, WM_USER, 0, 126);
@@ -522,6 +527,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Text = "SilverAudioPlayerIPC";
+        _IsStarted = true;
         HookMsg(Handle);
         cadRegister();
         Show();
@@ -530,6 +536,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
+        _IsStarted = false;
 
         cadShutdown();
         Invoke(() => { Dispose(); });

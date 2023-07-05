@@ -12,6 +12,7 @@ public class ATLCOREPicture : IPicture
         PicType = (PictureType?)i.PicType;
         Reliance = new(Cached);
         Hash = i.PictureHash.ToString();
+        
     }
 
     public void Dispose()

@@ -125,18 +125,10 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
     public ObjectToRemember[] ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
 
 
-    public DiscordPlayTracker() : this("926595775574712370")
+ 
+    string id = "926595775574712370";
+    public DiscordPlayTracker()
     {
-    }
-
-    public DiscordPlayTracker(string id)
-    {
-        client = new DiscordRpcClient(id)
-        {
-            SkipIdenticalPresence = false,
-            Logger = new DebugLogger { Level = LogLevel.Warning }
-        };
-        client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
         ConfigurableElements = new List<IConfigurableElement>
         {
             new SimpleDropDown()
@@ -157,12 +149,10 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
                     if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
                     x.Uploader = Enum.Parse<Uploader>(s);
                     ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("Uploader"));
+                    ChangeImageUploader();
                 }
             },
-            
         };
-        
-
     }
 
     public List<IConfigurableElement> GetElements()
@@ -173,6 +163,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
     
     public void Dispose()
     {
+        client.Dispose();
     }
 
     public void PlayerStateChanged(object e, PlaybackState newstate)
@@ -268,8 +259,12 @@ SilverAudioPlayer.DiscordRP
         new Tuple<Uri, URLType>(new Uri("https://github.com/Lachee/discord-rpc-csharp/issues"), URLType.LibraryCode)
     };
 
+    public bool IsStarted => _IsStarted;
+    private bool _IsStarted;
+
     public void ChangeSong(string? loc, Song? a)
     {
+        if (!_IsStarted) return;
         var bigimage = GetAlbumArt(loc, a);
         SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
             StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
@@ -278,6 +273,7 @@ SilverAudioPlayer.DiscordRP
 
     private static string StatusOrNotToStatus(string message, string status)
     {
+
         if (message.Length == 0) return "";
         if (message.Length > 10) return message;
         return status + " " + message;
@@ -285,6 +281,7 @@ SilverAudioPlayer.DiscordRP
 
     public string? GetAlbumArt(string? loc, Song? a)
     {
+
         if (richPresenceURLs != null)
         {
             var url = richPresenceURLs.GetURL(a, Env);
@@ -297,7 +294,7 @@ SilverAudioPlayer.DiscordRP
 
     public void SPause(string? loc, Song? a)
     {
-        Debug.WriteLine("Pause called");
+        if (!_IsStarted) return;
 
         if (a != null)
         {
@@ -315,7 +312,8 @@ SilverAudioPlayer.DiscordRP
 
     public void SPlay(string? loc, Song? a)
     {
-        Debug.WriteLine("play called");
+        if (!_IsStarted) return;
+
 
         if (a != null)
         {
@@ -333,13 +331,16 @@ SilverAudioPlayer.DiscordRP
 
     public void SStop()
     {
-        Debug.WriteLine("stop called");
+        if (!_IsStarted) return;
+
         SetStatus(StoppedTextSState, "Not playing anything", "sap", AppName, StoppedStateRPSMLICN, StoppedTextState);
     }
 
     private void SetStatus(string details, string state, string largeimage, string largeimagetext, string smallimage,
         string smallimagetext)
     {
+        if (!_IsStarted) return;
+
         try
         {
             client.SetPresence(new RichPresence
@@ -364,32 +365,55 @@ SilverAudioPlayer.DiscordRP
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
+        _IsStarted = true;
+        client = new DiscordRpcClient(id)
+        {
+            SkipIdenticalPresence = false,
+            Logger = new DebugLogger { Level = LogLevel.Warning }
+        };
+        client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
+
         client.Initialize();
         listener.PlayerStateChanged += PlayerStateChanged;
         listener.TrackChangedNotification += TrackChangedNotification;
-        if (ConfigObject.Value is not DiscordPlayTrackerConfig t) return;
-        switch (t.Uploader)
-        {
-            case Uploader.None:
-                break;
-            case Uploader.Catbox:
-                richPresenceURLs = new RememberRichPresenceURLsUsingCatboxAndAJsonFile { Uploadit = true };
-                break;
-            case Uploader.Imgur:
-                richPresenceURLs = new RememberRichPresenceUrLsUsingImgurAndAJsonFile { Uploadit = true };
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        if (ConfigObject.Value is not DiscordPlayTrackerConfig) return;
+        ChangeImageUploader();
     }
-
+    public void ChangeImageUploader()
+    {
+        if(ConfigObject.Value is DiscordPlayTrackerConfig x)
+        {
+            switch (x.Uploader)
+            {
+                case Uploader.None:
+                    richPresenceURLs = null;
+                    break;
+                case Uploader.Catbox:
+                    richPresenceURLs = new RememberRichPresenceURLsUsingCatboxAndAJsonFile { Uploadit = true };
+                    break;
+                case Uploader.Imgur:
+                    richPresenceURLs = new RememberRichPresenceUrLsUsingImgurAndAJsonFile { Uploadit = true };
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        
+    }
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
         Debug.WriteLine("disable called");
+        _IsStarted = false;
         listener.PlayerStateChanged -= PlayerStateChanged;
         listener.TrackChangedNotification -= TrackChangedNotification;
-        client.Deinitialize();
-        client.Dispose();
+        try
+        {
+            client.Deinitialize();
+            client.Dispose();
+        }
+        catch
+        {
+        }
     }
 }
 

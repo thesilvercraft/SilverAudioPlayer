@@ -1,3 +1,5 @@
+#if FFMPEG
+#else 
 using CSCore;
 using NLayer;
 
@@ -23,3 +25,4 @@ public class NLayerReader : IWaveSource
     public long Position { get=>_mpegFile.Position; set=>_mpegFile.Position=value; }
     public long Length => _mpegFile.Length;
 }
+#endif

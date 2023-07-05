@@ -19,6 +19,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private bool disposedValue;
     private List<string> TempFiles = new();
     private System.Timers.Timer TimeLineTimer;
+    public bool IsStarted => _IsStarted;
+    private bool _IsStarted;
 
     public SMTCPlayTracker()
     {
@@ -42,6 +44,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public void PlayerStateChanged(object obj, PlaybackState newstate)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
 
         if (_systemMediaTransportControls != null)
             switch (newstate)
@@ -79,6 +82,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public async void TrackChangedNotification(object obj, Song newtrack)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
+
         if (_systemMediaTransportControls != null && newtrack != null)
         {
             _systemMediaTransportControls.IsEnabled = true;
@@ -131,6 +136,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private void UpdateTimeline(PlaybackState state, Song track, double pos)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
+
         var timelineProperties = new SystemMediaTransportControlsTimelineProperties();
         if (track != null)
         {
@@ -149,6 +156,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
         PlaybackPositionChangeRequestedEventArgs args)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
+
         Env.SetPosition((ulong)args.RequestedPlaybackPosition.TotalSeconds);
 
     }
@@ -157,6 +166,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
         AutoRepeatModeChangeRequestedEventArgs args)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
+
         var a = args.RequestedAutoRepeatMode switch
         {
             MediaPlaybackAutoRepeatMode.None => RepeatState.None,
@@ -172,6 +183,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
         ShuffleEnabledChangeRequestedEventArgs args)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
+
         Env.SetShuffle(args.RequestedShuffleEnabled);
 
     }
@@ -206,6 +219,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
         SystemMediaTransportControlsButtonPressedEventArgs args)
     {
         if (DISABLE) return;
+        if (!_IsStarted) return;
+
         switch (args.Button)
         {
             case SystemMediaTransportControlsButton.Play:
@@ -254,6 +269,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
+        _IsStarted=true;
         Env.TrackChangedNotification += TrackChangedNotification;
         Env.PlayerStateChanged += PlayerStateChanged;
         if (DISABLE) return;
@@ -289,6 +305,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
         if (DISABLE) return;
+        _IsStarted = false;
+
         TimeLineTimer.Stop();
         Env.TrackChangedNotification -= TrackChangedNotification;
         Env.PlayerStateChanged -= PlayerStateChanged;

@@ -10,7 +10,8 @@ namespace SilverAudioPlayer.Linux.MPRIS
     public class Mpris :IMusicStatusInterface, IMediaPlayer2,IPlayer
     {
         public event Action<PropertyChanges> OnPropertiesChanged;
-
+        public bool IsStarted => _IsStarted;
+        private bool _IsStarted;
         public Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler)
         {
             Debug.WriteLine("Someone cares?");

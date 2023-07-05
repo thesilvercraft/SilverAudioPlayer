@@ -26,7 +26,7 @@ using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
 
 namespace SilverAudioPlayer.Avalonia;
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
-    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin);
+    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin,bool IsMusicStatusInterface);
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -58,8 +58,10 @@ public partial class Settings : Window
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
         ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
-        List<ICodeInformation> info = new();
-        info.Add(mainWindow.Env);
+        List<ICodeInformation> info = new()
+        {
+            mainWindow.Env
+        };
         info.AddRange(mainWindow.Logic.PlayProviders);
         info.AddRange(mainWindow.Logic.MusicStatusInterfaces);
         info.AddRange(mainWindow.Logic.MetadataProviders);
@@ -74,6 +76,23 @@ public partial class Settings : Window
         };
         Legalese = ir.Item2;
     }
+
+    private void EnableMSI(object? sender, RoutedEventArgs e)
+    {
+        var y = (CheckBox?)sender;
+        if (y is not { DataContext: InfoPRecord { IsMusicStatusInterface: true } record }) return;
+        if (record.Item is not IMusicStatusInterface msi) return;
+        if (y.IsChecked == msi.IsStarted) return;
+            if(y.IsChecked==true)
+            {
+            msi.StartIPC(mainWindow.Env);
+            }
+            else
+            {
+            msi.StopIPC(mainWindow.Env);
+            }
+    }
+
     string Legalese;
     public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
     {
@@ -92,7 +111,8 @@ public partial class Settings : Window
                 item is IAmConfigurable,
                 item is IPlayStreamProvider,
                 item is IAmOnceAgainAskingYouForYourMemory,
-                item is ISyncPlugin
+                item is ISyncPlugin,
+                item is IMusicStatusInterface
             ));
             licenses.AppendLine(item.Licenses);
         }
@@ -101,8 +121,7 @@ public partial class Settings : Window
     public static IImage? DecodeImage(WrappedStream? stream, int width=80)
     {
         if (stream == null) return null;
-        stream.GetStream();
-        Debug.WriteLine(stream.MimeType);
+        stream.Use((str) => { });
         if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
         {
             return Bitmap.DecodeToWidth(stream.GetStream(), width);
@@ -194,7 +213,7 @@ public partial class Settings : Window
     }
     public static void ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)
     {
-
+        if (element == null) return;
         LaunchActionsWindow launchActionsWindow = new();
         if(element.Item.Links==null)
         {
@@ -218,7 +237,7 @@ public partial class Settings : Window
             case IPlayStreamProvider streamProvider:
                 actions.Add(new SAction
                 {
-                    ActionName = "Use",
+                    ActionName = "🔨Use",
                     ActionToInvoke = () =>
                     {
                         streamProvider.Use(mainWindow.Env);
@@ -228,7 +247,7 @@ public partial class Settings : Window
             case ISyncPlugin syncPlugin:
                 actions.Add(new SAction
                 {
-                    ActionName = "Sync",
+                    ActionName = "🔁Sync",
                     ActionToInvoke = () =>
                     {
                         syncPlugin.Use(mainWindow.Env);

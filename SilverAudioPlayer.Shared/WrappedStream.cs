@@ -12,7 +12,10 @@ public abstract class WrappedStream : IDisposable
     /// </summary>
     public abstract bool ShouldDisposeStream { get; }
     public abstract void Dispose();
-
+    /// <summary>
+    /// A simple way to use this wrappedstream
+    /// </summary>
+    /// <param name="x">the action to perform with that stream</param>
     public void Use(Action<Stream> x)
     {
         var s = GetStream();

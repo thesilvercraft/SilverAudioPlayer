@@ -1,17 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <Import Project="../SilverAudioPlayer.targets" />
-    <ItemGroup>
-        <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" />
-        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-    </ItemGroup>
+   
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
+        <DefineConstants>FFMPEG</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="NLayer" Version="1.14.0" />
+      <PackageReference Include="NLayer" Version="1.14.0" Condition="! $(DefineConstants.Contains('FFMPEG'))"  />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" />
+        <ProjectReference Include="..\cscore\CSCore.Ffmpeg\CSCore.Ffmpeg.csproj"  Condition="$(DefineConstants.Contains('FFMPEG'))"/>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="cscore.svg" />

@@ -96,9 +96,16 @@ public class FakedMemoryStream : Stream
 }
 public  class WrappedMemoryStream : WrappedStream, IDisposable
 {
-    public WrappedMemoryStream(byte[] data, MimeType? mt = null)
+    public WrappedMemoryStream(byte[] data, MimeType? mt = null, bool copy=true)
     {
-        _data = new(){Bytes = data};
+        if(copy)
+        {
+            _data = new() { Bytes = data.ToArray() };
+        }
+        else
+        {
+            _data = new() { Bytes = data };
+        }
         if (mt == null)
         {
             var stream2 = GetStream();

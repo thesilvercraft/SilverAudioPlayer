@@ -31,31 +31,22 @@ public class LocalLibraryPlayStreamProvider : IPlayStreamProvider
 
 
 public interface WrappedShowable
-{    
+{
     public string Name { get; }
     public Bitmap? Cover { get; }
     public string AlbumArtist { get; }
 }
-public class WrappedAlbum :WrappedShowable
+public class WrappedAlbum : WrappedShowable
 {
     public string Name { get; set; }
-    public Bitmap? Cover { get;  set; }
-    public string AlbumArtist { get; set;  }
+    public Bitmap? Cover => Songs[0].Cover;
+    public string AlbumArtist { get; set; }
     public ConcurrentObservableCollection<WrappedSong> Songs { get; } = new();
 }
-public class WrappedSong :WrappedShowable
+public class WrappedSong : WrappedShowable
 {
-    public WrappedSong(IMetadata meta, string url, ref Dictionary<string, Bitmap> bitmaps)
+    public WrappedSong(IMetadata meta, string url)
     {
-        if (meta.Pictures is not (null or { Count: 0 }))
-        {
-            if (!bitmaps.TryGetValue(meta.Pictures.First().Hash, out _Cover))
-            {
-                using var stream = (meta.Pictures.First().Data.GetStream());
-                _Cover = Bitmap.DecodeToHeight(stream, 400);
-                bitmaps.Add(meta.Pictures.First().Hash, _Cover);
-            }
-        }
         Url = url;
         Metadata = meta;
     }
@@ -63,15 +54,23 @@ public class WrappedSong :WrappedShowable
     public IMetadata Metadata;
     public string Name => Metadata.Title;
     public int? TrackNumber => Metadata.TrackNumber;
-    public Bitmap? Cover => _Cover;
-    public Bitmap? _Cover;
+    public Bitmap? Cover => DecodeCover();
+    public Bitmap? DecodeCover()
+    {
+        if(Metadata.Pictures.Count>0)
+        {
+            using var stream = Metadata.Pictures[0].Data.GetStream();
+            return Bitmap.DecodeToHeight(stream, 400);
+        }
+        return null;
+    }
 
     public string AlbumArtist => Metadata.Artist;
 }
-public class GuiBinding :ReactiveObject
+public class GuiBinding : ReactiveObject
 {
     public ConcurrentObservableCollection<WrappedAlbum> WrappedAlbums { get; set; } = new();
-    public ConcurrentObservableCollection<WrappedSong> WrappedSongs { get=>_WrappedSongs; set=>this.RaiseAndSetIfChanged(ref _WrappedSongs,value); } 
+    public ConcurrentObservableCollection<WrappedSong> WrappedSongs { get => _WrappedSongs; set => this.RaiseAndSetIfChanged(ref _WrappedSongs, value); }
     private ConcurrentObservableCollection<WrappedSong> _WrappedSongs = new();
 
 }
@@ -86,7 +85,7 @@ public partial class MainWindow : Window
         DataContext = _binding;
         LB = this.FindControl<ListBox>("LB");
         RB = this.FindControl<ListBox>("RB");
-        if(WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks")==true)
+        if (WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks") == true)
         {
             return;
         }
@@ -94,77 +93,78 @@ public partial class MainWindow : Window
     }
     private void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
-   
-            Env.LoadSongs(_binding.WrappedSongs.Select(song=>new WrappedFileStream (song.Url)).ToList()); //TODO GET SORTED PROPERLY
+        Env.LoadSongs(_binding.WrappedSongs.Select(song => new WrappedFileStream(song.Url)).ToList()); //TODO GET SORTED PROPERLY
     }
-    public MainWindow(IPlayStreamProviderListener env) :this()
+    public MainWindow(IPlayStreamProviderListener env) : this()
     {
         Env = env;
     }
     Dictionary<string, Bitmap> bitmaps = new();
-    public async Task ProcessFileAsync(string file)
+    public async Task<WrappedSong?> ProcessFileAsync(string file, CancellationToken ct=default)
     {
         try
         {
             var meta = await Env.GetMetadataAsync(new WrappedFileStream(file));
-            if (meta != null)
-            {
-                var album=_binding.WrappedAlbums.FirstOrDefault(x => x.Name == meta.Album);
-                if (album != null)
-                {
-                    album.Songs.Add(new WrappedSong(meta,file, ref bitmaps));
-                }
-                else
-                {
-                    Bitmap? cover=null;
-                    if (meta.Pictures is not (null or { Count: 0 }))
-                    {
-                        var firstPicture = meta.Pictures.First();
-                        if(!bitmaps.TryGetValue(firstPicture.Hash, out cover))
-                        {
-                            using var stream = firstPicture.Data.GetStream();
-                            if (stream != null)
-                            {
-                                cover = Bitmap.DecodeToHeight(stream, 400);
-                                bitmaps.Add(firstPicture.Hash, cover);
-                            }
-                        }
-                    }
-                    _binding.WrappedAlbums.Add(new()
-                    {
-                        AlbumArtist = meta.Artist,
-                        Cover = cover,
-                        Name = meta.Album
-                    });
-                }
-            }
+            return new WrappedSong(meta, file);
         }
         catch (Exception e)
         {
             Debug.WriteLine(e);
         }
+        return null;
     }
     private async void LoadNewFolder(object? sender, RoutedEventArgs e)
     {
         OpenFolderDialog ofd = new();
         var f = await ofd.ShowAsync(this);
-        if (f != null)
+        var restOfTask = Task.Run(async () =>
         {
-            var files =Directory.GetFiles(f, "*", SearchOption.AllDirectories);
-            foreach(var file in Env.FilterFiles(files))
+            if (f != null)
             {
-                await ProcessFileAsync(file);
-
+                var files = Directory.GetFiles(f, "*", SearchOption.AllDirectories);
+                object a = new();
+                List<WrappedSong> songs = new();
+                await Parallel.ForEachAsync(Env.FilterFiles(files), new ParallelOptions() { MaxDegreeOfParallelism = 10 }, async (file, ct) => {
+                    var song= await ProcessFileAsync(file, ct);
+                    if(song!=null)
+                    {
+                        lock (a)
+                        {
+                            songs.Add(song);
+                        }
+                    }
+                });
+                var albums = songs.GroupBy(x => x.Metadata.Album);
+            foreach (var album in albums)
+                {
+                    if(_binding.WrappedAlbums.FirstOrDefault(x => x.Name == album.Key) is { } wrappedAlbum)
+                    {
+                        wrappedAlbum.Songs.AddRange(album.ToList());
+                    }
+                    else
+                    {
+                        Bitmap? cover = null;
+                        var albuml = album.ToList();
+                        var wrapped = new WrappedAlbum()
+                        {
+                            AlbumArtist = albuml[0].Metadata.Artist,
+                            Name = albuml[0].Metadata.Album,
+                        };
+                        wrapped.Songs.AddRange(album.ToList());
+                        _binding.WrappedAlbums.Add(wrapped);
+                    }
+                }
+                
             }
+        });
 
-        }
     }
 
     private void RB_OnDoubleTapped(object? sender, TappedEventArgs e)
     {
         if (RB.SelectedItem is WrappedSong ws)
         {
-            //Env.LoadSong(new WrappedFileStream(ws.Url));
+            Env.LoadSong(new WrappedFileStream(ws.Url));
         }
     }
 
@@ -174,8 +174,8 @@ public partial class MainWindow : Window
         {
 
             _binding.WrappedSongs = wa.Songs;
-            
+
         }
-        
+
     }
 }

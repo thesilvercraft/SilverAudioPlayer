@@ -4,7 +4,7 @@ public interface IMusicStatusInterface : IDisposable, ICodeInformation
 {
     void StartIPC(IMusicStatusInterfaceListener listener);
     void StopIPC(IMusicStatusInterfaceListener listener);
-
+    bool IsStarted { get; }
 
 
 

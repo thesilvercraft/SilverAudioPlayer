@@ -70,7 +70,7 @@ public static class RegistryRegistration
     {
         if (OperatingSystem.IsWindows())
         {
-            return string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty,
+            return !string.IsNullOrEmpty((string?)Registry.GetValue("HKEY_CLASSES_ROOT\\SilverAudioPlayerA", string.Empty,
                 string.Empty));
         }
         else if (OperatingSystem.IsLinux())

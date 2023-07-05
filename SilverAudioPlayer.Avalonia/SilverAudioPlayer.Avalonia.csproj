@@ -4,8 +4,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<Nullable>enable</Nullable>
-		<!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
-		<TrimMode>copyused</TrimMode>
+		<TrimMode>link</TrimMode>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
@@ -38,59 +37,35 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="!$(DefineConstants.Contains('IGNORECSPROJ'))">
 		<!--Customize SilverAudioPlayer here-->
-
 		<!--JellyFin - alpha-->
-
 		<DefineConstants>$(DefineConstants)JF</DefineConstants>
-
-		<!--DryWetMidi BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
-
-		<!--<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
-
+		<!--DryWetMidi-->
+		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>
 		<!--Z440AtlCore-->
-
 		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
-
 		<!--NAudio-->
-
-<!--		<DefineConstants>$(DefineConstants)NA</DefineConstants>-->
-
+		<DefineConstants>$(DefineConstants)NA</DefineConstants>
 		<!--NAudio + Naudio.Flac-->
-
-<!--		<DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>
 		<!--NAudio + Naudio.Vorbis-->
-
-<!--		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 		<!--CSCore-->
 		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
-		
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
-		
 		<!--Discord (alpha)-->
-
 		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
-		
 		<!--ChromeCast (POC)-->
-
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
 		<!--VLC (Alpha) BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
-
 <!--		<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
 		<!--Windows only-->
-
 		<!--System Media Transport Controls - windows 10+-->
-
-<!--     <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
+<!--       <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
 		<!--Fortnite - windows (POC)-->
-
 <!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
-
 		<!--CD Art Display - windows 7+-->
-
 <!--    <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
-
-
 		<!--LINUX ONLY-->
 		<!--MPRIS DBUS STUFF - linux - pre POC -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>

@@ -25,7 +25,7 @@ public class WrappedHttpStream : WrappedRegenerativeStream, IDisposable
 
     private Stream InternalGetStream()
     {
-        var content = HttpClient.Client.GetAsync(Url).GetAwaiter().GetResult();
+        var content = Task.Run(async () => await HttpClient.Client.GetAsync(Url)).GetAwaiter().GetResult();
         var Stream = content.Content.ReadAsStream();
         Streams.Add(Stream);
         return Stream;
@@ -33,7 +33,7 @@ public class WrappedHttpStream : WrappedRegenerativeStream, IDisposable
 
     public override Stream GetStream()
     {
-        var content = HttpClient.Client.GetAsync(Url).GetAwaiter().GetResult();
+        var content = Task.Run(async ()=> await HttpClient.Client.GetAsync(Url)).GetAwaiter().GetResult();
         var Stream = content.Content.ReadAsStream();
         Streams.Add(Stream);
         if (_MimeType != null) return Stream;

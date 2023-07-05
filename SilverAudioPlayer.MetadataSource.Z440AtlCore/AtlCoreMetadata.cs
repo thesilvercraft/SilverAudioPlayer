@@ -1,7 +1,11 @@
-﻿using System.Diagnostics;
-using ATL;
-using SilverAudioPlayer.Shared;
+﻿#define hackymemory
 
+using ATL;
+#if hackymemory
+using System.Reflection;
+using ATL.AudioData;
+#endif
+using SilverAudioPlayer.Shared;
 namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 public class AtlCoreMetadata : IMetadata
 {
@@ -30,20 +34,48 @@ public class AtlCoreMetadata : IMetadata
         _cachedPicture;
 
     private Track theTrack { get; set; }
+#if hackymemory
+    private static readonly PropertyInfo cEP = typeof(Track)
+        .GetProperty("currentEmbeddedPictures", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly FieldInfo iEP = typeof(Track)
+        .GetField("initialEmbeddedPictures", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly FieldInfo fIO = typeof(Track)
+    .GetField("fileIO", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly PropertyInfo tD = typeof(MetaDataHolder)
+    .GetProperty("tagData", BindingFlags.NonPublic | BindingFlags.Instance);
+
+#endif
     public AtlCoreMetadata(WrappedStream stream)
     {
-        var memstart= System.GC.GetTotalMemory(true);
-        
         using var trackStream = stream.GetStream();
          theTrack = new(trackStream,stream.MimeType.RealMimeTypeToFakeMimeType());
          _cachedPicture = theTrack?.EmbeddedPictures?.Where(x => x != null).Select(x => new ATLCOREPicture(x))
                 .ToList();
+#if hackymemory
+        (cEP.GetValue(theTrack) as ICollection<PictureInfo>).Clear();
+        (iEP.GetValue(theTrack) as ICollection<PictureInfo>).Clear();
+        cEP.SetValue(theTrack, null);
+       iEP.SetValue(theTrack, null);
+        var fio = fIO.GetValue(theTrack);
+        var fioType = fio.GetType();
+        var metaFF = fioType?.GetField("metaData", BindingFlags.Instance | BindingFlags.NonPublic);
+        if(metaFF!= null)
+        {
+            var meta = metaFF.GetValue(fio) as IMetaDataIO;
+            if (meta is MetaDataHolder metaDataHolder)
+            {
+                var tagddata = tD.GetValue(metaDataHolder);
+                if(tagddata is TagData td)
+                {
+                    td.Pictures.Clear();
+                    td.Pictures = null;
+                }
+            }
+        }
+        
+#endif
+
         SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text)).ToList();
-        var memend= System.GC.GetTotalMemory(true);
-
-       
-            Debug.WriteLine("Size of metadata "+(memend-memstart));
-
     }
 
 

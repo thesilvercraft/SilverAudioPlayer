@@ -18,13 +18,13 @@
 				<Button Grid.Row="0" Grid.Column="2" Click="LicenseInfo">License</Button>
 			</Grid>
 			<Button Grid.Row="1" Click="RegisterClick">Register/Unregister in registry</Button>
-			<Button Grid.Row="2" Click="ToggleTransparency">Toggle transparency</Button>
-			<ComboBox Name="TransparencyDown" Grid.Row="3" Grid.Column="1" ItemsSource="{Binding TransparencyTypes}" />
-			<AutoCompleteBox Grid.Row="3" Grid.Column="1" Name="ColorBox" ItemsSource="{Binding AutoSuggestColours}" />
-			<Button Grid.Row="3" Click="ChangeColor">Change window color</Button>
-			<AutoCompleteBox Grid.Row="4" Grid.Column="1" Name="ColorBoxPB" ItemsSource="{Binding AutoSuggestColours}" />
-			<Button Grid.Row="4" Grid.Column="0" Click="ChangeColorPB">Change progress bar</Button>
-			<TextBlock Grid.Row="5" Text="Plugins:" FontSize="25" Margin="5" />
+			<Button Grid.Row="2" Click="ToggleTransparency" Grid.Column="1">Toggle transparency</Button>
+			<ComboBox Name="TransparencyDown" Grid.Row="2" Grid.Column="0" ItemsSource="{Binding TransparencyTypes}" />
+			<AutoCompleteBox Grid.Row="3" Grid.Column="0" Name="ColorBox" ItemsSource="{Binding AutoSuggestColours}" />
+			<Button Grid.Row="3" Click="ChangeColor" Grid.Column="1">Change window color</Button>
+			<AutoCompleteBox Grid.Row="4" Grid.Column="0" Name="ColorBoxPB" ItemsSource="{Binding AutoSuggestColours}" />
+			<Button Grid.Row="4" Grid.Column="1" Click="ChangeColorPB">Change progress bar</Button>
+			<TextBlock Grid.Row="6" Text="Plugins:" FontSize="25" Margin="5" />
 			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="7"
 					 DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2">
 				<ListBox.ItemTemplate>
@@ -41,6 +41,8 @@
 								<Button  IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
 								<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
 								<Button  IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
+								<CheckBox  IsVisible="{Binding IsMusicStatusInterface}" IsCheckedChanged="EnableMSI" IsChecked="{Binding Item.IsStarted,Mode=OneWay}"/>
+
 							</StackPanel>
 						</Grid>
 					</DataTemplate>

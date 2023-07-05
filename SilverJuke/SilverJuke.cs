@@ -24,7 +24,8 @@ public class SilverJuke : IMusicStatusInterface
     public string Licenses => "";
 
     public List<Tuple<Uri, URLType>>? Links => new();
-
+    public bool IsStarted => _IsStarted;
+    private bool _IsStarted;
     public void Dispose()
     {
         app.DisposeAsync();
@@ -33,6 +34,7 @@ public class SilverJuke : IMusicStatusInterface
     IMusicStatusInterfaceListener listener;
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
+        _IsStarted = true;
         this.listener = listener;
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseUrls("http://localhost:36169");
@@ -85,6 +87,7 @@ public class SilverJuke : IMusicStatusInterface
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
+        _IsStarted = false;
         Task.Run(async () =>
         {
             await app?.StopAsync();

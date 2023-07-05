@@ -1,5 +1,6 @@
 ﻿using System.Composition;
 using ATL;
+using ATL.AudioData;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.ConfigScreen;
 using SilverMagicBytes;

@@ -34,6 +34,9 @@ SOFTWARE.*/
 public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
 {
     private readonly List<IConfigurableElement> ConfigurableElements;
+    public bool IsStarted => _IsStarted;
+    private bool _IsStarted;
+
     public FortnitePlayTracker()
     {
         ConfigurableElements = new List<IConfigurableElement>
@@ -102,7 +105,9 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
     StreamReader StreamReader;
     private void NewWrite(object sender, FileSystemEventArgs e)
     {
-        if(Process.GetProcessesByName("FortniteClient-Win64-Shipping").Length ==0)
+        if (!_IsStarted) return;
+
+        if (Process.GetProcessesByName("FortniteClient-Win64-Shipping").Length ==0)
         {
             return;
         }
@@ -133,6 +138,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
+        _IsStarted = true;
         Watcher = new FileSystemWatcher
         {
             Filter = "FortniteGame.log",
@@ -146,6 +152,8 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
+        _IsStarted = false;
+
         Watcher?.Dispose();
         StreamReader?.Dispose();
     }

@@ -22,6 +22,7 @@ namespace SilverAudioPlayerBuilder
             {"LLib","Local library, musiclibrary, Proof-Of-Concept" },
             {"*NA*FLAC","NAudio.Flac, extends NAudio with FLAC support" },
             {"*NA*VORB","NAudio.Vorbis, extends NAudio with Vorbis (OGG) support" },
+            {"CSCORE","CSCore, player, Beta" },
             {"DISCRD","Discord, status interface, Alpha" },
             {"SMTC","System Media Transport Controls, Windows 10+" },
             {"CAD","CD Art Display, Windows 7+" },

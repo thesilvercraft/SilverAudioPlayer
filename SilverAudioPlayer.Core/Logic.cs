@@ -359,7 +359,7 @@ Loop mode: {LoopType}", StopAutoLoading, playerContext.CurrentSong, playerContex
     {
         await Task.Delay(200);
         List<Song> sng = new();
-        var albums = playerContext.Queue.ToList().GroupBy(a => a.Metadata.Album);
+        var albums = playerContext.Queue.ToList().GroupBy(a => a.Metadata?.Album);
         List<Tuple<string?, List<Song>>> fuzzedAlbums = new();
         foreach (var album in albums)
             if (fuzzedAlbums.Find(x => Fuzz.Ratio(x.Item1 ?? "", album.Key ?? "") > 80) is { } group)
