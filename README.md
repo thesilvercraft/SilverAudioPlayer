@@ -44,7 +44,7 @@ Grab the sources from github by:
 
 ### Compile it yourself manually (compiles quickly compared to webbrowsers)
 Grab the sources from github by:  
-`git clone https://github.com/thesilvercraft/SilverAudioPlayer.git`  
+`git clone --recurse-submodules https://github.com/thesilvercraft/SilverAudioPlayer.git`  
 `cd SilverAudioPlayer\SilverAudioPlayer.Avalonia`  
 And compile it yourself (that's why open source is good)  
 `dotnet build`  
