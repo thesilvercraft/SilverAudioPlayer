@@ -57,13 +57,13 @@
 		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
 		<!--ChromeCast (POC)-->
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
-		<!--VLC (Alpha) BROKEN BECAUSE OF https://github.com/dotnet/sdk/issues/30725-->
-		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
+		<!--VLC (Alpha)-->
+		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
-<!--       <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
+       <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
 		<!--Fortnite - windows (POC)-->
-<!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)FRT</DefineConstants>
 		<!--CD Art Display - windows 7+-->
 <!--    <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
 		<!--LINUX ONLY-->
@@ -71,12 +71,18 @@
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
 		<!-- sync plugin  - POC -->
     	<DefineConstants>$(DefineConstants)LSync</DefineConstants>
+		<!-- linux platform - POC -->
+		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net6.0-windows7</TargetFramework>
 		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net6.0-windows10.0.18362.0</TargetFramework>
+
 		<EnableWindowsTargeting Condition="$(TargetFramework.Contains('windows'))">true</EnableWindowsTargeting>
+		<PlatformTarget Condition="$(TargetFramework.Contains('windows'))">x64</PlatformTarget>
+		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win10-x64</RuntimeIdentifiers>
+
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
@@ -91,6 +97,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj"  Condition="$(DefineConstants.Contains('LPlatform'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />

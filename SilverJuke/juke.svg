@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="1024px" height="1024px" viewBox="0 0 1024 1024" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1" id="gradient_1">
+      <stop offset="0%" stop-color="#6969FF" />
+      <stop offset="100%" stop-color="#696969" />
+    </linearGradient>
+    <path d="M1024 0L1024 0L1024 1024L0 1024L0 0L1024 0Z" id="path_1" />
+    <path d="M170 0L170 0L170 170L0 170L0 0L170 0Z" id="path_2" />
+    <path d="M92 0C96.4189 0 100 3.58112 100 8L100 17C100 21.4189 96.4189 25 92 25L8 25C3.58112 25 0 21.4189 0 17L0 8C0 3.58112 3.58112 0 8 0L92 0Z" id="path_3" />
+    <path d="M92 28C96.4189 28 100 31.5811 100 36L100 45C100 49.4189 96.4189 53 92 53L8 53C3.58112 53 0 49.4189 0 45L0 36C0 31.5811 3.58112 28 8 28L92 28Z" id="path_4" />
+    <path d="M92 56C96.4189 56 100 59.5811 100 64L100 73C100 77.4189 96.4189 81 92 81L8 81C3.58112 81 0 77.4189 0 73L0 64C0 59.5811 3.58112 56 8 56L92 56Z" id="path_5" />
+    <path d="M92 84C96.4189 84 100 87.5811 100 92L100 101C100 105.419 96.4189 109 92 109L8 109C3.58112 109 0 105.419 0 101L0 92C0 87.5811 3.58112 84 8 84L92 84Z" id="path_6" />
+    <path d="M92 112C96.4189 112 100 115.581 100 120L100 129C100 133.419 96.4189 137 92 137L8 137C3.58112 137 0 133.419 0 129L0 120C0 115.581 3.58112 112 8 112L92 112Z" id="path_7" />
+    <path d="M92 140C96.4189 140 100 143.581 100 148L100 157C100 161.419 96.4189 165 92 165L8 165C3.58112 165 0 161.419 0 157L0 148C0 143.581 3.58112 140 8 140L92 140Z" id="path_8" />
+    <clipPath id="clip_1">
+      <use xlink:href="#path_1" />
+    </clipPath>
+    <clipPath id="clip_2">
+      <use xlink:href="#path_2" />
+    </clipPath>
+    <clipPath id="clip_3">
+      <use xlink:href="#path_3" />
+    </clipPath>
+    <clipPath id="clip_4">
+      <use xlink:href="#path_4" />
+    </clipPath>
+    <clipPath id="clip_5">
+      <use xlink:href="#path_5" />
+    </clipPath>
+    <clipPath id="clip_6">
+      <use xlink:href="#path_6" />
+    </clipPath>
+    <clipPath id="clip_7">
+      <use xlink:href="#path_7" />
+    </clipPath>
+    <clipPath id="clip_8">
+      <use xlink:href="#path_8" />
+    </clipPath>
+  </defs>
+  <g id="Icon 1024" clip-path="url(#clip_1)">
+    <path d="M1024 0L1024 0L1024 1024L0 1024L0 0L1024 0Z" id="Icon-1024" fill="#000000" stroke="none" />
+    <path d="M327 156L702 156L702 176L728 176L728 208L746 208L746 526L768 526L768 610L746 610L746 926L726 926L726 956L644 956L644 938L382 938L382 956L296 956L296 926L278 926L278 610L260 610L260 526L278 526L278 206L294 206L294 176L324 175.5L324 156L327 156Z" id="Vector" fill="#FFFFFF" fill-rule="evenodd" stroke="none" />
+    <path d="M296.707 211L324 211L324 179.5L701.5 179.5L701.5 211L726 211L726 542L751.5 542L751.5 598.5L726 598.5L726 920.5L296 920.5L296 598.5L278.5 598.5L278.5 542L296 542L296.707 211Z" id="Vector-2" fill="#000000" fill-rule="evenodd" stroke="none" />
+    <path d="M362 213.646L666 214L666 245L702.5 245L702.5 491L666 491L326.5 491L326.5 245L362 245L362 213.646Z" id="Vector-3" fill="#D3D3D3" fill-rule="evenodd" stroke="none" />
+    <path d="M365 247L664 247L664 474L365 474L365 247Z" id="Rectangle" fill="#D32F2F" fill-rule="evenodd" stroke="none" />
+    <path d="M379 265L649 265L649 436L379 436L379 265Z" id="Rectangle-2" fill="#FFFFFF" fill-rule="evenodd" stroke="none" />
+    <g id="icon 1025" clip-path="url(#clip_2)" transform="translate(379 265)">
+      <path d="M170 0L170 0L170 170L0 170L0 0L170 0Z" id="icon-1025" fill="none" stroke="none" />
+      <path d="M0 85C0 38.0558 38.0558 0 85 0C131.944 0 170 38.0558 170 85C170 131.944 131.944 170 85 170C38.0558 170 0 131.944 0 85Z" id="Circle" fill="url(#gradient_1)" fill-rule="evenodd" stroke="none" />
+      <path d="M53.125 85C53.125 67.3959 67.3959 53.125 85 53.125C102.604 53.125 116.875 67.3959 116.875 85C116.875 102.604 102.604 116.875 85 116.875C67.3959 116.875 53.125 102.604 53.125 85Z" id="Circle" fill="#FF9900" fill-rule="evenodd" stroke="none" />
+      <path d="M60.2083 85C60.2083 71.3079 71.3079 60.2083 85 60.2083C98.692 60.2083 109.792 71.3079 109.792 85C109.792 98.692 98.692 109.792 85 109.792C71.3079 109.792 60.2083 98.692 60.2083 85Z" id="Circle" fill="#00FF66" fill-rule="evenodd" stroke="none" />
+      <path d="M67.2917 85C67.2917 75.22 75.22 67.2917 85 67.2917C94.7801 67.2917 102.708 75.22 102.708 85C102.708 94.7801 94.7801 102.708 85 102.708C75.22 102.708 67.2917 94.7801 67.2917 85Z" id="Circle" fill="#00F0FF" fill-rule="evenodd" stroke="none" />
+      <path d="M74.375 85C74.375 79.132 79.132 74.375 85 74.375C90.868 74.375 95.625 79.132 95.625 85C95.625 90.868 90.868 95.625 85 95.625C79.132 95.625 74.375 90.868 74.375 85Z" id="Circle" fill="#000000" fill-rule="evenodd" stroke="none" />
+    </g>
+    <g id="Group-2" transform="translate(549 268)">
+      <g id="Rectangle">
+        <use stroke="none" fill="#F44336" xlink:href="#path_3" />
+        <g clip-path="url(#clip_3)">
+          <use xlink:href="#path_3" fill="none" stroke="#808080" stroke-width="2" />
+        </g>
+      </g>
+      <g id="Rectangle-8">
+        <use stroke="none" fill="#F44336" xlink:href="#path_4" />
+        <g clip-path="url(#clip_4)">
+          <use xlink:href="#path_4" fill="none" stroke="#808080" stroke-width="2" />
+        </g>
+      </g>
+      <g id="Rectangle-9">
+        <use stroke="none" fill="#F44336" xlink:href="#path_5" />
+        <g clip-path="url(#clip_5)">
+          <use xlink:href="#path_5" fill="none" stroke="#808080" stroke-width="2" />
+        </g>
+      </g>
+      <g id="Rectangle-10">
+        <use stroke="none" fill="#F44336" xlink:href="#path_6" />
+        <g clip-path="url(#clip_6)">
+          <use xlink:href="#path_6" fill="none" stroke="#808080" stroke-width="2" />
+        </g>
+      </g>
+      <g id="Rectangle-11">
+        <use stroke="none" fill="#F44336" xlink:href="#path_7" />
+        <g clip-path="url(#clip_7)">
+          <use xlink:href="#path_7" fill="none" stroke="#808080" stroke-width="2" />
+        </g>
+      </g>
+      <g id="Rectangle-12">
+        <use stroke="none" fill="#F44336" xlink:href="#path_8" />
+        <g clip-path="url(#clip_8)">
+          <use xlink:href="#path_8" fill="none" stroke="#808080" stroke-width="2" />
+        </g>
+      </g>
+    </g>
+    <path d="M326 599L365 599L365 890L326 890L326 599Z" id="Rectangle-3" fill="#AAAAAA" fill-rule="evenodd" stroke="none" />
+    <path d="M663 599L702 599L702 890L663 890L663 599Z" id="Rectangle-3" fill="#AAAAAA" fill-rule="evenodd" stroke="none" />
+    <path d="M379 729L641 729L641 890L379 890L379 729Z" id="Rectangle-4" fill="#AAAAAA" fill-rule="evenodd" stroke="none" />
+    <path d="M326 697L365 697L365 729L326 729L326 697Z" id="Rectangle-5" fill="#448AFF" fill-rule="evenodd" stroke="none" />
+    <path d="M663 700L702 700L702 732L663 732L663 700Z" id="Rectangle-6" fill="#448AFF" fill-rule="evenodd" stroke="none" />
+    <path d="M365 599L664 599L664 700L365 700L365 599Z" id="Rectangle-7" fill="#464646" fill-rule="evenodd" stroke="none" />
+    <g id="Group" transform="translate(559 616)">
+      <path d="M13.9211 0C18.3399 0 21.9211 3.58112 21.9211 8L21.9211 10.6974C21.9211 15.1162 18.3399 18.6974 13.9211 18.6974L8 18.6974C3.58112 18.6974 0 15.1162 0 10.6974L0 8C0 3.58112 3.58112 0 8 0L13.9211 0Z" id="Rectangle-8" fill="#00B466" stroke="none" />
+      <path d="M41 7.87032e-05C45.4189 7.87032e-05 49 3.5812 49 8.00008L49 10.6974C49 15.1163 45.4189 18.6974 41 18.6974L35.0789 18.6974C30.6601 18.6974 27.0789 15.1163 27.0789 10.6974L27.0789 8.00008C27.0789 3.5812 30.6601 7.87032e-05 35.0789 7.87032e-05L41 7.87032e-05Z" id="Rectangle-9" fill="#00B466" stroke="none" />
+      <path d="M13.9211 23.8553C18.3399 23.8553 21.9211 27.4364 21.9211 31.8553L21.9211 34.5526C21.9211 38.9715 18.3399 42.5526 13.9211 42.5526L8 42.5526C3.58112 42.5526 0 38.9715 0 34.5526L0 31.8553C0 27.4364 3.58112 23.8553 8 23.8553L13.9211 23.8553Z" id="Rectangle-8" fill="#00B466" stroke="none" />
+      <path d="M41 23.8553C45.4189 23.8553 49 27.4364 49 31.8553L49 34.5526C49 38.9715 45.4189 42.5526 41 42.5526L35.0789 42.5526C30.6601 42.5526 27.0789 38.9715 27.0789 34.5526L27.0789 31.8553C27.0789 27.4364 30.6601 23.8553 35.0789 23.8553L41 23.8553Z" id="Rectangle-9" fill="#00B466" stroke="none" />
+      <path d="M68.3211 0.5C72.74 0.5 76.3211 4.08112 76.3211 8.5L76.3211 11.1974C76.3211 15.6162 72.74 19.1974 68.3211 19.1974L62.4 19.1974C57.9811 19.1974 54.4 15.6162 54.4 11.1974L54.4 8.5C54.4 4.08112 57.9811 0.5 62.4 0.5L68.3211 0.5Z" id="Rectangle-10" fill="#00B466" stroke="none" />
+      <path d="M68.3212 23.7C72.7401 23.7 76.3212 27.2811 76.3212 31.7L76.3212 34.3974C76.3212 38.8163 72.7401 42.3974 68.3212 42.3974L62.4001 42.3974C57.9813 42.3974 54.4001 38.8163 54.4001 34.3974L54.4001 31.7C54.4001 27.2811 57.9813 23.7 62.4001 23.7L68.3212 23.7Z" id="Rectangle-11" fill="#00B466" stroke="none" />
+      <path d="M13.9211 47.9C18.3399 47.9 21.9211 51.4811 21.9211 55.9L21.9211 58.5974C21.9211 63.0163 18.3399 66.5974 13.9211 66.5974L8 66.5974C3.58112 66.5974 0 63.0163 0 58.5974L0 55.9C0 51.4811 3.58112 47.9 8 47.9L13.9211 47.9Z" id="Rectangle-12" fill="#00B466" stroke="none" />
+      <path d="M40.9211 47.9C45.3399 47.9 48.9211 51.4811 48.9211 55.9L48.9211 58.5974C48.9211 63.0163 45.3399 66.5974 40.9211 66.5974L35 66.5974C30.5811 66.5974 27 63.0163 27 58.5974L27 55.9C27 51.4811 30.5811 47.9 35 47.9L40.9211 47.9Z" id="Rectangle-13" fill="#00B466" stroke="none" />
+      <path d="M68.021 47.9C72.4399 47.9 76.021 51.4811 76.021 55.9L76.021 58.5974C76.021 63.0163 72.4399 66.5974 68.021 66.5974L62.1 66.5974C57.6811 66.5974 54.1 63.0163 54.1 58.5974L54.1 55.9C54.1 51.4811 57.6811 47.9 62.1 47.9L68.021 47.9Z" id="Rectangle-14" fill="#00B466" stroke="none" />
+    </g>
+  </g>
+</svg>

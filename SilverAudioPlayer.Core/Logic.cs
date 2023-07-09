@@ -196,7 +196,7 @@ public class Logic<T> where T : PlayerContext
                 return;
             }
         }
-
+        Player?.Stop();
         Player = await GetPlayerFromStream(playerContext.CurrentSong.Stream);
 
         if (Player == null)

@@ -25,7 +25,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
                 {
                     var connection = new Connection(Address.Session!);
                     await connection.ConnectAsync();
-                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.silveraudioplayer.instance"+Environment.ProcessId);
+                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.sap.i"+Environment.ProcessId);
                     await connection.RegisterObjectAsync(this);
                 }
                 catch (Exception e)
@@ -91,16 +91,17 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         public Task SeekAsync(long Offset)
         {
-            Debug.WriteLine("[MPRIS] Failing to SeekAsync");
-
-            throw new NotImplementedException();
+            Debug.WriteLine("[MPRIS] SeekAsync");
+            Env.SetPosition(Env.GetPosition()+(Offset/1000000d));
+            return Task.CompletedTask;
         }
 
         public Task SetPositionAsync(ObjectPath TrackId, long Position)
         {
-            Debug.WriteLine("[MPRIS] Failing to SetPositionAsync");
+            Debug.WriteLine("[MPRIS] SetPositionAsync");
+            Env.SetPosition(Position);
+            return Task.CompletedTask;
 
-            throw new NotImplementedException();
         }
 
         public Task OpenUriAsync(string Uri)
@@ -149,7 +150,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
                     return 1;
                 //Metadata
                 case "position":
-                    return (long)Env.GetPosition()*1000;
+                    return (long)Env.GetPosition()*1000*1000;
                 case "volume":
                     return Env.GetVolume() / 255;
                 case "loopstatus":
@@ -171,7 +172,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
             var track = Env?.GetCurrentTrack();
             return new Dictionary<string, object>()
             {
-                {"mpris:length",( (long?)Env?.GetDuration()??10)*1000},
+                {"mpris:length",( (long?)Env?.GetDuration()??10)*1000*1000},
                 {"mpris:trackid", new ObjectPath("/org/silvercraft/t"+track?.Guid.ToString("N"))},
                 {"mpris:artUrl", "http://localhost:36169/albumart"}, 
                 {"xesam:title", track?.Metadata?.Title ?? "nothing"},
@@ -199,6 +200,7 @@ CanGoNext = true,
 CanGoPrevious = true,
 CanSeek = true,
 Metadata = GetMetadata(),
+Volume = Env?.GetVolume()/100d ?? 100d
 
             });
         }
@@ -219,7 +221,14 @@ Metadata = GetMetadata(),
 
         public Task SetAsync(string prop, object val)
         {
-            Debug.WriteLine("[MPRIS] NOT SETTING "+prop);
+            if (prop == "Volume" && val is double v)
+            {
+                Env.SetVolume((byte)(v*100));
+            }
+            else
+            {
+                Debug.WriteLine("[MPRIS] NOT SETTING "+prop);
+            }
             return Task.CompletedTask;
         }
 

@@ -10,33 +10,40 @@ using System.Net.Sockets;
 using System.Net;
 using GenHTTP.Modules.Practices;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Xml.Serialization;
+using SilverAudioPlayer.Any.PlayProvider.ChromeCast;
+using SilverConfig;
 
 namespace SilverAudioPlayer.Any.PlayProvider.ChromeCast
 {
     public class ChromeCastSettings: INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
     {
-        public Guid ChromeCast { get; set; }
+      [Comment("Name or guid or ip of chromecast, if null or empty it will choose the first avaliable chromecast")]
 
-        public bool AllowedToRead => throw new NotImplementedException();
+      public string ChromeCast { get; set; } = "";
+        void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
+        {
+          PropertyChanged?.Invoke(e, a);
+        }
+        [XmlIgnore] public bool _AllowedRead = true;
+
+        [XmlIgnore] public bool AllowedToRead => _AllowedRead;
 
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
         }
-    }
+    
+    
 
     [Export(typeof(IPlayProvider))]
 
     public class ChromeCastPlayProvider : IPlayProvider,IAmOnceAgainAskingYouForYourMemory
     {
-        public ChromeCastPlayProvider()
-        {
-            var a = new ChromeCastSettings();
-            _ObjectsToRememberForMe = new ObjectToRemember[] { new(new("443f9f7e-9cfe-4f7c-a6d5-edced58542ea"),a) };
-        }
 
-        public IReadOnlyList<MimeType>? SupportedMimes =>new MimeType[] { KnownMimes.AACMime, KnownMimes.WAVMime, KnownMimes.FLACMime,KnownMimes.MP3Mime,KnownMimes.OGGMime };
+        public ObjectToRemember[] ObjectsToRememberForMe =>new ObjectToRemember[] {  ConfigObject};
+        public ObjectToRemember ConfigObject = new(Guid.Parse("443f9f7e-9cfe-4f7c-a6d5-edced58542ea"), new ChromeCastSettings());
+
+        private ChromeCastSettings _settings=new(); public IReadOnlyList<MimeType>? SupportedMimes =>new MimeType[] { KnownMimes.AACMime, KnownMimes.WAVMime, KnownMimes.FLACMime,KnownMimes.MP3Mime,KnownMimes.OGGMime };
 
         public IPlayProviderListner ProviderListener { set => _=value; }
 
@@ -733,8 +740,6 @@ Public License instead of this License.  But first, please read
         new(new Uri("https://github.com/kakone/GoogleCast"), URLType.LibraryCode),
 
         };
-        ObjectToRemember[] _ObjectsToRememberForMe;
-        public ObjectToRemember[] ObjectsToRememberForMe => _ObjectsToRememberForMe;
 
         public bool CanPlayFile(WrappedStream stream)
         {
@@ -746,13 +751,15 @@ Public License instead of this License.  But first, please read
         {
             //TODO IMPLEMENT PROPER CHECK FOR CHROMECASTS
             //If you get an error saying `System.InvalidOperationException: 'Sequence contains no elements` on the line below no chromecasts were detected
-            var chromecast = Task.Run(async () => { return await (new DeviceLocator().FindReceiversAsync()); }).GetAwaiter().GetResult().First();
+            var chromecasts = Task.Run(async () => { return await (new DeviceLocator().FindReceiversAsync()); }).GetAwaiter().GetResult().ToList();
+            var c = ((ChromeCastSettings)ConfigObject.Value).ChromeCast;
+            IReceiver? chromecast = !string.IsNullOrWhiteSpace(c) ? chromecasts.First(x=>x.Id==c || x.FriendlyName ==c || x.IPEndPoint.Address.ToString()==c) : chromecasts.First();
             var sender = new Sender();
             Task.Run(async () =>
-            {
-                await sender.ConnectAsync(chromecast);
-            }).GetAwaiter().GetResult();
-            return new ChromeCastPlayer(stream,sender ,chromecast) ;
+             {
+                 await sender.ConnectAsync(chromecast);
+             }).GetAwaiter().GetResult();
+             return new ChromeCastPlayer(stream,sender ,chromecast) ;
         }
 
         public Task OnStartup()
