@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="300mm"
+   height="200mm"
+   viewBox="0 0 300 200"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="diybuild.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview15947"
+     pagecolor="#000000"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="1.0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.64693624"
+     inkscape:cx="286.73614"
+     inkscape:cy="446.72099"
+     inkscape:window-width="2201"
+     inkscape:window-height="869"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     inkscape:pageshadow="0" />
+  <defs
+     id="defs15942">
+    <rect
+       x="346.48367"
+       y="63.394489"
+       width="870.03473"
+       height="473.27267"
+       id="rect10951" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath20697-9">
+      <path
+         d="M 0,551.986 H 530.973 V 0 H 0 Z"
+         id="path20695-2" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath21769-0">
+      <path
+         d="M 0,576 H 576 V 0 H 0 Z"
+         id="path21767-6" />
+    </clipPath>
+    <rect
+       x="85.254662"
+       y="49.185383"
+       width="1123.9634"
+       height="778.56949"
+       id="rect12168" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,-49.198572,80.406281)"
+       id="text10949"
+       style="font-weight:500;font-size:106.667px;font-family:Dubai;-inkscape-font-specification:'Dubai Medium';white-space:pre;shape-inside:url(#rect10951);display:inline;fill:#00ffff;fill-opacity:0.589147;stroke-width:4.78866" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,-2.890303,44.250249)"
+       id="text12166"
+       style="font-weight:500;font-size:192px;font-family:Dubai;-inkscape-font-specification:'Dubai Medium';white-space:pre;shape-inside:url(#rect12168);display:inline;fill:#00ffff;fill-opacity:0.589147;stroke-width:4.78866"><tspan
+         x="85.253906"
+         y="291.81923"
+         id="tspan422"><tspan
+           style="font-weight:normal;font-size:266.667px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';fill:#ff0000"
+           id="tspan418">DIY </tspan><tspan
+           style="font-weight:normal;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans'"
+           id="tspan420">build</tspan></tspan></text>
+  </g>
+</svg>

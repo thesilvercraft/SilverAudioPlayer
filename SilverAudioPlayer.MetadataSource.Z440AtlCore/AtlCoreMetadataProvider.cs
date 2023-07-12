@@ -14,7 +14,7 @@ public class AtlCoreFileMetadataProvider : IMetadataProvider,
 {
     private readonly List<IConfigurableElement> ConfigurableElements;
     public ObjectToRemember ConfigObject = new(Guid.Parse("97db82ee-ac2c-4772-b3f6-ca45957316a8"), new ZAtlCoreConfig());
-    public ObjectToRemember[] ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
+    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
 
     public AtlCoreFileMetadataProvider()
     {

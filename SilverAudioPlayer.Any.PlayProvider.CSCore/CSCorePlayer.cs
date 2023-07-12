@@ -129,7 +129,10 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
 
         private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
         {
-            TrackEnd?.Invoke(sender, e);
+            Task.Run(() =>
+            {
+                TrackEnd?.Invoke(sender, e);
+            });
         }
     }
 }

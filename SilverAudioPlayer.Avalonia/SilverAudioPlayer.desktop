@@ -1,0 +1,20 @@
+[Desktop Entry]
+Comment[en_GB]=The SilverCraft Audio Player
+Comment=The SilverCraft Audio Player
+Path=/opt/silveraudioplayer
+Exec=/usr/bin/SilverAudioPlayer.Avalonia %U
+GenericName[en_GB]=Audio player
+GenericName=Audio player
+Icon=sap
+Keywords=Player;Audio;Dotnet;
+MimeType=x-content/audio-player;audio/vnd.wave;audio/wav;audio/x-wav;audio/x-vorbis+ogg;audio/ogg;application/ogg;audio/x-aiff;audio/mp2;audio/x-midi;audio/mp4;audio/aac;audio/wave;audio/flac;audio/mpeg;audio/vorbis;audio/aiff;video/mpeg;audio/midi;video/mp4;
+Name[en_GB]=SilverAudioPlayer
+Name=SilverAudioPlayer
+NoDisplay=false
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-Protocols=http,https
+X-KDE-SubstituteUID=false
+Categories=Audio;Midi;Music;

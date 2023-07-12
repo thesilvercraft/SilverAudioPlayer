@@ -60,11 +60,8 @@ public class LinuxWakeLock : IWakeLockProvider
             if (Cookie is not null)
             {
                 Debug.WriteLine("Invalidate cookie {0}", Cookie);
-
                 await _screenSaver.UnInhibitAsync((uint)Cookie);
             }
         });      
     }
-
-  
 }

@@ -119,8 +119,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
             return (PlaybackState)x;
 
         }
-        return  PlaybackState.Stopped;
-
+        return PlaybackState.Stopped;
     }
 
     public RepeatState GetRepeat() => mainWindow.dc.LoopType;
@@ -190,5 +189,5 @@ SilverAudioPlayer.Avalonia
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ";
 
-    public string[] KnownConfigFileLocations => new[] { MainWindow.ConfigPath, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SilverCraftAvaloniav1Shared", "dotfile.json") };
+    public string[] KnownConfigFileLocations => new[] { ConfigPath.GetPath("SilverAudioPlayer.Config.xml"), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SilverCraftAvaloniav1Shared", "dotfile.json") };
 }

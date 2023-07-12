@@ -40,7 +40,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.ChromeCast
     public class ChromeCastPlayProvider : IPlayProvider,IAmOnceAgainAskingYouForYourMemory
     {
 
-        public ObjectToRemember[] ObjectsToRememberForMe =>new ObjectToRemember[] {  ConfigObject};
+        public IEnumerable<ObjectToRemember> ObjectsToRememberForMe =>new ObjectToRemember[] {  ConfigObject};
         public ObjectToRemember ConfigObject = new(Guid.Parse("443f9f7e-9cfe-4f7c-a6d5-edced58542ea"), new ChromeCastSettings());
 
         private ChromeCastSettings _settings=new(); public IReadOnlyList<MimeType>? SupportedMimes =>new MimeType[] { KnownMimes.AACMime, KnownMimes.WAVMime, KnownMimes.FLACMime,KnownMimes.MP3Mime,KnownMimes.OGGMime };

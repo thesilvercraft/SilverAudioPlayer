@@ -11,6 +11,9 @@
 		<None Remove=".gitignore" />
 		<None Remove="icon.ico" />
 		<None Remove="icon.png" />
+		<None Update="SilverAudioPlayer.desktop">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="icon.svg" />
@@ -23,7 +26,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="icon.png" />
-		<EmbeddedResource Include="icon.svg" />
+		<EmbeddedResource Include="icon.svg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 	<ItemGroup>
 		<!--This helps with theme dll-s trimming.
@@ -58,7 +63,7 @@
 		<!--ChromeCast (POC)-->
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
 		<!--VLC (Alpha)-->
-		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
        <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
@@ -97,7 +102,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj"  Condition="$(DefineConstants.Contains('LPlatform'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />

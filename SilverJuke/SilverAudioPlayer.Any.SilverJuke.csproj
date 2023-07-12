@@ -16,4 +16,8 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="juke.svg" />
+	  <EmbeddedResource Include="juke.svg" />
+	</ItemGroup>
 </Project>

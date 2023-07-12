@@ -88,8 +88,7 @@ public partial class MainWindow : Window
 {
     public Config config;
 
-    public static readonly string ConfigPath =
-        Path.Combine(SilverAudioPlayer.Shared.ConfigPath.BasePath, "SilverAudioPlayer.Config.xml");
+    private readonly string _configPath = ConfigPath.GetPath("SilverAudioPlayer.Config.xml");
 
     public readonly MainWindowContext dc;
     public SapAvaloniaPlayerEnviroment Env { get; }
@@ -131,8 +130,8 @@ public partial class MainWindow : Window
         mainListBox.PointerPressed += TreeView_PointerPressed1;
         reader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
         Env = new SapAvaloniaPlayerEnviroment(this);
-        if (!File.Exists(ConfigPath)) reader.Write(new Config(), ConfigPath);
-        config = reader.Read(ConfigPath) ?? new Config();
+        if (!File.Exists(_configPath)) reader.Write(new Config(), _configPath);
+        config = reader.Read(_configPath) ?? new Config();
         dc = new MainWindowContext(this)
         {
             SetLoopType = lt =>
@@ -141,7 +140,7 @@ public partial class MainWindow : Window
                 {
                     config.LoopType = lt;
                     config._AllowedRead = false;
-                    reader.Write(config, ConfigPath);
+                    reader.Write(config, _configPath);
                     config._AllowedRead = true;
                 }
 
@@ -156,7 +155,7 @@ public partial class MainWindow : Window
                 dc?.RaisePropertyChanged(nameof(dc.Volume));
                 if (!config._AllowedRead) return;
                 config._AllowedRead = false;
-                reader.Write(config, ConfigPath);
+                reader.Write(config, _configPath);
                 config._AllowedRead = true;
             },
             GetVolume = () => config.Volume,
@@ -327,7 +326,7 @@ public partial class MainWindow : Window
                         config.PreferedPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
 
                         config._AllowedRead = false;
-                        reader.Write(config, ConfigPath);
+                        reader.Write(config, _configPath);
                         config._AllowedRead = true;
 
                         return w.Selected;
@@ -354,7 +353,7 @@ public partial class MainWindow : Window
                     config.PreferedPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
 
                     config._AllowedRead = false;
-                    reader.Write(config, ConfigPath);
+                    reader.Write(config, _configPath);
                     config._AllowedRead = true;
 
                     return w.Selected;

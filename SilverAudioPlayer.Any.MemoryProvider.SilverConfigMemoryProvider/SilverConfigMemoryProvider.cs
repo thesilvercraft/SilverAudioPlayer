@@ -3,6 +3,7 @@ using SilverAudioPlayer.Shared;
 using SilverConfig;
 using System.ComponentModel;
 using System.Composition;
+using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Security.Cryptography.X509Certificates;
@@ -12,30 +13,29 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
     [Export(typeof(IWillProvideMemory))]
     public class SilverConfigMemoryProvider : IWillProvideMemory, IWillTellYouWhereIStoreTheConfigs
     {
-        public void MakeSureAllIsWell()
-        {
-        }
+   
         List<ObjectClass> Classes = new();
-        string basedir = Path.Combine(ConfigPath.BasePath, "Pandora");
+        readonly string _basedir = ConfigPath.GetPath("Pandora");
 
         public void RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember)
         {
-            if(!Directory.Exists(basedir))
+            if(!Directory.Exists(_basedir))
             {
-                Directory.CreateDirectory(basedir);
+                Directory.CreateDirectory(_basedir);
             }
             foreach (var obj in objectsToRemember)
             {
-                var loc = Path.Combine(basedir, obj.Id.ToString() + ".xml");
-                var t = obj.Value?.GetType();
-                if(t==null)
+                try
                 {
-                    continue;
-                }
-                Type genericType = typeof(CommentXmlConfigReaderNotifyWhenChanged<>).MakeGenericType(new[] { t });
-                var reader = Activator.CreateInstance(genericType);
-                if (reader != null && genericType!=null && reader.GetType() == genericType)
-                {
+                    var loc = GetConfig(obj.Id);
+                    var t = obj.Value?.GetType();
+                    if(t==null)
+                    {
+                        continue;
+                    }
+                    var genericType = typeof(CommentXmlConfigReaderNotifyWhenChanged<>).MakeGenericType(new[] { t });
+                    var reader = Activator.CreateInstance(genericType);
+                    if (reader == null || genericType == null || reader.GetType() != genericType) continue;
                     if(!File.Exists(loc))
                     {
                         genericType?.GetMethod("Write")?.Invoke(reader, new object[] { obj.Value, loc });
@@ -54,13 +54,16 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
                     }
                     Classes.Add(new(obj, reader, loc, genericType));
                 }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                }
             }
-            
         }
 
         public string GetConfig(Guid id)
         {
-            return Path.Combine(basedir, id.ToString() + ".xml");
+            return Path.Combine(_basedir, id + ".xml");
         }
     }
     public record class ObjectClass(ObjectToRemember obj, object config, string loc, Type  genericType  );

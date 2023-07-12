@@ -15,13 +15,15 @@ public class SilverJuke : IMusicStatusInterface
 {
     public string Name => "SilverJuke";
 
-    public string Description => "SilverJuke";
+    public string Description => "A SilverJuke server. Provides a simple http interface to control the audio player. You can access it yourself at http://localhost:36169";
 
-    public WrappedStream? Icon => null;
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SilverJuke).Assembly,
+        "SilverAudioPlayer.Any.SilverJuke.juke.svg");
 
-    public Version? Version => null;
 
-    public string Licenses => "";
+    public Version? Version => typeof(SilverJuke).Assembly.GetName().Version;    
+
+    public string Licenses => "SilverJuke is licensed under the GPL 3.0 license.\n";
 
     public List<Tuple<Uri, URLType>>? Links => new();
     public bool IsStarted => _IsStarted;
@@ -46,8 +48,8 @@ public class SilverJuke : IMusicStatusInterface
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-        app.MapGet("/state", () => listener.GetState()).WithName("GetState");
-        app.MapGet("/track", () => listener.GetCurrentTrack()).WithName("GetCurrentTrack");
+        app.MapGet("/state", listener.GetState).WithName("GetState");
+        app.MapGet("/track", listener.GetCurrentTrack).WithName("GetCurrentTrack");
         app.MapGet("/duration", () => listener.GetPosition).WithName("GetDuration");
         app.MapGet("/position", listener.GetPosition).WithName("GetPosition");
         app.MapPost("/position", listener.SetPosition).WithName("SetPosition");

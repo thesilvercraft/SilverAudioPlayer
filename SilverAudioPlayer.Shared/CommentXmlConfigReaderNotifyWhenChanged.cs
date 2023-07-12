@@ -35,26 +35,25 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
         j.Changed += (x, y) =>
         {
             if (y.ChangeType != WatcherChangeTypes.Changed) return;
-            if (y.FullPath == fp && c.AllowedToRead)
+            if (y.FullPath != fp || !c.AllowedToRead) return;
+            try
             {
-                try
-                {
-                    var c2 = base.Read(path);
-                    var t = typeof(T);
-                    foreach (var a in t.GetProperties())
-                        if (a.Name != "AllowedToRead" && a.CanRead && a.GetValue(c)?.Equals(a.GetValue(c2)) != true)
-                        {
-                            if (a.CanWrite)
-                                a.SetValue(c, a.GetValue(c2));
-                            else
-                                Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
-                            c?.PropertyChanged(this, new PropertyChangedEventArgs(a.Name));
-                        }
-                }
-                 catch
-                {
-//dont kill entire app for that
-                }
+                var c2 = base.Read(path);
+                var t = typeof(T);
+                foreach (var a in t.GetProperties())
+                    if (a.Name != "AllowedToRead" && a.CanRead && a.GetValue(c)?.Equals(a.GetValue(c2)) != true)
+                    {
+                        if (a.CanWrite)
+                            a.SetValue(c, a.GetValue(c2));
+                        else
+                            Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
+                        c?.PropertyChanged(this, new PropertyChangedEventArgs(a.Name));
+                    }
+            }
+            catch (Exception e)
+            {
+                //dont kill entire app for that
+                Debug.WriteLine(e);
             }
         };
         fileSystemWatchers.Add(j);

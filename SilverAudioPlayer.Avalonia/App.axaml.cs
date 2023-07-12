@@ -59,10 +59,21 @@ public class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
-            if (OperatingSystem.IsLinux())
+            if (!File.Exists(Path.Combine(AppContext.BaseDirectory, ".portable")))
             {
-                confdir = Path.Combine(Environment.GetEnvironmentVariable("XDG_CONFIG_HOME")?? Path.Combine(Environment.GetEnvironmentVariable("HOME"),".config"), "SilverAudioPlayer");
+                if (OperatingSystem.IsLinux())
+                {
+                    confdir = Path.Combine(
+                        Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ??
+                        Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".config"), "SilverAudioPlayer");
+                }
+                else if (OperatingSystem.IsWindows())
+                {
+                    confdir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "SilverCraft", "SilverAudioPlayer");
+                }
             }
+
             if (!Directory.Exists(confdir))
             {
                 Directory.CreateDirectory(confdir);

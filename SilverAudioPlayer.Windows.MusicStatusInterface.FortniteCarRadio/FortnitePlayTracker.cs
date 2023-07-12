@@ -83,7 +83,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
     }
 
     public ObjectToRemember ConfigObject = new(Guid.Parse("d11919d0-281a-4fd0-9694-98c9d648dec1"), new FortniteCarRadioConfig());
-    public ObjectToRemember[] ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
+    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
     public string Name => "fORTNITE";
 
     public string Description => "awful plugin do not use";

@@ -122,7 +122,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
     private readonly List<IConfigurableElement> ConfigurableElements;
     public IRememberRichPresenceURLs? richPresenceURLs;
     public ObjectToRemember ConfigObject = new(Guid.Parse("85782940-db9a-404e-9f22-1cea863da536"), new DiscordPlayTrackerConfig());
-    public ObjectToRemember[] ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
+    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
 
 
  

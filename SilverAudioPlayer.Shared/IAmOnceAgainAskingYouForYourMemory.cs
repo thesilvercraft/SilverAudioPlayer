@@ -9,7 +9,7 @@ namespace SilverAudioPlayer.Shared
 {
     public interface IAmOnceAgainAskingYouForYourMemory
     {
-        public ObjectToRemember[] ObjectsToRememberForMe { get; }
+        public IEnumerable<ObjectToRemember> ObjectsToRememberForMe { get; }
     }
     public interface ICanBeToldThatAPartOfMeIsChanged
     {
@@ -41,6 +41,5 @@ namespace SilverAudioPlayer.Shared
     public interface IWillProvideMemory
     {
         public void RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember);
-        public void MakeSureAllIsWell();
     }
 }
