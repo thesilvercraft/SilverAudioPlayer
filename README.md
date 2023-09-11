@@ -1,3 +1,7 @@
+> **Warning**  
+> This project is now hosted on https://gitlab.com/silvercraft/SilverAudioPlayer 
+
+
 ![SilverAudioPlayer logo](https://raw.githubusercontent.com/thesilvercraft/SilverAudioPlayer/master/SilverAudioPlayer.Avalonia/textandlogo.svg)
 ![subtext](https://user-images.githubusercontent.com/46320280/204018020-6b0204a0-5b2d-4306-b6d1-488a7e621faf.svg)
 ![mockup of silveraudioplayer](https://user-images.githubusercontent.com/46320280/204107142-3bd7a10a-0f94-4c1f-80b9-593ece8041a2.svg)
