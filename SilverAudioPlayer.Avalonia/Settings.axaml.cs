@@ -53,8 +53,10 @@ public partial class Settings : Window
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
         this.mainWindow = mainWindow;
-      //  TransparencyDown.SelectedItem =
-   //         WindowExtensions.envBackend.GetEnum<WindowTransparencyLevel>("SAPTransparency") ?? WindowTransparencyLevel.AcrylicBlur;
+        TransparencyLevelHint = WindowExtensions.GetTransparencyLevelsFromString( WindowExtensions.envBackend.GetString("SAPTransparency")?? "Mica,AcrylicBlur,None");
+
+        TransparencyDown.SelectedItem = TransparencyLevelHint[0];
+
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
         ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
@@ -309,7 +311,7 @@ public partial class Settings : Window
         var t = ColorBoxPB.Text;
         Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor",t));
        
-        mainWindow.SetPBColor(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
+        mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
 
     }
 

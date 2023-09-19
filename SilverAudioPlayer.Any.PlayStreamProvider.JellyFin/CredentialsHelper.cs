@@ -255,19 +255,10 @@ public class JellyFinHelper
        // return new WrappedJellyFinStream(audioClient, userDto, dto);
       // var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
       // Debug.WriteLine(goofyah);
-        
-        Uri baseUri = new Uri(settings.BaseUrl);
-        Uri myUri = new Uri(baseUri, $"/Items/{dto.Id}/Download?api_key={settings.AccessToken}");
-        return new WrappedSusHttpStream(() =>
-        {
-            var request = new HttpRequestMessage() {
-                RequestUri =  myUri,
-                Method = HttpMethod.Get,
-            };
-            request.Headers.Add("X-Emby-Token",settings.AccessToken);
-            return HttpClient.
-                Client.SendAsync(request);
-        });
+        var baseUri = new Uri(settings.BaseUrl);
+        var audioUri = new Uri(baseUri, $"/Audio/{dto.Id}/universal?UserId={userDto.Id}&DeviceId=1&MaxStreamingBitrate=140000000&Container=opus%2Cwebm%7Copus%2Cmp3%2Caac%2Cm4a%7Caac%2Cm4b%7Caac%2Cflac%2Cwebma%2Cwebm%7Cwebma%2Cwav%2Cogg&TranscodingContainer=ts&TranscodingProtocol=hls&AudioCodec=aac&api_key={settings.AccessToken}&PlaySessionId=1&StartTimeTicks=0&EnableRedirection=true&EnableRemoteMedia=false");
+        Debug.WriteLine(audioUri);
+        return new WrappedHttpStream(audioUri.ToString());
     }
 
     public async Task<WrappedStream?> GetImageStream(BaseItemDto dto)

@@ -1,5 +1,4 @@
-#if FFMPEG
-#else 
+#if NLayer
 using CSCore;
 using NLayer;
 

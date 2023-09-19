@@ -48,7 +48,9 @@ A "contributor" is any person that distributes its contribution under this licen
             new(new("https://www.nuget.org/packages/CSCore/"),URLType.PackageManager),
         new(new("https://github.com/filoe/cscore/"),URLType.LibraryCode),
         new(new("https://filoe.github.io/cscore/sharpDox/"), URLType.LibraryDocumentation),
-        new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)};
+        new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
+       
+        };
 
         public bool CanPlayFile(WrappedStream stream)
         {
@@ -71,7 +73,7 @@ A "contributor" is any person that distributes its contribution under this licen
         /// <summary>
         /// Try to share the same ISoundOut device and player, results in uh funny behaviour
         /// </summary>
-        public bool DoFunny { get; set; } = false;
+        public bool DoFunny { get; set; } = true;
     
         public Task OnStartup()
         {

@@ -14,7 +14,7 @@ public interface IMusicStatusInterfaceListenerAdmin : IMusicStatusInterfaceListe
     public void FireTrackChangedNotification(Song? currentSong);
     public void FirePlayerStateChanged(PlaybackState state);
 }
-public interface IMusicStatusInterfaceListener : IPlayerEnviroment
+public interface IMusicStatusInterfaceListener : IPlayerEnvironment
 {
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front);
     void Play();

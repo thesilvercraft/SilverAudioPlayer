@@ -47,7 +47,6 @@ public class ProvidersReturnedNullException : Exception
 
 public class App : Application
 {
-    private CompositionHost Container;
 
     public override void Initialize()
     {
@@ -99,14 +98,7 @@ public class App : Application
             var mw = new MainWindow();
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
-           
-
-            List<Assembly> assemblies = new();
-            PlatformLogicHelper.LoadAssemblies(ref assemblies);
-            var catalog = new ContainerConfiguration();
-            catalog.WithAssemblies(assemblies);
-            Container = catalog.CreateContainer();
-            Container.SatisfyImports(mw.Logic);
+            PlatformLogicHelper.SatisfyImports(mw.Logic);
             if (mw.Logic.PlayProviders == null)
                 throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
             mw.Logic.PlayableMimes = new List<MimeType>();
@@ -153,7 +145,7 @@ public class App : Application
                     mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
                 }
             }
-            mw.Logic.log = logger;
+            mw.Logic.Log = logger;
             mw.Logic.ProcessFiles(desktop.Args);
         }
         base.OnFrameworkInitializationCompleted();

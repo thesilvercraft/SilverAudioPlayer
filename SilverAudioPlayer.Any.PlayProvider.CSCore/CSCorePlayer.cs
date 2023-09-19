@@ -3,9 +3,6 @@ using CSCore;
 using CSCore.Codecs.AIFF;
 using CSCore.Codecs.FLAC;
 using CSCore.Codecs.WAV;
-#if FFMPEG
-using CSCore.Ffmpeg;
-#endif
 using CSCore.SoundOut;
 using SilverMagicBytes;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
@@ -16,7 +13,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
     {
         private ISoundOut? _soundOut;
         private IWaveSource? _waveSource;
-        public bool DoFunny { get; set; } = false;
+        public bool DoFunny { get; set; } = true;
         public byte Volume { get; set; } = 70;
         public void Play()
         {
@@ -25,10 +22,14 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
 
         public void Stop()
         {
+            
             _soundOut?.Stop();
             if (DoFunny) return;
             _soundOut?.Dispose();
             _waveSource?.Dispose();
+            _soundOut = null;
+            _waveSource = null;
+
         }
 
         public void Pause()
@@ -105,18 +106,14 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
             {
                 _waveSource = new AiffReader(stream.GetStream());
             }
-            #if FFMPEG
-            else
-            {
-                _waveSource= new FfmpegDecoder(stream.GetStream());
-            }
-            #else 
+            #if NLayer
             else if (stream.MimeType == KnownMimes.MP3Mime || stream.MimeType == KnownMimes.Mp2Mime ||
                      stream.MimeType == KnownMimes.MpegMime)
             {
                 _waveSource = new NLayerReader(stream.GetStream());
             }
 #endif
+          
             
             if (_soundOut == null)
             {
@@ -124,6 +121,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
                 _soundOut.Stopped += OutputDeviceOnPlaybackStopped;
             }
 
+            TrackEnd = null;
             _soundOut.Initialize(_waveSource);
         }
 

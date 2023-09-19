@@ -1,9 +1,13 @@
-using FuzzySharp.Extensions;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Core;
 
-public class MetadataCombo : IMetadata
+public interface IMetadataCombo : IMetadata
+{
+    List<IMetadata> OriginalMetadatas { get; }
+}
+
+public class MetadataCombo : IMetadataCombo
 {
     public MetadataCombo()
     {
@@ -14,7 +18,7 @@ public class MetadataCombo : IMetadata
     public MetadataCombo(IReadOnlyCollection<IMetadata> metadatas)
     {
         OriginalMetadatas = metadatas.OrderBy(x=>x.GetType().Name.Contains("FileMetadata")).ToList();
-        Title =OriginalMetadatas.Select(x => x.Title).FirstOrDefault();
+        Title = OriginalMetadatas.Select(x => x.Title).FirstOrDefault();
         Artist = OriginalMetadatas.Select(x => x.Artist).FirstOrDefault();
         Album = OriginalMetadatas.Select(x => x.Album).FirstOrDefault();
         Genre = OriginalMetadatas.Select(x => x.Genre).FirstOrDefault();
@@ -30,10 +34,9 @@ public class MetadataCombo : IMetadata
         if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrEmpty(Lyrics) && (Lyrics[0] == '['))
         {
             //There is a chance that the unsynced lyrics are actually synced, lets try and read them
-
             try
             {
-                var s = global::Opportunity.LrcParser.Lyrics.Parse(Lyrics);
+                var s = Opportunity.LrcParser.Lyrics.Parse(Lyrics);
                 SyncedLyrics = s.Lyrics.Lines.Select(x => new LyricPhrase((int)(x.Timestamp.Ticks / TimeSpan.TicksPerMillisecond), x.Content + "\n")).ToList();
             }
             catch { }

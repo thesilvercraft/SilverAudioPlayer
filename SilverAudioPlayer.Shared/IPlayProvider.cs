@@ -34,5 +34,5 @@ public interface IWakeLockProvider : ICodeInformation
 
 public interface IPlayProviderListner
 {
-    IPlayerEnviroment GetEnviroment();
+    IPlayerEnvironment GetEnviroment();
 }

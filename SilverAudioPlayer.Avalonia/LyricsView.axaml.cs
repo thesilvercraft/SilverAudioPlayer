@@ -81,9 +81,9 @@ public partial class LyricsView : Window
                     }
                 }
             }
-
+var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
             foreach (var x in d)
-                if (x.Key <= mainWindow?.Player?.GetPosition().TotalMilliseconds)
+                if (x.Key <= pos )
                     x.Value.Foreground = red;
                 else
                     x.Value.Foreground = white;

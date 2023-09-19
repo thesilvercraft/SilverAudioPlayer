@@ -207,8 +207,8 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
     public string Description => "Discord rich presence music status interface";
 
-    public WrappedStream? Icon => null;
-
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(DiscordPlayTracker).Assembly,
+        "SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.drp.svg");
     public Version? Version => typeof(DiscordPlayTracker).Assembly.GetName().Version;
 
     public string Licenses => @"DiscordRichPresence - https://www.nuget.org/packages/DiscordRichPresence

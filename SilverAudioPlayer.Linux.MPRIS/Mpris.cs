@@ -19,6 +19,11 @@ namespace SilverAudioPlayer.Linux.MPRIS
         }
         public Mpris()
         {
+            start();
+        }
+
+        void start()
+        {
             Task.Run(async ()=>
             {
                 try
@@ -27,6 +32,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
                     await connection.ConnectAsync();
                     await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.sap.i"+Environment.ProcessId);
                     await connection.RegisterObjectAsync(this);
+                    connection.StateChanged+= ConnectionOnStateChanged;
                 }
                 catch (Exception e)
                 {
@@ -35,6 +41,15 @@ namespace SilverAudioPlayer.Linux.MPRIS
                 }
              
             });
+        }
+
+        private void ConnectionOnStateChanged(object? sender, ConnectionStateChangedEventArgs e)
+        {
+            if (e.State == ConnectionState.Disconnected)
+            {
+                start();
+            }
+            Debug.WriteLine(e.DisconnectReason);
         }
 
         public void Dispose()

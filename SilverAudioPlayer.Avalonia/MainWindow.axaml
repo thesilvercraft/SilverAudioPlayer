@@ -103,6 +103,8 @@
 						<MenuItem Header="Remove Selected" Click="RemoveSelected" />
 						<MenuItem Header="Clear Queue" Click="ClearAll" />
 						<MenuItem Header="Browse From Dialog" Click="AddFile" />
+						<MenuItem Header="Save current queue" Click="SaveQueue" />
+						<MenuItem Header="Load queue" Click="LoadQueue" />
 					</ContextMenu>
 				</ListBox.ContextMenu>
 

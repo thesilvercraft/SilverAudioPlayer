@@ -17,8 +17,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.0-prerelease2" />
-        <PackageReference Include="System.Composition" Version="8.0.0-preview.4.23259.5" />
+        <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.1" />
+        <PackageReference Include="System.Composition" Version="8.0.0-preview.6.23329.7" />
     </ItemGroup>
 
     <ItemGroup>

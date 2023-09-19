@@ -9,16 +9,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Opportunity.LrcParser" Version="1.0.4" />
+        <PackageReference Include="Avalonia" Version="11.0.4" />
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />
-        <PackageReference Include="System.Composition" Version="8.0.0-preview.4.23259.5" />
+        <PackageReference Include="System.Composition" Version="8.0.0-preview.6.23329.7" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
-
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.ComponentModel.Composition">
+        <HintPath>..\..\..\..\..\..\home\silver\.nuget\packages\system.componentmodel.composition\8.0.0-preview.6.23329.7\lib\net6.0\System.ComponentModel.Composition.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

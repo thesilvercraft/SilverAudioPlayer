@@ -16,12 +16,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SkiaSharp;
 using Avalonia.Collections;
 using Avalonia.Platform.Storage;
+using SilverAudioPlayer.Shared.SilverPlaylist;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -100,6 +100,7 @@ public partial class MainWindow : Window
     private Thread? th;
     private CancellationTokenSource? token = new();
     private bool AlbumArtTransparencyChanged = false;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -111,6 +112,7 @@ public partial class MainWindow : Window
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
+
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
         // Closing += (s, e) => Player?.Stop();
@@ -164,7 +166,7 @@ public partial class MainWindow : Window
                 Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
                 Dispatcher.UIThread.InvokeAsync(() => LT.Text = TimeSpan.Zero.ToString());
                 token = new CancellationTokenSource();
-                th = new Thread(() => SndUpdThrd(token.Token));
+                th = new Thread(() => SeekBarUpdateThread(token.Token));
             },
             SetScrollBarTextTo = scrl =>
             {
@@ -187,7 +189,8 @@ public partial class MainWindow : Window
                         }
 
                         if (CurrentSong?.Metadata?.Pictures?.Any() != true) return;
-                        if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong) && !AlbumArtTransparencyChanged)
+                        if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong) &&
+                            !AlbumArtTransparencyChanged)
                         {
                             if (lastsong != null && CurrentSong.Metadata.Pictures.Count != 0 &&
                                 lastsong?.Metadata?.Pictures?.Count != 0 && CurrentSong.Metadata.Pictures[0].Hash ==
@@ -210,7 +213,7 @@ public partial class MainWindow : Window
                                 {
                                     return;
                                 }
-                                 
+
                                 using MemoryStream blur = new();
                                 using var stream = imageData.GetStream();
                                 using var wrbmp = SKBitmap.Decode(stream);
@@ -231,10 +234,12 @@ public partial class MainWindow : Window
                                             });
                                         canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
                                     }
+
                                     surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
                                         .CopyTo(blur);
                                     blur.Position = 0;
                                 }
+
                                 var imgbrsh = new ImageBrush(new Bitmap(blur))
                                 {
                                     Stretch = Stretch.UniformToFill
@@ -311,7 +316,7 @@ public partial class MainWindow : Window
                     }
                 }
 
-                if (!config.PreferedPlayers.TryGetValue(m.MimeType.Common, out var v))
+                if (!config.PreferredPlayers.TryGetValue(m.MimeType.Common, out var v))
                     return await Dispatcher.UIThread.InvokeAsync(async () =>
                     {
                         ChooseProvider w = new();
@@ -323,7 +328,7 @@ public partial class MainWindow : Window
                         }
 
                         if (w.SetAsDefaultForFileType != true) return w.Selected;
-                        config.PreferedPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
+                        config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
 
                         config._AllowedRead = false;
                         reader.Write(config, _configPath);
@@ -350,7 +355,7 @@ public partial class MainWindow : Window
                     }
 
                     if (w.SetAsDefaultForFileType != true) return w.Selected;
-                    config.PreferedPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
+                    config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
 
                     config._AllowedRead = false;
                     reader.Write(config, _configPath);
@@ -366,32 +371,26 @@ public partial class MainWindow : Window
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-        TransparencyLevelHint = new[]
-        {
-            WindowTransparencyLevel.AcrylicBlur
-        }; // TODO WindowExtensions.envBackend.GetString("SAPTransparency")
-        Background = WindowExtensions.envBackend.GetString("SAPColor")
-            .ParseBackground(def: SAPAWindowExtensions.defBrush);
+        this.DoAfterInitTasksF(false);
+
     }
 
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (sender == reader)
+        if (sender != reader) return;
+        switch (e.PropertyName)
         {
-            switch (e.PropertyName)
-            {
-                case "LoopType":
-                    dc?.SetLoopType?.Invoke(config.LoopType);
-                    break;
-                case "Volume":
-                    dc?.VolumeChanged?.Invoke(config.Volume);
-                    break;
-                case "AlbumArtTransparency":
-                    AlbumArtTransparencyChanged = true;
-                    break;
-                default:
-                    break;
-            }
+            case "LoopType":
+                dc?.SetLoopType?.Invoke(config.LoopType);
+                break;
+            case "Volume":
+                dc?.VolumeChanged?.Invoke(config.Volume);
+                break;
+            case "AlbumArtTransparency":
+                AlbumArtTransparencyChanged = true;
+                break;
+            default:
+                break;
         }
     }
 
@@ -413,23 +412,16 @@ public partial class MainWindow : Window
 
     private void RepeatButton_Click(object? sender, RoutedEventArgs e)
     {
-        switch (dc.LoopType)
+        dc.LoopType = dc.LoopType switch
         {
-            case RepeatState.None:
-                dc.LoopType = RepeatState.One;
-                break;
-
-            case RepeatState.One:
-                dc.LoopType = RepeatState.Queue;
-                break;
-
-            case RepeatState.Queue:
-                dc.LoopType = RepeatState.None;
-                break;
-        }
+            RepeatState.None => RepeatState.One,
+            RepeatState.One => RepeatState.Queue,
+            RepeatState.Queue => RepeatState.None,
+            _ => dc.LoopType
+        };
     }
 
-    public void SetPBColor(IBrush c)
+    public void SetProgressBarColour(IBrush c)
     {
         dc.GradientStops = c switch
         {
@@ -447,11 +439,9 @@ public partial class MainWindow : Window
 
     private void TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (en2)
-        {
-            en = false;
-            en2 = false;
-        }
+        if (!en2) return;
+        en = false;
+        en2 = false;
     }
 
     private void TreeView_PointerMoved(object? sender, PointerEventArgs e)
@@ -533,10 +523,10 @@ public partial class MainWindow : Window
     }
 
 
-    private void SndUpdThrd(CancellationToken e)
+    private void SeekBarUpdateThread(CancellationToken e)
     {
         var exit = false;
-        Thread.CurrentThread.Name = "SndUpdThrd";
+        Thread.CurrentThread.Name = "SeekBarUpdateThread";
         while (!(e.IsCancellationRequested && exit))
             if (Player?.GetPlaybackState() == PlaybackState.Playing)
             {
@@ -556,7 +546,7 @@ public partial class MainWindow : Window
                 }
                 catch (Exception ex)
                 {
-                    Logic.log.Error(ex.Message);
+                    Logic.Log.Error(ex.Message);
                     return;
                 }
 
@@ -606,7 +596,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (e.Source is Control c && c.Name == "MoveTarget")
+        if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
         else
             e.DragEffects &= DragDropEffects.Copy;
@@ -615,7 +605,7 @@ public partial class MainWindow : Window
             var files = e!.Data.GetFiles();
             if (files != null)
             {
-                Logic.ProcessFiles(files.Select(x=>x.TryGetLocalPath()));
+                Logic.ProcessFiles(files.Select(x => x.TryGetLocalPath()));
             }
         }
 
@@ -626,7 +616,8 @@ public partial class MainWindow : Window
                 x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url), Env));
             if (psps.Any())
             {
-                Task.Run(async () => await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url), Env));
+                Task.Run(async () =>
+                    await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url), Env));
                 return;
             }
 
@@ -699,22 +690,22 @@ public partial class MainWindow : Window
 
     public void RemoveSelected(object sender, RoutedEventArgs e)
     {
-        Logic.log.Information("RemoveSelected called");
+        Logic.Log.Information("RemoveSelected called");
         while (dc.Selection.SelectedIndexes.Count != 0)
         {
             var selected = dc.Selection.SelectedItem;
             if (selected.Equals(Logic.NextSong))
             {
-                Logic.log.Information("Selected is nextsong");
+                Logic.Log.Information("Selected is nextsong");
                 var a = dc.Queue.IndexOf(selected);
                 if (dc.Queue.Count > a + 1)
                 {
-                    Logic.log.Information("NextSong is set the next one");
+                    Logic.Log.Information("NextSong is set the next one");
                     Logic.NextSong = dc.Queue[a + 1];
                 }
                 else
                 {
-                    Logic.log.Information("NextSong is set to null");
+                    Logic.Log.Information("NextSong is set to null");
                     Logic.NextSong = null;
                 }
             }
@@ -726,5 +717,62 @@ public partial class MainWindow : Window
 
             dc.Queue.Remove(selected);
         }
+    }
+
+    private async void SaveQueue(object? sender, RoutedEventArgs e)
+    {
+        var a = await StorageProvider.SaveFilePickerAsync(new()
+        {
+            DefaultExtension = ".spl.br",
+            FileTypeChoices = new[]
+            {
+                new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
+                {
+                    MimeTypes = new[] { "application/silverplaylist+br" }
+                }
+            }
+        });
+        if (a != null)
+        {
+            var queue = Logic.GetQueueCopy();
+            SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue), await a.OpenWriteAsync());
+        }
+    }
+
+    private async void LoadQueue(object? sender, RoutedEventArgs e)
+    {
+        var a = await StorageProvider.OpenFilePickerAsync(new()
+        {
+            FileTypeFilter = new FilePickerFileType[]
+            {
+                new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
+                {
+                    MimeTypes = new[] { "application/silverplaylist+br" }
+                }
+            }, AllowMultiple = false,
+        });
+        if (a != null && a.FirstOrDefault() is {} file)
+        {
+            var playlist = SilverPlaylistHelper.DeserializeBrotli(await file.OpenReadAsync());
+            for (var index = 0; index < playlist.Song.Count; index++)
+            {
+                var song = playlist.Song[index];
+                if (!song.Sources.Source.Any()) continue;
+                foreach (var source in song.Sources.Source)
+                {
+                    if (source.Type == "file")
+                    {
+                        Logic.AddSong(new Song(new WrappedFileStream(source.Text), song.Name, logic: Logic), index!=playlist.Song.Count-1);
+                        break;
+                    }
+                    else if (source.Type == "http")
+                    {
+                        Logic.AddSong(new Song(new WrappedHttpStream(source.Text), song.Name, logic: Logic), index!=playlist.Song.Count-1);
+                        break;
+                    }
+                }
+            }
+        }
+        
     }
 }

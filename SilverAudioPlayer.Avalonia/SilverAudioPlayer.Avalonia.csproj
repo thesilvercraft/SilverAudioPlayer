@@ -54,8 +54,8 @@
 		<DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>
 		<!--NAudio + Naudio.Vorbis-->
 		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
-		<!--CSCore-->
-		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
+		<!--Standalone CSCore-->
+<!--		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>-->
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		<!--Discord (alpha)-->
@@ -63,7 +63,7 @@
 		<!--ChromeCast (POC)-->
 		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
 		<!--VLC (Alpha)-->
-		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
+		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
        <!--<DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
@@ -78,6 +78,10 @@
     	<DefineConstants>$(DefineConstants)LSync</DefineConstants>
 		<!-- linux platform - POC -->
 		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
+		<!-- managed midi - POC -->
+		
+		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
+		
 	</PropertyGroup>
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -91,7 +95,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.4" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
@@ -99,6 +103,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.CSCore\SilverAudioPlayer.Any.PlayProvider.CSCore.csproj" Condition="$(DefineConstants.Contains('CSCORE'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))"  />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
@@ -107,16 +112,12 @@
 
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.Sync\SilverAudioPlayer.Any.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />
-		
-		<ProjectReference Include="..\SilverAudioPlayer.Win.PlayProviderExtension.Naudio.MediaFoundation\SilverAudioPlayer.Windows.PlayProviderExtension.Naudio.MediaFoundation.csproj" Condition="$(DefineConstants.Contains('NA'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj" Condition="$(DefineConstants.Contains('JF'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.DryWetMidi\SilverAudioPlayer.Any.MetadataSource.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
 
 		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Naudio.Flac\SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.csproj" Condition="$(DefineConstants.Contains('NAFLAC'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis\SilverAudioPlayer.Any.PlayProviderExtenison.Naudio.Vorbis.csproj" Condition="$(DefineConstants.Contains('NAVORB'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Windows.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
@@ -125,19 +126,19 @@
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-rc1.1" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-rc1.1" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-preview.4.23259.5" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0-preview.4.23259.5" />
-		<PackageReference Include="ReactiveUI" Version="19.2.1" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="7.0.0" />
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.1" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.1" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-preview.6.23329.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0-preview.6.23329.7" />
+		<PackageReference Include="ReactiveUI" Version="19.4.1" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="7.0.2-dev-00546" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00947" />
-		<PackageReference Include="Svg.Skia" Version="0.6.0-rc1.1" />
-		<PackageReference Include="System.Composition" Version="8.0.0-preview.4.23259.5" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
-		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.0-rc1.1" />
+		<PackageReference Include="Svg.Skia" Version="1.0.0.1" />
+		<PackageReference Include="System.Composition" Version="8.0.0-preview.6.23329.7" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
+		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.4" />
 	</ItemGroup>
 
 </Project>

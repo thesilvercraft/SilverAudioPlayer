@@ -743,7 +743,6 @@ Public License instead of this License.  But first, please read
 
         public bool CanPlayFile(WrappedStream stream)
         {
-            stream.GetStream();
             return (SupportedMimes.Contains(stream.MimeType));//TODO make sure user has chromecast
         }
 

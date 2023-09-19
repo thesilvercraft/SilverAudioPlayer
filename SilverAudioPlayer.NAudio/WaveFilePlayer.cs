@@ -1,12 +1,15 @@
 ﻿using System.Composition;
 using System.Diagnostics;
 using Audioz_playerZ;
+using CSCore.SoundOut;
 using NAudio.Wave;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
 
 namespace SilverAudioPlayer.NAudio;
+
+
 
 [Export(typeof(IPlay))]
 public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
@@ -16,9 +19,29 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public WaveFilePlayer()
     {
-            outputDevice = new WaveOutEvent();
-            //outputDevice = new SharpPlayerOutput();
+    }
 
+    public void InitBackEnd(byte volume)
+    {
+#if CSCore
+        if (OperatingSystem.IsWindows())
+        {
+            outputDevice = new WaveOutEvent()
+            {
+                Volume = volume / 100f
+            };
+        }
+        else
+        {
+            outputDevice = new SilverAudioPlayer.Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut());
+        }
+#else
+     outputDevice = new WaveOutEvent()
+            {
+                Volume = volume / 100f
+            };
+
+#endif
     }
 
     public byte Volume { get; set; } = 70;
@@ -26,10 +49,17 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         if (outputDevice != null)
         {
             outputDevice.Dispose();
             outputDevice = null;
+        }
+        audioFile?.Dispose();
+
+        if (LoadedWrappedStream is { ShouldDisposeStream: true } && LoadedStream is {CanRead:true})
+        {
+            LoadedStream.Dispose();
         }
     }
 
@@ -41,7 +71,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     public void Stop()
     {
         outputDevice?.Stop();
-        outputDevice?.Dispose();
+        Dispose();
     }
 
     public void Pause()
@@ -63,7 +93,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public TimeSpan GetPosition()
     {
-        if (outputDevice != null && audioFile is WaveStream ws) return ws.CurrentTime;
+        if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
         //this should not happen
         Debug.WriteLine("PlayProvider.NAudio THISSHOULDNOTHAPPEN");
         return TimeSpan.Zero;
@@ -81,7 +111,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
             global::NAudio.Wave.PlaybackState.Stopped => PlaybackState.Stopped,
             global::NAudio.Wave.PlaybackState.Playing => PlaybackState.Playing,
             global::NAudio.Wave.PlaybackState.Paused => PlaybackState.Paused,
-            _ => throw new NotSupportedException()
+            _ => null
         };
     }
 
@@ -114,16 +144,17 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     public event EventHandler<object> TrackEnd;
 
     public event EventHandler<object> TrackPause;
-
+    public WrappedStream? LoadedWrappedStream { get; set; }
+    public Stream? LoadedStream { get; set; }
     public void LoadStream(WrappedStream stream)
     {
         if (stream is null) throw new ArgumentNullException(nameof(stream));
-
         var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(stream);
         if (wrapper != null)
         {
             Decoder = wrapper.GetType().FullName + " (" + stream.MimeType + ")";
-            audioFile = wrapper.GetStream(stream);
+            LoadedStream = stream.GetStream();
+            audioFile = wrapper.GetStream(LoadedStream);
         }
         else if (stream is WrappedFileStream wf)
         {
@@ -132,45 +163,20 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
         }
 
         if (outputDevice == null)
-            outputDevice = new WaveOutEvent
-            {
-                Volume = Volume / 100f
-            };
+        {
+            InitBackEnd(Volume);
+        }
+
         else
             outputDevice.Stop();
+
         outputDevice.Init(audioFile);
+        LoadedWrappedStream = stream;
         outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
     }
 
     private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
         TrackEnd?.Invoke(sender, e);
-    }
-
-
-    /* public virtual void LoadFile(string file)
-     {
-         if (string.IsNullOrWhiteSpace(file))
-         {
-             throw new ArgumentException("The name of the file must not be null or empty", nameof(file));
-         }
-         var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(file);
-         if (wrapper != null)
-         {
-             Decoder = wrapper.GetType().FullName + " (" + Path.GetExtension(file)[0..].ToUpperInvariant() + ")";
-             audioFile = wrapper.GetStream(file);
-         }
-         else
-         {
-             Decoder = "NAudio.Wave.AudioFileReader";
-             audioFile = new AudioFileReader(file);
-         }
-         DoStuffAfterFile();
-     }
-    */
-
-    internal void DoStuffAfterFile()
-    {
-       
     }
 }
