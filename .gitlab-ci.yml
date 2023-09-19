@@ -1,0 +1,25 @@
+image: mcr.microsoft.com/dotnet/sdk:latest
+
+variables:
+  OBJECTS_DIRECTORY: 'obj'
+  NUGET_PACKAGES_DIRECTORY: '.nuget'
+  SOURCE_CODE_PATH: '*/*/'
+  GIT_SUBMODULE_STRATEGY: recursive
+cache:
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+  paths:
+    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/project.assets.json'
+    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/*.csproj.nuget.*'
+    - '$NUGET_PACKAGES_DIRECTORY'
+  policy: pull-push
+
+build:
+  stage: build
+  script:
+    - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
+    - 'dotnet publish SilverAudioPlayer.Avalonia/SilverAudioPlayer.Avalonia.csproj -c Release -f net6.0 --no-restore'
+  artifacts:
+    expire_in: 1 week  
+    paths:
+      - 'SilverAudioPlayer.Avalonia/bin/Release/net6.0/publish'
+
