@@ -31,7 +31,8 @@ public abstract class WrappedStream : IDisposable
             }
         }
     }
-    
+   
+
 }
 
 public abstract class WrappedRegenerativeStream:WrappedStream

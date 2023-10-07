@@ -22,6 +22,7 @@ using SkiaSharp;
 using Avalonia.Collections;
 using Avalonia.Platform.Storage;
 using SilverAudioPlayer.Shared.SilverPlaylist;
+using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -107,7 +108,6 @@ public partial class MainWindow : Window
 #if DEBUG
         this.AttachDevTools();
 #endif
-        MainGrid = this.FindControl<Grid>("MainGrid");
         if (OperatingSystem.IsLinux())
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
@@ -372,7 +372,6 @@ public partial class MainWindow : Window
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
         this.DoAfterInitTasksF(false);
-
     }
 
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -541,6 +540,7 @@ public partial class MainWindow : Window
                             PB.Value = x.TotalMilliseconds;
                             LT.Text = x.ToString();
                         }
+
                         exit = PB.Value >= PB.Maximum;
                     }, DispatcherPriority.Normal);
                 }
@@ -741,38 +741,85 @@ public partial class MainWindow : Window
 
     private async void LoadQueue(object? sender, RoutedEventArgs e)
     {
+        var fileTypePickerTypes = new List<FilePickerFileType>
+        {
+            new("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
+            {
+                MimeTypes = new[] { "application/silverplaylist+br" },
+                Patterns = new[] { "*.spl.br" }
+            }
+        };
+        var playlistMimes = Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
+        foreach (var playlistMime in playlistMimes)
+        {
+            fileTypePickerTypes.Add(
+                new($"{playlistMime.FileExtensions.FirstOrDefault()} playlist ({playlistMime.Common})")
+                {
+                    MimeTypes = new List<string>(playlistMime.AlternativeTypes) { playlistMime.Common },
+                    Patterns = playlistMime.FileExtensions.Select(x => '*' + x).ToList(),
+                });
+        }
+
         var a = await StorageProvider.OpenFilePickerAsync(new()
         {
-            FileTypeFilter = new FilePickerFileType[]
-            {
-                new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
-                {
-                    MimeTypes = new[] { "application/silverplaylist+br" }
-                }
-            }, AllowMultiple = false,
+            FileTypeFilter = fileTypePickerTypes,
+            AllowMultiple = false,
         });
-        if (a != null && a.FirstOrDefault() is {} file)
+
+        if (a.Count <= 0 || a?[0] is not { } file) return;
+        using var wrappedPlaylistFileStream = new WrappedFileStream(file.Path.LocalPath);
+        if (wrappedPlaylistFileStream.MimeType == KnownMimes.SplMime)
         {
-            var playlist = SilverPlaylistHelper.DeserializeBrotli(await file.OpenReadAsync());
-            for (var index = 0; index < playlist.Song.Count; index++)
+            await EvilSilverPlaylistLoading(wrappedPlaylistFileStream);
+        }
+        else
+        {
+            var playlist = Logic.TryReadPlaylist(wrappedPlaylistFileStream);
+            foreach (var song in playlist.Tracks)
             {
-                var song = playlist.Song[index];
-                if (!song.Sources.Source.Any()) continue;
-                foreach (var source in song.Sources.Source)
+                if (song.Source == "file")
                 {
-                    if (source.Type == "file")
-                    {
-                        Logic.AddSong(new Song(new WrappedFileStream(source.Text), song.Name, logic: Logic), index!=playlist.Song.Count-1);
-                        break;
-                    }
-                    else if (source.Type == "http")
-                    {
-                        Logic.AddSong(new Song(new WrappedHttpStream(source.Text), song.Name, logic: Logic), index!=playlist.Song.Count-1);
-                        break;
-                    }
+                    Logic.AddSong(new Song(new WrappedFileStream(song.URL), song.URL, logic: Logic),
+                        true);
+                    break;
+                }
+
+                if (song.Source == "http")
+                {
+                    Logic.AddSong(new Song(new WrappedHttpStream(song.URL), song.URL, logic: Logic),
+                        true);
+                    break;
+                }
+            }
+
+            Logic.DoneAddingSongs();
+        }
+    }
+
+    async Task EvilSilverPlaylistLoading(WrappedFileStream file)
+    {
+        using var fs = file.GetStream();
+        var playlist = SilverPlaylistHelper.DeserializeBrotli(fs);
+        for (var index = 0; index < playlist.Song.Count; index++)
+        {
+            var song = playlist.Song[index];
+            if (!song.Sources.Source.Any()) continue;
+            foreach (var source in song.Sources.Source)
+            {
+                if (source.Type == "file")
+                {
+                    Logic.AddSong(new Song(new WrappedFileStream(source.Text), song.Name, logic: Logic),
+                        index != playlist.Song.Count - 1);
+                    break;
+                }
+
+                if (source.Type == "http")
+                {
+                    Logic.AddSong(new Song(new WrappedHttpStream(source.Text), song.Name, logic: Logic),
+                        index != playlist.Song.Count - 1);
+                    break;
                 }
             }
         }
-        
     }
 }

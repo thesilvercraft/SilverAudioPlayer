@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Composition;
 using System.Diagnostics;
 using Avalonia.Controls;

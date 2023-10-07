@@ -1,12 +1,7 @@
-﻿using Serilog;
-using SilverAudioPlayer.Shared;
-using SilverConfig;
+﻿using SilverAudioPlayer.Shared;
 using System.ComponentModel;
 using System.Composition;
 using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
-using System.Security.Cryptography.X509Certificates;
 
 namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
 {

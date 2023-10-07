@@ -1,7 +1,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Layout;
-using SilverAudioPlayer.Shared.ConfigScreen;
+using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Avalonia;
 

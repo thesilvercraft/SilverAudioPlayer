@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using LibVLCSharp.Shared;
+﻿using LibVLCSharp.Shared;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using System.Composition;

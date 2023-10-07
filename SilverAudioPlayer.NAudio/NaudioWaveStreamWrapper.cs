@@ -1,6 +1,7 @@
 ﻿using System.Composition;
 using System.Diagnostics;
 using NAudio.Wave;
+using Silver.Composition;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;

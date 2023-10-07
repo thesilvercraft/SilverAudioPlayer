@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Avalonia;

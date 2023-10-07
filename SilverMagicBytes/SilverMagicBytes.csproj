@@ -16,6 +16,7 @@
         <IncludeSymbols>True</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
+        <LangVersion>default</LangVersion>
 
 
     </PropertyGroup>

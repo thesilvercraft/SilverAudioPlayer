@@ -2,31 +2,30 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Svg.Skia;
-using Microsoft.Win32;
+using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.ConfigScreen;
 using SilverCraft.AvaloniaUtils;
+using SilverCraft.Ekorensis;
 using SilverMagicBytes;
-using Swordfish.NET.Collections.Auxiliary;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
 
 namespace SilverAudioPlayer.Avalonia;
+
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
-    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin,bool IsMusicStatusInterface);
+    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin,
+    bool IsMusicStatusInterface);
+
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -43,17 +42,20 @@ public partial class Settings : Window
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
+
         this.DoAfterInitTasksF();
     }
+
     public Settings(MainWindow mainWindow) : this()
     {
-
         ColorBox = this.FindControl<AutoCompleteBox>("ColorBox");
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
         this.mainWindow = mainWindow;
-        TransparencyLevelHint = WindowExtensions.GetTransparencyLevelsFromString( WindowExtensions.envBackend.GetString("SAPTransparency")?? "Mica,AcrylicBlur,None");
+        TransparencyLevelHint =
+            WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString("SAPTransparency") ??
+                                                             "Mica,AcrylicBlur,None");
 
         TransparencyDown.SelectedItem = TransparencyLevelHint[0];
 
@@ -64,14 +66,11 @@ public partial class Settings : Window
         {
             mainWindow.Env
         };
-        info.AddRange(mainWindow.Logic.PlayProviders);
-        info.AddRange(mainWindow.Logic.MusicStatusInterfaces);
-        info.AddRange(mainWindow.Logic.MetadataProviders);
-        info.AddRange(mainWindow.Logic.WakeLockInterfaces);
-        info.AddRange(mainWindow.Logic.PlayStreamProviders);
-        info.AddRange(mainWindow.Logic.SyncPlugins);
+        info.AddRange((mainWindow.Logic as ILogicImportable).CreditInformation);
         var ir = GetInfoRecords(info);
-        DataContext = new SettingsDC() { Items = ir.Item1,
+        DataContext = new SettingsDC()
+        {
+            Items = ir.Item1,
             ProductName = mainWindow.Env.Name,
             ProductDescription = mainWindow.Env.Description,
             ProductIcon = ir.Item1.First().Icon,
@@ -85,17 +84,18 @@ public partial class Settings : Window
         if (y is not { DataContext: InfoPRecord { IsMusicStatusInterface: true } record }) return;
         if (record.Item is not IMusicStatusInterface msi) return;
         if (y.IsChecked == msi.IsStarted) return;
-            if(y.IsChecked==true)
-            {
+        if (y.IsChecked == true)
+        {
             msi.StartIPC(mainWindow.Env);
-            }
-            else
-            {
+        }
+        else
+        {
             msi.StopIPC(mainWindow.Env);
-            }
+        }
     }
 
     string Legalese;
+
     public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
     {
         ObservableCollection<InfoPRecord> infop = new();
@@ -118,9 +118,11 @@ public partial class Settings : Window
             ));
             licenses.AppendLine(item.Licenses);
         }
+
         return new(infop, licenses.ToString());
     }
-    public static IImage? DecodeImage(WrappedStream? stream, int width=80)
+
+    public static IImage? DecodeImage(WrappedStream? stream, int width = 80)
     {
         if (stream == null) return null;
         stream.Use((str) => { });
@@ -137,8 +139,10 @@ public partial class Settings : Window
             img.Source.Load(stream.GetStream());
             return img;
         }
+
         return null;
     }
+
     public static void OpenBrowser(string url)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -156,6 +160,7 @@ public partial class Settings : Window
         var y = (InfoPRecord?)CapBox.SelectedItem;
         ShowElementActionWindow(y, mainWindow);
     }
+
     public void ConfigureClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
@@ -165,16 +170,25 @@ public partial class Settings : Window
         cw.HandleConfiguration(configurable);
         cw.Show();
     }
+
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y is not { DataContext: InfoPRecord { IsAskingMemoryProvider: true, Item: IAmOnceAgainAskingYouForYourMemory configurable } } ||
+        if (y is not
+            {
+                DataContext: InfoPRecord
+                {
+                    IsAskingMemoryProvider: true, Item: IAmOnceAgainAskingYouForYourMemory configurable
+                }
+            } ||
             mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
         LaunchActionsWindow launchActionsWindow = new();
-        var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m => new SAction { ActionName = "Open " + m, ActionToInvoke = () => { OpenBrowser(m); } }).ToList();
+        var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
+            new SAction { ActionName = "Open " + m, ActionToInvoke = () => { OpenBrowser(m); } }).ToList();
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }
+
     public void PlayProviderClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
@@ -190,7 +204,7 @@ public partial class Settings : Window
                 break;
         }
     }
-    
+
     public static string GetHumanName(URLType type)
     {
         return type switch
@@ -204,24 +218,32 @@ public partial class Settings : Window
             _ => string.Empty,
         };
     }
+
     public static string GetHumanerName(URLType type)
     {
         var name = GetHumanName(type);
-        if(!string.IsNullOrEmpty(name))
+        if (!string.IsNullOrEmpty(name))
         {
             return " (" + name + ")";
         }
+
         return name;
     }
+
     public static void ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)
     {
         if (element == null) return;
         LaunchActionsWindow launchActionsWindow = new();
-        if(element.Item.Links==null)
+        if (element.Item.Links == null)
         {
             return;
         }
-        var actions = element.Item.Links.Select(z => new SAction { ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2), ActionToInvoke = () => OpenBrowser(z.Item1.ToString()) }).ToList();
+
+        var actions = element.Item.Links.Select(z => new SAction
+        {
+            ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2),
+            ActionToInvoke = () => OpenBrowser(z.Item1.ToString())
+        }).ToList();
         switch (element.Item)
         {
             case IAmConfigurable configurable:
@@ -240,20 +262,14 @@ public partial class Settings : Window
                 actions.Add(new SAction
                 {
                     ActionName = "🔨Use",
-                    ActionToInvoke = () =>
-                    {
-                        streamProvider.Use(mainWindow.Env);
-                    }
+                    ActionToInvoke = () => { streamProvider.Use(mainWindow.Env); }
                 });
                 break;
             case ISyncPlugin syncPlugin:
                 actions.Add(new SAction
                 {
                     ActionName = "🔁Sync",
-                    ActionToInvoke = () =>
-                    {
-                        syncPlugin.Use(mainWindow.Env);
-                    }
+                    ActionToInvoke = () => { syncPlugin.Use(mainWindow.Env); }
                 });
                 break;
         }
@@ -261,13 +277,16 @@ public partial class Settings : Window
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }
+
     private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",TransparencyDown.SelectedItem.ToString() ??
+        Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",
+            TransparencyDown.SelectedItem.ToString() ??
             WindowTransparencyLevel.AcrylicBlur.ToString()));
-        WindowExtensions.OnStyleChange.Invoke(this, new(null,null, new []{(WindowTransparencyLevel)TransparencyDown.SelectedItem} ));
+        WindowExtensions.OnStyleChange.Invoke(this,
+            new(null, new[] { (WindowTransparencyLevel)TransparencyDown.SelectedItem }, null));
     }
-    
+
     private void RegisterClick(object? sender, RoutedEventArgs e)
     {
         if (RegistryRegistration.IsReg())
@@ -279,6 +298,7 @@ public partial class Settings : Window
             RegistryRegistration.RegisterUrlScheme(mainWindow);
         }
     }
+
     private void LicenseInfo(object? sender, RoutedEventArgs e)
     {
         var w = new Window();
@@ -292,33 +312,34 @@ public partial class Settings : Window
         w.Content = tb;
         w.DoAfterInitTasksF();
         w.Show();
-
     }
+
     private void ToggleTransparency(object? sender, RoutedEventArgs e)
     {
         var SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
-        Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency",SapTransparency));
-        WindowExtensions.OnStyleChange(this, new(SapTransparency, null, null));
+        Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency", SapTransparency));
+        WindowExtensions.OnStyleChange(this, new(null, null, null));
     }
-    
+
     public static readonly GradientStops defPBStops = new()
     {
         new(KnownColor.Coral.ToColor(), 0),
         new(KnownColor.SilverCraftBlue.ToColor(), 1)
     };
+
     private void ChangeColorPB(object? sender, RoutedEventArgs e)
     {
         var t = ColorBoxPB.Text;
-        Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor",t));
-       
-        mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops }));
+        Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor", t));
 
+        mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush()
+            { GradientStops = defPBStops }));
     }
 
     private void ChangeColor(object? sender, RoutedEventArgs e)
     {
-        Task.Run(() => { WindowExtensions.envBackend.SetString("SAPColor",ColorBox.Text); });
-        WindowExtensions.OnStyleChange?.Invoke(this, new(null, ColorBox.Text, null));
+        Task.Run(() => { WindowExtensions.envBackend.SetString("SAPColor", ColorBox.Text); });
+        WindowExtensions.OnStyleChange?.Invoke(this, new(ColorBox.Text, null, null));
     }
 
     private void InitializeComponent()
@@ -332,7 +353,7 @@ public class SettingsDC
     public WindowTransparencyLevel[] TransparencyTypes { get; set; } =
     {
         WindowTransparencyLevel.None, WindowTransparencyLevel.Transparent, WindowTransparencyLevel.Blur,
-        WindowTransparencyLevel.AcrylicBlur,  WindowTransparencyLevel.Mica
+        WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.Mica
     };
 
     public KnownColor[] AutoSuggestColours { get; set; } =
@@ -370,6 +391,7 @@ public class SettingsDC
         KnownColor.Cornsilk, KnownColor.LemonChiffon, KnownColor.FloralWhite, KnownColor.Snow, KnownColor.Yellow,
         KnownColor.LightYellow, KnownColor.Ivory, KnownColor.White
     };
+
     public ObservableCollection<InfoPRecord> Items { get; set; }
     public string ProductName { get; internal set; }
     public string ProductDescription { get; internal set; }

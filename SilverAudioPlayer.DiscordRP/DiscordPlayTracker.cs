@@ -5,8 +5,8 @@ using System.Xml.Serialization;
 using DiscordRPC;
 using DiscordRPC.Logging;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.ConfigScreen;
 using SilverConfig;
+using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.DiscordRP;
 

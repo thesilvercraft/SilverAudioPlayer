@@ -1,9 +1,6 @@
-﻿using System.Security.Cryptography;
-
-namespace SilverAudioPlayer.Any.MetadataSource.File;
+﻿namespace SilverAudioPlayer.Any.MetadataSource.File;
 
 using SilverAudioPlayer.Shared;
-using SilverMagicBytes;
 
 public class FileMetadata : IMetadata
 {

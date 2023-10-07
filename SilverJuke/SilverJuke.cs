@@ -30,7 +30,7 @@ public class SilverJuke : IMusicStatusInterface
     private bool _IsStarted;
     public void Dispose()
     {
-        app.DisposeAsync();
+        app?.DisposeAsync();
     }
     WebApplication? app;
     IMusicStatusInterfaceListener listener;

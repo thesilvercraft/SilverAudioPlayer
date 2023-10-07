@@ -1,5 +1,4 @@
 ﻿using Avalonia.Controls;
-using DynamicData;
 using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;

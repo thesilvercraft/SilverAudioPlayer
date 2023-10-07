@@ -64,6 +64,3 @@ public interface IPlay
     event EventHandler<object> TrackPause;
 }
 
-public interface ICanTellIfICanPlayAFile
-{
-}

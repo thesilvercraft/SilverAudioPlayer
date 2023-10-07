@@ -2,7 +2,6 @@
 using NAudio.Vorbis;
 using NAudio.Wave;
 using SilverAudioPlayer.NAudio;
-using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;

@@ -4,7 +4,6 @@ using Audioz_playerZ;
 using CSCore.SoundOut;
 using NAudio.Wave;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
 
 namespace SilverAudioPlayer.NAudio;

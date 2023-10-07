@@ -1,24 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Composition;
-using System.Composition.Hosting;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Themes.Fluent;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Win32;
 using Serilog;
-using Serilog.Events;
+using Silver.Composition;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
-using SilverCraft.AvaloniaUtils;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Avalonia;

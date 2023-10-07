@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using CatBox.NET.Client;
 using CatBox.NET.Requests;
@@ -32,6 +33,7 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
             return cached.First(x => x.hsh == a.Hash).url.Replace("https", "http");
         if (!Uploadit) return null;
         var res = Upload(a.Data);
+        if (res == null) return null;
         res = res.Replace("https", "http");
         cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
         SetCache();
@@ -44,9 +46,14 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
         var stream = bits.GetStream();
         try
         {
-            var res =  Task.Run(async () => await client.UploadImage(new StreamUploadRequest()
+            var res = Task.Run(async () => await client.UploadImage(new StreamUploadRequest()
                 { Stream = stream, FileName = "a" + bits.MimeType.FileExtensions[0] })).GetAwaiter().GetResult();
             return res;
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+            return null;
         }
         finally
         {

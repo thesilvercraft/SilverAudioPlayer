@@ -4,7 +4,6 @@ using Jellyfin.Sdk;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using SilverAudioPlayer.Shared;
-using SilverMagicBytes;
 using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 using SystemException = Jellyfin.Sdk.SystemException;
 

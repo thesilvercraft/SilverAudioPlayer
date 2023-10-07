@@ -2,13 +2,16 @@
 
 public class MagicByteCombo
 {
-    private readonly byte?[] Combo;
+    public readonly byte?[] Combo;
 
     public MagicByteCombo(params byte?[] combo)
     {
         Combo = combo;
     }
-
+    public MagicByteCombo( byte[] combo)
+    {
+        Combo = combo.Cast<byte?>().ToArray();
+    }
     public bool Match(Stream s, long offset)
     {
         if (s.CanSeek) s.Position = offset;

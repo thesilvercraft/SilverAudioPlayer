@@ -6,7 +6,10 @@ public class MagicByteComboWithMimeType : MagicByteCombo
     {
         MimeType = mimetype;
     }
-
+    public MagicByteComboWithMimeType(MimeType mimetype, byte[] combo) : base(combo)
+    {
+        MimeType = mimetype;
+    }
     public MimeType MimeType { get; set; }
 }
 

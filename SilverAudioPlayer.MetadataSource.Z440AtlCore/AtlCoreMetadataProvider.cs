@@ -1,8 +1,7 @@
 ﻿using System.Composition;
 using ATL;
-using ATL.AudioData;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.ConfigScreen;
+using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 using Version = System.Version;
 
@@ -91,17 +90,7 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
-        new Tuple<Uri, URLType>(
-            new Uri(
-                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.MetadataSource.Z440AtlCore"),
-            URLType.Code),
-        new Tuple<Uri, URLType>(
-            new Uri($"https://www.nuget.org/packages/z440.atl.core/{typeof(Track).Assembly.GetName().Version}"),
-            URLType.PackageManager),
-        new Tuple<Uri, URLType>(new Uri("https://github.com/Zeugma440/atldotnet"), URLType.LibraryCode)
-    };
+    public List<Tuple<Uri, URLType>>? Links => AtlCoreSharedInfo.Links;
 
 
     public bool CanGetMetadata(WrappedStream stream)

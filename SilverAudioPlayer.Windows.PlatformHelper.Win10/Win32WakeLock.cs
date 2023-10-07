@@ -1,6 +1,5 @@
 ﻿using System.Composition;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Windows.PlatformHelper.Win;

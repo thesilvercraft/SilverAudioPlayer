@@ -1,14 +1,10 @@
-﻿using System.ComponentModel;
-using System.Composition;
+﻿using System.Composition;
 using System.Diagnostics;
-using Avalonia.Collections;
 using FuzzySharp;
 using ReactiveUI;
-using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using Swordfish.NET.Collections;
-using Swordfish.NET.Collections.Auxiliary;
 using Logger = Serilog.Core.Logger;
 
 namespace SilverAudioPlayer.Core;
@@ -24,9 +20,27 @@ public interface ILogicImportable
     [ImportMany] public IEnumerable<IWakeLockProvider> WakeLockInterfaces { get; set; }
     [ImportMany] public IEnumerable<IPlayStreamProvider> PlayStreamProviders { get; set; }
     [ImportMany] public IEnumerable<ISyncPlugin> SyncPlugins { get; set; }
+    [ImportMany] public IEnumerable<IPlaylistReader> PlaylistReaders { get; set; }
+
 
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
+    public IEnumerable<ICodeInformation> CreditInformation => GetCreditInformation();
 
+    IEnumerable<ICodeInformation> GetCreditInformation()
+    {
+        List<ICodeInformation> info = new()
+        {
+            
+        };
+        info.AddRange(PlayProviders);
+        info.AddRange(MusicStatusInterfaces);
+        info.AddRange(MetadataProviders);
+        info.AddRange(WakeLockInterfaces);
+        info.AddRange(PlayStreamProviders);
+        info.AddRange(PlaylistReaders);
+        info.AddRange(SyncPlugins);
+        return info;
+    }
 }
 public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 {
@@ -66,6 +80,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     [ImportMany] public IEnumerable<IWakeLockProvider> WakeLockInterfaces { get; set; }
     [ImportMany] public IEnumerable<IPlayStreamProvider> PlayStreamProviders { get; set; }
     [ImportMany] public IEnumerable<ISyncPlugin> SyncPlugins { get; set; }
+    [ImportMany] public IEnumerable<IPlaylistReader> PlaylistReaders { get; set; }
 
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
 
@@ -170,6 +185,11 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         _changeAllowed = true;
     }
 
+    public IPlaylist? TryReadPlaylist(WrappedStream playlistStream)
+    {
+        var playlistReader= PlaylistReaders.FirstOrDefault(x => x.SupportedMimes.Contains(playlistStream.MimeType));
+        return playlistReader != null && playlistReader.TryParse(playlistStream, out var playlist) ? playlist : null;
+    }
     public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin musicStatusInterface)
     {
         if (MusicStatusInterfaces?.Any() == true)
@@ -376,6 +396,13 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
     {
         PlayerContext.Queue.Add(song);
         if (expectmore || _isSortRequested) return;
+        _isSortRequested = true;
+        var sortTask = Task.Run(async () => await DoSort());
+    }
+
+    public void DoneAddingSongs()
+    {
+        if (_isSortRequested) return;
         _isSortRequested = true;
         var sortTask = Task.Run(async () => await DoSort());
     }

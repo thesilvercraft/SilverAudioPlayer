@@ -19,7 +19,9 @@ public static class KnownMimes
     public static readonly MimeType Mp4Mime = new Mp4Mime();
     public static readonly MimeType MpegMime = new MpegMime();
     public static readonly MimeType Mp2Mime = new Mp2Mime();
-
+    public static readonly MimeType M3uMime = new M3UMime();
+    public static readonly MimeType SplMime = new SPLMime();
+    
     public static readonly List<MimeType> KnownMimeTypes = new()
     {
         MidMime,
@@ -36,6 +38,8 @@ public static class KnownMimes
         Mp4Mime,
         MpegMime,
         Mp2Mime,
+        M3uMime,
+        SplMime,
         OctetMime,
     };
 
@@ -49,7 +53,20 @@ public static class KnownMimes
         return KnownMimeTypes.Find(x => x.FileExtensions.Contains(Extension));
     }
 }
+public class M3UMime : PlaylistMime
+{
+    public M3UMime() : base("application/mpegurl", fileExtensions: new[] {".m3u",".m3u8"}, alternativeTypes:new[]{"application/x-mpegurl","audio/mpegurl","audio/x-mpegurl","application/vnd.apple.mpegurl", "application/vnd.apple.mpegurl.audio", "application/vnd.apple.mpegurl","audio/mpegurl" })
+    {
 
+    }
+}
+public class SPLMime : PlaylistMime
+{
+    public SPLMime() : base("application/silverplaylist+br", fileExtensions: new[] {".spl.br"})
+    {
+
+    }
+}
 public class SVGMime : MimeType
 {
     public SVGMime() : base("image/svg+xml", fileExtensions: new[] {".svg"})
@@ -143,6 +160,14 @@ public class JPGMime : CompressedImageMime
 public class AudioMime : MimeType
 {
     public AudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
+        alternativeTypes, fileExtensions)
+    {
+    }
+}
+
+public class PlaylistMime : MimeType
+{
+    public PlaylistMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
         alternativeTypes, fileExtensions)
     {
     }

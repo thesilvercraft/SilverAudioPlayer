@@ -1,6 +1,5 @@
 ﻿using System.Composition;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using SilverAudioPlayer.Shared;
 using Tmds.DBus;
 using ScreenSaver.DBus;

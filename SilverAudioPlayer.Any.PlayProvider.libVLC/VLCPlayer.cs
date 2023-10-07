@@ -1,6 +1,5 @@
 ﻿using LibVLCSharp.Shared;
 using SilverAudioPlayer.Shared;
-using System.Diagnostics;
 
 namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 {
