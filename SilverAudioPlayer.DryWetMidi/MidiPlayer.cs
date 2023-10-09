@@ -109,10 +109,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
         return null;
     }
 
-    public IPlayProviderListner ProviderListener
-    {
-        set => _ = value;
-    }
+
 
     public string Name => "DryWetMidi MidiPlayer";
 

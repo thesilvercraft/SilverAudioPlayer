@@ -6,6 +6,7 @@ using System.Reflection;
 using ATL.AudioData;
 #endif
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 

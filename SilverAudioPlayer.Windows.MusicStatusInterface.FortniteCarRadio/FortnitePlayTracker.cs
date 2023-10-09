@@ -67,14 +67,13 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
                  { if(ConfigObject.Value is FortniteCarRadioConfig x)
                     {
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolDef"));
-
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolVeh"));
                      }
                  }
                 }
         };
     }
-    public List<IConfigurableElement> GetElements()
+    public IEnumerable<IConfigurableElement> GetElements()
     {
         return ConfigurableElements;
     }

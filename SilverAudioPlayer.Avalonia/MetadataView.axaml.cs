@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Serilog;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Avalonia;
 

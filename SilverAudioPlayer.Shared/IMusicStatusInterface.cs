@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer.Shared;
+﻿using SilverAudioPlayer.Shared.Metadata;
+
+namespace SilverAudioPlayer.Shared;
 
 public interface IMusicStatusInterface : IDisposable, ICodeInformation
 {

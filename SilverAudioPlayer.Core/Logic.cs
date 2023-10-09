@@ -3,6 +3,7 @@ using System.Diagnostics;
 using FuzzySharp;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverMagicBytes;
 using Swordfish.NET.Collections;
 using Logger = Serilog.Core.Logger;

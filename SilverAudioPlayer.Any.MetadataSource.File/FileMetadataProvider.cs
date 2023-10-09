@@ -1,5 +1,6 @@
 using System.Composition;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.MetadataSource.File;
 

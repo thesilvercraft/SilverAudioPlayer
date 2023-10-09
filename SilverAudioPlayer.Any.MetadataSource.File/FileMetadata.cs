@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer.Any.MetadataSource.File;
+﻿using SilverAudioPlayer.Shared.Metadata;
+
+namespace SilverAudioPlayer.Any.MetadataSource.File;
 
 using SilverAudioPlayer.Shared;
 

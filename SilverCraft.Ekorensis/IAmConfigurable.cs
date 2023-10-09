@@ -4,5 +4,5 @@ namespace SilverCraft.Ekorensis;
 
 public interface IAmConfigurable
 {
-    public List<IConfigurableElement> GetElements();
+    public IEnumerable<IConfigurableElement> GetElements();
 }

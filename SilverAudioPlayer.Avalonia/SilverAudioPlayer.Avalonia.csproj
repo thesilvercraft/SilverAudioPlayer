@@ -121,6 +121,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj" Condition="$(DefineConstants.Contains('FRT'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
+		<ProjectReference Include="..\SilverCraft.Ekonrensis.Avalonia\SilverCraft.Ekonrensis.Avalonia.csproj" />
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>

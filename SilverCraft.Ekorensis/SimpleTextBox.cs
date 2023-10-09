@@ -16,3 +16,12 @@ public class SimpleTextBox : IConfigurableTextBox
         set => SetContent(value);
     }
 }
+
+public class SimpleLabel : IConfigurableLabel
+{
+    public Func<string> GetContent;
+    public string Content
+    {
+        get => GetContent();
+    }
+}

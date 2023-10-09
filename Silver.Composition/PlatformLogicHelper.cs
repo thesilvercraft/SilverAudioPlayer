@@ -120,7 +120,8 @@ public static class PlatformLogicHelper
                      x is System.Composition.ImportManyAttribute
                          or System.ComponentModel.Composition.ImportManyAttribute)))
         {
-            var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped").MakeGenericMethod(field.PropertyType.GetGenericArguments()[0])
+            var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped")
+                ?.MakeGenericMethod(field.PropertyType.GetGenericArguments()[0])
                 .Invoke(null, new[] { assemblies });
             if (field.PropertyType.IsInstanceOfType( res))
             {
@@ -136,14 +137,15 @@ public static class PlatformLogicHelper
                      x is System.Composition.ImportAttribute
                          or System.ComponentModel.Composition.ImportAttribute)))
         {
-            var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped").MakeGenericMethod(field.PropertyType.GetType())
+            var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped")
+                ?.MakeGenericMethod(field.PropertyType)
                 .Invoke(null, new[] { assemblies });
-            var resType = typeof(IEnumerable<>).MakeGenericType(field.PropertyType.GetType());
+            var resType = typeof(IEnumerable<>).MakeGenericType(field.PropertyType);
             if (resType.IsInstanceOfType( res))
             {
                 if (res is not IEnumerable enumerable) continue;
                 var current = enumerable.GetEnumerator();
-                if (current.Current != null)
+                if (current.MoveNext())
                 {
                     field.SetValue(a, current.Current);
                 }
@@ -156,7 +158,7 @@ public static class PlatformLogicHelper
             else
             {
                 Console.WriteLine(
-                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res.GetType()}");
+                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {(res?.GetType()?.ToString() ?? "null type")}");
             }
         }
 

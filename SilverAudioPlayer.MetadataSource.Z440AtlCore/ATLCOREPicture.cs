@@ -1,5 +1,6 @@
 ﻿using ATL;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
@@ -24,8 +25,11 @@ public class ATLCOREPicture : IPicture
 
     private SharedStream? Cached;
     private RelianceOnSharedStream? Reliance;
-    public string? Description { get; init; }
+    public string? Description { get; }
     public WrappedStream? Data => Cached.Stream;
-    public PictureType? PicType { get; init; }
-    public string? Hash { get; set; }
+    public PictureType? PicType { get; }
+    /// <summary>
+    /// AtlCore hash 
+    /// </summary>
+    public string? Hash { get; }
 }

@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
+using SilverCraft.Ekonrensis.Avalonia;
+using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Avalonia;
 
 
 
-public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin
+public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin,IConfigurableListener
 {
     private readonly MainWindow mainWindow;
 
@@ -189,4 +192,10 @@ SilverAudioPlayer.Avalonia
 ";
 
     public string[] KnownConfigFileLocations => new[] { ConfigPath.GetPath("SilverAudioPlayer.Config.xml"), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SilverCraftAvaloniav1Shared", "dotfile.json") };
+    public IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)
+    {
+        EkonrensisWindow window = new();
+        window.HandleConfiguration(elements);
+        return window;
+    }
 }

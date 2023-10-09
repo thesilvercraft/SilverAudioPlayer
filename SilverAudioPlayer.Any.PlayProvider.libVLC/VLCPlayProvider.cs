@@ -12,7 +12,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
         public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.FLACMime, KnownMimes.AACMime,
           KnownMimes.AiffMime, KnownMimes.WAVMime, KnownMimes.MP3Mime, KnownMimes.MidMime, KnownMimes.Mp2Mime, KnownMimes.Mp4Mime, KnownMimes.MpegMime, KnownMimes.OGGMime };
 
-        public IPlayProviderListner ProviderListener { set => _ = value; }
 
         public string Name => "VLC playprovider";
 

@@ -1,4 +1,4 @@
-namespace SilverAudioPlayer.Shared;
+namespace SilverAudioPlayer.Shared.Metadata;
 
 public abstract class Metadata :IMetadata
 {

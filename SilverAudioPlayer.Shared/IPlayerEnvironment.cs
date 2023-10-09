@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer.Shared;
+﻿using SilverAudioPlayer.Shared.Metadata;
+
+namespace SilverAudioPlayer.Shared;
 
 /// <summary>
 ///     A interface that describes the User Interface

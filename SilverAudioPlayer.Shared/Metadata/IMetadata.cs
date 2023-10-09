@@ -1,4 +1,4 @@
-namespace SilverAudioPlayer.Shared;
+namespace SilverAudioPlayer.Shared.Metadata;
 
 public interface IMetadata : IDisposable
 {

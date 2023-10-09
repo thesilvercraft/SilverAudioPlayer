@@ -10,7 +10,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
         public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { 
             KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.AiffMime, KnownMimes.MP3Mime,KnownMimes.Mp2Mime ,KnownMimes.MpegMime  };
 
-        public IPlayProviderListner ProviderListener { set => _ = value; }
+
 
         public string Name => "CSCore player";
 

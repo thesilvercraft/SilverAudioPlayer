@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.AvaloniaUtils;
 using Swordfish.NET.Collections;
 

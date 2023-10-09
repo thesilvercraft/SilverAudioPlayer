@@ -5,6 +5,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.2"/>
+        <PackageReference Include="Avalonia" Version="11.0.4"/>
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="ConfigureWindow.axaml.cs">
+        <DependentUpon>ConfigureWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+  
+  
+    <ItemGroup>
+      <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj" />
     </ItemGroup>
 </Project>

@@ -102,11 +102,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
         return null;
     }
 
-    public IPlayProviderListner ProviderListener
-    {
-        set => _ = value;
-    }
-
+ 
     public string Name => "managed-midi MidiPlayer";
 
     public string Description =>

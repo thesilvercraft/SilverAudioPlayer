@@ -27,10 +27,6 @@ public static class NaudioWaveStreamWrapperTypeHolder
 [Export(typeof(IPlayProvider))]
 public class NaudioWaveStreamWrapper : IPlayProvider
 {
-    public IPlayProviderListner ProviderListener
-    {
-        set => _ = value;
-    }
 
     public string Name => "NAudio Player";
 

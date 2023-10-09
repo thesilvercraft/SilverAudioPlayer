@@ -155,7 +155,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
         };
     }
 
-    public List<IConfigurableElement> GetElements()
+    public IEnumerable<IConfigurableElement> GetElements()
     {
         return ConfigurableElements;
     }
@@ -163,7 +163,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
     
     public void Dispose()
     {
-        client.Dispose();
+        client?.Dispose();
     }
 
     public void PlayerStateChanged(object e, PlaybackState newstate)

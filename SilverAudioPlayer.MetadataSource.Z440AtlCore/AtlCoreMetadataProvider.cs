@@ -1,6 +1,7 @@
 ﻿using System.Composition;
 using ATL;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 using Version = System.Version;
@@ -9,41 +10,22 @@ namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 [Export(typeof(IMetadataProvider))]
 public class AtlCoreFileMetadataProvider : IMetadataProvider,
-    IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
+    IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin
 {
-    private readonly List<IConfigurableElement> ConfigurableElements;
-    public ObjectToRemember ConfigObject = new(Guid.Parse("97db82ee-ac2c-4772-b3f6-ca45957316a8"), new ZAtlCoreConfig());
+
+    public ObjectToRemember ConfigObject =
+        new(Guid.Parse("97db82ee-ac2c-4772-b3f6-ca45957316a8"), new ZAtlCoreConfig());
+
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
 
-    public AtlCoreFileMetadataProvider()
-    {
-        ConfigurableElements = new List<IConfigurableElement>
-        {
-            new SimpleCheckBox
-                { GetContent = () => "Allow MIDI reading", Checked = c => {
-
-                    if(ConfigObject.Value is ZAtlCoreConfig x)
-                    {
-                        x.ReadMidiMetadata=c;
-                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("ReadMidiMetadata"));
-                    }
-
-                },
-                GetChecked = () => GetAllowedMidi()
-                }
-        };
-    }
     bool GetAllowedMidi()
     {
         if (ConfigObject.Value is ZAtlCoreConfig x)
         {
             return x.ReadMidiMetadata;
         }
+
         return false;
-    }
-    public List<IConfigurableElement> GetElements()
-    {
-        return ConfigurableElements;
     }
 
     public string Name => "Z440AtlCore Metadata Provider";
@@ -103,5 +85,23 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
     public Task<IMetadata?> GetMetadata(WrappedStream stream)
     {
         return Task.FromResult((IMetadata?)new AtlCoreMetadata(stream));
+    }
+
+    public void ConfigureUi(IConfigurableListener env)
+    {
+        var window = env.TryGetWindow(new List<IConfigurableElement>
+        {
+            new SimpleCheckBox
+            {
+                GetContent = () => "Allow MIDI reading", Checked = c =>
+                {
+                    if (ConfigObject.Value is not ZAtlCoreConfig x) return;
+                    x.ReadMidiMetadata = c;
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("ReadMidiMetadata"));
+                },
+                GetChecked = GetAllowedMidi
+            }
+        });
+        window?.Show();
     }
 }

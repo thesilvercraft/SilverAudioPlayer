@@ -1,8 +1,9 @@
 ﻿using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
-namespace SilverAudioPlayer.Any.MetadataSource.DryWetMidi;
+namespace SilverAudioPlayer.Any.PlayProvider.DryWetMidi;
 
 public class MidiMetadata : Metadata
 {

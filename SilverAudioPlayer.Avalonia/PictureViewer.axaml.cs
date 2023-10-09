@@ -9,6 +9,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Avalonia;
 

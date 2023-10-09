@@ -1,7 +1,9 @@
 ﻿using System.Composition;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Multimedia;
+using SilverAudioPlayer.Any.PlayProvider.DryWetMidi;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Any.MetadataSource.DryWetMidi;

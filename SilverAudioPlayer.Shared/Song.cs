@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using SilverAudioPlayer.Core;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;

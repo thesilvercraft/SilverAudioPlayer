@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Svg.Skia;
+using ReactiveUI;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
+using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
@@ -52,6 +56,8 @@ public partial class Settings : Window
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
+        ProductIconButton = this.FindControl<Button>("ProductIconButton");
+        ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon, RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
         TransparencyLevelHint =
             WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString("SAPTransparency") ??
@@ -68,16 +74,20 @@ public partial class Settings : Window
         };
         info.AddRange((mainWindow.Logic as ILogicImportable).CreditInformation);
         var ir = GetInfoRecords(info);
-        DataContext = new SettingsDC()
+        _settingsDc = new SettingsDC()
         {
             Items = ir.Item1,
             ProductName = mainWindow.Env.Name,
             ProductDescription = mainWindow.Env.Description,
             ProductIcon = ir.Item1.First().Icon,
         };
+
+        DataContext = _settingsDc;
         Legalese = ir.Item2;
     }
 
+
+    private SettingsDC _settingsDc;
     private void EnableMSI(object? sender, RoutedEventArgs e)
     {
         var y = (CheckBox?)sender;
@@ -110,7 +120,7 @@ public partial class Settings : Window
                 icon,
                 item.Licenses,
                 item,
-                item is IAmConfigurable,
+                item is IAmConfigurable or IConfigurableUiPlugin,
                 item is IPlayStreamProvider,
                 item is IAmOnceAgainAskingYouForYourMemory,
                 item is ISyncPlugin,
@@ -165,10 +175,20 @@ public partial class Settings : Window
     {
         var y = (Button?)button;
         if (y is not { DataContext: InfoPRecord { Configurable: true } record }) return;
-        if (record.Item is not IAmConfigurable configurable) return;
-        ConfigureWindow cw = new();
-        cw.HandleConfiguration(configurable);
-        cw.Show();
+        switch (record.Item)
+        {
+            case IConfigurableUiPlugin configurableUiPlugin:
+                configurableUiPlugin.ConfigureUi(mainWindow.Env);
+                break;
+            case IAmConfigurable configurable:
+            {
+                EkonrensisWindow cw = new();
+                cw.HandleConfiguration(configurable);
+                cw.Show();
+                break;
+            }
+           
+        }
     }
 
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
@@ -196,8 +216,9 @@ public partial class Settings : Window
             record is { IsPlayStreamProvider: false, IsSyncPlugin: false }) return;
         switch (record.Item)
         {
-            case IPlayStreamProvider configurable:
-                configurable.Use(mainWindow.Env);
+          
+            case IPlayStreamProvider streamProvider:
+                streamProvider.Use(mainWindow.Env);
                 break;
             case ISyncPlugin syncPlugin:
                 syncPlugin.Use(mainWindow.Env);
@@ -246,13 +267,23 @@ public partial class Settings : Window
         }).ToList();
         switch (element.Item)
         {
+            case IConfigurableUiPlugin guiConfig:
+                actions.Add(new SAction
+                {
+                    ActionName = "🔧Configure",
+                    ActionToInvoke = () =>
+                    {
+                        guiConfig.ConfigureUi(mainWindow.Env);
+                    }
+                });
+                break;
             case IAmConfigurable configurable:
                 actions.Add(new SAction
                 {
                     ActionName = "🔧Configure",
                     ActionToInvoke = () =>
                     {
-                        ConfigureWindow cw = new();
+                        EkonrensisWindow cw = new();
                         cw.HandleConfiguration(configurable);
                         cw.Show();
                     }
@@ -346,9 +377,64 @@ public partial class Settings : Window
     {
         AvaloniaXamlLoader.Load(this);
     }
+
+    private string? Template = null;
+    private void ProductIconClicked()
+    {
+        if ((mainWindow.Env.Icon is not { MimeType: SVGMime } ) ||mainWindow.Env.Icon?.MimeType == null)
+        {
+            var instance = mainWindow.Env.Icon;
+            instance?.Use(x=>{});
+            if (instance?.MimeType is not SVGMime)
+            {
+                return;
+            }
+        }
+
+       
+        if (Template == null)
+        {
+            mainWindow.Env.Icon.Use(s =>
+            {
+                using var textreader = new StreamReader(s);
+                Template = textreader.ReadToEnd();
+                Template = Template.Replace("stop-color=\"#6969ff\"", "stop-color=\"{0}\"")
+                   
+                    .Replace("stop-color=\"#696969\"", "stop-color=\"{1}\"")
+                    .Replace("fill=\"#F90\"", "fill=\"{2}\"")
+                    .Replace("fill=\"#0F6\"", "fill=\"{3}\"")
+                    .Replace("fill=\"#00F0FF\"", "fill=\"{4}\"")
+                    .Replace("fill=\"#000\"", "fill=\"{5}\"");
+            });
+        }
+
+        string NewHex() => $"#{Random.Shared.Next(0x1000000):X6}";
+        var realisedTemplate = string.Format(Template, NewHex(), NewHex(), NewHex(), NewHex(), NewHex(), NewHex());
+        var img = new SvgImage
+        {
+            Source = new()
+        };
+        using var s = new MemoryStream(Encoding.UTF8.GetBytes(realisedTemplate));
+        img.Source.Load(s);
+        _settingsDc.ProductIcon = img;
+        CurrentSource = realisedTemplate;
+    }
+    private void PointerReleasedProductIcon(object? sender, PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton == MouseButton.Right)
+        {
+            Clipboard?.SetTextAsync(CurrentSource);
+        }
+    }
+
+    private string? CurrentSource;
+    private void ProductIconClick(object? sender, RoutedEventArgs e)
+    {
+        ProductIconClicked();
+    }
 }
 
-public class SettingsDC
+public class SettingsDC : ReactiveObject
 {
     public WindowTransparencyLevel[] TransparencyTypes { get; set; } =
     {
@@ -395,5 +481,7 @@ public class SettingsDC
     public ObservableCollection<InfoPRecord> Items { get; set; }
     public string ProductName { get; internal set; }
     public string ProductDescription { get; internal set; }
-    public IImage? ProductIcon { get; internal set; }
+    public IImage? ProductIcon { get=>_productIcon; set=> this.RaiseAndSetIfChanged(ref _productIcon, value, "ProductIcon"); }
+    public IImage? _productIcon;
+
 }

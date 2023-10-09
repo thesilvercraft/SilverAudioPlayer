@@ -1,4 +1,5 @@
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Core;
 /// <summary>

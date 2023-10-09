@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Serilog;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.CAD;
 
