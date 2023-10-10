@@ -15,4 +15,9 @@
       <PackageReference Include="VideoLibrary" Version="3.2.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="icon.svg" />
+      <EmbeddedResource Include="icon.svg" />
+    </ItemGroup>
+
 </Project>

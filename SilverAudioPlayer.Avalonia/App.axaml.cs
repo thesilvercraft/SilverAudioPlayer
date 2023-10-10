@@ -1,18 +1,23 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.Configuration;
+using ReactiveUI;
 using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 using Silver.Composition;
-using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
+using Logger = SilverAudioPlayer.Shared.Logger;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -38,14 +43,52 @@ public class ProvidersReturnedNullException : Exception
     }
 }
 
+public class GuiSink : ILogEventSink
+{
+    public StringBuilder writer = new();
+    public event Action<string>? New;
+    public void Emit(LogEvent logEvent)
+    {
+        if (writer.Length > 25 * 1000)
+        {
+            writer.Clear();
+        }
+
+        var render = logEvent.RenderMessage()+'\n';
+        writer.AppendLine(render);
+        New?.Invoke(render);
+    }
+}
+public class RxObservableExceptionHandler : IObserver<Exception>
+{
+    public void OnNext(Exception value)
+    {
+        Log.Error(value,
+            "Unhandled exception caught by RxObservableExceptionHandler.OnNext");
+    }
+
+    public void OnError(Exception error)
+    {
+        Log.Error(error,
+            "Unhandled exception caught by RxObservableExceptionHandler.OnError");
+    }
+
+    public void OnCompleted()
+    {
+     
+    }
+}
 public class App : Application
 {
-
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
+    public static Config mwconfig;
+    public static CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
+    public  static string _configPath;
 
+    public static GuiSink sink = new();
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -70,24 +113,40 @@ public class App : Application
             {
                 Directory.CreateDirectory(confdir);
             }
+
             ConfigPath.Set(confdir);
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(confdir)
-                .AddJsonFile(Path.Combine(confdir, "appsettings.json"), true)
-                .Build();
+            _configPath = ConfigPath.GetPath("SilverAudioPlayer.Config.xml");
+            mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
+
+            if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
+            mwconfig = mwconfreader.Read(_configPath) ?? new Config();
+            if (mwconfig.UserLogPreferences==ConfigStyle.Unknown)
+            {
+                //todo: show user dialog to choose
+            }
+            //todo: logging based on config
             var logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-
-                .WriteTo.Debug()
+                .WriteTo.Sink(sink, LogEventLevel.Debug)
+                .WriteTo.Debug(LogEventLevel.Debug)
                 .CreateLogger();
+                //LogWindow lw = new();
+            //lw.Show();
             Log.Logger = logger;
-
+            logger.Warning("Test warning");
             AppDomain.CurrentDomain.UnhandledException += (x, y) =>
             {
-                Log.Error((Exception)y.ExceptionObject, "Unhandled exception caught in AppDomain.CurrentDomain.UnhandledException, Terminating: {IsTerminating}", y.IsTerminating);
+                Log.Error((Exception)y.ExceptionObject,
+                    "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating: {IsTerminating}",
+                    y.IsTerminating);
             };
+            TaskScheduler.UnobservedTaskException += (x,y) =>
+            {
+                Log.Error(y.Exception,
+                    "Unhandled exception caught by TaskScheduler.UnobservedTaskException");
+            };
+            RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
             Logger.GetLoggerFunc += e => logger.ForContext(e);
-
+        
             var mw = new MainWindow();
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
@@ -96,6 +155,11 @@ public class App : Application
                 throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
             mw.Logic.PlayableMimes = new List<MimeType>();
             bool canProvideMemory = mw.Logic.MemoryProvider != null;
+            if (!canProvideMemory)
+            {
+                logger.Warning("Failed to find a memory provider, proceeding anyways");
+            }
+
             foreach (var provider in mw.Logic.PlayProviders)
             {
                 var name = provider.GetType().Name;
@@ -104,6 +168,7 @@ public class App : Application
                 {
                     mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
                 }
+
                 if (provider.SupportedMimes != null) mw.Logic.PlayableMimes.AddRange(provider.SupportedMimes);
             }
 
@@ -117,32 +182,31 @@ public class App : Application
             {
                 mw.Logic.MemoryProvider.RegisterObjectsToRemember(mainwindowMemory.ObjectsToRememberForMe);
             }
-            foreach (var provider in mw.Logic.MetadataProviders)
+
+            void HandleMemoryLogic(IEnumerable objectsOwnedByLogic)
             {
-                if(canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
+                foreach (var o in objectsOwnedByLogic)
                 {
-                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
+                    if (canProvideMemory && o is IAmOnceAgainAskingYouForYourMemory asker)
+                    {
+                        mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
+                    }
                 }
             }
-            foreach (var provider in mw.Logic.MusicStatusInterfaces)
+
+            if (canProvideMemory)
             {
-                if (canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
-                {
-                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
-                }
+                HandleMemoryLogic(mw.Logic.MetadataProviders);
+                HandleMemoryLogic(mw.Logic.MusicStatusInterfaces);
+                HandleMemoryLogic(mw.Logic.WakeLockInterfaces);
+                HandleMemoryLogic(mw.Logic.SyncPlugins);
+                HandleMemoryLogic(mw.Logic.PlaylistReaders);
             }
-            foreach (var provider in mw.Logic.WakeLockInterfaces)
-            {
-                if (canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
-                {
-                    mw.Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
-                }
-            }
+
             mw.Logic.Log = logger;
             mw.Logic.ProcessFiles(desktop.Args);
         }
+
         base.OnFrameworkInitializationCompleted();
     }
-
-    
 }

@@ -15,11 +15,13 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Svg.Skia;
 using ReactiveUI;
+using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
 using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Ekorensis;
+using SilverCraft.Shared;
 using SilverMagicBytes;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
@@ -33,7 +35,7 @@ public record InfoPRecord(string Name, string Description, Version? Version, IIm
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
-
+    private ILogger? Logger;
 
     public Settings()
     {
@@ -47,6 +49,7 @@ public partial class Settings : Window
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
 
+        Logger = Shared.Logger.GetLogger(typeof(Settings));
         this.DoAfterInitTasksF();
     }
 
@@ -152,18 +155,7 @@ public partial class Settings : Window
 
         return null;
     }
-
-    public static void OpenBrowser(string url)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Process.Start("xdg-open", url);
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            Process.Start("open", url);
-        else
-            throw new NotSupportedException("Os not supported");
-    }
+    
 
     public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
     {
@@ -204,7 +196,7 @@ public partial class Settings : Window
             mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
         LaunchActionsWindow launchActionsWindow = new();
         var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
-            new SAction { ActionName = "Open " + m, ActionToInvoke = () => { OpenBrowser(m); } }).ToList();
+            new SAction { ActionName = "Open " + m, ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); } }).ToList();
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }
@@ -263,7 +255,7 @@ public partial class Settings : Window
         var actions = element.Item.Links.Select(z => new SAction
         {
             ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2),
-            ActionToInvoke = () => OpenBrowser(z.Item1.ToString())
+            ActionToInvoke = () => EnvironmentExtensions.OpenBrowser(z.Item1.ToString())
         }).ToList();
         switch (element.Item)
         {
@@ -387,6 +379,7 @@ public partial class Settings : Window
             instance?.Use(x=>{});
             if (instance?.MimeType is not SVGMime)
             {
+                Logger?.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",instance?.MimeType);
                 return;
             }
         }
@@ -394,12 +387,11 @@ public partial class Settings : Window
        
         if (Template == null)
         {
-            mainWindow.Env.Icon.Use(s =>
+            mainWindow.Env.Icon?.Use(s =>
             {
                 using var textreader = new StreamReader(s);
                 Template = textreader.ReadToEnd();
                 Template = Template.Replace("stop-color=\"#6969ff\"", "stop-color=\"{0}\"")
-                   
                     .Replace("stop-color=\"#696969\"", "stop-color=\"{1}\"")
                     .Replace("fill=\"#F90\"", "fill=\"{2}\"")
                     .Replace("fill=\"#0F6\"", "fill=\"{3}\"")
@@ -408,16 +400,18 @@ public partial class Settings : Window
             });
         }
 
-        string NewHex() => $"#{Random.Shared.Next(0x1000000):X6}";
-        var realisedTemplate = string.Format(Template, NewHex(), NewHex(), NewHex(), NewHex(), NewHex(), NewHex());
-        var img = new SvgImage
+        if (Template == null) return;
         {
-            Source = new()
-        };
-        using var s = new MemoryStream(Encoding.UTF8.GetBytes(realisedTemplate));
-        img.Source.Load(s);
-        _settingsDc.ProductIcon = img;
-        CurrentSource = realisedTemplate;
+            var realisedTemplate = string.Format(Template, EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString());
+            var img = new SvgImage
+            {
+                Source = new SvgSource()
+            };
+            using var s = new MemoryStream(Encoding.UTF8.GetBytes(realisedTemplate));
+            img.Source.Load(s);
+            _settingsDc.ProductIcon = img;
+            CurrentSource = realisedTemplate;
+        }
     }
     private void PointerReleasedProductIcon(object? sender, PointerReleasedEventArgs e)
     {

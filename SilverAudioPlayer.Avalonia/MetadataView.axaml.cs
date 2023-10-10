@@ -52,21 +52,36 @@ public partial class MetadataView : Window
     private void ProcessSubProperties(object thing, Field parentfield, int allowedlength = 7)
     {
         if (allowedlength == 0) return;
-        if (thing is string) return;
-        
-        if (thing is IList tlist )
+        switch (thing)
         {
-            var c = tlist.Count;
-            if (c > 200) c = 200;
-            for (var i = 0; i < c; i++)
+            case string:
+            case int:
+                return;
+            case IList tlist:
             {
-                var item = tlist[i];
-                var pf = new Field(i.ToString(), item?.ToString() ?? "null");
-                parentfield.SubFields.Add(pf);
-                if (item is not null) ProcessSubProperties(item, pf, allowedlength - 1);
-            }
+                var c = tlist.Count;
+                switch (c)
+                {
+                    case 0:
+                    {
+                        var pf = new Field("empty","this IList is empty");
+                        parentfield.SubFields.Add(pf);
+                        return;
+                    }
+                    case > 200:
+                        c = 200;
+                        break;
+                }
 
-            return;
+                for (var i = 0; i < c; i++)
+                {
+                    var item = tlist[i];
+                    var pf = new Field(i.ToString(), item?.ToString() ?? "null");
+                    parentfield.SubFields.Add(pf);
+                    if (item is not null) ProcessSubProperties(item, pf, allowedlength - 1);
+                }
+                return;
+            }
         }
 
         var typeofmetadata = thing.GetType();

@@ -113,7 +113,7 @@ public static class PlatformLogicHelper
         return Helper.GetFromAssembliesWrapped<T>(assemblies).First();
     }
 
-    public static void SatisfyImports(object a)
+    public static void SatisfyImports(object a, bool tolist = true)
     {
         RefreshCatalogsAndAssemblies();
         foreach (var field in a.GetType().GetProperties().Where(field => field.GetCustomAttributes().Any(x =>
@@ -123,9 +123,18 @@ public static class PlatformLogicHelper
             var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped")
                 ?.MakeGenericMethod(field.PropertyType.GetGenericArguments()[0])
                 .Invoke(null, new[] { assemblies });
-            if (field.PropertyType.IsInstanceOfType( res))
+            if (field.PropertyType.IsInstanceOfType(res))
             {
-                field.SetValue(a, res);
+                if (tolist)
+                {
+                    field.SetValue(a,
+                        typeof(List<>).MakeGenericType(field.PropertyType.GetGenericArguments()[0])
+                            .GetConstructor(new[] { res.GetType() }).Invoke(new[] { res }));
+                }
+                else
+                {
+                    field.SetValue(a, res);
+                }
             }
             else
             {
@@ -133,6 +142,7 @@ public static class PlatformLogicHelper
                     $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res.GetType()}");
             }
         }
+
         foreach (var field in a.GetType().GetProperties().Where(field => field.GetCustomAttributes().Any(x =>
                      x is System.Composition.ImportAttribute
                          or System.ComponentModel.Composition.ImportAttribute)))
@@ -141,7 +151,7 @@ public static class PlatformLogicHelper
                 ?.MakeGenericMethod(field.PropertyType)
                 .Invoke(null, new[] { assemblies });
             var resType = typeof(IEnumerable<>).MakeGenericType(field.PropertyType);
-            if (resType.IsInstanceOfType( res))
+            if (resType.IsInstanceOfType(res))
             {
                 if (res is not IEnumerable enumerable) continue;
                 var current = enumerable.GetEnumerator();

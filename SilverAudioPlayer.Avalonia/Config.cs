@@ -22,10 +22,30 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     public float AlbumArtTransparency { get; set; } = 0.25f;
     [XmlIgnore] public bool AllowedToRead => _AllowedRead;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = new();
-
+    public ConfigStyle UserLogPreferences = ConfigStyle.Unknown;
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {
         PropertyChanged?.Invoke(e, a);
     }
     public event PropertyChangedEventHandler? PropertyChanged;
+}
+
+public enum ConfigStyle
+{
+    /// <summary>
+    /// The user hasn't clicked on anything in the config prompt yet
+    /// </summary>
+    Unknown,
+    /// <summary>
+    /// absolutely no logs
+    /// </summary>
+    None,
+    /// <summary>
+    /// log in memory, show in window
+    /// </summary>
+    LogWindow,
+    /// <summary>
+    /// log to file
+    /// </summary>
+    File
 }

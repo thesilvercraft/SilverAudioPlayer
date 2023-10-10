@@ -16,7 +16,7 @@ public class MidiMetadataProvider : IMetadataProvider
     public string Description => "Metadata Provider that provides MIDI metadata";
 
     public WrappedStream Icon => new WrappedEmbeddedResourceStream(typeof(MidiMetadataProvider).Assembly,
-        "SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+        "SilverAudioPlayer.Win.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
 
     public Version? Version => typeof(MidiMetadataProvider).Assembly.GetName().Version;
 

@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using ReactiveUI;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 
@@ -18,11 +19,13 @@ public partial class PictureViewer : Window
     private readonly IReadOnlyList<IPicture>? pictures;
     private int pos;
     private readonly DContext x;
+    private readonly ILogger? Log;
 
     public PictureViewer()
     {
         InitializeComponent();
         this.DoAfterInitTasksF();
+        Log = Logger.GetLogger(typeof(MetadataView));
     }
 
     public PictureViewer(IReadOnlyList<IPicture>? pictures) : this()
@@ -35,22 +38,18 @@ public partial class PictureViewer : Window
 
     private void Left(object? sender, RoutedEventArgs e)
     {
-        if (pos > 0)
-        {
-            pos--;
-            using var data = pictures[pos].Data.GetStream();
-            x.Picture = new Bitmap(data);
-        }
+        if (pos <= 0) return;
+        pos--;
+        using var data = pictures[pos].Data.GetStream();
+        x.Picture = new Bitmap(data);
     }
 
     private void Right(object? sender, RoutedEventArgs e)
     {
-        if (pos < pictures.Count - 1)
-        {
-            pos++;
-            using var data = pictures[pos].Data.GetStream();
-            x.Picture = new Bitmap(data);
-        }
+        if (pos >= pictures?.Count - 1) return;
+        pos++;
+        using var data = pictures[pos].Data.GetStream();
+        x.Picture = new Bitmap(data);
     }
 
     private void Copy(object? sender, RoutedEventArgs e)
@@ -77,7 +76,7 @@ public partial class PictureViewer : Window
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Log?.Error(ex, "Error while setting clipboard image");
         }
     }
     

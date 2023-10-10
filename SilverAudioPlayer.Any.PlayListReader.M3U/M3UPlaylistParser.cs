@@ -11,7 +11,9 @@ public class M3UPlaylistParser : IPlaylistReader
 {
     public string Name => "m3u Playlist parser";
     public string Description => "Playlist provider that parses m3u playlists";
-    public WrappedStream? Icon => null;
+    public WrappedStream Icon => new WrappedEmbeddedResourceStream(typeof(M3UPlaylistParser).Assembly,
+        "SilverAudioPlayer.Any.PlayListReader.M3U.icon.svg");
+
     public Version? Version => typeof(M3UPlaylistParser).Assembly.GetName().Version;
     public string Licenses => "";
     public List<Tuple<Uri, URLType>>? Links => null;
@@ -74,8 +76,8 @@ public class M3UPlaylistParser : IPlaylistReader
                 }
 
                 var list = new List<ITrackLoadInfo>();
-                int length;
-                bool lengthset = false;
+              //  int length;
+              //  bool lengthset = false;
                 string? fileTitle = null;
                 while (!reader.EndOfStream)
                 {
@@ -84,7 +86,7 @@ public class M3UPlaylistParser : IPlaylistReader
                     {
                         if (line.StartsWith("#EXTINF:"))
                         {
-                            length = 0;
+                          //  length = 0;
                             fileTitle = null;
                             string? numeral = null;
                             bool startreadingname = false;
@@ -93,7 +95,7 @@ public class M3UPlaylistParser : IPlaylistReader
                                 if (numeral == null && line[i] is not (>= '0' and <= '9'))
                                 {
                                     numeral = line[7..i];
-                                    lengthset = int.TryParse(numeral, out length);
+                                    //lengthset = int.TryParse(numeral, out length);
                                 }
 
                                 if (startreadingname || line[i] != ',') continue;

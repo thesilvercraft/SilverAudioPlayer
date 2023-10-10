@@ -12,9 +12,8 @@ using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Avalonia;
 
-
-
-public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IPlayStreamProviderListener, ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin,IConfigurableListener
+public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations, IPlayStreamProviderListener,
+    ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin, IConfigurableListener
 {
     private readonly MainWindow mainWindow;
 
@@ -28,7 +27,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
 
     public void LoadSong(WrappedStream s)
     {
-        Dispatcher.UIThread.Post(()=>mainWindow.Logic.ProcessStream(s));
+        Dispatcher.UIThread.Post(() => mainWindow.Logic.ProcessStream(s));
     }
 
     public void ProcessFiles(IEnumerable<string> files)
@@ -38,7 +37,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
 
     public void LoadSongs(IEnumerable<WrappedStream> streams)
     {
-       mainWindow.Logic.ProcessStreams(streams);
+        mainWindow.Logic.ProcessStreams(streams);
     }
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
@@ -82,7 +81,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
     {
         var res = pictures?.Where(x => x.PicType == type);
-        return res?.Any()==true ? res?.First() : pictures?.FirstOrDefault();
+        return res?.Any() == true ? res?.First() : pictures?.FirstOrDefault();
     }
 
     public void Play() => mainWindow.Logic.Play();
@@ -97,7 +96,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
 
     public void Previous() => mainWindow.Logic.Previous();
 
-    public void SetVolume(byte volume) => mainWindow.dc.Volume= volume;
+    public void SetVolume(byte volume) => mainWindow.dc.Volume = volume;
 
     public byte GetVolume() => mainWindow.dc.Volume;
 
@@ -106,7 +105,8 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
         return mainWindow.dc.CurrentSong;
     }
 
-    public double GetDuration() => mainWindow.Player?.Length()?.TotalSeconds ?? (mainWindow.dc.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
+    public double GetDuration() => mainWindow.Player?.Length()?.TotalSeconds ??
+                                   (mainWindow.dc.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
 
 
     public void SetPosition(double position) => mainWindow.Player?.SetPosition(TimeSpan.FromSeconds(position));
@@ -116,11 +116,11 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
     public PlaybackState GetState()
     {
         var x = mainWindow.Player?.GetPlaybackState();
-        if(x != null)
+        if (x != null)
         {
             return (PlaybackState)x;
-
         }
+
         return PlaybackState.Stopped;
     }
 
@@ -151,20 +151,14 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IP
 
     public void FireTrackChangedNotification(Song? currentSong)
     {
-        Task.Run(() =>
-        {
-            TrackChangedNotification?.Invoke(this,currentSong);
-        });
+        Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
     }
 
     public void FirePlayerStateChanged(PlaybackState state)
     {
-        Task.Run(() =>
-        {
-        PlayerStateChanged?.Invoke(this, state);
-        });
+        Task.Run(() => { PlayerStateChanged?.Invoke(this, state); });
     }
-   
+
 
     public string Licenses => @"Avalonia
 The MIT License (MIT)
@@ -191,7 +185,13 @@ SilverAudioPlayer.Avalonia
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ";
 
-    public string[] KnownConfigFileLocations => new[] { ConfigPath.GetPath("SilverAudioPlayer.Config.xml"), Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SilverCraftAvaloniav1Shared", "dotfile.json") };
+    public string[] KnownConfigFileLocations => new[]
+    {
+        ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "SilverCraftAvaloniav1Shared", "dotfile.json")
+    };
+
     public IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)
     {
         EkonrensisWindow window = new();
