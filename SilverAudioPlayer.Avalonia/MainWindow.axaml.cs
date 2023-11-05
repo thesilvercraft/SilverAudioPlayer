@@ -368,7 +368,12 @@ public partial class MainWindow : Window
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-        this.DoAfterInitTasksF(false);
+        this.DoAfterInitTasksF(options: new()
+        {
+            SetBackground = false,
+            SetTransparency = true,
+            SetFontFamily = true,
+        }, followOptionsOnCall:false);
     }
 
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -627,16 +632,7 @@ public partial class MainWindow : Window
 
     public void ClearAll(object sender, RoutedEventArgs e)
     {
-        var delList = dc.Queue.ToList();
-        foreach (var track in delList)
-        {
-            if (dc.CurrentSong != track)
-            {
-                track.Dispose();
-            }
-
-            dc.Queue.Remove(track);
-        }
+        Logic.ClearAll();
     }
 
     public async void AddFile(object sender, RoutedEventArgs e)

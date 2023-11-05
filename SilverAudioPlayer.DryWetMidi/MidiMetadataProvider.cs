@@ -26,7 +26,7 @@ public class MidiMetadataProvider : IMetadataProvider
     {
         new Tuple<Uri, URLType>(
             new Uri(
-                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.DryWetMidi"),
+                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.DryWetMidi"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri(

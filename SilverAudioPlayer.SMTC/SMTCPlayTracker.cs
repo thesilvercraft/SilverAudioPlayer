@@ -35,7 +35,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     public List<Tuple<Uri, URLType>>? Links => new()
     {
-        new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.SMTC"),
+        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.SMTC"),
             URLType.Code),
         new(new("https://docs.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols?view=winrt-22621"),
             URLType.LibraryDocumentation)

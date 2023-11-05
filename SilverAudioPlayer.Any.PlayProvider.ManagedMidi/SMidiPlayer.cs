@@ -115,7 +115,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
     public List<Tuple<Uri, URLType>>? Links => new()
     {
         new Tuple<Uri, URLType>(
-            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayerProvider.ManagedMidi"),
+            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayerProvider.ManagedMidi"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri(

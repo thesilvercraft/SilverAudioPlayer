@@ -23,20 +23,25 @@ public class FakedMemoryStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        
-        int n = (int)(Length - Position);
+        var n = (int)(Length - Position);
         if (n > count)
             n = count;
-        if (n <= 0)
-            return 0;
-        if (n <= 8)
+        switch (n)
         {
-            int byteCount = n;
-            while (--byteCount >= 0)
-                buffer[offset + byteCount] = MemoryArrayHolder.Bytes[Position+byteCount];
+            case <= 0:
+                return 0;
+            case <= 8:
+            {
+                var byteCount = n;
+                while (--byteCount >= 0)
+                    buffer[offset + byteCount] = MemoryArrayHolder.Bytes[Position+byteCount];
+                break;
+            }
+            default:
+                Buffer.BlockCopy(MemoryArrayHolder.Bytes, (int)Position, buffer, offset, n);
+                break;
         }
-        else
-            Buffer.BlockCopy(MemoryArrayHolder.Bytes, (int)Position, buffer, offset, n);
+
         Position += n;
         return n;
     }
@@ -47,7 +52,7 @@ public class FakedMemoryStream : Stream
         {
             case SeekOrigin.Begin:
             {
-                int tempPosition = unchecked((int)offset);
+                var tempPosition = unchecked((int)offset);
                 if (offset < 0)
                     throw new IOException("IO_SeekBeforeBegin");
                 Position = tempPosition;
@@ -55,7 +60,7 @@ public class FakedMemoryStream : Stream
             }
             case SeekOrigin.Current:
             {
-                int tempPosition = (int)unchecked(Position + (int)offset);
+                var tempPosition = (int)unchecked(Position + (int)offset);
                 if (unchecked(Position + offset) < 0 || tempPosition < 0)
                     throw new IOException("IO_SeekBeforeBegin");
                 Position = tempPosition;
@@ -63,7 +68,7 @@ public class FakedMemoryStream : Stream
             }
             case SeekOrigin.End:
             {
-                int tempPosition = (int)unchecked(Length + (int)offset);
+                var tempPosition = (int)unchecked(Length + (int)offset);
                 if (unchecked(Length + offset) < 0 || tempPosition < 0)
                     throw new IOException("IO_SeekBeforeBegin");
                 Position = tempPosition;
@@ -94,7 +99,7 @@ public class FakedMemoryStream : Stream
     public override long Length => MemoryArrayHolder.Bytes.Length;
     public override long Position { get; set; }
 }
-public  class WrappedMemoryStream : WrappedStream, IDisposable
+public class WrappedMemoryStream : WrappedStream, IDisposable
 {
     public WrappedMemoryStream(byte[] data, MimeType? mt = null, bool copy=true)
     {
@@ -131,7 +136,6 @@ public  class WrappedMemoryStream : WrappedStream, IDisposable
         return f;
     }
 
-    public override bool ShouldDisposeStream => true;
  
     public override void Dispose()
     {

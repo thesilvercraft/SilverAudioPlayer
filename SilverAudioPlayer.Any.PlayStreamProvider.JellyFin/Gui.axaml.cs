@@ -30,6 +30,7 @@ public partial class Gui : Window
     }
 
     private IPlayStreamProviderListener ProviderListner;
+
     public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
     {
         ProviderListner = jellyFinPlayStreamProvider;
@@ -70,7 +71,7 @@ public partial class Gui : Window
         var groups = g.SearchResults.GroupBy(x => x.IsFolder);
         foreach (var group in groups)
         {
-            if (group.Key==true)
+            if (group.Key == true)
             {
                 foreach (var folder in group)
                 {
@@ -80,9 +81,10 @@ public partial class Gui : Window
             }
             else
             {
-                tasks.Add( Add(group));
+                tasks.Add(Add(group));
             }
         }
+
         await Task.WhenAll(tasks);
         ProviderListner.LoadSongs(streams);
         Cursor = Cursor.Default;
@@ -111,23 +113,19 @@ public partial class Gui : Window
         {
             var wrappedStream = await helper.GetImageStream(u.dto);
             var stream = wrappedStream?.GetStream();
+            if (stream == null) continue;
             try
             {
-                if (stream != null)
-                {
-                    u.Cover = Bitmap.DecodeToHeight(stream, 200);
-                }
+                u.Cover = Bitmap.DecodeToHeight(stream, 200);
             }
             catch (Exception exception)
             {
                 Log.Error(exception, "Error occured while reading bitmap");
+                
             }
             finally
             {
-                if (wrappedStream is { ShouldDisposeStream: true } && stream != null)
-                {
-                    await stream.DisposeAsync();
-                }
+                await stream.DisposeAsync();
             }
         }
 
@@ -136,8 +134,8 @@ public partial class Gui : Window
         back = current;
         current = si;
         Cursor = Cursor.Default;
-
     }
+
     private WrappedDto? back;
     private WrappedDto? current;
 

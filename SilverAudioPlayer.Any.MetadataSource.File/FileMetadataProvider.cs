@@ -21,7 +21,7 @@ public class FileMetadataProvider : IMetadataProvider
     {
         new Tuple<Uri, URLType>(
             new Uri(
-                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.File"),
+                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.File"),
             URLType.Code),
         
     };

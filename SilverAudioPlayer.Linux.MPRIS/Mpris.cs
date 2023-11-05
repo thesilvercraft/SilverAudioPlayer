@@ -289,7 +289,7 @@ Volume = Env?.GetVolume()/100d ?? 100d
         public List<Tuple<Uri, URLType>>? Links => new()
         {
             new Tuple<Uri, URLType>(
-                new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.MPRIS"),
+                new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.MPRIS"),
                 URLType.Code),
             new Tuple<Uri, URLType>(
                 new Uri("https://specifications.freedesktop.org/mpris-spec/latest/"),

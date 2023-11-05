@@ -2,7 +2,7 @@
     <Import Project="../SilverAudioPlayer.targets"/>
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\NAudio.Flac\NAudio.Flac.csproj" />
         <ProjectReference Include="..\Silver.Composition\Silver.Composition.csproj" />
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj"/>
         <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" Condition=" $(DefineConstants.Contains('CSCore'))"/>
@@ -31,6 +30,7 @@
         <PackageReference Include="NLayer.NAudioSupport" Version="1.3.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4"/>
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1"/>
+        <ProjectReference Include="..\SilverCraft.SndFile\SilverCraft.SndFile.csproj" />
     </ItemGroup>
 
     <ItemGroup>

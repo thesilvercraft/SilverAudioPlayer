@@ -20,6 +20,10 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     {
     }
 
+    static WaveFilePlayer()
+    {
+        CSCore.LogLocation.GetFunc = Logger.GetLogger;
+    }
     public void InitBackEnd(byte volume)
     {
 #if CSCore
@@ -56,7 +60,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
         }
         audioFile?.Dispose();
 
-        if (LoadedWrappedStream is { ShouldDisposeStream: true } && LoadedStream is {CanRead:true})
+        if (LoadedStream is {CanRead:true})
         {
             LoadedStream.Dispose();
         }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using Serilog;
 
 namespace SilverAudioPlayer.Shared;
 /// <summary>
@@ -16,6 +17,21 @@ public interface ISharedMemoryStreamPool
 
 public class SharedMemoryStreamPool : ISharedMemoryStreamPool
 {
+    private ILogger? _logger;
+    public SharedMemoryStreamPool()
+    {
+        _logger = Logger.GetLogger(typeof(SharedMemoryStreamPool));
+        Logger.OnNewLoggerSet += OnLoggerOnOnNewLoggerSet;
+    }
+    ~ SharedMemoryStreamPool()
+    {
+        Logger.OnNewLoggerSet -= OnLoggerOnOnNewLoggerSet;
+    }
+    private void OnLoggerOnOnNewLoggerSet(Func<Type, ILogger>? func)
+    {
+        _logger = func?.Invoke(typeof(SharedMemoryStreamPool));
+    }
+
     private Dictionary<Guid, List<RelianceOnSharedStream>> _reliances = new();
     private readonly object _reliancesLock = new object();
 
@@ -31,8 +47,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
             var sharedStream2 = new SharedStream(memoryStream, hash);
 
             SharedStreams.Add(sharedStream2);
-
-            Debug.WriteLine($"return new {hash}");
+            _logger?.Debug("return new {Hash}", hash);
             return sharedStream2;
         }
     }
@@ -78,12 +93,11 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
             {
                 reliance1.Remove(reliance);
             }
-
             if (reliance1.Count != 0) return;
             Reliances.Remove(reliance.SharedStreamId);
             if (SharedStreams.FirstOrDefault(x => x.SharedStreamId == reliance.SharedStreamId) is not
                 { } sharedStream) return;
-            Debug.WriteLine($"Last reliance on {reliance.SharedStreamId} removed, disposing");
+            _logger?.Debug("return new {RelianceSharedStreamId}", reliance.SharedStreamId);
             sharedStream.Stream.Dispose();
         }
     }

@@ -2,7 +2,7 @@
 
 namespace SilverAudioPlayer.Shared;
 
-public class WrappedFileStream : WrappedRegenerativeStream, IDisposable
+public class WrappedFileStream : WrappedStream, IDisposable
 {
     private bool disposedValue;
 
@@ -30,7 +30,7 @@ public class WrappedFileStream : WrappedRegenerativeStream, IDisposable
 
     public override MimeType MimeType { get; } = KnownMimes.OctetMime;
 
-    
+
     private Stream InternalGetStream()
     {
         var Stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -44,8 +44,7 @@ public class WrappedFileStream : WrappedRegenerativeStream, IDisposable
         return Stream;
     }
 
-    public override bool ShouldDisposeStream => true;
-   
+
     public override void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -55,13 +54,12 @@ public class WrappedFileStream : WrappedRegenerativeStream, IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-            foreach (var stream in Streams.Where(x => x.CanRead))
-                stream.Dispose();
+        foreach (var stream in Streams.Where(x => x.CanRead))
+            stream.Dispose();
     }
 
     ~WrappedFileStream()
     {
         Dispose(false);
     }
-    
 }

@@ -128,10 +128,7 @@ public class M3UPlaylistParser : IPlaylistReader
             }
             finally
             {
-                if (stream.ShouldDisposeStream)
-                {
                     s.Dispose();
-                }
             }
         }
 

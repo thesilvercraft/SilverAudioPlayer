@@ -10,8 +10,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
         public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { 
             KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.AiffMime, KnownMimes.MP3Mime,KnownMimes.Mp2Mime ,KnownMimes.MpegMime  };
 
-
-
         public string Name => "CSCore player";
 
         public string Description => "A player implemented with CSCore";
@@ -47,7 +45,7 @@ A "contributor" is any person that distributes its contribution under this licen
             new(new("https://www.nuget.org/packages/CSCore/"),URLType.PackageManager),
         new(new("https://github.com/filoe/cscore/"),URLType.LibraryCode),
         new(new("https://filoe.github.io/cscore/sharpDox/"), URLType.LibraryDocumentation),
-        new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
+        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
        
         };
 

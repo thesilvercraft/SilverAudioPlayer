@@ -11,9 +11,9 @@
         <Title>SilverAudioPlayer's Shared code</Title>
         <Product>SilverAudioPlayer</Product>
         <Description>Code shared between all SilverAudioPlayer modules</Description>
-        <RepositoryUrl>https://github.com/thesilvercraft/SilverAudioPlayer</RepositoryUrl>
+        <RepositoryUrl>https://gitlab.com/silvercraft/SilverAudioPlayer</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageProjectUrl>https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Shared</PackageProjectUrl>
+        <PackageProjectUrl>https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Shared</PackageProjectUrl>
         <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
         <IncludeSymbols>True</IncludeSymbols>

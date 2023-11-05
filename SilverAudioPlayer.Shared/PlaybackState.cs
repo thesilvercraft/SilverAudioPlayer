@@ -1,6 +1,6 @@
 ﻿namespace SilverAudioPlayer.Shared;
 
-public enum PlaybackState
+public enum  PlaybackState
 {
     Stopped,
     Playing,

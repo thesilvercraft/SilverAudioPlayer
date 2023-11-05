@@ -108,7 +108,7 @@ public class App : Application
                         "SilverCraft", "SilverAudioPlayer");
                 }
             }
-
+            
             if (!Directory.Exists(confdir))
             {
                 Directory.CreateDirectory(confdir);
@@ -117,7 +117,7 @@ public class App : Application
             ConfigPath.Set(confdir);
             _configPath = ConfigPath.GetPath("SilverAudioPlayer.Config.xml");
             mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
-
+            HttpClient.Client.DefaultRequestHeaders.Add("User-Agent", "SilverAudioPlayer/6.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)");
             if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
             mwconfig = mwconfreader.Read(_configPath) ?? new Config();
             if (mwconfig.UserLogPreferences==ConfigStyle.Unknown)
@@ -129,8 +129,8 @@ public class App : Application
                 .WriteTo.Sink(sink, LogEventLevel.Debug)
                 .WriteTo.Debug(LogEventLevel.Debug)
                 .CreateLogger();
-                //LogWindow lw = new();
-            //lw.Show();
+                LogWindow lw = new();
+            lw.Show();
             Log.Logger = logger;
             logger.Warning("Test warning");
             AppDomain.CurrentDomain.UnhandledException += (x, y) =>

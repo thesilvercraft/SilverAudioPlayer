@@ -13,21 +13,10 @@ public class MetadataCombo : IMetadataCombo
     }
 
     public List<IMetadata> OriginalMetadata { get; private set; }
-    public MetadataCombo(IReadOnlyCollection<IMetadata> metadata)
+    public MetadataCombo(IReadOnlyCollection<IMetadata> metadata, IEnumerable<IAdditionalMetadataGatherer> metadataGatherers)
     {
         OriginalMetadata = metadata.OrderBy(x=>x.GetType().Name.Contains("FileMetadata")).ToList();
-        Title = OriginalMetadata.Select(x => x.Title).FirstOrDefault();
-        Artist = OriginalMetadata.Select(x => x.Artist).FirstOrDefault();
-        Album = OriginalMetadata.Select(x => x.Album).FirstOrDefault();
-        Genre = OriginalMetadata.Select(x => x.Genre).FirstOrDefault();
-        Year = ((int?)OriginalMetadata.Select(x => x.Year).Where(x => x is not 9999  or null).Average());
-        TrackNumber = OriginalMetadata.Select(x => x.TrackNumber).MaxBy(x => x is not null);
-        Duration = OriginalMetadata.Select(x => x.Duration).MaxBy(x => x is not null);
-        Bitrate = OriginalMetadata.Select(x => x.Bitrate).MaxBy(x => x is not null);
-        SampleRate = OriginalMetadata.Select(x => x.SampleRate).MaxBy(x => x is not null);
-        Channels = OriginalMetadata.Select(x => x.Channels).MaxBy(x => x is not null);
-        Comments = OriginalMetadata.Where(x=>x.Comments is not null).SelectMany(x => x.Comments!).Distinct().ToArray();
-        Lyrics = OriginalMetadata.Select(x => x.Lyrics).Where(x => x != null).MaxBy(x => !string.IsNullOrEmpty(x));
+        OriginalMetadata.AddRange(metadataGatherers.Select(x=>x.GatherAdditionalMetadata(this)).Where(x=> x is not null).Cast<IMetadata>());
         SyncedLyrics = OriginalMetadata.Select(x => x.SyncedLyrics).Where(x=>x is not null).MaxBy(x => x!.Count);
         if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrEmpty(Lyrics) && (Lyrics[0] == '['))
         {
@@ -47,19 +36,21 @@ public class MetadataCombo : IMetadataCombo
         DiscNumber = metadata.Select(x => x.DiscNumber).MaxBy(x => x is not null);
     }
 
-    public string? Title { get; }
-    public string? Artist { get; }
-    public string? Album { get; }
-    public string? Genre { get; }
-    public int? Year { get; }
-    public ulong? Bitrate { get; }
-    public ulong? SampleRate { get; }
-    public uint? Channels { get; }
-    public int? TrackNumber { get; }
+    public string? Title => OriginalMetadata.Select(x => x.Title).FirstOrDefault();
+    public string? Artist =>  OriginalMetadata.Select(x => x.Artist).FirstOrDefault();
+    public string? Album => OriginalMetadata.Select(x => x.Album).FirstOrDefault();
+    public string? Genre => OriginalMetadata.Select(x => x.Genre).FirstOrDefault();
+    public int? Year => ((int?)OriginalMetadata.Select(x => x.Year).Where(x => x is not 9999  or null).Average());
+    public ulong? Bitrate => OriginalMetadata.Select(x => x.Bitrate).MaxBy(x => x is not null);
+    public ulong? SampleRate => OriginalMetadata.Select(x => x.SampleRate).MaxBy(x => x is not null);
+    public uint? Channels => OriginalMetadata.Select(x => x.Channels).MaxBy(x => x is not null);
+    public int? TrackNumber => OriginalMetadata.Select(x => x.TrackNumber).MaxBy(x => x is not null);
     public int? DiscNumber { get; }
-    public string[]? Comments { get; }
-    public double? Duration { get; }
-    public string? Lyrics { get; }
+
+    public string[]? Comments => OriginalMetadata.Where(x => x.Comments is not null).SelectMany(x => x.Comments!)
+        .Distinct().ToArray();
+    public double? Duration => OriginalMetadata.Select(x => x.Duration).MaxBy(x => x is not null);
+    public string? Lyrics => OriginalMetadata.Select(x => x.Lyrics).Where(x => x != null).MaxBy(x => !string.IsNullOrEmpty(x));
     public IList<LyricPhrase>? SyncedLyrics { get; }
     public IReadOnlyList<IPicture>? Pictures => OriginalMetadata.Select(x => x.Pictures).MaxBy(x => x?.Count);
 

@@ -64,7 +64,7 @@ SOFTWARE.";
     {
         new Tuple<Uri, URLType>(
             new Uri(
-                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"),
+                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri($"https://www.nuget.org/packages/Jellyfin.Sdk/{typeof(ApiKeyClient).Assembly.GetName().Version}"),

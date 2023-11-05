@@ -273,16 +273,10 @@ public class JellyFinHelper
            var resp= await HttpClient.Client.SendAsync(request);
            if (resp.IsSuccessStatusCode)
            {
-               return new WrappedSusHttpStream(() =>
-               {
-                   var request = new HttpRequestMessage() {
-                       RequestUri = new Uri(fr),
-                       Method = HttpMethod.Get,
-                   };
-                   request.Headers.Add("X-Emby-Token",settings.AccessToken);
-                   return HttpClient.
-                       Client.SendAsync(request);
-               });
+               Debug.WriteLine(fr);
+               var r = new HttpRequestMessage(HttpMethod.Get,new Uri(fr));
+               r.Headers.Add("X-Emby-Token",settings.AccessToken);
+               return new WrappedSusHttpStream(r);
            }
         }
         catch

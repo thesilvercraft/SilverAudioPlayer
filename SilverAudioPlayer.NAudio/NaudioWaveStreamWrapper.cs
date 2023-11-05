@@ -41,7 +41,7 @@ public class NaudioWaveStreamWrapper : IPlayProvider
     public List<Tuple<Uri, URLType>>? Links => new()
     {
         new Tuple<Uri, URLType>(
-            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.NAudio"),
+            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.NAudio"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri($"https://www.nuget.org/packages/Naudio/{typeof(WaveOutEvent).Assembly.GetName().Version}"),
@@ -53,7 +53,7 @@ public class NaudioWaveStreamWrapper : IPlayProvider
         ,new(new("https://www.nuget.org/packages/CSCore/"),URLType.PackageManager),
         new(new("https://github.com/filoe/cscore/"),URLType.LibraryCode),
         new(new("https://filoe.github.io/cscore/sharpDox/"), URLType.LibraryDocumentation),
-        new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
+        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
 #endif
     };
 #if CSCore

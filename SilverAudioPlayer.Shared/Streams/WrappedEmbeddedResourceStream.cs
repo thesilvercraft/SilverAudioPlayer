@@ -7,13 +7,11 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 {
     private readonly Assembly Assembly;
     private bool disposedValue;
-
     public WrappedEmbeddedResourceStream(Assembly assembly, string resourceLoc)
     {
         Assembly = assembly;
         URL = resourceLoc;
     }
-
     public string URL { get; set; }
     public List<Stream> Streams { get; set; } = new();
     public override MimeType MimeType => _MimeType;
@@ -21,47 +19,38 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 
     public override void Dispose()
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     private Stream InternalGetStream()
     {
-        var Stream = Assembly.GetManifestResourceStream(URL);
-        Streams.Add(Stream);
-        return Stream;
+        var stream = Assembly.GetManifestResourceStream(URL);
+        Streams.Add(stream);
+        return stream;
     }
 
     public override Stream GetStream()
     {
-        var Stream = InternalGetStream();
-        if(_MimeType==null)
+        var stream = InternalGetStream();
+        if (_MimeType != null) return stream;
+        MimeType? mt;
+        using (var stream2 = InternalGetStream())
         {
-            MimeType? mt;
-            using (var stream2 = InternalGetStream())
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-                Streams.Remove(stream2);
-            }
-            _MimeType = mt;
-
+            mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+            Streams.Remove(stream2);
         }
-
-
-        return Stream;
+        _MimeType = mt;
+        return stream;
     }
 
-    public override bool ShouldDisposeStream => true;
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
-        {
-            if (disposing)
-                foreach (var stream in Streams.Where(x => x.CanRead))
-                    stream.Dispose();
-            disposedValue = true;
-        }
+        if (disposedValue) return;
+        if (disposing)
+            foreach (var stream in Streams.Where(x => x.CanRead))
+                stream.Dispose();
+        disposedValue = true;
     }
 }

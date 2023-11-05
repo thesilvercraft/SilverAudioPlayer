@@ -12,6 +12,7 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
     private MscArtFile[] cached;
     public bool Uploadit;
     private CatBoxClient client;
+
     public RememberRichPresenceURLsUsingCatboxAndAJsonFile()
     {
         var options = new RealOptions()
@@ -21,7 +22,7 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
                 CatBoxUrl = new Uri("https://catbox.moe/user/api.php")
             }
         };
-        client = new CatBoxClient(HttpClient.Client,  options);
+        client = new CatBoxClient(HttpClient.Client, options);
     }
 
     public string? GetURL(Song? track, IMusicStatusInterfaceListener Env)
@@ -38,7 +39,6 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
         cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
         SetCache();
         return res;
-
     }
 
     public virtual string? Upload(WrappedStream bits)
@@ -57,10 +57,7 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
         }
         finally
         {
-            if (bits.ShouldDisposeStream)
-            {
-                stream.Dispose();
-            }
+            stream.Dispose();
         }
     }
 

@@ -22,6 +22,7 @@ public interface ILogicImportable
     [ImportMany] public IEnumerable<IPlayStreamProvider> PlayStreamProviders { get; set; }
     [ImportMany] public IEnumerable<ISyncPlugin> SyncPlugins { get; set; }
     [ImportMany] public IEnumerable<IPlaylistReader> PlaylistReaders { get; set; }
+    [ImportMany] public IEnumerable<IAdditionalMetadataGatherer> MetadataGatherers { get; set; }
 
 
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
@@ -82,6 +83,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     [ImportMany] public IEnumerable<IPlayStreamProvider> PlayStreamProviders { get; set; }
     [ImportMany] public IEnumerable<ISyncPlugin> SyncPlugins { get; set; }
     [ImportMany] public IEnumerable<IPlaylistReader> PlaylistReaders { get; set; }
+    [ImportMany] public IEnumerable<IAdditionalMetadataGatherer> MetadataGatherers { get; set; }
 
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
 
@@ -278,7 +280,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 StopAutoLoading: {StopAutoLoading}
 Current song: {CurrentSong}
 Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContext.LoopType);
-
         if (PlayerContext.LoopType == RepeatState.One && !StopAutoLoading)
         {
             //Loop
@@ -305,6 +306,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
             }
             else if (NextSong != null)
             {
+                PlayerContext.CurrentSong?.Dispose();
                 HandleSongChanging(NextSong, true);
                 NextSong = null;
             }
@@ -327,6 +329,13 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         StartPlaying(resetsal: resetsal);
     }
 
+     void ProcessFile(string file, bool oneFile)
+    {
+        AddSong(
+            file.StartsWith("http")
+                ? new Song(new WrappedHttpStream(file), file, logic: this)
+                : new Song(new WrappedFileStream(file), file, logic: this), !oneFile);
+    }
     public void ProcessFiles(IEnumerable<string> files)
     {
         var enumerable = files.ToList();
@@ -347,18 +356,12 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
                 foreach (var file in files2)
                 {
-                    AddSong(
-                        file.StartsWith("http")
-                            ? new Song(new WrappedHttpStream(file), file, logic: this)
-                            : new Song(new WrappedFileStream(file), file, logic: this), !oneFile);
+                    ProcessFile(file, oneFile);
                 }
             }
             else
             {
-                AddSong(
-                    path.StartsWith("http")
-                        ? new Song(new WrappedHttpStream(path), path, logic: this)
-                        : new Song(new WrappedFileStream(path), path, logic: this), !oneFile);
+                ProcessFile(path, oneFile);
             }
         }
 
@@ -390,7 +393,17 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
     public void ClearAll()
     {
-        PlayerContext.Queue.Clear();
+        var delList = PlayerContext.Queue.ToList();
+        foreach (var track in delList)
+        {
+            if (!ReferenceEquals(PlayerContext.CurrentSong, track))
+            {
+                track.Dispose();
+            }
+
+            PlayerContext.Queue.Remove(track);
+        }
+        //PlayerContext.Queue.Clear();
     }
 
     public void AddSong(Song song, bool expectmore = false)
@@ -451,7 +464,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         {
             listofmetadatas.AddRange(additionalMetadata);
         }
-        return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas));
+        return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas,MetadataGatherers));
     }
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
@@ -476,7 +489,6 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
             || x.EndsWith(".xml")
             || x.EndsWith(".nfo")
             || x.EndsWith(".html")
-            || x.EndsWith(".m3u")
             || x.EndsWith(".xmp")
             || x.EndsWith(".log")
             || x.EndsWith(".gif")
