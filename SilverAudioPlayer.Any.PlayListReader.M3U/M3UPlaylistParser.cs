@@ -97,7 +97,6 @@ public class M3UPlaylistParser : IPlaylistReader
                                     numeral = line[7..i];
                                     //lengthset = int.TryParse(numeral, out length);
                                 }
-
                                 if (startreadingname || line[i] != ',') continue;
                                 startreadingname = true;
                                 fileTitle = line[(i + 1)..];

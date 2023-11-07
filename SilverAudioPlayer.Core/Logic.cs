@@ -331,11 +331,30 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
      void ProcessFile(string file, bool oneFile)
     {
-        AddSong(
-            file.StartsWith("http")
-                ? new Song(new WrappedHttpStream(file), file, logic: this)
-                : new Song(new WrappedFileStream(file), file, logic: this), !oneFile);
+        if (file.EndsWith(".m3u") || file.EndsWith(".m3u8") ||file.EndsWith(".spl.br"))
+        {
+            var playlist=TryReadPlaylist(file.StartsWith("http") ? new WrappedHttpStream(file) : new WrappedFileStream(file));
+            if (playlist == null) return;
+            foreach (var song in playlist.Tracks)
+            {
+                AddWithURLBad(song.URL, song.Source == "http", false);
+            }
+        }
+      
+        else
+        {
+            AddWithURLBad(file, file.StartsWith("http"), oneFile);
+        }
+      
     }
+
+     public void AddWithURLBad(string f, bool http, bool oneFile)
+     {
+         AddSong(
+             http
+                 ? new Song(new WrappedHttpStream(f), f, logic: this)
+                 : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
+     }
     public void ProcessFiles(IEnumerable<string> files)
     {
         var enumerable = files.ToList();

@@ -762,6 +762,7 @@ Public License instead of this License.  But first, please read
             return Task.CompletedTask;
         }
     }
+
     public class ChromeCastPlayer : IPlay
     {
         IMediaChannel? mediaChannel = null;

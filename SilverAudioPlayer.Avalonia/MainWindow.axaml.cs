@@ -14,6 +14,7 @@ using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -236,7 +237,6 @@ public partial class MainWindow : Window
                                         .CopyTo(blur);
                                     blur.Position = 0;
                                 }
-
                                 var imgbrsh = new ImageBrush(new Bitmap(blur))
                                 {
                                     Stretch = Stretch.UniformToFill
@@ -278,7 +278,7 @@ public partial class MainWindow : Window
             }
         };
         dc.GetQueue = () => dc.queue;
-        dc.SetQueue = (q) =>
+        dc.SetQueue = q =>
         {
             Dispatcher.UIThread.Post(() =>
             {
@@ -389,8 +389,6 @@ public partial class MainWindow : Window
                 break;
             case "AlbumArtTransparency":
                 AlbumArtTransparencyChanged = true;
-                break;
-            default:
                 break;
         }
     }
@@ -513,15 +511,9 @@ public partial class MainWindow : Window
         Player?.SetPosition(at);
     }
 
-    private void PauseButton_Click(object? x, RoutedEventArgs y)
-    {
-        Logic.Pause();
-    }
+    private void PauseButton_Click(object? x, RoutedEventArgs y) => Logic.Pause();
 
-    private void PlayButton_Click(object? x, RoutedEventArgs y)
-    {
-        Logic.Play();
-    }
+    private void PlayButton_Click(object? x, RoutedEventArgs y) => Logic.Play();
 
 
     private void SeekBarUpdateThread(CancellationToken e)
@@ -630,34 +622,35 @@ public partial class MainWindow : Window
         }
     }
 
-    public void ClearAll(object sender, RoutedEventArgs e)
-    {
-        Logic.ClearAll();
-    }
+    public void ClearAll(object sender, RoutedEventArgs e) => Logic.ClearAll();
 
     public async void AddFile(object sender, RoutedEventArgs e)
     {
-        var af = Logic.PlayableMimes.Select(x => x.Common).ToList();
-        af.AddRange(Logic.PlayableMimes.SelectMany(y => y.AlternativeTypes));
+        var mimeTypes = Logic.PlayableMimes.Select(x => x.Common).ToList();
+        mimeTypes.AddRange(Logic.PlayableMimes.SelectMany(y => y.AlternativeTypes));
+        var fileExten = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
+            .SelectMany(x => x.FileExtensions.Select(y => "*" + y)).ToList();
+        fileExten.AddRange(Logic.PlaylistReaders.SelectMany(x=>x.SupportedMimes.SelectMany(y=>y.FileExtensions)).Select(x => '*' + x).ToList());
+        var playlistMimes = Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
+        mimeTypes.AddRange(playlistMimes.Select(y=>y.Common));
+        mimeTypes.AddRange(playlistMimes.SelectMany(y=>y.AlternativeTypes));
+    
         var fileDialogFilters = new List<FilePickerFileType>
         {
-            new("Audio Files")
+            new("Audio And Playlists")
             {
-                Patterns = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-                    .SelectMany(x => x.FileExtensions.Select(y => "*" + y)).ToList(),
-                MimeTypes = af
+                Patterns =fileExten ,
+                MimeTypes = mimeTypes
             },
             new("Everything else")
                 { Patterns = new List<string>() { "*" }, MimeTypes = new List<string>() { "application/octet-stream" } }
         };
-        foreach (var mime in Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0))
-        {
-            fileDialogFilters.Add(new(mime.FileExtensions[0].ToUpper() + " Files")
-            {
-                MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(),
-                Patterns = mime.FileExtensions.Select(x => "*" + x).ToList()
-            });
-        }
+        
+        fileDialogFilters.AddRange(Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).
+            Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
+        
+        fileDialogFilters.AddRange(playlistMimes.Where(x => x.FileExtensions.Length > 0).
+            Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
 
         var u = config.DialogStartLoc;
         IStorageFolder? musicfolder = null;
@@ -725,94 +718,9 @@ public partial class MainWindow : Window
                 }
             }
         });
-        if (a != null)
-        {
-            var queue = Logic.GetQueueCopy();
-            SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue), await a.OpenWriteAsync());
-        }
+        if (a == null) return;
+        var queue = Logic.GetQueueCopy();
+        SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue), await a.OpenWriteAsync());
     }
-
-    private async void LoadQueue(object? sender, RoutedEventArgs e)
-    {
-        var fileTypePickerTypes = new List<FilePickerFileType>
-        {
-            new("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
-            {
-                MimeTypes = new[] { "application/silverplaylist+br" },
-                Patterns = new[] { "*.spl.br" }
-            }
-        };
-        var playlistMimes = Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
-        foreach (var playlistMime in playlistMimes)
-        {
-            fileTypePickerTypes.Add(
-                new($"{playlistMime.FileExtensions.FirstOrDefault()} playlist ({playlistMime.Common})")
-                {
-                    MimeTypes = new List<string>(playlistMime.AlternativeTypes) { playlistMime.Common },
-                    Patterns = playlistMime.FileExtensions.Select(x => '*' + x).ToList(),
-                });
-        }
-
-        var a = await StorageProvider.OpenFilePickerAsync(new()
-        {
-            FileTypeFilter = fileTypePickerTypes,
-            AllowMultiple = false,
-        });
-
-        if (a.Count <= 0 || a?[0] is not { } file) return;
-        using var wrappedPlaylistFileStream = new WrappedFileStream(file.Path.LocalPath);
-        if (wrappedPlaylistFileStream.MimeType == KnownMimes.SplMime)
-        {
-            await EvilSilverPlaylistLoading(wrappedPlaylistFileStream);
-        }
-        else
-        {
-            var playlist = Logic.TryReadPlaylist(wrappedPlaylistFileStream);
-            foreach (var song in playlist.Tracks)
-            {
-                if (song.Source == "file")
-                {
-                    Logic.AddSong(new Song(new WrappedFileStream(song.URL), song.URL, logic: Logic),
-                        true);
-                    break;
-                }
-
-                if (song.Source == "http")
-                {
-                    Logic.AddSong(new Song(new WrappedHttpStream(song.URL), song.URL, logic: Logic),
-                        true);
-                    break;
-                }
-            }
-
-            Logic.DoneAddingSongs();
-        }
-    }
-
-    async Task EvilSilverPlaylistLoading(WrappedFileStream file)
-    {
-        using var fs = file.GetStream();
-        var playlist = SilverPlaylistHelper.DeserializeBrotli(fs);
-        for (var index = 0; index < playlist.Song.Count; index++)
-        {
-            var song = playlist.Song[index];
-            if (!song.Sources.Source.Any()) continue;
-            foreach (var source in song.Sources.Source)
-            {
-                if (source.Type == "file")
-                {
-                    Logic.AddSong(new Song(new WrappedFileStream(source.Text), song.Name, logic: Logic),
-                        index != playlist.Song.Count - 1);
-                    break;
-                }
-
-                if (source.Type == "http")
-                {
-                    Logic.AddSong(new Song(new WrappedHttpStream(source.Text), song.Name, logic: Logic),
-                        index != playlist.Song.Count - 1);
-                    break;
-                }
-            }
-        }
-    }
+    
 }

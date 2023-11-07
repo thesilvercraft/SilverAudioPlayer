@@ -4,9 +4,9 @@ using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 
-public class HttpSeekableStream : Stream
+public class HttpSeekableStream : Stream, IRefreshableStream
 {
-    public readonly HttpRequestMessage RequestMessage;
+    public  HttpRequestMessage RequestMessage { get; }
 
     public HttpSeekableStream(string getURL) : this(new HttpRequestMessage(HttpMethod.Get, getURL))
     {
@@ -80,13 +80,17 @@ public class HttpSeekableStream : Stream
         return clone;
     }
 
-    public static Tuple<long, bool> GetLengthAndRangeSupport(HttpRequestMessage RequestMessage)
+    public static Tuple<long, bool>? GetLengthAndRangeSupport(HttpRequestMessage RequestMessage)
     {
         var clone = CloneMessage(RequestMessage);
         using var r = HttpClient.Client.Send(clone, HttpCompletionOption.ResponseHeadersRead);
         if (r.IsSuccessStatusCode)
         {
-            return new((long)r.Content.Headers.ContentLength, r.Headers.AcceptRanges.Contains("bytes"));
+            if (r.Content.Headers.ContentLength is { } length)
+            {
+                return new(length, r.Headers.AcceptRanges.Contains("bytes"));
+            }
+            return null;
         }
 
         throw new Exception($"HTTP Status code {r.StatusCode}");
@@ -222,6 +226,13 @@ public class HttpSeekableStream : Stream
     {
         Internal?.Dispose();
         Internal = null;
+        if (Inside)
+        {
+            foreach (var s in CachedStreams)
+            {
+                s.Value.Dispose();
+            }
+        }
         // Note: Never change this to call other virtual methods on Stream
         // like Write, since the state on subclasses has already been
         // torn down.  This is the last code to run on cleanup for a stream.
@@ -234,12 +245,25 @@ public class HttpSeekableStream : Stream
     public override bool CanWrite => false;
     public override long Length { get; }
     private long _currentPos;
+    public bool Inside;
 
     public override long Position
     {
         get => _currentPos;
         set => Seek(value, SeekOrigin.Begin);
     }
+    
+    public Stream GetStream()
+    {
+        return new HttpSeekableStream(RequestMessage, ref CachedStreams);
+    }
+}
+
+public interface IRefreshableStream  
+{
+    public  HttpRequestMessage RequestMessage { get; }
+    public Stream GetStream();
+    public void Dispose();
 }
 /// <summary>
 /// Supports HTTP STREAMS THAT SUPPORT RANGE
@@ -249,15 +273,27 @@ public class WrappedHttpStream : WrappedStream, IDisposable
     public WrappedHttpStream(string url) : this(new HttpRequestMessage(HttpMethod.Get,url))
     {
     }
+    public WrappedHttpStream(HttpRequestMessage requestMessage)
+    {
+        if (HttpSeekableStream.GetLengthAndRangeSupport(requestMessage) is {Item2:true})
+        {
+            inside = new HttpSeekableStream(requestMessage){Inside=true};
+            
+        }
+        else
+        {
+            inside = new WrappedSusHttpStream(requestMessage);
+
+        }
+
+        using var s = inside.GetStream();
+        _MimeType = MagicByteCombos.Match(s, 0)?.MimeType;
+#if DEBUG
+        T = new(Callback, this, 1000, 1000);
+#endif
+    }
 #if DEBUG
     private Timer T;
-
-    private void Callback(object? state)
-    {
-        CheckForReturned();
-    }
-
-    public List<Tuple<Stream, string>> NotDisposedStreams = new();
     void CheckForReturned()
     {
         foreach (var sTuple in NotDisposedStreams.ToArray())
@@ -267,22 +303,22 @@ public class WrappedHttpStream : WrappedStream, IDisposable
             Debug.WriteLine($"{sTuple.Item2} seems to have returned a stream, {NotDisposedStreams.Count} now");
         }
     }
-#endif
-    public WrappedHttpStream(HttpRequestMessage requestMessage)
+    private void Callback(object? state)
     {
-        inside = new(requestMessage);
-        _MimeType = MagicByteCombos.Match(inside, 0)?.MimeType;
-#if DEBUG
-        T = new(Callback, this, 1000, 1000);
-#endif
+        CheckForReturned();
     }
-    private HttpSeekableStream inside;
+
+    public List<Tuple<Stream, string>> NotDisposedStreams = new();
+  
+#endif
+   
+    private IRefreshableStream inside;
     public override MimeType MimeType => _MimeType;
     private MimeType _MimeType { get; set; }
 
     public override Stream GetStream()
     {
-        var stream = new HttpSeekableStream(inside.RequestMessage, ref inside.CachedStreams);
+        var stream = inside.GetStream();
 #if DEBUG
         var mth = new StackTrace().GetFrame(1).GetMethod();
         var cls = mth.ReflectedType.Name;
@@ -298,10 +334,7 @@ public class WrappedHttpStream : WrappedStream, IDisposable
     public override void Dispose()
     {
         Debug.WriteLine($"WRPHTTPSTRM {inside.RequestMessage} dispose");
-        foreach (var s in inside.CachedStreams)
-        {
-            s.Value.Dispose();
-        }
+       
 #if DEBUG
         T.Dispose();
 #endif
@@ -311,16 +344,15 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 }
 
 
-public class WrappedSusHttpStream : WrappedStream, IDisposable
+public class WrappedSusHttpStream : IRefreshableStream, IDisposable
 {
     private bool _disposedValue;
     private MemoryArrayHolder data = new();
 
-    private HttpRequestMessage _requestMessage;
 
     public WrappedSusHttpStream(HttpRequestMessage requestMessage)
     {
-        _requestMessage = requestMessage;
+        RequestMessage = requestMessage;
         var content = HttpClient.Client.Send(requestMessage);
         var Stream = content.Content.ReadAsStream();
         byte[] array;
@@ -335,32 +367,19 @@ public class WrappedSusHttpStream : WrappedStream, IDisposable
             array = memstream.ToArray();
         }
         data.Bytes = array;
-        MimeType? mt = null;
-        if (mt == null)
-        {
-            var stream2 = new FakedMemoryStream(data);
-            try
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            }
-            finally
-            {
-                stream2.Dispose();
-            }
-        }
-        _MimeType = mt;
+      
     }
 
-    public override MimeType MimeType => _MimeType;
-    private MimeType _MimeType { get; set; }
 
-    public override void Dispose()
+    public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
-    public override Stream GetStream()
+    public HttpRequestMessage RequestMessage { get; }
+
+    public Stream GetStream()
     {
         return new FakedMemoryStream(data);
     }

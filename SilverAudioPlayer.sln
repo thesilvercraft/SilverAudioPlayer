@@ -103,6 +103,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverCraft.SndFile", "Silv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MetadataSource.MusicBrainz", "SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj", "{FDDA57A6-FA94-4CD7-8E57-8C9CF3D6C9FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayListReader.SPL", "SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj", "{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -691,6 +693,22 @@ Global
 		{FDDA57A6-FA94-4CD7-8E57-8C9CF3D6C9FE}.Release|x64.Build.0 = Release|Any CPU
 		{FDDA57A6-FA94-4CD7-8E57-8C9CF3D6C9FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{FDDA57A6-FA94-4CD7-8E57-8C9CF3D6C9FE}.Release|x86.Build.0 = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|arm64.Build.0 = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|x64.Build.0 = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Debug|x86.Build.0 = Debug|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|arm64.ActiveCfg = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|arm64.Build.0 = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|x64.ActiveCfg = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|x64.Build.0 = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|x86.ActiveCfg = Release|Any CPU
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -727,6 +745,7 @@ Global
 		{B1F0BA2D-F9A3-44A0-8626-C4F9AF34E7E8} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
 		{37D44200-F658-4F45-B6E2-755AC94CD41B} = {0C596BB7-D172-4367-BA85-27F93C05AF86}
 		{FDDA57A6-FA94-4CD7-8E57-8C9CF3D6C9FE} = {DA365F63-3B6D-4763-890A-1A4785A0ABCB}
+		{4D10E1DC-7F7C-4AC9-8F0F-5F41A07A4920} = {0FF8ED90-0361-4443-B6E7-385ACFD7DCFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

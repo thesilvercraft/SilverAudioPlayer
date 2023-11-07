@@ -276,7 +276,7 @@ public class JellyFinHelper
                Debug.WriteLine(fr);
                var r = new HttpRequestMessage(HttpMethod.Get,new Uri(fr));
                r.Headers.Add("X-Emby-Token",settings.AccessToken);
-               return new WrappedSusHttpStream(r);
+               return new WrappedHttpStream(r);
            }
         }
         catch

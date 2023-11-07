@@ -83,7 +83,7 @@
 		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
 		<!-- music brainz - pre POC -->
 
-		<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
 		
 	</PropertyGroup>
 	<PropertyGroup>
@@ -105,6 +105,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))"  />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.CSCore\SilverAudioPlayer.Any.PlayProvider.CSCore.csproj" Condition="$(DefineConstants.Contains('CSCORE'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
