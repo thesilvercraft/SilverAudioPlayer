@@ -17,9 +17,9 @@ build:
   stage: build
   script:
     - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish SilverAudioPlayer.Avalonia/SilverAudioPlayer.Avalonia.csproj -c Release -f net6.0 --no-restore'
+    - 'dotnet publish SilverAudioPlayer.Avalonia/SilverAudioPlayer.Avalonia.csproj -c Release -f net7.0 --no-restore'
   artifacts:
     expire_in: 1 week  
     paths:
-      - 'SilverAudioPlayer.Avalonia/bin/Release/net6.0/publish'
+      - 'SilverAudioPlayer.Avalonia/bin/Release/net7.0/publish'
 
