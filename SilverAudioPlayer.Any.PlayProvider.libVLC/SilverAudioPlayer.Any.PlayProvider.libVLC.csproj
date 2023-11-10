@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="LibVLCSharp" Version="3.7.0" />
+		<PackageReference Include="LibVLCSharp" Version="3.8.2" />
 		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" />
 	</ItemGroup>
 

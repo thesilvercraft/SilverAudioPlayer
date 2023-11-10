@@ -42,10 +42,10 @@ if c is changed you probably don't have to worry at all,
 changes in d shouldn't be noticeable at all.  
 
 ### Breaking changes since last major version
-v6.2.0 removes an unused method void MakeSureAllIsWell(); in IWillProvideMemory, and IAmOnceAgainAskingYouForYourMemory uses a IEnumerable<ObjectToRemember> instead of ObjectToRemember[]
+Many things
 
 ## Module creation
-Follow the [plugin guide](https://github.com/thesilvercraft/SilverAudioPlayer/wiki/Create-a-new-plugin) (and let me know if any issues arise), for now attempt installing [SilverAudioPlayer.Shared](https://www.nuget.org/packages/SilverAudioPlayer.Shared/) to a class library containing a class that implements one of:
+Follow the [plugin guide](https://gitlab.com/silvercraft/SilverAudioPlayer/-/wikis/Create-a-new-plugin) (and let me know if any issues arise), for now attempt installing [SilverAudioPlayer.Shared](https://www.nuget.org/packages/SilverAudioPlayer.Shared/) to a class library containing a class that implements one of:
 - `IPlayProvider` for implementing new players (most of the time you should just implement `INaudioWaveStreamWrapper` if a new player isn't needed to play that file)
 - `IMetadataProvider` for implementing new metadata providers (the things that read metadata from files/streams)
 - `IMusicStatusInterface` for implementing things that track/control playback (eg. discord rich presence/SMTC/Cd Art Display)
@@ -56,4 +56,4 @@ Consider looking through the already implemented modules as a reference
 **Don't forget to export your module by adding `[Export(typeof([YOURMODULEINTERFACETYPE]))]`**
 
 ## Goals and general TODO
-Check out the [issues](https://github.com/thesilvercraft/SilverAudioPlayer/issues)
+Check out the [issues](https://gitlab.com/silvercraft/SilverAudioPlayer/-/issues)

@@ -1,4 +1,3 @@
-using System.Composition;
 using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -11,24 +10,6 @@ using SilverCraft.AvaloniaUtils;
 using Swordfish.NET.Collections;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
-
-[Export(typeof(IPlayStreamProvider))]
-public class LocalLibraryPlayStreamProvider : IPlayStreamProvider
-{
-    public void Use(IPlayStreamProviderListener env)
-    {
-        MainWindow mw = new(env);
-        mw.Show();
-    }
-
-    public string Name => "Local Library";
-    public string Description => "Allows you to sort and play local files";
-    public WrappedStream? Icon => null;
-    public Version? Version => typeof(LocalLibraryPlayStreamProvider).Assembly.GetName().Version;
-    public string Licenses => "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\nGPL3.0";
-    public List<Tuple<Uri, URLType>>? Links { get; }
-}
-
 
 public interface WrappedShowable
 {

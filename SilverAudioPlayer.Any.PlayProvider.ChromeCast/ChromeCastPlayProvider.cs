@@ -939,5 +939,9 @@ Public License instead of this License.  But first, please read
             server?.Stop();
 
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

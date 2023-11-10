@@ -88,8 +88,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
     {
         ps = PlaybackState.Stopped;
         player.Stop();
-        player.Dispose();
-        midiOut = null;
+    
     }
 
     public long? GetSampleRate()
@@ -186,5 +185,11 @@ SilverAudioPlayer.Win.PlayProvider.MidiPlayer
         return Task.CompletedTask;
     }
 
-   
+
+    public void Dispose()
+    {
+        midiOut.Dispose();
+        player.Dispose();
+        midiOut = null;
+    }
 }

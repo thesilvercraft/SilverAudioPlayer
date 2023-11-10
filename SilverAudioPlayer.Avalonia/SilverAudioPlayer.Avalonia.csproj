@@ -45,7 +45,7 @@
 		<!--JellyFin - alpha-->
 		<DefineConstants>$(DefineConstants)JF</DefineConstants>
 		<!--DryWetMidi-->
-		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
 		<!--Z440AtlCore-->
 		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 		<!--NAudio-->
@@ -55,13 +55,13 @@
 		<!--NAudio + Naudio.Vorbis-->
 		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 		<!--Standalone CSCore-->
-<!--		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		<!--Discord (alpha)-->
 		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
 		<!--ChromeCast (POC)-->
-		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)CAST</DefineConstants>-->
 		<!--VLC (Alpha)-->
 		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
 		<!--Windows only-->
@@ -80,7 +80,7 @@
 		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
 		<!-- managed midi - POC -->
 		
-		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>-->
 		<!-- music brainz - pre POC -->
 
 <!--		<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
@@ -98,7 +98,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.4" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.5" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
@@ -132,17 +132,17 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.1" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.2" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.4" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.3" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="ReactiveUI" Version="19.4.1" />
+		<PackageReference Include="ReactiveUI" Version="19.5.1" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="7.0.1" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="Svg.Skia" Version="1.0.0.2" />
+		<PackageReference Include="Svg.Skia" Version="1.0.0.3" />
 		<PackageReference Include="System.Composition" Version="7.0.0" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.4" />
 	</ItemGroup>
 

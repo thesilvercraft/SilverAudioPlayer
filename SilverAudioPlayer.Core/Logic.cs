@@ -234,12 +234,27 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             }
             else
             {
-                Serilog.Log.Information("Avoiding fatal crash, nothing to play");
+                Log.Information("Avoiding fatal crash, nothing to play");
                 return;
             }
         }
         Player?.Stop();
-        Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
+        bool addevents = true;
+        if (Player is IPlayStreams p && p.SupportedMimes?.Contains(PlayerContext.CurrentSong.Stream.MimeType) == true)
+        {
+            //Worth a shot?
+            addevents = false;
+            Log.Debug("Using old player");
+            p.LoadStream(PlayerContext.CurrentSong.Stream);
+        }
+        else
+        {
+            Log.Debug("disposing old player and requesting new one");
+
+            Player?.Dispose();
+            Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
+            
+        }
 
         if (Player == null)
         {
@@ -254,7 +269,10 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             Player.SetVolume(Volume);
             Player.Play();
             SendIfStateIsNotNull();
-            Player.TrackEnd += OutputDevice_PlaybackStopped;
+            if (addevents)
+            {
+                Player.TrackEnd += OutputDevice_PlaybackStopped;
+            }
             PlayerContext?.ResetUIScrollBar?.Invoke();
             if (Player?.Length() is { } total) PlayerContext?.SetScrollBarTextTo?.Invoke(total);
             PlayerContext?.HandleLateStageMetadataAndScrollBar?.Invoke();
@@ -269,7 +287,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     {
         Player?.Stop();
         SendIfStateIsNotNull();
-        Player = null;
         _token?.Cancel();
         Thread.Sleep(30);
     }

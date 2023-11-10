@@ -14,4 +14,9 @@
       <PackageReference Include="Opportunity.LrcParser" Version="1.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="icon.svg" />
+      <EmbeddedResource Include="icon.svg" />
+    </ItemGroup>
+
 </Project>

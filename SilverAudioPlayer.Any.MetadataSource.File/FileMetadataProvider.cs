@@ -11,7 +11,8 @@ public class FileMetadataProvider : IMetadataProvider
 
     public string Description => "Metadata Provider that provides from files";
 
-    public WrappedStream Icon => null;
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(FileMetadataProvider).Assembly,
+        "SilverAudioPlayer.Any.MetadataSource.File.icon.svg");
 
     public Version? Version => typeof(FileMetadataProvider).Assembly.GetName().Version;
 

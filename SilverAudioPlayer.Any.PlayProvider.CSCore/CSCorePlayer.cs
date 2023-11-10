@@ -13,7 +13,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
     {
         private ISoundOut? _soundOut;
         private IWaveSource? _waveSource;
-        public bool DoFunny { get; set; } = true;
         public byte Volume { get; set; } = 70;
         public void Play()
         {
@@ -24,11 +23,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
         {
             
             _soundOut?.Stop();
-            if (DoFunny) return;
-            _soundOut?.Dispose();
-            _waveSource?.Dispose();
-            _soundOut = null;
-            _waveSource = null;
 
         }
 
@@ -131,6 +125,12 @@ namespace SilverAudioPlayer.Any.PlayProvider.CSCore
             {
                 TrackEnd?.Invoke(sender, e);
             });
+        }
+
+        public void Dispose()
+        {
+            _soundOut?.Dispose();
+            _waveSource?.Dispose();
         }
     }
 }

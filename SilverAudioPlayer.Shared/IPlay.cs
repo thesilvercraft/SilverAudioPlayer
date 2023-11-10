@@ -1,4 +1,6 @@
-﻿namespace SilverAudioPlayer.Shared;
+﻿using SilverMagicBytes;
+
+namespace SilverAudioPlayer.Shared;
 
 public interface IPlayStreams : IPlay
 {
@@ -7,9 +9,38 @@ public interface IPlayStreams : IPlay
     /// </summary>
     /// <param name="stream">The stream to be loaded</param>
     void LoadStream(WrappedStream stream);
+    public IReadOnlyList<MimeType>? SupportedMimes { get; }
 }
 
-public interface IPlay
+public interface IPlayStreamsWithConfidence : IPlayStreams
+{
+    public Confidence CanPlayStream(WrappedStream stream);
+}
+public enum Confidence : byte
+{
+    /// <summary>
+    /// The player is unsure whether it can play the stream
+    /// </summary>
+    Unknown=0, 
+    /// <summary>
+    /// The player is sure that it is NOT ABLE to play the stream
+    /// </summary>
+    ConfidentNo,
+    /// <summary>
+    /// The player thinks it might be able to play the stream but depending on other factors that have not been considered it might fail to do so
+    /// </summary>
+    SemiConfident,
+    /// <summary>
+    /// The player KNOWS it IS ABLE to play the stream
+    /// </summary>
+    Confident
+}
+public interface IPlayLancer : IPlayStreams
+{
+    bool EnqueueNextStream(WrappedStream stream);
+
+}
+public interface IPlay : IDisposable
 {
     /// <summary>
     ///     Starts playing the loaded file.

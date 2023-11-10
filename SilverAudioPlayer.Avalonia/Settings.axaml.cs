@@ -14,6 +14,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Svg.Skia;
+using Avalonia.Threading;
 using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
@@ -60,7 +61,8 @@ public partial class Settings : Window
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
         ProductIconButton = this.FindControl<Button>("ProductIconButton");
-        ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon, RoutingStrategies.Tunnel, true);
+        ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
+            RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
         TransparencyLevelHint =
             WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString("SAPTransparency") ??
@@ -91,6 +93,7 @@ public partial class Settings : Window
 
 
     private SettingsDC _settingsDc;
+
     private void EnableMSI(object? sender, RoutedEventArgs e)
     {
         var y = (CheckBox?)sender;
@@ -155,7 +158,7 @@ public partial class Settings : Window
 
         return null;
     }
-    
+
 
     public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
     {
@@ -179,7 +182,6 @@ public partial class Settings : Window
                 cw.Show();
                 break;
             }
-           
         }
     }
 
@@ -196,7 +198,11 @@ public partial class Settings : Window
             mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
         LaunchActionsWindow launchActionsWindow = new();
         var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
-            new SAction { ActionName = "Open " + m, ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); } }).ToList();
+                new SAction
+ {
+                    ActionName = "Open " + m, ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); }
+                })
+            .ToList();
         launchActionsWindow.AddActions(actions);
         launchActionsWindow.Show();
     }
@@ -208,7 +214,6 @@ public partial class Settings : Window
             record is { IsPlayStreamProvider: false, IsSyncPlugin: false }) return;
         switch (record.Item)
         {
-          
             case IPlayStreamProvider streamProvider:
                 streamProvider.Use(mainWindow.Env);
                 break;
@@ -263,10 +268,7 @@ public partial class Settings : Window
                 actions.Add(new SAction
                 {
                     ActionName = "🔧Configure",
-                    ActionToInvoke = () =>
-                    {
-                        guiConfig.ConfigureUi(mainWindow.Env);
-                    }
+                    ActionToInvoke = () => { guiConfig.ConfigureUi(mainWindow.Env); }
                 });
                 break;
             case IAmConfigurable configurable:
@@ -339,9 +341,12 @@ public partial class Settings : Window
 
     private void ToggleTransparency(object? sender, RoutedEventArgs e)
     {
-        var SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
-        Task.Run(() => WindowExtensions.envBackend.SetBool("DisableSAPTransparency", SapTransparency));
-        WindowExtensions.OnStyleChange(this, new(null, null, null));
+        Dispatcher.UIThread.Post(() =>
+        {
+            var SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
+            WindowExtensions.OnStyleChange(this, new(null, null, null));
+            WindowExtensions.envBackend.SetBool("DisableSAPTransparency", SapTransparency);
+        }, DispatcherPriority.Normal);
     }
 
     public static readonly GradientStops defPBStops = new()
@@ -352,17 +357,22 @@ public partial class Settings : Window
 
     private void ChangeColorPB(object? sender, RoutedEventArgs e)
     {
-        var t = ColorBoxPB.Text;
-        Task.Run(() => WindowExtensions.envBackend.SetEnv("SAPPBColor", t));
-
-        mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush()
-            { GradientStops = defPBStops }));
+        Dispatcher.UIThread.Post(() =>
+        {
+            var t = ColorBoxPB.Text;
+            mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush()
+                { GradientStops = defPBStops }));
+            WindowExtensions.envBackend.SetEnv("SAPPBColor", t);
+        }, DispatcherPriority.Normal);
     }
 
     private void ChangeColor(object? sender, RoutedEventArgs e)
     {
-        Task.Run(() => { WindowExtensions.envBackend.SetString("SAPColor", ColorBox.Text); });
-        WindowExtensions.OnStyleChange?.Invoke(this, new(ColorBox.Text, null, null));
+        Dispatcher.UIThread.Post(() =>
+        {
+            WindowExtensions.OnStyleChange?.Invoke(this, new(ColorBox.Text, null, null));
+            WindowExtensions.envBackend.SetString("SAPColor", ColorBox.Text);
+        }, DispatcherPriority.Normal);
     }
 
     private void InitializeComponent()
@@ -371,20 +381,22 @@ public partial class Settings : Window
     }
 
     private string? Template = null;
+
     private void ProductIconClicked()
     {
-        if ((mainWindow.Env.Icon is not { MimeType: SVGMime } ) ||mainWindow.Env.Icon?.MimeType == null)
+        if ((mainWindow.Env.Icon is not { MimeType: SVGMime }) || mainWindow.Env.Icon?.MimeType == null)
         {
             var instance = mainWindow.Env.Icon;
-            instance?.Use(x=>{});
+            instance?.Use(x => { });
             if (instance?.MimeType is not SVGMime)
             {
-                Logger?.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",instance?.MimeType);
+                Logger?.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",
+                    instance?.MimeType);
                 return;
             }
         }
 
-       
+
         if (Template == null)
         {
             mainWindow.Env.Icon?.Use(s =>
@@ -402,7 +414,10 @@ public partial class Settings : Window
 
         if (Template == null) return;
         {
-            var realisedTemplate = string.Format(Template, EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString());
+            var realisedTemplate = string.Format(Template, EnvironmentExtensions.NewHexString(),
+                EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
+                EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
+                EnvironmentExtensions.NewHexString());
             var img = new SvgImage
             {
                 Source = new SvgSource()
@@ -413,6 +428,7 @@ public partial class Settings : Window
             CurrentSource = realisedTemplate;
         }
     }
+
     private void PointerReleasedProductIcon(object? sender, PointerReleasedEventArgs e)
     {
         if (e.InitialPressMouseButton == MouseButton.Right)
@@ -422,6 +438,7 @@ public partial class Settings : Window
     }
 
     private string? CurrentSource;
+
     private void ProductIconClick(object? sender, RoutedEventArgs e)
     {
         ProductIconClicked();
@@ -475,7 +492,12 @@ public class SettingsDC : ReactiveObject
     public ObservableCollection<InfoPRecord> Items { get; set; }
     public string ProductName { get; internal set; }
     public string ProductDescription { get; internal set; }
-    public IImage? ProductIcon { get=>_productIcon; set=> this.RaiseAndSetIfChanged(ref _productIcon, value, "ProductIcon"); }
-    public IImage? _productIcon;
 
+    public IImage? ProductIcon
+    {
+        get => _productIcon;
+        set => this.RaiseAndSetIfChanged(ref _productIcon, value, "ProductIcon");
+    }
+
+    public IImage? _productIcon;
 }

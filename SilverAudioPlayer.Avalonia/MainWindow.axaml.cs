@@ -561,10 +561,8 @@ public partial class MainWindow : Window
     public void RemoveTrack()
     {
         Dispatcher.UIThread.InvokeAsync(() => Title = "SilverAudioPlayer");
-        Player?.Stop();
-        Player = null;
+        Logic.RemoveTrack();
         token?.Cancel();
-        Thread.Sleep(30);
     }
 
 
@@ -696,7 +694,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            if (!dc.CurrentSong.Equals(selected))
+            if (dc.CurrentSong?.Equals(selected) !=true)
             {
                 selected.Dispose();
             }

@@ -4,6 +4,7 @@ using Audioz_playerZ;
 using CSCore.SoundOut;
 using NAudio.Wave;
 using SilverAudioPlayer.Shared;
+using SilverMagicBytes;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
 
 namespace SilverAudioPlayer.NAudio;
@@ -11,13 +12,14 @@ namespace SilverAudioPlayer.NAudio;
 
 
 [Export(typeof(IPlay))]
-public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
+public class WaveFilePlayer : IDisposable, IPlayStreams
 {
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
 
     public WaveFilePlayer()
     {
+        Debug.WriteLine("NewInstance of WaveFilePlayer");
     }
 
     static WaveFilePlayer()
@@ -36,7 +38,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
         }
         else
         {
-            outputDevice = new SilverAudioPlayer.Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut());
+            outputDevice = new SilverAudioPlayer.Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
         }
 #else
      outputDevice = new WaveOutEvent()
@@ -52,6 +54,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public void Dispose()
     {
+        Debug.WriteLine("Disposing WaveFilePlayer");
         GC.SuppressFinalize(this);
         if (outputDevice != null)
         {
@@ -74,7 +77,6 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     public void Stop()
     {
         outputDevice?.Stop();
-        Dispose();
     }
 
     public void Pause()
@@ -98,7 +100,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     {
         if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
         //this should not happen
-        Debug.WriteLine("PlayProvider.NAudio THISSHOULDNOTHAPPEN");
+        Debug.WriteLine("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS");
         return TimeSpan.Zero;
     }
 
@@ -132,9 +134,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public long? GetSampleRate()
     {
-        if (audioFile != null) return audioFile.WaveFormat.SampleRate;
-
-        return null;
+        return audioFile?.WaveFormat.SampleRate;
     }
 
     public uint? GetBitsPerSample()
@@ -167,16 +167,19 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
         if (outputDevice == null)
         {
+            Debug.WriteLine("initing backend");
             InitBackEnd(Volume);
+            outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
         }
-
         else
             outputDevice.Stop();
 
-        outputDevice.Init(audioFile);
+        outputDevice?.Init(audioFile);
         LoadedWrappedStream = stream;
-        outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
     }
+
+    public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
+        .SelectMany(x => x.SupportedMimeTypes).ToList();
 
     private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
     {

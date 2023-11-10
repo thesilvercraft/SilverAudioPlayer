@@ -56,27 +56,21 @@ A "contributor" is any person that distributes its contribution under this licen
 
         public IPlay? GetPlayer(WrappedStream stream)
         {
-            if (DoFunny && Funny!=null)
+            if (Funny!=null)
             {
                 Funny.LoadStream(stream);
                 return Funny;
             }
-            var player = new CSCorePlayer();
-            player.LoadStream(stream);
-            return player;
+            Funny = new CSCorePlayer();
+            Funny.LoadStream(stream);
+            return Funny;
         }
     
         private CSCorePlayer? Funny = null;
-        /// <summary>
-        /// Try to share the same ISoundOut device and player, results in uh funny behaviour
-        /// </summary>
-        public bool DoFunny { get; set; } = true;
     
         public Task OnStartup()
         {
-            if (!DoFunny) return Task.CompletedTask;
             Funny = new();
-            Funny.DoFunny = DoFunny;
             return Task.CompletedTask;
         }
     }

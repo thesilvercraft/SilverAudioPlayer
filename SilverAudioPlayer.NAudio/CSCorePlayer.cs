@@ -13,7 +13,7 @@ public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
         _soundOut = soundOut;
         _soundOut.Stopped += (x, y) =>
         {
-            PlaybackStopped.Invoke(this, new StoppedEventArgs());
+            PlaybackStopped?.Invoke(this, new StoppedEventArgs());
         };
     }
 

@@ -94,9 +94,6 @@ internal class MidiPlayer : IPlay, IPlayProvider
     {
         ps = PlaybackState.Stopped;
         player.Stop();
-        player.Dispose();
-        midiOut.Dispose();
-        midiOut = null;
     }
 
     public long? GetSampleRate()
@@ -222,5 +219,11 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
         };
         player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
         player.OutputDevice = midiOut;
+    }
+
+    public void Dispose()
+    {
+        midiOut.Dispose();
+        player.Dispose();
     }
 }

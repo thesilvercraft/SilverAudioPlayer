@@ -104,6 +104,11 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
         {
             Task.Run(() => mp.Stop());  
         }
+
+        public void Dispose()
+        {
+            mp.Dispose();
+        }
     }
 
 }

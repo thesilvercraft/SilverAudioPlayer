@@ -220,14 +220,11 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
 
     public IPlay? GetPlayer(WrappedStream stream)
     {
-        if (CanPlayFile(stream))
-        {
-            var player = new WaveFilePlayer();
-            player.LoadStream(stream);
-            return player;
-        }
+        if (!CanPlayFile(stream)) return null;
+        var player = new WaveFilePlayer();
+        player.LoadStream(stream);
+        return player;
 
-        return null;
     }
 
     public Task OnStartup()

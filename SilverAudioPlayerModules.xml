@@ -48,6 +48,20 @@
         <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net6.0/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.pdb" />
       </Debug>
     </Module>
+    <Module Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz">
+      <Dependencies>
+        <string>SilverMagicBytes</string>
+        <string>SilverCraft.Ekorensis</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net6.0/SilverAudioPlayer.Any.MetadataSource.MusicBrainz.deps.json" />
+        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net6.0/SilverAudioPlayer.Any.MetadataSource.MusicBrainz.dll" />
+      </Files>
+      <Debug>
+        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net6.0/SilverAudioPlayer.Any.MetadataSource.MusicBrainz.pdb" />
+      </Debug>
+    </Module>
     <Module Name="SilverAudioPlayer.Any.PlayListReader.M3U">
       <Dependencies>
         <string>SilverMagicBytes</string>
@@ -60,6 +74,20 @@
       </Files>
       <Debug>
         <File Name="SilverAudioPlayer.Any.PlayListReader.M3U/bin/Release/net6.0/SilverAudioPlayer.Any.PlayListReader.M3U.pdb" />
+      </Debug>
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayListReader.SPL">
+      <Dependencies>
+        <string>SilverMagicBytes</string>
+        <string>SilverCraft.Ekorensis</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayListReader.SPL/bin/Release/net6.0/SilverAudioPlayer.Any.PlayListReader.SPL.deps.json" />
+        <File Name="SilverAudioPlayer.Any.PlayListReader.SPL/bin/Release/net6.0/SilverAudioPlayer.Any.PlayListReader.SPL.dll" />
+      </Files>
+      <Debug>
+        <File Name="SilverAudioPlayer.Any.PlayListReader.SPL/bin/Release/net6.0/SilverAudioPlayer.Any.PlayListReader.SPL.pdb" />
       </Debug>
     </Module>
     <Module Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast">
@@ -158,61 +186,6 @@
         <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net6.0/SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.pdb" />
       </Debug>
     </Module>
-    <Module Name="NAudio.Flac">
-      <Dependencies />
-      <Files>
-        <File Name="NAudio.Flac/bin/Release/net6.0/NAudio.Flac.deps.json" />
-        <File Name="NAudio.Flac/bin/Release/net6.0/NAudio.Flac.dll" />
-      </Files>
-      <Debug>
-        <File Name="NAudio.Flac/bin/Release/net6.0/NAudio.Flac.pdb" />
-      </Debug>
-    </Module>
-    <Module Name="Silver.Composition">
-      <Dependencies />
-      <Files>
-        <File Name="Silver.Composition/bin/Release/net6.0/Silver.Composition.deps.json" />
-        <File Name="Silver.Composition/bin/Release/net6.0/Silver.Composition.dll" />
-      </Files>
-      <Debug>
-        <File Name="Silver.Composition/bin/Release/net6.0/Silver.Composition.pdb" />
-      </Debug>
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.NAudio">
-      <Dependencies>
-        <string>Silver.Composition</string>
-        <string>SilverMagicBytes</string>
-        <string>NAudio.Flac</string>
-        <string>SilverCraft.Ekorensis</string>
-        <string>CSCore</string>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.NAudio.deps.json" />
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.NAudio.dll" />
-      </Files>
-      <Debug>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.NAudio.pdb" />
-      </Debug>
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac">
-      <Dependencies>
-        <string>NAudio.Flac</string>
-        <string>Silver.Composition</string>
-        <string>CSCore</string>
-        <string>SilverCraft.Ekorensis</string>
-        <string>SilverMagicBytes</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>SilverAudioPlayer.Any.PlayProvider.NAudio</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Naudio.Flac/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.deps.json" />
-        <File Name="SilverAudioPlayer.Naudio.Flac/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.dll" />
-      </Files>
-      <Debug>
-        <File Name="SilverAudioPlayer.Naudio.Flac/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProviderExtension.Naudio.Flac.pdb" />
-      </Debug>
-    </Module>
     <Module Name="SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio">
       <Dependencies>
         <string>SilverMagicBytes</string>
@@ -269,23 +242,6 @@
         <File Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib/bin/Release/net6.0/SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.pdb" />
       </Debug>
     </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.NAudio">
-      <Dependencies>
-        <string>Silver.Composition</string>
-        <string>SilverCraft.Ekorensis</string>
-        <string>NAudio.Flac</string>
-        <string>SilverMagicBytes</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>CSCore</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.NAudio.deps.json" />
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.NAudio.dll" />
-      </Files>
-      <Debug>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.NAudio.pdb" />
-      </Debug>
-    </Module>
     <Module Name="SilverAudioPlayer.Any.Sync">
       <Dependencies>
         <string>SilverMagicBytes</string>
@@ -314,7 +270,7 @@
         <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net6.0/SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.pdb" />
       </Debug>
     </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.DryWetMidi">
+    <Module Name="SilverAudioPlayer.Win.PlayProvider.DryWetMidi">
       <Dependencies>
         <string>SilverMagicBytes</string>
         <string>SilverCraft.Ekorensis</string>
@@ -324,11 +280,11 @@
         <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/Melanchall_DryWetMidi_Native32.dll" />
         <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/Melanchall_DryWetMidi_Native64.dll" />
         <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/Melanchall_DryWetMidi_Native64.dylib" />
-        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.DryWetMidi.deps.json" />
-        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.DryWetMidi.dll" />
+        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/SilverAudioPlayer.Win.PlayProvider.DryWetMidi.deps.json" />
+        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/SilverAudioPlayer.Win.PlayProvider.DryWetMidi.dll" />
       </Files>
       <Debug>
-        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/SilverAudioPlayer.Any.PlayProvider.DryWetMidi.pdb" />
+        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net6.0/SilverAudioPlayer.Win.PlayProvider.DryWetMidi.pdb" />
       </Debug>
     </Module>
     <Module Name="SilverAudioPlayer.Linux.MPRIS">
