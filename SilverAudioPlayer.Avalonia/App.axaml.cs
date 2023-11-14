@@ -132,17 +132,27 @@ public class App : Application
                 LogWindow lw = new();
             lw.Show();
             Log.Logger = logger;
-            logger.Warning("Test warning");
             AppDomain.CurrentDomain.UnhandledException += (x, y) =>
             {
-                Log.Error((Exception)y.ExceptionObject,
-                    "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating: {IsTerminating}",
-                    y.IsTerminating);
+                if (y.IsTerminating)
+                {
+                    Log.Fatal((Exception)y.ExceptionObject,
+                        "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating!!!");
+                    var r = new ErrorReport();
+                    r.Show();
+                }
+                else
+                {
+                    Log.Error((Exception)y.ExceptionObject,
+                        "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException");
+                }
             };
             TaskScheduler.UnobservedTaskException += (x,y) =>
             {
-                Log.Error(y.Exception,
-                    "Unhandled exception caught by TaskScheduler.UnobservedTaskException");
+                Log.Fatal(y.Exception,
+                    "Unhandled exception caught by TaskScheduler.UnobservedTaskException, Terminating!!!");
+                var r = new ErrorReport();
+                r.Show();
             };
             RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
             Logger.GetLoggerFunc += e => logger.ForContext(e);
@@ -154,7 +164,7 @@ public class App : Application
             if (mw.Logic.PlayProviders == null)
                 throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
             mw.Logic.PlayableMimes = new List<MimeType>();
-            bool canProvideMemory = mw.Logic.MemoryProvider != null;
+            var canProvideMemory = mw.Logic.MemoryProvider != null;
             if (!canProvideMemory)
             {
                 logger.Warning("Failed to find a memory provider, proceeding anyways");

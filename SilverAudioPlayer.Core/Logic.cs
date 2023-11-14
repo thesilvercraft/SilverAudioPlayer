@@ -93,7 +93,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     public Logger Log { get; set; }
     public T PlayerContext { get; set; }
     public List<MimeType> PlayableMimes { get; set; }
-
+    public IFullPlayerEnvironment PlayerEnvironment { get; set; }
     private byte Volume
     {
         get => PlayerContext.Volume;
@@ -354,7 +354,11 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
             if (playlist == null) return;
             foreach (var song in playlist.Tracks)
             {
-                AddWithURLBad(song.URL, song.Source == "http", false);
+                foreach (var source in song.TrackLoadInfos)
+                {
+                    AddWithURLBad(source.URL, source.Source == "http", false);
+                    break;
+                }
             }
         }
       
@@ -367,10 +371,22 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
      public void AddWithURLBad(string f, bool http, bool oneFile)
      {
-         AddSong(
-             http
-                 ? new Song(new WrappedHttpStream(f), f, logic: this)
-                 : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
+         var psps = PlayStreamProviders.Where(x =>
+             x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(f), PlayerEnvironment));
+         if (psps.Any())
+         {
+             Task.Run(async () =>
+                 await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), PlayerEnvironment));
+             return;
+         }
+         else
+         {
+             AddSong(
+                 http
+                     ? new Song(new WrappedHttpStream(f), f, logic: this)
+                     : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
+         }
+        
      }
     public void ProcessFiles(IEnumerable<string> files)
     {
@@ -439,7 +455,6 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
             PlayerContext.Queue.Remove(track);
         }
-        //PlayerContext.Queue.Clear();
     }
 
     public void AddSong(Song song, bool expectmore = false)

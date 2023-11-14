@@ -75,7 +75,7 @@ public class M3UPlaylistParser : IPlaylistReader
                     return false;
                 }
 
-                var list = new List<ITrackLoadInfo>();
+                var list = new List<ITrack>();
               //  int length;
               //  bool lengthset = false;
                 string? fileTitle = null;

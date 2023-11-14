@@ -112,7 +112,7 @@ void ProcessModule(string dir, SilverAudioPlayerModulesInfo info, string parent)
         if (exitCode != 0) return;
         Module m = new();
         m.Name = project;
-        var net6 = Path.Combine(bin, "Release", "net6.0");
+        var net6 = Path.Combine(bin, "Release", "net8.0");
         if (!Directory.Exists(net6)) return;
         var net6files = Directory.GetFiles(net6);
         var net6filesfiltered = CleanDependant(net6files.ToList(), libs);

@@ -18,18 +18,16 @@ public class VideoLibraryPlayStreamProvider :IPlayStreamProviderThatSupportsUrls
 
     public void Use(IPlayStreamProviderListener env)
     {
-        if (env is IConfigurableListener listener)
+        if (env is not IConfigurableListener listener) return;
+        var window = listener.TryGetWindow(new List<IConfigurableElement>
         {
-            var window = listener.TryGetWindow(new List<IConfigurableElement>
+            new SimpleLabel()
             {
-                new SimpleLabel()
-                {
-                    GetContent = ()=>"To use this PlayStreamProvider you must load a URL via the player"
-                }
-            });
-            window?.Show();
-        }
-     
+                GetContent = ()=>"To use this PlayStreamProvider you must load a URL via the player"
+            }
+        });
+        window?.Show();
+
     }
 
     public string Name => "libVideo";
@@ -88,6 +86,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
         }
         var youTube = YouTube.Default;
         var video =await youTube.GetAllVideosAsync(given.ToString());
-        listener.LoadSong(new WrappedHttpStream(video.Where(x => x.AudioBitrate > 1).OrderByDescending(x => x.AudioBitrate).First().Uri));
+        var uri = video.FirstOrDefault(x =>
+            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Aac or AudioFormat.Vorbis)?.Uri;
+        if (uri != null)
+        {
+            listener.LoadSong(new WrappedHttpStream(uri));
+        }
     }
 }

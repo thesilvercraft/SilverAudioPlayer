@@ -18,7 +18,7 @@ class SilverPlayListI : IPlaylist
         Tracks = s.Song.Select(x => new SilverPlayListTrackI(x)).ToList();
     }
 
-    public IEnumerable<ITrackLoadInfo> Tracks { get; } 
+    public IEnumerable<ITrack> Tracks { get; } 
     public int? IndexOfActive { get; }
     public double? PositionOfActive { get; }
 }

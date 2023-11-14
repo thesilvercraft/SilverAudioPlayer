@@ -882,12 +882,7 @@ Public License instead of this License.  But first, please read
 
         public TimeSpan GetPosition()
         {
-            if (mediaChannel == null)
-            {
-                return TimeSpan.FromSeconds(2);
-            }
-            return TimeSpan.FromSeconds(GetMediaChannelStatus()?.CurrentTime ?? 2);
-
+          return mediaChannel == null ? TimeSpan.FromSeconds(2) : TimeSpan.FromSeconds(GetMediaChannelStatus()?.CurrentTime ?? 2);
         }
       
         public long? GetSampleRate() => null;

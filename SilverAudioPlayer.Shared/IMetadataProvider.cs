@@ -21,6 +21,10 @@ public interface IMetadataProvider : ICodeInformation
     public bool CanGetMetadata(WrappedStream stream);
 }
 
+public interface ITrack
+{
+    IEnumerable<ITrackLoadInfo> TrackLoadInfos { get; }
+}
 public interface ITrackLoadInfo
 {
     public string URL { get; set; }
@@ -28,7 +32,7 @@ public interface ITrackLoadInfo
 }
 public interface IPlaylist
 {
-    public IEnumerable<ITrackLoadInfo> Tracks { get; }
+    public IEnumerable<ITrack> Tracks { get; }
     public int? IndexOfActive { get; }
     public double? PositionOfActive { get; }
 }

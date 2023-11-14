@@ -12,8 +12,7 @@ using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Avalonia;
 
-public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations, IPlayStreamProviderListener,
-    ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin, IConfigurableListener
+public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IFullPlayerEnvironment
 {
     private readonly MainWindow mainWindow;
 

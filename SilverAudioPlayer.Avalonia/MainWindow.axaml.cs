@@ -604,14 +604,7 @@ public partial class MainWindow : Window
         if (!e.Data.Contains("UniformResourceLocatorW")) return;
         {
             var url = e!.Data!.GetText();
-            var psps = Logic.PlayStreamProviders.Where(x =>
-                x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(url), Env));
-            if (psps.Any())
-            {
-                Task.Run(async () =>
-                    await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(url), Env));
-                return;
-            }
+          
 
             if (!string.IsNullOrEmpty(url))
             {
