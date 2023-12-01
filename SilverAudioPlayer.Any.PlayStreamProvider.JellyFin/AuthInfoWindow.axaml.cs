@@ -19,9 +19,7 @@ public partial class AuthInfoWindow : Window
         Fail = this.FindControl<TextBlock>("Fail");
         UserName = this.FindControl<TextBox>("UserName");
         Password = this.FindControl<TextBox>("Password");
-#if DEBUG
-        this.AttachDevTools();
-#endif
+
         this.DoAfterInitTasks(true);
     }
 

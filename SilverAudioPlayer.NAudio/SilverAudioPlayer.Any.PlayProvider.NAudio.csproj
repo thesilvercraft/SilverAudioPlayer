@@ -33,10 +33,5 @@
         <ProjectReference Include="..\SilverCraft.SndFile\SilverCraft.SndFile.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="NAudio.Vorbis">
-        <HintPath>..\..\..\..\..\..\home\silver\.nuget\packages\naudio.vorbis\1.5.0\lib\netstandard2.0\NAudio.Vorbis.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 
 </Project>

@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net6.0/SilverAudioPlayer.Avalonia.dll",
+            "program": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net8.0/SilverAudioPlayer.Avalonia.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net6.0/",
+            "cwd": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net8.0/",
             "console": "internalConsole",
             "stopAtEntry": false
         },

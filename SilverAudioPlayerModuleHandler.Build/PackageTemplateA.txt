@@ -19,5 +19,5 @@ build() {{
 }}
 package() {{
   mkdir -p "${{pkgdir}}/opt/silveraudioplayer"
-  cp bin/Publish/net6.0/publish silveraudioplayer
+  cp bin/Publish/net8.0/publish silveraudioplayer
 }}

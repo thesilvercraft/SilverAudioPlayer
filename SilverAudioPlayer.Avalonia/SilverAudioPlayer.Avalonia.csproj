@@ -50,8 +50,6 @@
 		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 		<!--NAudio-->
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
-		<!--NAudio + Naudio.Flac-->
-		<DefineConstants>$(DefineConstants)NAFLAC</DefineConstants>
 		<!--NAudio + Naudio.Vorbis-->
 		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 		<!--Standalone CSCore-->
