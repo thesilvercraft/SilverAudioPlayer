@@ -14,7 +14,7 @@ public class FileMetadata : IMetadata
         DirUrl = Path.GetDirectoryName(FileUrl);
         var files= Directory.EnumerateFiles(DirUrl, Path.GetFileNameWithoutExtension(FileUrl) + ".lrc",
             new EnumerationOptions()
-                { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true, IgnoreInaccessible = true });
+                { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true, IgnoreInaccessible = true, MaxRecursionDepth=2 });
 
        foreach (var possiblelrcfile in files)
        {
@@ -30,7 +30,7 @@ public class FileMetadata : IMetadata
        }
        var cover= Directory.EnumerateFiles(DirUrl, "cover*",
            new EnumerationOptions()
-               { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true});
+               { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true, MaxRecursionDepth=2});
 
        foreach (var covr in cover)
        {
@@ -61,7 +61,7 @@ public class FileMetadata : IMetadata
     public double? Duration { get; }
     public string? Lyrics { get; }
     public IList<LyricPhrase>? SyncedLyrics { get; set; }
-    private List<IPicture>? _internalPictures = new();
+    private List<IPicture>? _internalPictures = [];
     public IReadOnlyList<IPicture>? Pictures=>_internalPictures;
 }
 

@@ -30,7 +30,7 @@ namespace SilverAudioPlayerBuilder
             {"CAST","Chromecast player, Proof-Of-Concept" },
             {"FRT","Fortnite Car, music status, radio volume changer (Proof-Of-Concept)" },
         };
-        Dictionary<string,CheckBox> CheckBoxes = new();
+        Dictionary<string,CheckBox> CheckBoxes = [];
         public MainWindow()
         {
             InitializeComponent();
@@ -91,7 +91,7 @@ namespace SilverAudioPlayerBuilder
 
         private void DOIT_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            List<string> selectedArgs = new();
+            List<string> selectedArgs = [];
             foreach(var c in CheckBoxes)
             {
                 if(c.Value.IsChecked==true)

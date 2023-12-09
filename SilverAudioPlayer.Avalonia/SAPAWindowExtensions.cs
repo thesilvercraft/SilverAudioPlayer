@@ -6,11 +6,11 @@ namespace SilverAudioPlayer.Avalonia
 {
     public static class SAPAWindowExtensions
     {
-        static GradientStops defBGStops = new()
-        {
+        static GradientStops defBGStops =
+        [
             new(Color.FromUInt32(0x7F6969ff), 0),
             new(Color.FromUInt32(0x7F696969), 1)
-        };
+        ];
         public static LinearGradientBrush defBrush = new LinearGradientBrush
         {
             GradientStops = defBGStops

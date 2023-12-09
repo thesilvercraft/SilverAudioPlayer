@@ -53,8 +53,8 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IF
 
     public Version? Version => typeof(SapAvaloniaPlayerEnviroment).Assembly.GetName().Version;
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Avalonia"),
             URLType.Code),
@@ -63,7 +63,7 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IF
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/AvaloniaUI/Avalonia"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://docs.avaloniaui.net/"), URLType.LibraryDocumentation)
-    };
+    ];
 
     public Task<IMetadata?>? GetMetadataAsync(WrappedStream stream)
     {

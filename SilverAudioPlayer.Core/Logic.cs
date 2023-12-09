@@ -30,23 +30,23 @@ public interface ILogicImportable
 
     IEnumerable<ICodeInformation> GetCreditInformation()
     {
-        List<ICodeInformation> info = new()
-        {
-            
-        };
-        info.AddRange(PlayProviders);
-        info.AddRange(MusicStatusInterfaces);
-        info.AddRange(MetadataProviders);
-        info.AddRange(WakeLockInterfaces);
-        info.AddRange(PlayStreamProviders);
-        info.AddRange(PlaylistReaders);
-        info.AddRange(SyncPlugins);
+        List<ICodeInformation> info =
+
+        [
+            .. PlayProviders,
+            .. MusicStatusInterfaces,
+            .. MetadataProviders,
+            .. WakeLockInterfaces,
+            .. PlayStreamProviders,
+            .. PlaylistReaders,
+            .. SyncPlugins,
+        ];
         return info;
     }
 }
 public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 {
-    public readonly List<IMusicStatusInterface> LoadedMusicStatusInterfaces = new();
+    public readonly List<IMusicStatusInterface> LoadedMusicStatusInterfaces = [];
     private bool _changeAllowed = true;
     private bool _isSortRequested;
     public Song? NextSong;
@@ -65,7 +65,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         PlayerContext.GetVolume ??= () => PlayerContext._Volume;
         PlayerContext.GetLoopType ??= () => PlayerContext._LoopType;
         PlayerContext.SetLoopType ??= lt => PlayerContext.RaiseAndSetIfChanged(ref PlayerContext._LoopType, lt);
-        ConcurrentObservableCollection<Song> queue = new();
+        ConcurrentObservableCollection<Song> queue = [];
         playercontext.GetQueue ??= () => queue;
 
         ChoosePlayProvider ??= (x, _) => Task.FromResult(x.FirstOrDefault());
@@ -187,7 +187,9 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         HandleSongChanging(PlayerContext.Queue[a - 1], true);
         _changeAllowed = true;
     }
-
+    public void SetPosition(double seconds) => Player?.SetPosition(TimeSpan.FromSeconds(seconds));
+    public void SetPosition(TimeSpan pos) => Player?.SetPosition(pos);
+    
     public IPlaylist? TryReadPlaylist(WrappedStream playlistStream)
     {
         var playlistReader= PlaylistReaders.FirstOrDefault(x => x.SupportedMimes.Contains(playlistStream.MimeType));
@@ -475,9 +477,9 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
     public async Task DoSort()
     {
         await Task.Delay(200);
-        List<Song> sng = new();
+        List<Song> sng = [];
         var albums = PlayerContext.Queue.ToList().GroupBy(a => a.Metadata?.Album);
-        List<Tuple<string?, List<Song>>> fuzzedAlbums = new();
+        List<Tuple<string?, List<Song>>> fuzzedAlbums = [];
         foreach (var album in albums)
             if (fuzzedAlbums.Find(x => Fuzz.Ratio(x.Item1 ?? "", album.Key ?? "") > 80) is { } group)
                 group.Item2.AddRange(album.ToList());

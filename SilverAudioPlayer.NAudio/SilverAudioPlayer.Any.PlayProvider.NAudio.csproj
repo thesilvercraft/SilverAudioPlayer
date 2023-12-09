@@ -15,10 +15,13 @@
 
     <ItemGroup>
         <None Remove="NAudioLogo.png"/>
+        <None Remove="cscore.svg"/>
+
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="NAudioLogo.png"/>
+        <EmbeddedResource Include="NAudioLogo.png" Condition="! $(DefineConstants.Contains('CSCore'))"/>
+        <EmbeddedResource Include="cscore.svg"  Condition="$(DefineConstants.Contains('CSCore'))"/>
     </ItemGroup>
 
     <ItemGroup>

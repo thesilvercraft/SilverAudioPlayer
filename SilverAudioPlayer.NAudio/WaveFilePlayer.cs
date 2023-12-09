@@ -38,7 +38,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
         }
         else
         {
-            outputDevice = new SilverAudioPlayer.Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
+            outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
         }
 #else
      outputDevice = new WaveOutEvent()
@@ -56,6 +56,11 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     {
         Debug.WriteLine("Disposing WaveFilePlayer");
         GC.SuppressFinalize(this);
+        foreach(var file in FilesToCleanUp.ToArray())
+        {
+            File.Delete(file);
+            FilesToCleanUp.Remove(file);
+        }
         if (outputDevice != null)
         {
             outputDevice.Dispose();
@@ -149,9 +154,32 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     public event EventHandler<object> TrackPause;
     public WrappedStream? LoadedWrappedStream { get; set; }
     public Stream? LoadedStream { get; set; }
+    readonly List<string> FilesToCleanUp=[];
     public void LoadStream(WrappedStream stream)
     {
-        if (stream is null) throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
+        if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
+        {
+            var a = Path.GetTempPath()+"Sap"+Random.Shared.Next()+".webm";
+            var b = Path.GetTempPath()+"Sap"+Random.Shared.Next()+".opus";
+            using var fileWrite = File.OpenWrite(a);
+            stream.Use(x=>x.CopyTo(fileWrite));
+            fileWrite.Close();
+            FilesToCleanUp.Add(a);
+            FilesToCleanUp.Add(b);
+            var c =Process.Start("/usr/bin/mkvextract",$"{a} tracks 0:{b}");
+            c.WaitForExit();
+            File.Delete(a);
+            FilesToCleanUp.Remove(a);
+            if(c.ExitCode==0)
+            {
+                stream=new WrappedFileStream(b);
+            }
+            else
+            {
+                //nevermind
+            }
+        }
         var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(stream);
         if (wrapper != null)
         {

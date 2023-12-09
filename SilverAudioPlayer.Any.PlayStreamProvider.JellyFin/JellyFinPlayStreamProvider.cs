@@ -60,8 +60,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri(
                 "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"),
@@ -70,6 +70,6 @@ SOFTWARE.";
             new Uri($"https://www.nuget.org/packages/Jellyfin.Sdk/{typeof(ApiKeyClient).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/jellyfin/jellyfin-sdk-csharp"), URLType.LibraryCode)
-    };
+    ];
     
 }

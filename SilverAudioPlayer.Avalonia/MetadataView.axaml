@@ -13,7 +13,6 @@
         </Style>
     </Window.Styles>
     <Grid Margin="5 30 5 5">
-
         <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
             <Grid>
                 <TreeView Name="mainTreeView" ItemsSource="{Binding ValuePairs}">

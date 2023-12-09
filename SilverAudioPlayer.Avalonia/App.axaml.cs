@@ -36,11 +36,6 @@ public class ProvidersReturnedNullException : Exception
     {
     }
 
-    protected ProvidersReturnedNullException(
-        SerializationInfo info,
-        StreamingContext context) : base(info, context)
-    {
-    }
 }
 
 public class GuiSink : ILogEventSink
@@ -54,7 +49,7 @@ public class GuiSink : ILogEventSink
             writer.Clear();
         }
 
-        var render = logEvent.RenderMessage()+'\n';
+        var render = logEvent.RenderMessage() + '\n';
         writer.AppendLine(render);
         New?.Invoke(render);
     }
@@ -75,7 +70,7 @@ public class RxObservableExceptionHandler : IObserver<Exception>
 
     public void OnCompleted()
     {
-     
+
     }
 }
 public class App : Application
@@ -86,7 +81,7 @@ public class App : Application
     }
     public static Config mwconfig;
     public static CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
-    public  static string _configPath;
+    public static string _configPath;
 
     public static GuiSink sink = new();
     public override void OnFrameworkInitializationCompleted()
@@ -108,7 +103,7 @@ public class App : Application
                         "SilverCraft", "SilverAudioPlayer");
                 }
             }
-            
+
             if (!Directory.Exists(confdir))
             {
                 Directory.CreateDirectory(confdir);
@@ -120,7 +115,7 @@ public class App : Application
             HttpClient.Client.DefaultRequestHeaders.Add("User-Agent", "SilverAudioPlayer/6.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)");
             if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
             mwconfig = mwconfreader.Read(_configPath) ?? new Config();
-            if (mwconfig.UserLogPreferences==ConfigStyle.Unknown)
+            if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
             {
                 //todo: show user dialog to choose
             }
@@ -129,17 +124,25 @@ public class App : Application
                 .WriteTo.Sink(sink, LogEventLevel.Debug)
                 .WriteTo.Debug(LogEventLevel.Debug)
                 .CreateLogger();
-                LogWindow lw = new();
+            LogWindow lw = new();
             lw.Show();
             Log.Logger = logger;
+            void OnFatalError(Exception y)
+            {
+                var a = Path.GetTempFileName();
+                File.WriteAllText(a, sink.writer.ToString());
+                if (File.Exists("/usr/bin/kdialog"))
+                {
+                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"A more detailed account on what happened is saved in {a}\n{y.ToString()}\"");
+                }
+            }
             AppDomain.CurrentDomain.UnhandledException += (x, y) =>
             {
                 if (y.IsTerminating)
                 {
                     Log.Fatal((Exception)y.ExceptionObject,
                         "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating!!!");
-                    var r = new ErrorReport();
-                    r.Show();
+                    OnFatalError((Exception)y.ExceptionObject);
                 }
                 else
                 {
@@ -147,23 +150,22 @@ public class App : Application
                         "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException");
                 }
             };
-            TaskScheduler.UnobservedTaskException += (x,y) =>
+            TaskScheduler.UnobservedTaskException += (x, y) =>
             {
                 Log.Fatal(y.Exception,
                     "Unhandled exception caught by TaskScheduler.UnobservedTaskException, Terminating!!!");
-                var r = new ErrorReport();
-                r.Show();
+                OnFatalError(y.Exception);
             };
             RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
-            Logger.GetLoggerFunc += e => logger.ForContext(e);
-        
+            Logger.GetLoggerFunc += logger.ForContext;
+
             var mw = new MainWindow();
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
             PlatformLogicHelper.SatisfyImports(mw.Logic);
             if (mw.Logic.PlayProviders == null)
                 throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
-            mw.Logic.PlayableMimes = new List<MimeType>();
+            mw.Logic.PlayableMimes = [];
             var canProvideMemory = mw.Logic.MemoryProvider != null;
             if (!canProvideMemory)
             {

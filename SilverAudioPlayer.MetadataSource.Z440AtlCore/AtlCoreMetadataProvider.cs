@@ -77,6 +77,8 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
 
     public bool CanGetMetadata(WrappedStream stream)
     {
+        if(stream is WrappedHttpStream wrappedHttpStream && wrappedHttpStream.Url.Contains(".googlevideo.com"))
+            return false;
         using var s = stream.GetStream();
         if (!GetAllowedMidi() && stream.MimeType == KnownMimes.MidMime) return false;
         return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;

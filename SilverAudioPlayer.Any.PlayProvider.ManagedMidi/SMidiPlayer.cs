@@ -111,8 +111,8 @@ internal class SMidiPlayer : IPlay, IPlayProvider
 
     public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayerProvider.ManagedMidi"),
             URLType.Code),
@@ -121,7 +121,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
                 $"https://www.nuget.org/packages/managed-midi/{typeof(MidiPlayer).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/atsushieno/managed-midi"), URLType.LibraryCode)
-    };
+    ];
 
     public string Licenses => @"managed-midi (https://github.com/atsushieno/managed-midi)
 MIT License

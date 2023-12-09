@@ -13,9 +13,7 @@ public class ZAtlCoreConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsC
     }
     [Comment("Is ZAtlCore allowed to read midi metadata")]
     public bool ReadMidiMetadata { get; set; } = false;
-    [XmlIgnore] public bool _AllowedRead = true;
-
-    [XmlIgnore] public bool AllowedToRead => _AllowedRead;
+    [XmlIgnore] public bool AllowedToRead {get;set;}= true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 }

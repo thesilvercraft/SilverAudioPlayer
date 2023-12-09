@@ -56,7 +56,7 @@ public partial class Gui : Window
     private async void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
         Cursor = new Cursor(StandardCursorType.Wait);
-        List<WrappedStream> streams = new();
+        List<WrappedStream> streams = [];
 
         async Task Add(IEnumerable<WrappedDto> dtos)
         {
@@ -67,7 +67,7 @@ public partial class Gui : Window
             }
         }
 
-        List<Task> tasks = new();
+        List<Task> tasks = [];
         var groups = g.SearchResults.GroupBy(x => x.IsFolder);
         foreach (var group in groups)
         {

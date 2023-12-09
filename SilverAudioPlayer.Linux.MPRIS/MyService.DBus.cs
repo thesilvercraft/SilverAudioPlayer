@@ -26,218 +26,113 @@ namespace SilverAudioPlayer.Linux.MPRIS
     [Dictionary]
     class PlayerProperties
     {
-        private string _playbackStatus = default(string);
         public string PlaybackStatus
         {
-            get
-            {
-                return _playbackStatus;
-            }
+            get;
 
-            set
-            {
-                _playbackStatus = (value);
-            }
+            set;
         }
 
-        private string _loopStatus = default(string);
         public string LoopStatus
         {
-            get
-            {
-                return _loopStatus;
-            }
+            get;
 
-            set
-            {
-                _loopStatus = (value);
-            }
+            set;
         }
 
-        private double _rate = default(double);
         public double Rate
         {
-            get
-            {
-                return _rate;
-            }
+            get;
 
-            set
-            {
-                _rate = (value);
-            }
+            set;
         }
 
-        private bool _shuffle = default(bool);
         public bool Shuffle
         {
-            get
-            {
-                return _shuffle;
-            }
+            get;
 
-            set
-            {
-                _shuffle = (value);
-            }
+            set;
         }
 
-        private IDictionary<string, object> _metadata = default(IDictionary<string, object>);
         public IDictionary<string, object> Metadata
         {
-            get
-            {
-                return _metadata;
-            }
+            get;
 
-            set
-            {
-                _metadata = (value);
-            }
+            set;
         }
 
-        private double _volume = default(double);
         public double Volume
         {
-            get
-            {
-                return _volume;
-            }
+            get;
 
-            set
-            {
-                _volume = (value);
-            }
+            set;
         }
 
-        private long _position = default(long);
         public long Position
         {
-            get
-            {
-                return _position;
-            }
+            get;
 
-            set
-            {
-                _position = (value);
-            }
+            set;
         }
 
-        private double _minimumRate = default(double);
         public double MinimumRate
         {
-            get
-            {
-                return _minimumRate;
-            }
+            get;
 
-            set
-            {
-                _minimumRate = (value);
-            }
+            set;
         }
 
-        private double _maximumRate = default(double);
         public double MaximumRate
         {
-            get
-            {
-                return _maximumRate;
-            }
+            get;
 
-            set
-            {
-                _maximumRate = (value);
-            }
+            set;
         }
 
-        private bool _canGoNext = default(bool);
         public bool CanGoNext
         {
-            get
-            {
-                return _canGoNext;
-            }
+            get;
 
-            set
-            {
-                _canGoNext = (value);
-            }
+            set;
         }
 
-        private bool _canGoPrevious = default(bool);
         public bool CanGoPrevious
         {
-            get
-            {
-                return _canGoPrevious;
-            }
+            get;
 
-            set
-            {
-                _canGoPrevious = (value);
-            }
+            set;
         }
 
-        private bool _canPlay = default(bool);
         public bool CanPlay
         {
-            get
-            {
-                return _canPlay;
-            }
+            get;
 
-            set
-            {
-                _canPlay = (value);
-            }
-        }
+            set;
+        }=true;
 
-        private bool _canPause = default(bool);
         public bool CanPause
         {
-            get
-            {
-                return _canPause;
-            }
+            get;
 
-            set
-            {
-                _canPause = (value);
-            }
-        }
+            set;
+        }=true;
 
-        private bool _canSeek = default(bool);
         public bool CanSeek
         {
-            get
-            {
-                return _canSeek;
-            }
+            get;
 
-            set
-            {
-                _canSeek = (value);
-            }
-        }
+            set;
+        }=true;
 
-        private bool _canControl = default(bool);
         public bool CanControl
         {
-            get
-            {
-                return _canControl;
-            }
+            get;
 
-            set
-            {
-                _canControl = (value);
-            }
-        }
+            set;
+        }=true;
     }
 
-   
+
     [DBusInterface("org.mpris.MediaPlayer2.Playlists")]
     interface IPlaylists : IDBusObject
     {
@@ -253,46 +148,25 @@ namespace SilverAudioPlayer.Linux.MPRIS
     [Dictionary]
     class PlaylistsProperties
     {
-        private uint _playlistCount = default(uint);
         public uint PlaylistCount
         {
-            get
-            {
-                return _playlistCount;
-            }
+            get;
 
-            set
-            {
-                _playlistCount = (value);
-            }
+            set;
         }
 
-        private string[] _orderings = default(string[]);
         public string[] Orderings
         {
-            get
-            {
-                return _orderings;
-            }
+            get;
 
-            set
-            {
-                _orderings = (value);
-            }
+            set;
         }
 
-        private (bool, (ObjectPath, string, string)) _activePlaylist = default((bool, (ObjectPath, string, string)));
         public (bool, (ObjectPath, string, string)) ActivePlaylist
         {
-            get
-            {
-                return _activePlaylist;
-            }
+            get;
 
-            set
-            {
-                _activePlaylist = (value);
-            }
+            set;
         }
     }
 
@@ -318,32 +192,18 @@ namespace SilverAudioPlayer.Linux.MPRIS
     [Dictionary]
     class TrackListProperties
     {
-        private ObjectPath[] _tracks = default(ObjectPath[]);
         public ObjectPath[] Tracks
         {
-            get
-            {
-                return _tracks;
-            }
+            get;
 
-            set
-            {
-                _tracks = (value);
-            }
+            set;
         }
 
-        private bool _canEditTracks = default(bool);
         public bool CanEditTracks
         {
-            get
-            {
-                return _canEditTracks;
-            }
+            get;
 
-            set
-            {
-                _canEditTracks = (value);
-            }
+            set;
         }
     }
 
@@ -363,132 +223,68 @@ namespace SilverAudioPlayer.Linux.MPRIS
     [Dictionary]
     public class MediaPlayer2Properties
     {
-        private bool _canQuit = default(bool);
         public bool CanQuit
         {
-            get
-            {
-                return _canQuit;
-            }
+            get;
 
-            set
-            {
-                _canQuit = (value);
-            }
+            set;
         }
 
-        private bool _fullscreen = default(bool);
         public bool Fullscreen
         {
-            get
-            {
-                return _fullscreen;
-            }
+            get;
 
-            set
-            {
-                _fullscreen = (value);
-            }
+            set;
         }
 
-        private bool _canSetFullscreen = default(bool);
         public bool CanSetFullscreen
         {
-            get
-            {
-                return _canSetFullscreen;
-            }
+            get;
 
-            set
-            {
-                _canSetFullscreen = (value);
-            }
+            set;
         }
 
-        private bool _canRaise = default(bool);
         public bool CanRaise
         {
-            get
-            {
-                return _canRaise;
-            }
+            get;
 
-            set
-            {
-                _canRaise = (value);
-            }
+            set;
         }
 
-        private bool _hasTrackList = default(bool);
         public bool HasTrackList
         {
-            get
-            {
-                return _hasTrackList;
-            }
+            get;
 
-            set
-            {
-                _hasTrackList = (value);
-            }
+            set;
         }
 
-        private string _identity = default(string);
         public string Identity
         {
-            get
-            {
-                return _identity;
-            }
+            get;
 
-            set
-            {
-                _identity = (value);
-            }
+            set;
         }
 
-        private string _desktopEntry = default(string);
         public string DesktopEntry
         {
-            get
-            {
-                return _desktopEntry;
-            }
+            get;
 
-            set
-            {
-                _desktopEntry = (value);
-            }
+            set;
         }
 
-        private string[] _supportedUriSchemes = default(string[]);
         public string[] SupportedUriSchemes
         {
-            get
-            {
-                return _supportedUriSchemes;
-            }
+            get;
 
-            set
-            {
-                _supportedUriSchemes = (value);
-            }
+            set;
         }
 
-        private string[] _supportedMimeTypes = default(string[]);
         public string[] SupportedMimeTypes
         {
-            get
-            {
-                return _supportedMimeTypes;
-            }
-
-            set
-            {
-                _supportedMimeTypes = (value);
-            }
+            get;
+            set;
         }
     }
 
-   
+
 }

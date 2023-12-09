@@ -14,7 +14,6 @@ using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,7 +22,6 @@ using SkiaSharp;
 using Avalonia.Collections;
 using Avalonia.Platform.Storage;
 using SilverAudioPlayer.Shared.SilverPlaylist;
-using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -34,7 +32,7 @@ public class MainWindowContext : PlayerContext
     private IBrush _pbForeGround;
 
     private string _Title;
-    public AvaloniaList<Song> queue = new();
+    public AvaloniaList<Song> queue = [];
 
     public MainWindowContext(MainWindow mw)
     {
@@ -43,18 +41,18 @@ public class MainWindowContext : PlayerContext
         {
             SingleSelect = false
         };
-        GradientStops defPBStops = new()
-        {
+        GradientStops defPBStops =
+        [
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
-        };
+        ];
         PBForeground = WindowExtensions.envBackend.GetString("SAPPBColor")
             .ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
         GradientStops = PBForeground switch
         {
             LinearGradientBrush lgb => lgb.GradientStops,
-            SolidColorBrush scb => new GradientStops { new GradientStop(scb.Color, 0) },
-            _ => new GradientStops { new GradientStop(KnownColor.Coral.ToColor(), 0) }
+            SolidColorBrush scb => [new GradientStop(scb.Color, 0)],
+            _ => [new GradientStop(KnownColor.Coral.ToColor(), 0)]
         };
     }
 
@@ -139,9 +137,7 @@ public partial class MainWindow : Window
                 if (config.LoopType != lt)
                 {
                     config.LoopType = lt;
-                    config._AllowedRead = false;
                     reader.Write(config, App._configPath);
-                    config._AllowedRead = true;
                 }
 
                 dc?.RaisePropertyChanged(nameof(dc.LoopType));
@@ -152,11 +148,8 @@ public partial class MainWindow : Window
             {
                 config.Volume = vol;
                 Player?.SetVolume(vol);
-                dc?.RaisePropertyChanged(nameof(dc.Volume));
-                if (!config._AllowedRead) return;
-                config._AllowedRead = false;
+                if (!config.AllowedToRead) return;
                 reader.Write(config, App._configPath);
-                config._AllowedRead = true;
             },
             GetVolume = () => config.Volume,
             ResetUIScrollBar = () =>
@@ -327,10 +320,7 @@ public partial class MainWindow : Window
                         if (w.SetAsDefaultForFileType != true) return w.Selected;
                         config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
 
-                        config._AllowedRead = false;
                         reader.Write(config, App._configPath);
-                        config._AllowedRead = true;
-
                         return w.Selected;
                     });
                 {
@@ -353,14 +343,11 @@ public partial class MainWindow : Window
 
                     if (w.SetAsDefaultForFileType != true) return w.Selected;
                     config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
-
-                    config._AllowedRead = false;
                     reader.Write(config, App._configPath);
-                    config._AllowedRead = true;
-
                     return w.Selected;
                 });
-            }
+            },
+            PlayerEnvironment= Env
         };
         config.PropertyChanged += Config_PropertyChanged;
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
@@ -368,6 +355,7 @@ public partial class MainWindow : Window
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
+     
         this.DoAfterInitTasksF(options: new()
         {
             SetBackground = false,
@@ -425,8 +413,8 @@ public partial class MainWindow : Window
         dc.GradientStops = c switch
         {
             LinearGradientBrush lgb => lgb.GradientStops,
-            SolidColorBrush scb => new GradientStops { new(scb.Color, 0) },
-            _ => new GradientStops { new(KnownColor.Coral.ToColor(), 0) }
+            SolidColorBrush scb => [new(scb.Color, 0)],
+            _ => [new(KnownColor.Coral.ToColor(), 0)]
         };
     }
 
@@ -705,7 +693,8 @@ public partial class MainWindow : Window
             {
                 new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
                 {
-                    MimeTypes = new[] { "application/silverplaylist+br" }
+                    MimeTypes = new[] { "application/silverplaylist+br" },
+                    Patterns = new[] {"*.spl.br"}
                 }
             }
         });

@@ -65,11 +65,11 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(new Uri("https://github.com/omansak/libvideo"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://www.nuget.org/packages/VideoLibrary"), URLType.PackageManager)
-    };
+    ];
    
     public bool IsUrlSupported(Uri given, IPlayStreamProviderListener listener)
     {
@@ -87,7 +87,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
         var youTube = YouTube.Default;
         var video =await youTube.GetAllVideosAsync(given.ToString());
         var uri = video.FirstOrDefault(x =>
-            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Aac or AudioFormat.Vorbis)?.Uri;
+            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis)?.Uri;
         if (uri != null)
         {
             listener.LoadSong(new WrappedHttpStream(uri));

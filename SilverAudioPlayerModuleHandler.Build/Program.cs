@@ -10,13 +10,14 @@ string Version = "7.0.0-dev";
 //This code is currently responsible for creating the SilverAudioPlayerModules.xml file which might be used in the future
 //to aid in package development (maybe) to allow users to choose which plugins to install using their system package 
 //manager
-Dictionary<string, string> PackageNames = new();
+Dictionary<string, string> PackageNames = [];
 
 /*foreach (var arg in args)
 {
     switch (arg.ToLower())
     {
         case "gi" or "generateindex":*/
+        
 GenIndex();
 /*  break;
 case "bs" or "builddebian":*/
@@ -37,11 +38,15 @@ return;
 string GetParent(string path, int n) => n > 0 ? GetParent(Directory.GetParent(path).FullName, n - 1) : Directory.GetParent(path).FullName;
 void Debian2ndPart(string parent, SilverAudioPlayerModulesInfo info, string output)
 {
+    var path = Path.Join(parent, "build", "debian");
+
     foreach (var module in info.Modules)
     {
-        var modpath = Path.Join(parent, "build", "debian", GetPackageName(module.Name));
-        CreateAndFillNeededDirForPackageDebian(parent, modpath, module);
-        Process.Start("dpkg-deb", $"--build {modpath}");
+        string? modpath = CreateAndFillNeededDirForPackageDebian(parent, path, module);
+        if (!string.IsNullOrEmpty(modpath))
+        {
+            Process.Start("dpkg-deb", $"--build {modpath}");
+        }
     }
     Console.WriteLine("Done????");
 }
@@ -51,11 +56,16 @@ string GetPackageName(string input)
     {
         return value;
     }
-    return PackageNames[input] = input.ToLower().Replace('.', '-');
+    return PackageNames[input] = (input.StartsWith("SilverCraft") ? "" : "silvercraft-") + input.ToLower().Replace('.', '-');
 }
-void CreateAndFillNeededDirForPackageDebian(string basePath, string path, Module mod)
+string? CreateAndFillNeededDirForPackageDebian(string basePath, string pathBegin, Module mod)
 {
-    //path would be something like ...../build/debian/silveraudioplayer-naudio/
+    if (mod.Name.StartsWith("SilverAudioPlayer.Win"))
+    {
+        return null;
+    }
+    var path = Path.Join(pathBegin, GetPackageName(mod.Name));
+
     if (!Path.Exists(path))
     {
         Directory.CreateDirectory(path);
@@ -79,18 +89,55 @@ Description: {mod.Name} for SilverAudioPlayer
         if (File.Exists(filetoCopy))
         {
             var dirandname = file.Name.Split("/net8.0/publish/")[1];
-            var dir = Path.GetDirectoryName(Path.Combine(opt, dirandname));
-            if (!string.IsNullOrWhiteSpace(dir))
+            if (file.LocationToPlaceLinux != null)
             {
-                Directory.CreateDirectory(dir);
+                var realLocAndName = Path.Combine(path, file.LocationToPlaceLinux[1..]);
+                var realLoc = Path.GetDirectoryName(realLocAndName);
+                if (!string.IsNullOrWhiteSpace(realLoc))
+                {
+                    Directory.CreateDirectory(realLoc);
+                }
+                else
+                {
+                    Console.Error.WriteLine($"\x1b[41mFile {filetoCopy} has invalid loc specified.... Try regenerating after regenererating index");
+                    return null;
+
+                }
+                File.Copy(filetoCopy, realLocAndName);
+
             }
-            File.Copy(filetoCopy, Path.Combine(opt, dirandname));
+            else
+            {
+                var dir = Path.GetDirectoryName(Path.Combine(opt, dirandname));
+                if (!string.IsNullOrWhiteSpace(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.Copy(filetoCopy, Path.Combine(opt, dirandname));
+            }
         }
         else
         {
-            Console.Error.WriteLine($"File {filetoCopy} doesnt exist???? Try regenerating after regenererating index");
+            Console.Error.WriteLine($"\x1b[41mFile {filetoCopy} doesnt exist???? Try regenerating after regenererating index");
+            return null;
         }
     }
+    foreach ((var from, var to) in mod.Links.Select(link => new Tuple<string, string>(Path.Combine(path, link.LocationFrom[1..]), Path.Combine(path, link.LocationTo[1..]))))
+    {
+        if (!File.Exists(to))
+        {
+            Console.Error.WriteLine($"\x1b[41mFile to link {to} doesnt exist???? Try regenerating after regenererating index");
+            return null;
+        }
+          var realLoc = Path.GetDirectoryName(from);
+                if (!string.IsNullOrWhiteSpace(realLoc))
+                {
+                    Directory.CreateDirectory(realLoc);
+                }
+        File.CreateSymbolicLink(from, to);
+    }
+    return path;
+
 }
 void BuildFirstPart(Action<string, SilverAudioPlayerModulesInfo, string> next, string kind)
 {
@@ -139,7 +186,7 @@ int Build(string directory, Action<string> standardOut, string additional = "")
     //-p:ExtraDefineConstants=
     var p = new Process();
     p.StartInfo.FileName = "dotnet";
-    p.StartInfo.Arguments = "publish -c Release";
+    p.StartInfo.Arguments = "publish -c Release -p:ExtraDefineConstants= ";
     p.StartInfo.WorkingDirectory = directory;
     p.StartInfo.UseShellExecute = false;
     //   p.StartInfo.RedirectStandardOutput = true;
@@ -159,18 +206,14 @@ string DoMagic(string aAAAAAAA)
 {
     if (aAAAAAAA.StartsWith("lib/netstandard"))
     {
-        Console.WriteLine(aAAAAAAA[19..]);
         return aAAAAAAA[19..];
     }
     if (aAAAAAAA.StartsWith("lib/netcoreapp"))
     {
-        Console.WriteLine(aAAAAAAA[18..]);
         return aAAAAAAA[18..];
     }
     if (aAAAAAAA.StartsWith("lib/net"))
     {
-
-        Console.WriteLine(aAAAAAAA[11..]);
         return aAAAAAAA[11..];
     }
     return aAAAAAAA;
@@ -178,7 +221,6 @@ string DoMagic(string aAAAAAAA)
 
 string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, string parentPublishFolder, string parent)
 {
-    //wtf am i gonna do here?????
     if (info.Modules.Any(x => x.Name == r.Name))
     {
         return null;
@@ -211,11 +253,27 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
         var range = asasassdasa.Select(x =>
             new SilverAudioPlayerModuleHandler.Build.File()
             {
-                Name =  Path.GetRelativePath(parent,Path.Combine(parentPublishFolder, x))
+                Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, x))
             }).GroupBy(x => Path.GetExtension(x.Name) is ".pdb" or ".dbg");
+
         m.Files.AddRange(range.Where(x => x.Key == false).SelectMany(x => x));
         m.Debug.AddRange(range.Where(x => x.Key == true).SelectMany(x => x));
-
+        m.Files.Add(new SilverAudioPlayerModuleHandler.Build.File()
+        {
+            Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, "SilverAudioPlayer.desktop")),
+            LocationToPlaceLinux = "/usr/share/applications/SilverAudioPlayer.desktop"
+        });
+        m.Files.Add(new SilverAudioPlayerModuleHandler.Build.File()
+        {
+            Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, "icon.svg")),
+            LocationToPlaceLinux = "/usr/share/pixmaps/sap.svg"
+        });
+          m.Links.Add(new()
+        {
+            LocationFrom =  "/usr/bin/silveraudioplayer" ,
+            LocationTo = "/opt/silveraudioplayer/SilverAudioPlayer.Avalonia"
+        });
+     
     }
     info.Modules.Add(m);
     return r.Name;
@@ -249,8 +307,6 @@ void ProcessModule(string dir, SilverAudioPlayerModulesInfo info, string parent)
         {
             var r = ProcessDepOfModule(runtimeLibrary, info, publishFolder, parent);
         }
-
-
     }
     else
     {
@@ -277,15 +333,6 @@ void GenIndex()
         if (File.Exists(Path.Combine(dir, ".SilverAudioPlayerModule")))
         {
             ProcessModule(dir, info, parent);
-            /* if (r != null)
-             {
-                 Helper.Visit(r.Item1, visited, sorted, x => info.Modules.Where(y => x.Dependencies.Contains(y.Name)), false);
-                 foreach (var deps in r.Item2)
-                 {
-                     Helper.Visit(deps, visited, sorted, x => info.Modules.Where(y => x.Dependencies.Contains(y.Name)), false);
-
-                 }
-             }*/
         }
     }
     foreach (var module in info.Modules)
@@ -296,7 +343,7 @@ void GenIndex()
         {
             if (!info.Modules.Any(x => x.Name == d))
             {
-                Console.WriteLine($"Dependancy {d} of {module.Name} not found");
+                Console.WriteLine($"Dependancy {d} of {module.Name} not found, maybe empty?");
                 module.Dependencies.Remove(d);
             }
             else
@@ -313,13 +360,9 @@ void GenIndex()
                         break;
                     }
                 }
-                //make sure all dep files exist maybe eh
             }
         }
     }
-    //var sorted =info.Modules.TSort(, false).ToList();
-    //info.Modules = sorted;
-    ///var allModuleFiles = info.Modules.Select(x => x.Files).ToList();
 
     XmlSerializer s = new(typeof(SilverAudioPlayerModulesInfo));
     using var mainfile = new FileStream(Path.Combine(parent, "SilverAudioPlayerModules.xml"), FileMode.Create);

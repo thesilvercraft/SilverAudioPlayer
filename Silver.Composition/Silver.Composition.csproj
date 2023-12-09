@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="System.ComponentModel.Composition" Version="7.0.0" />
-        <PackageReference Include="System.Composition" Version="7.0.0" />
+        <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
+        <PackageReference Include="System.Composition" Version="8.0.0" />
     </ItemGroup>
 </Project>

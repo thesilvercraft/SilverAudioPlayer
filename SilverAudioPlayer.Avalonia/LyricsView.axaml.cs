@@ -40,50 +40,54 @@ public partial class LyricsView : Window
                     Orientation = Orientation.Vertical
                 };
                 sv.Content = g;
-                StackPanel p = new()
+                StackPanel parentPanel = new()
                 {
-                    Orientation = Orientation.Horizontal
+                    Orientation = Orientation.Horizontal,
                 };
-                g.Children.Add(p);
-                foreach (var x in mainWindow.CurrentSong.Metadata.SyncedLyrics)
+                g.Children.Add(parentPanel);
+                foreach (var lyric in mainWindow.CurrentSong.Metadata.SyncedLyrics)
                 {
-                    TextBlock b = new()
+                    TextBlock textLyricBlock = new()
                     {
-                        Text = x.Content
+                        Text = lyric.Content.Replace("\n","").Replace("\r","\r")
                     };
-                    if (x.Content.EndsWith("\n"))
-                    {
-                        StackPanel p2 = new()
-                        {
-                            Orientation = Orientation.Horizontal
-                        };
-                        g.Children.Add(p2);
-                        p = p2;
-                    }
+                  
 
-                    if (!d.ContainsKey(x.TimeStampInMilliSeconds))
+                    if (!d.TryGetValue(lyric.TimeStampInMilliSeconds, out TextBlock? value))
                     {
-                        p.Children.Add(b);
-                        d.Add(x.TimeStampInMilliSeconds, b);
+                        parentPanel.Children.Add(textLyricBlock);
+                        d.Add(lyric.TimeStampInMilliSeconds, textLyricBlock);
+                        textLyricBlock.DoubleTapped+=(a,c)=>{
+                            mainWindow.Logic.SetPosition(lyric.TimeStampInMilliSeconds/1000d);
+                        };
                     }
-                    else if (string.IsNullOrWhiteSpace(x.Content))
+                    else if (string.IsNullOrWhiteSpace(lyric.Content))
                     {
-                        StackPanel p2 = new()
+                        StackPanel emptyLyricNewLinePanel = new()
                         {
                             Orientation = Orientation.Horizontal
                         };
-                        g.Children.Add(p2);
-                        p = p2;
+                        g.Children.Add(emptyLyricNewLinePanel);
+                        parentPanel = emptyLyricNewLinePanel;
                     }
                     else
                     {
-                        d[x.TimeStampInMilliSeconds].Text += x.Content;
+                        value.Text += lyric.Content;
+                    }
+                      if (lyric.Content.EndsWith("\n"))
+                    {
+                        StackPanel newLinePanel = new()
+                        {
+                            Orientation = Orientation.Horizontal
+                        };
+                        g.Children.Add(newLinePanel);
+                        parentPanel = newLinePanel;
                     }
                 }
             }
 var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
             foreach (var x in d)
-                if (x.Key <= pos )
+                if (x.Key <= pos)
                     x.Value.Foreground = red;
                 else
                     x.Value.Foreground = white;

@@ -19,7 +19,7 @@ public class SAction
 
 public class ActionDataContext
 {
-    public ObservableCollection<SAction> Actions { get; set; } = new();
+    public ObservableCollection<SAction> Actions { get; set; } = [];
 }
 
 public partial class LaunchActionsWindow : Window

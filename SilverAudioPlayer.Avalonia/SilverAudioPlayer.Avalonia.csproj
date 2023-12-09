@@ -88,26 +88,24 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net8.0-windows7</TargetFramework>
 		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net8.0-windows10.0.18362.0</TargetFramework>
-
 		<EnableWindowsTargeting Condition="$(TargetFramework.Contains('windows'))">true</EnableWindowsTargeting>
 		<PlatformTarget Condition="$(TargetFramework.Contains('windows'))">x64</PlatformTarget>
-		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win10-x64</RuntimeIdentifiers>
-
+		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.5" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.6" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))"  />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ChromeCast\SilverAudioPlayer.Any.PlayProvider.ChromeCast.csproj" Condition="$(DefineConstants.Contains('CAST'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.CSCore\SilverAudioPlayer.Any.PlayProvider.CSCore.csproj" Condition="$(DefineConstants.Contains('CSCORE'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))"  />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
@@ -129,18 +127,18 @@
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.1" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.3" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.5" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.7" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 		<PackageReference Include="ReactiveUI" Version="19.5.1" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="7.0.1" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="Svg.Skia" Version="1.0.0.3" />
-		<PackageReference Include="System.Composition" Version="7.0.0" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.5" />
+		<PackageReference Include="Svg.Skia" Version="1.0.0.7" />
+		<PackageReference Include="System.Composition" Version="8.0.0" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.4" />
 	</ItemGroup>
 

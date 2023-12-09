@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace SilverAudioPlayer.Linux.MPRIS
 {
     [Export(typeof(IMusicStatusInterface))]
-    public class Mpris :IMusicStatusInterface, IMediaPlayer2,IPlayer
+    public class Mpris :IMusicStatusInterface, /*IMediaPlayer2,*/IPlayer
     {
         public event Action<PropertyChanges> OnPropertiesChanged;
         public bool IsStarted => _IsStarted;
@@ -19,7 +19,6 @@ namespace SilverAudioPlayer.Linux.MPRIS
         }
         public Mpris()
         {
-            start();
         }
 
         void start()
@@ -253,13 +252,14 @@ Volume = Env?.GetVolume()/100d ?? 100d
             Env = listener;
             Env.PlayerStateChanged += PlayerStateChanged;
             Env.TrackChangedNotification += TrackChanged;
+            start();
         }
         private void TrackChanged(object? sender, Song e)
         {
-            OnPropertiesChanged?.Invoke(new PropertyChanges(new List<KeyValuePair<string,object>>()
-            {
+            OnPropertiesChanged?.Invoke(new PropertyChanges(
+            [
                 new("Metadata", GetMetadata()),
-            }.ToArray()));
+            ]));
         }
 
         private void PlayerStateChanged(object? sender, PlaybackState e)
@@ -286,8 +286,8 @@ Volume = Env?.GetVolume()/100d ?? 100d
 
         public Version? Version => typeof(Mpris).Assembly.GetName().Version;
         public string Licenses => "GPL3.0";
-        public List<Tuple<Uri, URLType>>? Links => new()
-        {
+        public List<Tuple<Uri, URLType>>? Links =>
+        [
             new Tuple<Uri, URLType>(
                 new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.MPRIS"),
                 URLType.Code),
@@ -300,7 +300,7 @@ Volume = Env?.GetVolume()/100d ?? 100d
             new Tuple<Uri, URLType>(
                 new Uri("https://github.com/tmds/Tmds.DBus"),
                 URLType.LibraryCode)
-        };
+        ];
         
 
        

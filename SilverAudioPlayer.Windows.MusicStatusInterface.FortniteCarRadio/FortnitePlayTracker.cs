@@ -36,8 +36,8 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
 
     public FortnitePlayTracker()
     {
-        ConfigurableElements = new List<IConfigurableElement>
-        {
+        ConfigurableElements =
+        [
             new SimpleTextBox
                 { GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolDef.ToString(), GetPlaceholder= ()=>"L", SetContent = c => {
                      Debug.WriteLine("l1");
@@ -71,7 +71,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
                      }
                  }
                 }
-        };
+        ];
     }
     public IEnumerable<IConfigurableElement> GetElements()
     {

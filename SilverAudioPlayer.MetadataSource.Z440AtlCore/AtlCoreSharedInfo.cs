@@ -5,8 +5,8 @@ namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 public class AtlCoreSharedInfo
 {
-    public static readonly List<Tuple<Uri, URLType>>? Links = new()
-    {
+    public static readonly List<Tuple<Uri, URLType>>? Links =
+    [
         new Tuple<Uri, URLType>(
             new Uri(
                 "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.MetadataSource.Z440AtlCore"),
@@ -15,6 +15,6 @@ public class AtlCoreSharedInfo
             new Uri($"https://www.nuget.org/packages/z440.atl.core/{typeof(Track).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/Zeugma440/atldotnet"), URLType.LibraryCode)
-    };
+    ];
 
 }

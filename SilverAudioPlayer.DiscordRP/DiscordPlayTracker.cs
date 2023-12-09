@@ -18,17 +18,6 @@ public class SerilogLogger : ILogger
     public SerilogLogger()
     {
         _logger = Logger.GetLogger(typeof(SerilogLogger));
-        Logger.OnNewLoggerSet += OnLoggerOnOnNewLoggerSet;
-    }
-
-    ~SerilogLogger()
-    {
-        Logger.OnNewLoggerSet -= OnLoggerOnOnNewLoggerSet;
-    }
-
-    private void OnLoggerOnOnNewLoggerSet(Func<Type, Serilog.ILogger>? func)
-    {
-        _logger = func?.Invoke(typeof(SerilogLogger));
     }
 
     public void Trace(string message, params object[] args)
@@ -64,9 +53,8 @@ public class DiscordPlayTrackerConfig : INotifyPropertyChanged, ICanBeToldThatAP
     }
 
     [Comment("The uploader to use")] public Uploader Uploader { get; set; } = Uploader.None;
-    [XmlIgnore] public bool _AllowedRead = true;
 
-    [XmlIgnore] public bool AllowedToRead => _AllowedRead;
+    [XmlIgnore] public bool AllowedToRead {get;set;}= true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 }

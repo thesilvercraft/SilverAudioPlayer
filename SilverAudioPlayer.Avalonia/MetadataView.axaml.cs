@@ -131,7 +131,7 @@ public class Field
         FieldValue = value;
     }
 
-    public ObservableCollection<Field> SubFields { get; set; } = new();
+    public ObservableCollection<Field> SubFields { get; set; } = [];
 
     public string FieldName { get; }
     public string FieldValue { get; }
@@ -139,7 +139,7 @@ public class Field
 
 internal class DC
 {
-    public ObservableCollection<Field> ValuePairs { get; } = new();
+    public ObservableCollection<Field> ValuePairs { get; } = [];
 
-    public ObservableCollection<Bitmap?> Bitmaps { get; } = new() { null };
+    public ObservableCollection<Bitmap?> Bitmaps { get; } = [null];
 }

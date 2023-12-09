@@ -731,11 +731,11 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.";
 
-        public List<Tuple<Uri, URLType>>? Links => new() { 
+        public List<Tuple<Uri, URLType>>? Links => [ 
         new(new Uri("https://www.nuget.org/packages/GoogleCast"), URLType.PackageManager),
         new(new Uri("https://github.com/kakone/GoogleCast"), URLType.LibraryCode),
 
-        };
+        ];
 
         public bool CanPlayFile(WrappedStream stream)
         {

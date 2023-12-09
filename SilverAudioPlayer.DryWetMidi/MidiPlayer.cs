@@ -118,8 +118,8 @@ internal class MidiPlayer : IPlay, IPlayProvider
 
     public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"),
             URLType.Code),
@@ -128,7 +128,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
                 $"https://www.nuget.org/packages/Melanchall.DryWetMidi/{typeof(OutputDevice).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/melanchall/drywetmidi"), URLType.LibraryCode)
-    };
+    ];
 
     public string Licenses => @"DryWetMidi (https://github.com/melanchall/drywetmidi)
 MIT License

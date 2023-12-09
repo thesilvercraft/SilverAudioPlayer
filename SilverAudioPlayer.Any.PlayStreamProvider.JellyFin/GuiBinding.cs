@@ -4,5 +4,5 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
 public class GuiBinding
 {
-    public ObservableCollection<WrappedDto> SearchResults { get; set; } = new();
+    public ObservableCollection<WrappedDto> SearchResults { get; set; } = [];
 }

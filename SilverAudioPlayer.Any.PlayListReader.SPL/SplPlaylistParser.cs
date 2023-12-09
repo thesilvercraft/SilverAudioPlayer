@@ -15,7 +15,7 @@ public class SplPlaylistParser : IPlaylistReader
     public string Description => "A simple module that deserializes brotli encoded silverplaylist files";
     public Version? Version => typeof(SplPlaylistParser).Assembly.GetName().Version; 
     public string Licenses => "GPL3";
-    public List<Tuple<Uri, URLType>>? Links { get; } = new();
+    public List<Tuple<Uri, URLType>>? Links { get; } = [];
     public IReadOnlyList<MimeType> SupportedMimes { get; } = new[] { KnownMimes.SplMime };
 
     public bool TryParse(WrappedStream stream, out IPlaylist? playlist)

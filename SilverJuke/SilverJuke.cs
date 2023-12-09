@@ -26,7 +26,7 @@ public class SilverJuke : IMusicStatusInterface
 
     public string Licenses => "SilverJuke is licensed under the GPL 3.0 license.\n";
 
-    public List<Tuple<Uri, URLType>>? Links => new();
+    public List<Tuple<Uri, URLType>>? Links => [];
     public bool IsStarted => _IsStarted;
     private bool _IsStarted;
     public void Dispose()

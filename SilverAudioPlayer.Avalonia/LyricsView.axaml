@@ -9,8 +9,13 @@
 	    Icon="/icon.ico">
     <Window.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="FontSize" Value="40" />
-        </Style>
+            <Setter Property="FontSize" Value="60" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="TextAlignment" Value="Center" />
+		</Style>
+		<Style Selector="StackPanel">
+			<Setter Property="HorizontalAlignment" Value="Center" />
+		</Style>
     </Window.Styles>
     <Grid Name="MainGrid" RowDefinitions="25,*" Margin="5">
         <ScrollViewer Name="sv" VerticalScrollBarVisibility="Visible" Grid.Row="1" />

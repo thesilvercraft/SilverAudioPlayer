@@ -7,8 +7,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="ClangSharp" Version="16.0.0" />
-        <PackageReference Include="ClangSharp.Interop" Version="16.0.0" />
+        <PackageReference Include="ClangSharp" Version="17.0.0" />
+        <PackageReference Include="ClangSharp.Interop" Version="17.0.0" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" />

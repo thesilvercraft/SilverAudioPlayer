@@ -17,7 +17,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private SystemMediaTransportControls? _systemMediaTransportControls;
     private readonly bool DISABLE = false;
     private bool disposedValue;
-    private List<string> TempFiles = new();
+    private List<string> TempFiles = [];
     private System.Timers.Timer TimeLineTimer;
     public bool IsStarted => _IsStarted;
     private bool _IsStarted;
@@ -33,13 +33,13 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     public Version? Version => typeof(SMTCPlayTracker).Assembly.GetName().Version;
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.SMTC"),
             URLType.Code),
         new(new("https://docs.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols?view=winrt-22621"),
             URLType.LibraryDocumentation)
-    };
+    ];
 
     public void PlayerStateChanged(object obj, PlaybackState newstate)
     {

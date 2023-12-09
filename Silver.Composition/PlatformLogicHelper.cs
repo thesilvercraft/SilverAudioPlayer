@@ -100,8 +100,8 @@ public static class Helper
 
 public static class PlatformLogicHelper
 {
-    static List<WrappedDirectoryCatalog> catalogs = new();
-    static List<WrappedAssembly> assemblies = new();
+    static List<WrappedDirectoryCatalog> catalogs = [];
+    static List<WrappedAssembly> assemblies = [];
 
     public static IEnumerable<T> GetTypeAll<T>()
     {
@@ -191,8 +191,8 @@ public static class PlatformLogicHelper
     {
         if (assemblies.Count == 0)
         {
-            assemblies = new();
-            catalogs = new();
+            assemblies = [];
+            catalogs = [];
             LoadAssemblies(ref assemblies, ref catalogs);
         }
     }

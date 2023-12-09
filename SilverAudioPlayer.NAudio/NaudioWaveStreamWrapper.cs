@@ -32,14 +32,17 @@ public class NaudioWaveStreamWrapper : IPlayProvider
 
     public string Description =>
         "A player that wraps around NAudio (https://github.com/naudio/NAudio) and plays audio files that derive from PCM (or WAV). MP3 is provided using https://github.com/naudio/NLayer";
-
+#if CSCore
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(NaudioWaveStreamWrapper).Assembly,
+        "SilverAudioPlayer.Any.PlayProvider.NAudio.cscore.svg");
+#else
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(NaudioWaveStreamWrapper).Assembly,
         "SilverAudioPlayer.Any.PlayProvider.NAudio.NAudioLogo.png");
-
+#endif
     public Version? Version => typeof(NaudioWaveStreamWrapper).Assembly.GetName().Version;
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.NAudio"),
             URLType.Code),
@@ -55,9 +58,9 @@ public class NaudioWaveStreamWrapper : IPlayProvider
         new(new("https://filoe.github.io/cscore/sharpDox/"), URLType.LibraryDocumentation),
         new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
 #endif
-    };
+    ];
 #if CSCore
-     public string Licenses => @"NAudio - https://github.com/naudio/NAudio 
+    public string Licenses => @"NAudio - https://github.com/naudio/NAudio 
 Copyright 2020 Mark Heath
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -140,7 +143,7 @@ A ""contributor"" is any person that distributes its contribution under this lic
 (C) If you distribute any portion of the software, you must retain all copyright, patent, trademark, and attribution notices that are present in the software.
 (D) If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.
 (E) The software is licensed ""as-is."" You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.";
-#else 
+#else
  public string Licenses => @"NAudio - https://github.com/naudio/NAudio 
 Copyright 2020 Mark Heath
 
@@ -207,8 +210,8 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
 #endif
-    
-   
+
+
 
     public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
         .SelectMany(x => x.SupportedMimeTypes).ToList();
@@ -240,9 +243,8 @@ public class NaudioWaveStreamWrapperTypes
 
     public NaudioWaveStreamWrapperTypes()
     {
-            wrapper = PlatformLogicHelper.GetTypeAll<INaudioWaveStreamWrapper>().ToList();
-Debug.Assert(wrapper.Count!=0);
-        
+        wrapper = PlatformLogicHelper.GetTypeAll<INaudioWaveStreamWrapper>().ToList();
+        Debug.Assert(wrapper.Count != 0);
     }
 
 
@@ -258,8 +260,13 @@ Debug.Assert(wrapper.Count!=0);
 
     public bool HasWrapper(WrappedStream stream)
     {
-        return GetWrappers().Any(x => x.SupportedMimeTypes.Contains(stream.MimeType));
+        if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
+        {
+            return true;
+        }
+        var res = GetWrappers().Any(x => x.SupportedMimeTypes.Contains(stream.MimeType));
+        return res;
     }
 
-    
+
 }

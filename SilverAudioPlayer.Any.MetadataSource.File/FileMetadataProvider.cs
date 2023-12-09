@@ -18,14 +18,14 @@ public class FileMetadataProvider : IMetadataProvider
 
     public string Licenses => "GPL";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri(
                 "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.File"),
             URLType.Code),
         
-    };
+    ];
 
     public bool CanGetMetadata(WrappedStream stream)
     {

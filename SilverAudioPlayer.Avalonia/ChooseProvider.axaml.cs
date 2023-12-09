@@ -9,7 +9,7 @@ namespace SilverAudioPlayer.Avalonia
 {
     public class ChooseProviderDataContext
     {
-        public ObservableCollection<InfoPRecord> playProviders { get; set; } = new();
+        public ObservableCollection<InfoPRecord> playProviders { get; set; } = [];
         public bool? SetAsDefaultIfPresent { get; set; } = false;
         public bool? SetAsDefaultForFileType { get; set; } = false;
 

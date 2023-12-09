@@ -15,7 +15,7 @@ namespace SilverAudioPlayer.Shared
     public interface ICanBeToldThatAPartOfMeIsChanged
     {
         public void PropertyChanged(object sender, PropertyChangedEventArgs e);
-        public bool AllowedToRead { get; }
+        public bool AllowedToRead { get; set;}
     }
     /// <summary>
     /// An object representing a config to serialise and deserialize

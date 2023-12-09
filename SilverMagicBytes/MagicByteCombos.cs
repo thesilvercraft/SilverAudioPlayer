@@ -2,13 +2,13 @@
 
 public static class MagicByteCombos
 {
-    private static readonly List<MagicByteComboWithMimeType> ByteCombos = new()
-    {
+    private static readonly List<MagicByteComboWithMimeType> ByteCombos =
+    [
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0x49, 0x44, 0x33),
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0xFF, 0xFB),
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0xFF, 0xF3),
         new MagicByteComboWithMimeType(KnownMimes.MP3Mime, 0xFF, 0xF2),
-        
+
         new MagicByteComboWithMimeType(KnownMimes.Mp4Mime, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D),
         new MagicByteComboWithMimeType(KnownMimes.MpegMime, 0x47),
         new MagicByteComboWithMimeType(KnownMimes.Mp2Mime, 0x00, 0x00, 0x01, 0xBA),
@@ -43,11 +43,10 @@ public static class MagicByteCombos
         new MagicByteComboWithMimeType(KnownMimes.SVGMime, 0xff ,0xfe ,0x00 ,0x00 ,0x3c ,0x00 ,0x00 ,0x00 ,0x73 ,0x00 ,0x00 ,0x00 ,0x76 ,0x00 ,0x00 ,0x00 ,0x67 ,0x00 ,0x00 ,0x00),//NO BOM utf32LE
         new MagicByteComboWithMimeType(KnownMimes.SplMime,"Spl"u8.ToArray()),
         new MagicByteComboWithMimeType(KnownMimes.M3uMime,"#EXTM3U"u8.ToArray()),
-
-
+        new MagicByteComboWithMimeType(KnownMimes.MKVMime, 0x1A, 0x45, 0xDF, 0xA3),
         new MagicByteComboWithMimeType(KnownMimes.OctetMime)
 
-    };
+    ];
 
     public static MagicByteComboWithMimeType? Match(Stream s, long offset)
     {
@@ -80,8 +79,5 @@ public static class MagicByteCombos
         ByteCombos.Remove(mbc);
     }
 
-    public static MagicByteComboWithMimeType[] GetAll()
-    {
-        return ByteCombos.ToArray();
-    }
+    public static MagicByteComboWithMimeType[] GetAll() => [.. ByteCombos];
 }

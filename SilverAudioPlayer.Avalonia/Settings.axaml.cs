@@ -73,11 +73,10 @@ public partial class Settings : Window
         TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
         ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
-        List<ICodeInformation> info = new()
-        {
-            mainWindow.Env
-        };
-        info.AddRange((mainWindow.Logic as ILogicImportable).CreditInformation);
+        List<ICodeInformation> info =
+        [
+            mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).CreditInformation
+        ];
         var ir = GetInfoRecords(info);
         _settingsDc = new SettingsDC()
         {
@@ -114,7 +113,7 @@ public partial class Settings : Window
 
     public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
     {
-        ObservableCollection<InfoPRecord> infop = new();
+        ObservableCollection<InfoPRecord> infop = [];
         StringBuilder licenses = new();
         foreach (var item in info)
         {
@@ -349,11 +348,11 @@ public partial class Settings : Window
         }, DispatcherPriority.Normal);
     }
 
-    public static readonly GradientStops defPBStops = new()
-    {
+    public static readonly GradientStops defPBStops =
+    [
         new(KnownColor.Coral.ToColor(), 0),
         new(KnownColor.SilverCraftBlue.ToColor(), 1)
-    };
+    ];
 
     private void ChangeColorPB(object? sender, RoutedEventArgs e)
     {

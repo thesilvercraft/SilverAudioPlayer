@@ -528,10 +528,10 @@ necessary.  Here is a sample; alter the names:
 
 That's all there is to it!";
 
-        public List<Tuple<Uri, URLType>>? Links => new List<Tuple<Uri, URLType>>() {
+        public List<Tuple<Uri, URLType>>? Links => [
             new(new("https://www.nuget.org/packages/LibVLCSharp"),URLType.PackageManager),
         new(new("https://code.videolan.org/videolan/LibVLCSharp"),URLType.LibraryCode),
-        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.libVLC"),URLType.PackageManager)};
+        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.libVLC"),URLType.PackageManager)];
 
         public bool CanPlayFile(WrappedStream stream)
         {

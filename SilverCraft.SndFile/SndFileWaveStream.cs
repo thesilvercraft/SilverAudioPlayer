@@ -8,7 +8,7 @@ public class SndFileWaveStream : ISampleSource
 {
     private unsafe sf_private_tag* infile;
     private SF_VIRTUAL_IO IO;
-    SF_INFO info = new SF_INFO();
+    SF_INFO info = new();
 
     public unsafe SndFileWaveStream(Stream s)
     {
@@ -16,13 +16,13 @@ public class SndFileWaveStream : ISampleSource
         IO= helper.Virtual;
         infile = Methods.sf_open_virtual(ref IO, Mode.Read, ref info,  0);
         WaveFormat = new WaveFormat(info.samplerate, 32, info.channels);
-        Length = info.frames/info.samplerate;
+        Length = info.frames* info.channels;
+        Debug.WriteLine($"Length {Length}");
         Debug.WriteLine($"Sample rate: {info.samplerate}Hz");
         Debug.WriteLine($"Channel count: {info.channels}");
         Debug.WriteLine($"Format: {info.format}");
         Debug.WriteLine($"Frames: {info.frames}");
         Debug.WriteLine($"Seekable: {info.seekable}");
-
     }
     public unsafe SndFileWaveStream(ref sf_private_tag* f, SF_INFO info)
     {
@@ -45,30 +45,25 @@ public class SndFileWaveStream : ISampleSource
     {
         unsafe
         {
-            Debug.WriteLine("DISPOSE!!!!");
+            Debug.WriteLine("Disposing SndFileWaveStream!");
            _ = Methods.sf_close(infile);
         }
     }
 
-    public bool CanSeek => false;
+    public bool CanSeek => info.seekable!=0;
     public WaveFormat WaveFormat { get; set; }
-    public long Position
+    public unsafe long Position
     {
-        get
-        {
-            return 0;
-        }
+        get => Methods.sf_seek(infile, 0, Whence.Current)* info.channels;
         set
         {
-            if (info.seekable!=0)
+            if (info.seekable != 0)
             {
-             //   Debug.WriteLine(value);
                 unsafe
                 {
-                    //Methods.sf_seek(infile, (nint)(value*info.samplerate), Whence.Set);
+                    Methods.sf_seek(infile, (nint)value/info.channels, Whence.Set);
                 }
             }
-          
         }
     }
 

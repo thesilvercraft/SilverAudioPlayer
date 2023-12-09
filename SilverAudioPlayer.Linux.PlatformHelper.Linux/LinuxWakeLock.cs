@@ -26,8 +26,8 @@ public class LinuxWakeLock : IWakeLockProvider
 
     public string Licenses => "GPL3.0";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.PlatformHelper.Linux"),
             URLType.Code),
@@ -37,7 +37,7 @@ public class LinuxWakeLock : IWakeLockProvider
         new Tuple<Uri, URLType>(
             new Uri("https://github.com/tmds/Tmds.DBus"),
             URLType.LibraryCode)
-    };
+    ];
 
     private uint? Cookie = null;
     public void WakeLock()

@@ -9,8 +9,14 @@ public static class Logger
         get => _GetLoggerFunc;
         set
         {
-            _GetLoggerFunc = value;
-            OnNewLoggerSet?.Invoke(value);
+            if (_GetLoggerFunc == null)
+            {
+                _GetLoggerFunc = value;
+            }
+            else
+            {
+                throw new InvalidOperationException("You may only set the logger function once");
+            }
         }
     }
 
@@ -21,5 +27,4 @@ public static class Logger
         return GetLoggerFunc?.Invoke(name);
     }
 
-    public static event Action<Func<Type, ILogger>?> OnNewLoggerSet;
 }

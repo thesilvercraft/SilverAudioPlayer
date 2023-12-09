@@ -21,9 +21,9 @@ public static class KnownMimes
     public static readonly MimeType Mp2Mime = new Mp2Mime();
     public static readonly MimeType M3uMime = new M3UMime();
     public static readonly MimeType SplMime = new SPLMime();
-    
-    public static readonly List<MimeType> KnownMimeTypes = new()
-    {
+    public static readonly MimeType MKVMime =new MKVMime();
+    public static readonly List<MimeType> KnownMimeTypes =
+    [
         MidMime,
         MP3Mime,
         FLACMime,
@@ -41,7 +41,8 @@ public static class KnownMimes
         M3uMime,
         SplMime,
         OctetMime,
-    };
+        MKVMime,
+    ];
 
     public static MimeType? GetKnownMimeByName(string Mime)
     {
@@ -51,6 +52,11 @@ public static class KnownMimes
     public static MimeType? GetKnownMimeByExtension(string Extension)
     {
         return KnownMimeTypes.Find(x => x.FileExtensions.Contains(Extension));
+    }
+}
+public class MKVMime : MimeType{
+    public MKVMime() : base("video/x-matroska",["audio/x-matroska","video/webm","audio/webm"],[".mkv",".mka",".mks",".mk3d",".webm"])
+    {
     }
 }
 public class M3UMime : PlaylistMime

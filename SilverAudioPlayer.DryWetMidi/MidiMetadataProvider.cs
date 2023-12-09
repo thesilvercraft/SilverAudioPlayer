@@ -22,8 +22,8 @@ public class MidiMetadataProvider : IMetadataProvider
 
     public string Licenses => "GPL";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri(
                 "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.DryWetMidi"),
@@ -33,7 +33,7 @@ public class MidiMetadataProvider : IMetadataProvider
                 $"https://www.nuget.org/packages/Melanchall.DryWetMidi/{typeof(OutputDevice).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/melanchall/drywetmidi"), URLType.LibraryCode)
-    };
+    ];
 
     public bool CanGetMetadata(WrappedStream stream)
     {

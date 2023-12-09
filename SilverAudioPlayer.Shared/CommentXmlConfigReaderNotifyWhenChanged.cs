@@ -14,12 +14,24 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
     {
         foreach (var fsw in fileSystemWatchers) fsw.Dispose();
     }
-
+    public override void Write(T config, string path)
+    {
+        if (config is ICanBeToldThatAPartOfMeIsChanged a)
+        {
+            a.AllowedToRead = false;
+            base.Write(config, path);
+            a.AllowedToRead = true;
+        }
+        else
+        {
+            base.Write(config, path);
+        }
+    }
     public override T? Read(string path)
     {
         var c = base.Read(path);
         var fp = Path.GetFullPath(path);
-        var fpdir = Path.GetDirectoryName(fp)??"";
+        var fpdir = Path.GetDirectoryName(fp) ?? "";
         var fpnm = Path.GetFileName(fp);
 
         FileSystemWatcher j = new()

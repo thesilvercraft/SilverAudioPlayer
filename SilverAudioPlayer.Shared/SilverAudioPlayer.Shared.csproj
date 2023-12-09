@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="../SilverAudioPlayer.targets"/>
+    <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -24,16 +24,16 @@
     <ItemGroup>
         <PackageReference Include="ReactiveUI" Version="19.5.1" />
         <PackageReference Include="Serilog" Version="3.1.1" />
-        <PackageReference Include="SilverCraft.SilverConfig" Version="1.0.3"/>
-        <PackageReference Include="System.Composition" Version="7.0.0" />
-        <PackageReference Include="Opportunity.LrcParser" Version="1.0.4"/>
+        <PackageReference Include="SilverCraft.SilverConfig" Version="1.0.3" />
+        <PackageReference Include="System.Composition" Version="8.0.0" />
+        <PackageReference Include="Opportunity.LrcParser" Version="1.0.4" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj"/>
-        <ProjectReference Include="..\SilverMagicBytes\SilverMagicBytes.csproj"/>
+        <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj" />
+        <ProjectReference Include="..\SilverMagicBytes\SilverMagicBytes.csproj" />
     </ItemGroup>
 
 

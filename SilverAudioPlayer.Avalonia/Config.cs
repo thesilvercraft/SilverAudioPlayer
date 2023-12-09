@@ -7,7 +7,6 @@ namespace SilverAudioPlayer.Avalonia;
 
 public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
-    [XmlIgnore] public bool _AllowedRead = true;
 
     [Comment("Does the player not loop (None), loop (One) song, or loop the entire (Queue)")]
     public RepeatState LoopType { get; set; } = RepeatState.None;
@@ -16,12 +15,12 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     public byte Volume { get; set; } = 70;
     [Comment("Folder suggested to OS when the open file dialog is chosen, can be 'Music','Desktop','Downloads','Pictures','Videos'  (user's special folders), any other valid folder path or nothing, if its nothing the os wont be given a suggested starting point.")]
 
-    public string DialogStartLoc { get; set; } = "Music";
+    public string DialogStartLoc { get; set; } = "";
 
     public bool DisableAlbumArtBlur { get; set; } = false;
     public float AlbumArtTransparency { get; set; } = 0.25f;
-    [XmlIgnore] public bool AllowedToRead => _AllowedRead;
-    public SerializableDictionary<string, string> PreferredPlayers { get; set; } = new();
+    [XmlIgnore] public bool AllowedToRead{get;set;}=true;
+    public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];
     public ConfigStyle UserLogPreferences = ConfigStyle.Unknown;
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {

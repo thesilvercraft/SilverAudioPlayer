@@ -22,7 +22,7 @@ public class WrappedAlbum : WrappedShowable
     public string Name { get; set; }
     public Bitmap? Cover => Songs[0].Cover;
     public string AlbumArtist { get; set; }
-    public ConcurrentObservableCollection<WrappedSong> Songs { get; } = new();
+    public ConcurrentObservableCollection<WrappedSong> Songs { get; } = [];
 }
 public class WrappedSong : WrappedShowable
 {
@@ -50,9 +50,9 @@ public class WrappedSong : WrappedShowable
 }
 public class GuiBinding : ReactiveObject
 {
-    public ConcurrentObservableCollection<WrappedAlbum> WrappedAlbums { get; set; } = new();
+    public ConcurrentObservableCollection<WrappedAlbum> WrappedAlbums { get; set; } = [];
     public ConcurrentObservableCollection<WrappedSong> WrappedSongs { get => _WrappedSongs; set => this.RaiseAndSetIfChanged(ref _WrappedSongs, value); }
-    private ConcurrentObservableCollection<WrappedSong> _WrappedSongs = new();
+    private ConcurrentObservableCollection<WrappedSong> _WrappedSongs = [];
 
 }
 
@@ -80,7 +80,7 @@ public partial class MainWindow : Window
     {
         Env = env;
     }
-    Dictionary<string, Bitmap> bitmaps = new();
+    Dictionary<string, Bitmap> bitmaps = [];
     public async Task<WrappedSong?> ProcessFileAsync(string file, CancellationToken ct=default)
     {
         try
@@ -104,7 +104,7 @@ public partial class MainWindow : Window
             {
                 var files = Directory.GetFiles(f, "*", SearchOption.AllDirectories);
                 object a = new();
-                List<WrappedSong> songs = new();
+                List<WrappedSong> songs = [];
                 await Parallel.ForEachAsync(Env.FilterFiles(files), new ParallelOptions() { MaxDegreeOfParallelism = 10 }, async (file, ct) => {
                     var song= await ProcessFileAsync(file, ct);
                     if(song!=null)

@@ -21,17 +21,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
     public SharedMemoryStreamPool()
     {
         _logger = Logger.GetLogger(typeof(SharedMemoryStreamPool));
-        Logger.OnNewLoggerSet += OnLoggerOnOnNewLoggerSet;
     }
-    ~ SharedMemoryStreamPool()
-    {
-        Logger.OnNewLoggerSet -= OnLoggerOnOnNewLoggerSet;
-    }
-    private void OnLoggerOnOnNewLoggerSet(Func<Type, ILogger>? func)
-    {
-        _logger = func?.Invoke(typeof(SharedMemoryStreamPool));
-    }
-
     private Dictionary<Guid, List<RelianceOnSharedStream>> _reliances = new();
     private readonly object _reliancesLock = new object();
 
