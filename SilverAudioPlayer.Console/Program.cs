@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics;
+using ClangSharp;
+using Opportunity.LrcParser;
 using ReactiveUI;
 using Serilog;
 using Serilog.Events;
@@ -200,17 +202,7 @@ public class ConsoleEnviroment : IHaveConfigFilesWithKnownLocations, IFullPlayer
     }
 
 
-    public string Licenses => @"Avalonia
-The MIT License (MIT)
-
-Copyright (c) .NET Foundation and Contributors All Rights Reserved
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-SilverAudioPlayer.Avalonia
+    public string Licenses => @"SilverAudioPlayer.Console
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -285,7 +277,6 @@ public class App
         Log.Logger = logger;
         void OnFatalError(Exception y)
         {
-            var a = Path.GetTempFileName();
             if (File.Exists("/usr/bin/kdialog"))
             {
                 Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"{y.ToString()}\"");
@@ -366,11 +357,11 @@ public class App
             HandleMemoryLogic(Logic.SyncPlugins);
             HandleMemoryLogic(Logic.PlaylistReaders);
         }
-
+        Logic.PlayerEnvironment = env;
         Logic.Log = logger;
         if (args.Length == 0)
         {
-            args = ["/vol/e4nh/Music/Danganronpa V3 Killing Harmony - OST (MP3)/"];
+            //args = ["https://www.youtube.com/watch?v=qXwqaRHr3hg"];
         }
         Logic.ProcessFiles(args);
         System.Console.WriteLine("Ayo");
@@ -380,9 +371,87 @@ public class App
         {
             while (Logic.Player?.GetPlaybackState() != PlaybackState.Stopped)
             {
-                System.Console.Write($"\r {Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():g}/{Logic.Player?.Length():g} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
+                var a = System.Console.GetCursorPosition();
+                System.Console.SetCursorPosition(0, 0);
+                for (int y = 0; y < a.Top; y++)
+                {
+                    for (int x = 0; x < 80; x++)
+                    {
+                        System.Console.Write(' ');
 
-                Thread.Sleep(100);
+                    }
+                    System.Console.Write('\n');
+                }
+                System.Console.SetCursorPosition(0, 0);
+
+                System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():g}/{Logic.Player?.Length():g} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
+                if (context?.CurrentSong?.Metadata?.SyncedLyrics is IList<LyricPhrase> lyrics)
+                {
+                    int last = 0;
+                    for (int i = 0; i < lyrics.Count; i++)
+                    {
+                        LyricPhrase? l = lyrics[i];
+                        if (l.TimeStampInMilliSeconds <= Logic.Player.GetPosition().TotalMilliseconds)
+                        {
+                            last = i;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    if (last > 3)
+                    {
+                        System.Console.WriteLine(lyrics[last - 3].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
+                    }
+                    else if (last > 1)
+                    {
+                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
+                    }
+                    System.Console.WriteLine(lyrics[last]);
+                    if (last < lyrics.Count - 1)
+                    {
+                        System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
+                    }
+                }
+                if (System.Console.KeyAvailable)
+                {
+                    var key = System.Console.ReadKey();
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.A:
+                            System.Console.Write("Enter URL to add to queue:");
+                            var r = System.Console.ReadLine();
+                            if (!string.IsNullOrWhiteSpace(r))
+                            {
+                                Logic.ProcessFiles([r.Trim('\'', '\"', ' ')]);
+                            }
+                            break;
+                        case ConsoleKey.RightArrow:
+                            env.SetPosition(env.GetPosition() + 5);
+                            break;
+                        case ConsoleKey.LeftArrow:
+                            env.SetPosition(env.GetPosition() - 5);
+                            break;
+                        case ConsoleKey.UpArrow:
+                            env.SetVolume((byte)Math.Clamp(env.GetVolume() + 5, 0, 100));
+                            break;
+                        case ConsoleKey.DownArrow:
+                            env.SetVolume((byte)Math.Clamp(env.GetVolume() - 5, 0, 100));
+                            break;
+                        case ConsoleKey.Spacebar:
+                            env.PlayPause();
+                            break;
+                        case ConsoleKey.Q:
+                            Environment.Exit(0);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                Thread.Sleep(90);
             }
             Thread.Sleep(2000);
 

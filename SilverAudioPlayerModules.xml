@@ -471,6 +471,404 @@
       <Links />
       <Debug />
     </Module>
+    <Module Name="SilverAudioPlayer.Console">
+      <Dependencies>
+        <string>Microsoft.Extensions.Configuration</string>
+        <string>Microsoft.Extensions.Configuration.Json</string>
+        <string>ReactiveUI</string>
+        <string>Serilog.Settings.Configuration</string>
+        <string>Serilog.Sinks.Debug</string>
+        <string>Serilog.Sinks.File</string>
+        <string>SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider</string>
+        <string>SilverAudioPlayer.Any.MetadataSource.File</string>
+        <string>SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</string>
+        <string>SilverAudioPlayer.Any.PlayListReader.M3U</string>
+        <string>SilverAudioPlayer.Any.PlayListReader.SPL</string>
+        <string>SilverAudioPlayer.Any.PlayProvider.NAudio</string>
+        <string>SilverAudioPlayer.Any.PlayStreamProvider.VideoLib</string>
+        <string>SilverAudioPlayer.Core</string>
+        <string>SilverAudioPlayer.Linux.MPRIS</string>
+        <string>SilverAudioPlayer.Linux.PlatformHelper.Linux</string>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Console.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="ClangSharp">
+      <Dependencies>
+        <string>ClangSharp.Interop</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/ClangSharp.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="ClangSharp.Interop">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/ClangSharp.Interop.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="FuzzySharp">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/FuzzySharp.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.Configuration">
+      <Dependencies>
+        <string>Microsoft.Extensions.Configuration.Abstractions</string>
+        <string>Microsoft.Extensions.Primitives</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.Configuration.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.Configuration.Abstractions">
+      <Dependencies>
+        <string>Microsoft.Extensions.Primitives</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.Configuration.Abstractions.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.Configuration.Binder">
+      <Dependencies>
+        <string>Microsoft.Extensions.Configuration.Abstractions</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.Configuration.Binder.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.Configuration.FileExtensions">
+      <Dependencies>
+        <string>Microsoft.Extensions.Configuration</string>
+        <string>Microsoft.Extensions.Configuration.Abstractions</string>
+        <string>Microsoft.Extensions.FileProviders.Abstractions</string>
+        <string>Microsoft.Extensions.FileProviders.Physical</string>
+        <string>Microsoft.Extensions.Primitives</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.Configuration.FileExtensions.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.Configuration.Json">
+      <Dependencies>
+        <string>Microsoft.Extensions.Configuration</string>
+        <string>Microsoft.Extensions.Configuration.Abstractions</string>
+        <string>Microsoft.Extensions.Configuration.FileExtensions</string>
+        <string>Microsoft.Extensions.FileProviders.Abstractions</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.Configuration.Json.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.DependencyModel">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.DependencyModel.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.FileProviders.Abstractions">
+      <Dependencies>
+        <string>Microsoft.Extensions.Primitives</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.FileProviders.Abstractions.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.FileProviders.Physical">
+      <Dependencies>
+        <string>Microsoft.Extensions.FileProviders.Abstractions</string>
+        <string>Microsoft.Extensions.FileSystemGlobbing</string>
+        <string>Microsoft.Extensions.Primitives</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.FileProviders.Physical.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Extensions.FileSystemGlobbing">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Microsoft.Extensions.FileSystemGlobbing.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio">
+      <Dependencies>
+        <string>NAudio.Asio</string>
+        <string>NAudio.Core</string>
+        <string>NAudio.Midi</string>
+        <string>NAudio.Wasapi</string>
+        <string>NAudio.WinMM</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio.Asio">
+      <Dependencies>
+        <string>NAudio.Core</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.Asio.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio.Core">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.Core.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio.Midi">
+      <Dependencies>
+        <string>NAudio.Core</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.Midi.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio.Vorbis">
+      <Dependencies>
+        <string>NAudio.Core</string>
+        <string>NVorbis</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.Vorbis.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio.Wasapi">
+      <Dependencies>
+        <string>NAudio.Core</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.Wasapi.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NAudio.WinMM">
+      <Dependencies>
+        <string>NAudio.Core</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NAudio.WinMM.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NLayer">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NLayer.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NLayer.NAudioSupport">
+      <Dependencies>
+        <string>NAudio.Core</string>
+        <string>NLayer</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NLayer.NAudioSupport.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="NVorbis">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/NVorbis.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog.Settings.Configuration">
+      <Dependencies>
+        <string>Microsoft.Extensions.Configuration.Binder</string>
+        <string>Microsoft.Extensions.DependencyModel</string>
+        <string>Serilog</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Serilog.Settings.Configuration.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog.Sinks.Debug">
+      <Dependencies>
+        <string>Serilog</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Serilog.Sinks.Debug.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog.Sinks.File">
+      <Dependencies>
+        <string>Serilog</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Serilog.Sinks.File.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.ComponentModel.Composition">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/System.ComponentModel.Composition.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Tmds.DBus">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Tmds.DBus.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="CSCore">
+      <Dependencies>
+        <string>Serilog</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/CSCore.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Silver.Composition">
+      <Dependencies>
+        <string>System.ComponentModel.Composition</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Silver.Composition.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayListReader.SPL">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayListReader.SPL.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayProvider.NAudio">
+      <Dependencies>
+        <string>CSCore</string>
+        <string>NAudio</string>
+        <string>NAudio.Vorbis</string>
+        <string>NLayer.NAudioSupport</string>
+        <string>Silver.Composition</string>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.SndFile</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.NAudio.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Core">
+      <Dependencies>
+        <string>Avalonia</string>
+        <string>FuzzySharp</string>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>Swordfish.NET.CollectionsV3</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Core.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Linux.MPRIS">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>Tmds.DBus</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Linux.MPRIS.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Linux.PlatformHelper.Linux">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>Tmds.DBus</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Linux.PlatformHelper.Linux.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverCraft.Shared">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverCraft.Shared.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverCraft.SndFile">
+      <Dependencies>
+        <string>CSCore</string>
+        <string>ClangSharp</string>
+        <string>ClangSharp.Interop</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverCraft.SndFile.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
     <Module Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz">
       <Dependencies>
         <string>MetaBrainz.MusicBrainz</string>
@@ -695,226 +1093,14 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.NAudio">
-      <Dependencies>
-        <string>CSCore</string>
-        <string>NAudio</string>
-        <string>NAudio.Vorbis</string>
-        <string>NLayer.NAudioSupport</string>
-        <string>Silver.Composition</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>SilverCraft.SndFile</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.NAudio.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="ClangSharp">
-      <Dependencies>
-        <string>ClangSharp.Interop</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/ClangSharp.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="ClangSharp.Interop">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/ClangSharp.Interop.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio">
-      <Dependencies>
-        <string>NAudio.Asio</string>
-        <string>NAudio.Core</string>
-        <string>NAudio.Midi</string>
-        <string>NAudio.Wasapi</string>
-        <string>NAudio.WinMM</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio.Asio">
-      <Dependencies>
-        <string>NAudio.Core</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.Asio.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio.Core">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.Core.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio.Midi">
-      <Dependencies>
-        <string>NAudio.Core</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.Midi.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio.Vorbis">
-      <Dependencies>
-        <string>NAudio.Core</string>
-        <string>NVorbis</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.Vorbis.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio.Wasapi">
-      <Dependencies>
-        <string>NAudio.Core</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.Wasapi.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NAudio.WinMM">
-      <Dependencies>
-        <string>NAudio.Core</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NAudio.WinMM.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NLayer">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NLayer.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NLayer.NAudioSupport">
-      <Dependencies>
-        <string>NAudio.Core</string>
-        <string>NLayer</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NLayer.NAudioSupport.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="NVorbis">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/NVorbis.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.ComponentModel.Composition">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/System.ComponentModel.Composition.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="CSCore">
-      <Dependencies>
-        <string>Serilog</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/CSCore.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Silver.Composition">
-      <Dependencies>
-        <string>System.ComponentModel.Composition</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/Silver.Composition.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverCraft.SndFile">
-      <Dependencies>
-        <string>CSCore</string>
-        <string>ClangSharp</string>
-        <string>ClangSharp.Interop</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.NAudio/bin/Release/net8.0/publish/SilverCraft.SndFile.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayListReader.SPL">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayListReader.SPL/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayListReader.SPL.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Linux.PlatformHelper.Linux">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>Tmds.DBus</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Linux.PlatformHelper.Linux/bin/Release/net8.0/publish/SilverAudioPlayer.Linux.PlatformHelper.Linux.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Tmds.DBus">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Linux.PlatformHelper.Linux/bin/Release/net8.0/publish/Tmds.DBus.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Linux.MPRIS">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>Tmds.DBus</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Linux.MPRIS/bin/Release/net8.0/publish/SilverAudioPlayer.Linux.MPRIS.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
     <Module Name="SilverAudioPlayer.Avalonia">
       <Dependencies>
         <string>Avalonia.AvaloniaEdit</string>
         <string>Avalonia.Desktop</string>
         <string>Avalonia.Svg.Skia</string>
         <string>Avalonia.Themes.Fluent</string>
+        <string>Microsoft.Extensions.Configuration</string>
+        <string>Microsoft.Extensions.Configuration.Json</string>
         <string>ReactiveUI</string>
         <string>Serilog.Settings.Configuration</string>
         <string>Serilog.Sinks.Debug</string>
@@ -925,7 +1111,6 @@
         <string>SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP</string>
         <string>SilverAudioPlayer.Any.PlayListReader.M3U</string>
         <string>SilverAudioPlayer.Any.PlayListReader.SPL</string>
-        <string>SilverAudioPlayer.Any.PlayProvider.CSCore</string>
         <string>SilverAudioPlayer.Any.PlayProvider.NAudio</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.JellyFin</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary</string>
@@ -1075,14 +1260,6 @@
       <Dependencies />
       <Files>
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ExCSS.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="FuzzySharp">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/FuzzySharp.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1617,45 +1794,6 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="Microsoft.Extensions.DependencyModel">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Microsoft.Extensions.DependencyModel.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Serilog.Settings.Configuration">
-      <Dependencies>
-        <string>Microsoft.Extensions.DependencyModel</string>
-        <string>Serilog</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Serilog.Settings.Configuration.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Serilog.Sinks.Debug">
-      <Dependencies>
-        <string>Serilog</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Serilog.Sinks.Debug.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Serilog.Sinks.File">
-      <Dependencies>
-        <string>Serilog</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Serilog.Sinks.File.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
     <Module Name="ShimSkiaSharp">
       <Dependencies />
       <Files>
@@ -1764,7 +1902,7 @@
         <string>System.CodeDom</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win/lib/net7.0/System.Management.dll" />
+        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win/lib/net8.0/System.Management.dll" />
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/System.Management.dll" />
       </Files>
       <Links />
@@ -1780,17 +1918,6 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.CSCore">
-      <Dependencies>
-        <string>CSCore</string>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.CSCore.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
     <Module Name="SilverAudioPlayer.Any.Sync">
       <Dependencies>
         <string>Avalonia</string>
@@ -1802,27 +1929,6 @@
       </Dependencies>
       <Files>
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Any.Sync.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Core">
-      <Dependencies>
-        <string>Avalonia</string>
-        <string>FuzzySharp</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>Swordfish.NET.CollectionsV3</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Core.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverCraft.Shared">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverCraft.Shared.dll" />
       </Files>
       <Links />
       <Debug />
