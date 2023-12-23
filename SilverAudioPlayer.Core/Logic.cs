@@ -254,8 +254,18 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             Log.Debug("disposing old player and requesting new one");
 
             Player?.Dispose();
-            Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
-            
+            try
+            {
+                Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
+            }
+            catch(Exception e)
+            {
+                //uhhhhhh
+                Log.Error(e, "EXCEPTION during startplaying");
+                Player?.Dispose();
+                Player = null;
+            }
+
         }
 
         if (Player == null)

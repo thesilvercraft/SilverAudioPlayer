@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using static System.Int64;
@@ -14,6 +15,14 @@ internal sealed class NativeTypeNameAttribute : Attribute
 }
 public static unsafe partial class Methods
 {
+    public const string dllName = "libsndfile";
+
+    public static IntPtr DllImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+    {
+        if (libraryName != dllName) return IntPtr.Zero;
+        return OperatingSystem.IsWindows() ? NativeLibrary.Load("sndfile.dll", assembly, searchPath) : IntPtr.Zero;
+    }
+
     public static unsafe void sfe_copy_data_int(ref sf_private_tag* outfile, ref sf_private_tag* infile, int channels)
     {
         int[]	data =new int[4096] ;
@@ -272,7 +281,6 @@ public static unsafe partial class Methods
     public const uint SF_LOOP_FORWARD = 801;
     public const uint SF_LOOP_BACKWARD = 802;
     public const uint SF_LOOP_ALTERNATING = 803;
-    public const string dllName = "libsndfile.so";
     [DllImport(dllName, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
     [return: NativeTypeName("SNDFILE *")]
     public static extern sf_private_tag* sf_open([NativeTypeName("const char *")] string path, Mode mode, SF_INFO* sfinfo);

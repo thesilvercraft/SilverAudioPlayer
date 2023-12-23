@@ -28,7 +28,23 @@ public class FileMetadata : IMetadata
            catch { }
 
        }
-       var cover= Directory.EnumerateFiles(DirUrl, "cover*",
+        var txtfiles = Directory.EnumerateFiles(DirUrl, Path.GetFileNameWithoutExtension(FileUrl) + ".txt",
+            new EnumerationOptions()
+            { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true, IgnoreInaccessible = true, MaxRecursionDepth = 2 });
+
+        foreach (var possibletxtfile in txtfiles)
+        {
+            if (!System.IO.File.Exists(possibletxtfile)) continue;
+            try
+            {
+                
+                Lyrics = System.IO.File.ReadAllText(possibletxtfile);
+                break;
+            }
+            catch { }
+
+        }
+        var cover= Directory.EnumerateFiles(DirUrl, "cover*",
            new EnumerationOptions()
                { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true, MaxRecursionDepth=2});
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using CSCore;
 using sndfile;
 
@@ -9,11 +10,17 @@ public class SndFileWaveStream : ISampleSource
     private unsafe sf_private_tag* infile;
     private SF_VIRTUAL_IO IO;
     SF_INFO info = new();
-
+    public static bool ResolverIsSet = false;   
     public unsafe SndFileWaveStream(Stream s)
     {
         SfVirtualStreamHelper helper = new(s);
         IO= helper.Virtual;
+        if (!ResolverIsSet)
+        {
+            ResolverIsSet = true;
+            NativeLibrary.SetDllImportResolver(typeof(Methods).Assembly, Methods.DllImportResolver);
+        }
+
         infile = Methods.sf_open_virtual(ref IO, Mode.Read, ref info,  0);
         WaveFormat = new WaveFormat(info.samplerate, 32, info.channels);
         Length = info.frames* info.channels;
