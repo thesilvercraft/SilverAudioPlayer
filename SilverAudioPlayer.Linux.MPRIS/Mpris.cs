@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace SilverAudioPlayer.Linux.MPRIS
 {
     [Export(typeof(IMusicStatusInterface))]
-    public class Mpris :IMusicStatusInterface, /*IMediaPlayer2,*/IPlayer
+    public class Mpris :IMusicStatusInterface, IMediaPlayer2,IPlayer
     {
         public event Action<PropertyChanges> OnPropertiesChanged;
         public bool IsStarted => _IsStarted;
@@ -228,8 +228,8 @@ Volume = Env?.GetVolume()/100d ?? 100d
                 CanRaise = false,
                 DesktopEntry = "silveraudioplayer",
                 Identity = "SilverAudioPlayer",
-                SupportedUriSchemes = new []{"http","https"},
-                SupportedMimeTypes = new []{"audio/ogg","audio/flac"},
+                SupportedUriSchemes = ["http","https"],
+                SupportedMimeTypes = ["audio/ogg","audio/flac"],
             });
         }
 

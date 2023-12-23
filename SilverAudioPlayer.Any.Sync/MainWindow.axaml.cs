@@ -56,7 +56,7 @@ public partial class MainWindow : Window
         this.env = env;
     }
 
-    public string[] BlockList = new[] { "/boot/efi", "/boot" };
+    public string[] BlockList = ["/boot/efi", "/boot"];
     public void RefreshDevices()
     {
         if (OperatingSystem.IsWindows())

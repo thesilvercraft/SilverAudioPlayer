@@ -308,7 +308,7 @@ public partial class Settings : Window
             TransparencyDown.SelectedItem.ToString() ??
             WindowTransparencyLevel.AcrylicBlur.ToString()));
         WindowExtensions.OnStyleChange.Invoke(this,
-            new(null, new[] { (WindowTransparencyLevel)TransparencyDown.SelectedItem }, null));
+            new(null, [(WindowTransparencyLevel)TransparencyDown.SelectedItem], null));
     }
 
     private void RegisterClick(object? sender, RoutedEventArgs e)
@@ -447,13 +447,13 @@ public partial class Settings : Window
 public class SettingsDC : ReactiveObject
 {
     public WindowTransparencyLevel[] TransparencyTypes { get; set; } =
-    {
+    [
         WindowTransparencyLevel.None, WindowTransparencyLevel.Transparent, WindowTransparencyLevel.Blur,
         WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.Mica
-    };
+    ];
 
     public KnownColor[] AutoSuggestColours { get; set; } =
-    {
+    [
         KnownColor.None, KnownColor.Transparent, KnownColor.Black, KnownColor.Navy, KnownColor.DarkBlue,
         KnownColor.MediumBlue, KnownColor.Blue, KnownColor.DarkGreen, KnownColor.Green, KnownColor.Teal,
         KnownColor.DarkCyan, KnownColor.DeepSkyBlue, KnownColor.DarkTurquoise, KnownColor.SilverCraftBlue,
@@ -486,7 +486,7 @@ public class SettingsDC : ReactiveObject
         KnownColor.BlanchedAlmond, KnownColor.PapayaWhip, KnownColor.LavenderBlush, KnownColor.SeaShell,
         KnownColor.Cornsilk, KnownColor.LemonChiffon, KnownColor.FloralWhite, KnownColor.Snow, KnownColor.Yellow,
         KnownColor.LightYellow, KnownColor.Ivory, KnownColor.White
-    };
+    ];
 
     public ObservableCollection<InfoPRecord> Items { get; set; }
     public string ProductName { get; internal set; }

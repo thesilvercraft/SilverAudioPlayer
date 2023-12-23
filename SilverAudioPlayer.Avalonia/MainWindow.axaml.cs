@@ -216,13 +216,13 @@ public partial class MainWindow : Window
                                     {
                                         paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
                                         paint.ColorFilter =
-                                            SKColorFilter.CreateColorMatrix(new float[]
-                                            {
+                                            SKColorFilter.CreateColorMatrix(
+                                            [
                                                 1, 0, 0, 0, 0,
                                                 0, 1, 0, 0, 0,
                                                 0, 0, 1, 0, 0,
                                                 0, 0, 0, config.AlbumArtTransparency, 0
-                                            });
+                                            ]);
                                         canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
                                     }
 

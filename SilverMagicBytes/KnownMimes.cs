@@ -61,21 +61,21 @@ public class MKVMime : MimeType{
 }
 public class M3UMime : PlaylistMime
 {
-    public M3UMime() : base("application/mpegurl", fileExtensions: new[] {".m3u",".m3u8"}, alternativeTypes:new[]{"application/x-mpegurl","audio/mpegurl","audio/x-mpegurl","application/vnd.apple.mpegurl", "application/vnd.apple.mpegurl.audio", "application/vnd.apple.mpegurl","audio/mpegurl" })
+    public M3UMime() : base("application/mpegurl", fileExtensions: [".m3u",".m3u8"], alternativeTypes:["application/x-mpegurl","audio/mpegurl","audio/x-mpegurl","application/vnd.apple.mpegurl", "application/vnd.apple.mpegurl.audio", "application/vnd.apple.mpegurl","audio/mpegurl"])
     {
 
     }
 }
 public class SPLMime : PlaylistMime
 {
-    public SPLMime() : base("application/silverplaylist+br", fileExtensions: new[] {".spl.br"})
+    public SPLMime() : base("application/silverplaylist+br", fileExtensions: [".spl.br"])
     {
 
     }
 }
 public class SVGMime : MimeType
 {
-    public SVGMime() : base("image/svg+xml", fileExtensions: new[] {".svg"})
+    public SVGMime() : base("image/svg+xml", fileExtensions: [".svg"])
         {
 
     }
@@ -83,59 +83,59 @@ public class SVGMime : MimeType
 
 public class Mp3Mime : CompressedAudioMime
 {
-    public Mp3Mime() : base("audio/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".mp3" })
+    public Mp3Mime() : base("audio/mpeg", CompressionType.Lossy, Array.Empty<string>(), [".mp3"])
     {
     }
 }
 public class Mp4Mime : CompressedVideoMime
 {
-    public Mp4Mime() : base("video/mp4", CompressionType.Lossy, new[] { "audio/mp4" }, new[] { ".mp4" })
+    public Mp4Mime() : base("video/mp4", CompressionType.Lossy, ["audio/mp4"], [".mp4"])
     {
     }
 }
 public class MpegMime : CompressedVideoMime
 {
-    public MpegMime() : base("video/mpeg", CompressionType.Lossy, new[] { "audio/mp2;" }, new[] { ".ts", ".tsv", ".tsa", ".mpg", ".mpeg" })
+    public MpegMime() : base("video/mpeg", CompressionType.Lossy, ["audio/mp2;"], [".ts", ".tsv", ".tsa", ".mpg", ".mpeg"])
     {
     }
 }
 public class Mp2Mime : CompressedVideoMime
 {
-    public Mp2Mime() : base("video/mpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".m2p", ".vob", ".mpg", ".mpeg" })
+    public Mp2Mime() : base("video/mpeg", CompressionType.Lossy, Array.Empty<string>(), [".m2p", ".vob", ".mpg", ".mpeg"])
     {
     }
 }
 public class AiffMime : CompressedAudioMime
 {
-    public AiffMime() : base("audio/aiff", CompressionType.Lossy, new[] { "audio/x-aiff" }, new[] { ".aiff", ".aif", ".aifc" })
+    public AiffMime() : base("audio/aiff", CompressionType.Lossy, ["audio/x-aiff"], [".aiff", ".aif", ".aifc"])
     {
     }
 }
 public class FlacMime : CompressedAudioMime
 {
-    public FlacMime() : base("audio/flac", CompressionType.Lossless, Array.Empty<string>(), new[] { ".flac" })
+    public FlacMime() : base("audio/flac", CompressionType.Lossless, Array.Empty<string>(), [".flac"])
     {
     }
 }
 public class WAVMime : AudioMime
 {
     public WAVMime() : base("audio/wave",
-        new[] { "audio/vnd.wave", "audio/wav", "audio/x-wav" },
-        new[] { ".wav" })
+        ["audio/vnd.wave", "audio/wav", "audio/x-wav"],
+        [".wav"])
     {
     }
 }
 
 public class OGGMime : CompressedAudioMime
 {
-    public OGGMime() : base("audio/vorbis", CompressionType.Lossy, new[] { "audio/x-vorbis+ogg", "audio/ogg", "application/ogg" }, new[] { ".ogg" })
+    public OGGMime() : base("audio/vorbis", CompressionType.Lossy, ["audio/x-vorbis+ogg", "audio/ogg", "application/ogg"], [".ogg"])
     {
     }
 }
 
 public class AACMime : CompressedAudioMime
 {
-    public AACMime() : base("audio/aac", CompressionType.Lossy, Array.Empty<string>(), new[] { ".aac" })
+    public AACMime() : base("audio/aac", CompressionType.Lossy, Array.Empty<string>(), [".aac"])
     {
     }
 }
@@ -144,21 +144,21 @@ public class AACMime : CompressedAudioMime
 
 public class MidMime : AudioMime
 {
-    public MidMime() : base("audio/midi", new[] { "audio/x-midi" }, new[] { ".mid", ".midi" })
+    public MidMime() : base("audio/midi", ["audio/x-midi"], [".mid", ".midi"])
     {
     }
 }
 
 public class PngMime : CompressedImageMime
 {
-    public PngMime() : base("image/png", CompressionType.Lossless, Array.Empty<string>(), new[] { ".png" })
+    public PngMime() : base("image/png", CompressionType.Lossless, Array.Empty<string>(), [".png"])
     {
     }
 }
 
 public class JPGMime : CompressedImageMime
 {
-    public JPGMime() : base("image/jpeg", CompressionType.Lossy, Array.Empty<string>(), new[] { ".jpg", ".jpeg" })
+    public JPGMime() : base("image/jpeg", CompressionType.Lossy, Array.Empty<string>(), [".jpg", ".jpeg"])
     {
     }
 }
@@ -206,7 +206,7 @@ public class ImageMime : MimeType
 
 public class OctetMime : MimeType
 {
-    public OctetMime() : base("application/octet-stream", new[] { "application/binary" }, new []{".bin"})
+    public OctetMime() : base("application/octet-stream", ["application/binary"], [".bin"])
     {
     }
 }

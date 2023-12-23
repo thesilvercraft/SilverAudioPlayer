@@ -7,14 +7,14 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.VideoLib;
 [Export(typeof(IPlayStreamProvider))]
 public class VideoLibraryPlayStreamProvider :IPlayStreamProviderThatSupportsUrls
 {
-    private string[] Domains = new[]
-    {
+    private string[] Domains =
+    [
         "www.youtube.com","youtube.com","yewtu.be", "vid.puffyan.us", "inv.riverside.rocks", "invidio.xamh.de", "y.com.sb",
         "invidious.sethforprivacy.com","yt.artemislena.eu","invidious.tiekoetter.com","invidious.flokinet.to",
         "inv.bp.projectsegfau.lt","inv.odyssey346.dev","invidious.snopyta.org","invidious.baczek.me",
         "invidious.drivet.xyz","yt.funami.tech","invidious.slipfox.xyz","invidious.dhusch.de","invidious.weblibre.org",
         "invidious.esmailelbob.xyz","invidious.namazso.eu","invidious.privacydev.net"
-    };
+    ];
 
     public void Use(IPlayStreamProviderListener env)
     {

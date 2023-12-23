@@ -272,7 +272,7 @@ public static unsafe partial class Methods
     public const uint SF_LOOP_FORWARD = 801;
     public const uint SF_LOOP_BACKWARD = 802;
     public const uint SF_LOOP_ALTERNATING = 803;
-    public const string dllName = "libsndfile.so.1.0.37";
+    public const string dllName = "libsndfile.so";
     [DllImport(dllName, CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
     [return: NativeTypeName("SNDFILE *")]
     public static extern sf_private_tag* sf_open([NativeTypeName("const char *")] string path, Mode mode, SF_INFO* sfinfo);

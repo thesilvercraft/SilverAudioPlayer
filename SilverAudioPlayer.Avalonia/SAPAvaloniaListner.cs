@@ -184,12 +184,12 @@ SilverAudioPlayer.Avalonia
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ";
 
-    public string[] KnownConfigFileLocations => new[]
-    {
+    public string[] KnownConfigFileLocations =>
+    [
         ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "SilverCraftAvaloniav1Shared", "dotfile.json")
-    };
+    ];
 
     public IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)
     {

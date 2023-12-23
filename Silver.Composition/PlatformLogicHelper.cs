@@ -129,7 +129,7 @@ public static class PlatformLogicHelper
                 {
                     field.SetValue(a,
                         typeof(List<>).MakeGenericType(field.PropertyType.GetGenericArguments()[0])
-                            .GetConstructor(new[] { res.GetType() }).Invoke(new[] { res }));
+                            .GetConstructor([res.GetType()]).Invoke([res]));
                 }
                 else
                 {

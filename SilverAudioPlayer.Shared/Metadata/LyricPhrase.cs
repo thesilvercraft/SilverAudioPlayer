@@ -12,16 +12,16 @@ public class LyricPhrase
     public string Content { get; set; }
     public override string ToString()
     {
-        return $"{new _DONOTUSEINTERNALTIMESPAN(TimeStampInMilliSeconds)} {Content}";
+        return $"{new LyricTimeSpan(TimeStampInMilliSeconds)} {Content}";
     }
 }
-public class _DONOTUSEINTERNALTIMESPAN
+public class LyricTimeSpan
 {
-    public _DONOTUSEINTERNALTIMESPAN(double milliseconds)
+    public LyricTimeSpan(double milliseconds)
     {
         Milliseconds = milliseconds;
     }
-    public _DONOTUSEINTERNALTIMESPAN(double minute, double second, double hundredth)
+    public LyricTimeSpan(double minute, double second, double hundredth)
     {
         Milliseconds = hundredth * 10 + second * 1000 + minute * 60000;
     }

@@ -3,23 +3,22 @@ using System.Diagnostics;
 using Audioz_playerZ;
 using CSCore.SoundOut;
 using NAudio.Wave;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
-
 namespace SilverAudioPlayer.NAudio;
-
-
 
 [Export(typeof(IPlay))]
 public class WaveFilePlayer : IDisposable, IPlayStreams
 {
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
-
+    ILogger? logger;
     public WaveFilePlayer()
     {
         Debug.WriteLine("NewInstance of WaveFilePlayer");
+        logger = Logger.GetLogger(typeof(WaveFilePlayer));
     }
 
     static WaveFilePlayer()
@@ -28,6 +27,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     }
     public void InitBackEnd(byte volume)
     {
+            logger?.Debug("initing backend {Windows}",OperatingSystem.IsWindows());
+
 #if CSCore
         if (OperatingSystem.IsWindows())
         {
@@ -56,7 +57,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     {
         Debug.WriteLine("Disposing WaveFilePlayer");
         GC.SuppressFinalize(this);
-        foreach(var file in FilesToCleanUp.ToArray())
+        foreach (var file in FilesToCleanUp.ToArray())
         {
             File.Delete(file);
             FilesToCleanUp.Remove(file);
@@ -67,8 +68,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
             outputDevice = null;
         }
         audioFile?.Dispose();
-
-        if (LoadedStream is {CanRead:true})
+        logger = null;
+        if (LoadedStream is { CanRead: true })
         {
             LoadedStream.Dispose();
         }
@@ -105,7 +106,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     {
         if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
         //this should not happen
-        Debug.WriteLine("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS");
+        logger?.Error("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS :(");
         return TimeSpan.Zero;
     }
 
@@ -154,26 +155,28 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     public event EventHandler<object> TrackPause;
     public WrappedStream? LoadedWrappedStream { get; set; }
     public Stream? LoadedStream { get; set; }
-    readonly List<string> FilesToCleanUp=[];
+    readonly List<string> FilesToCleanUp = [];
     public void LoadStream(WrappedStream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
         if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
         {
-            var a = Path.GetTempPath()+"Sap"+Random.Shared.Next()+".webm";
-            var b = Path.GetTempPath()+"Sap"+Random.Shared.Next()+".opus";
+            logger?.Debug("Doing silly stuff for mkv");
+
+            var a = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".webm";
+            var b = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".opus";
             using var fileWrite = File.OpenWrite(a);
-            stream.Use(x=>x.CopyTo(fileWrite));
+            stream.Use(x => x.CopyTo(fileWrite));
             fileWrite.Close();
             FilesToCleanUp.Add(a);
             FilesToCleanUp.Add(b);
-            var c =Process.Start("/usr/bin/mkvextract",$"{a} tracks 0:{b}");
+            var c = Process.Start("/usr/bin/mkvextract", $"{a} tracks 0:{b}");
             c.WaitForExit();
             File.Delete(a);
             FilesToCleanUp.Remove(a);
-            if(c.ExitCode==0)
+            if (c.ExitCode == 0)
             {
-                stream=new WrappedFileStream(b);
+                stream = new WrappedFileStream(b);
             }
             else
             {
@@ -192,10 +195,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
             Decoder = "NAudio.Wave.AudioFileReader";
             audioFile = new AudioFileReader(wf.URL);
         }
+        logger?.Information("Using {Decoder}", Decoder);
 
         if (outputDevice == null)
         {
-            Debug.WriteLine("initing backend");
             InitBackEnd(Volume);
             outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
         }

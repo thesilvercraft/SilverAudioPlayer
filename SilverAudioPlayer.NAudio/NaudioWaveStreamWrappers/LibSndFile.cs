@@ -10,11 +10,8 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 [Export(typeof(INaudioWaveStreamWrapper))]
 public class LibSndFile : INaudioWaveStreamWrapper
 {
-    public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = new List<MimeType> { KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.AiffMime,  KnownMimes.OGGMime  };
+    public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = new List<MimeType> { KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.AiffMime,  KnownMimes.OGGMime, KnownMimes.MP3Mime   };
 
-    public WaveStream GetStream(Stream stream)
-    {
-        return new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
-    }
+    public WaveStream GetStream(Stream stream) => new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
 
 }

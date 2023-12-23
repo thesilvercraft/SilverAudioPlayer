@@ -217,12 +217,12 @@ public class ConsoleEnviroment : IHaveConfigFilesWithKnownLocations, IFullPlayer
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ";
 
-    public string[] KnownConfigFileLocations => new[]
-    {
+    public string[] KnownConfigFileLocations =>
+    [
         ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "SilverCraftAvaloniav1Shared", "dotfile.json")
-    };
+    ];
 
     public IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)
     {
@@ -365,6 +365,7 @@ public class App
         }
         Logic.ProcessFiles(args);
         System.Console.WriteLine("Ayo");
+        System.Console.Clear();
         Logic.MainWindow_Opened(env);
         Logic.StartPlaying();
         while (Logic.Player?.GetPlaybackState() != PlaybackState.Stopped)
@@ -385,7 +386,7 @@ public class App
                 System.Console.SetCursorPosition(0, 0);
 
                 System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():g}/{Logic.Player?.Length():g} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
-                if (context?.CurrentSong?.Metadata?.SyncedLyrics is IList<LyricPhrase> lyrics)
+                if (context?.CurrentSong?.Metadata?.SyncedLyrics is IList<LyricPhrase> lyrics && lyrics.Count > 1)
                 {
                     int last = 0;
                     for (int i = 0; i < lyrics.Count; i++)
@@ -400,9 +401,21 @@ public class App
                             break;
                         }
                     }
-                    if (last > 3)
+                     if (last > 4)
+                    {
+                        System.Console.WriteLine(lyrics[last - 4].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 3].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
+                    }
+                    else if (last > 3)
                     {
                         System.Console.WriteLine(lyrics[last - 3].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
+                    }
+                     else if (last > 2)
+                    {
                         System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
                         System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
                     }
@@ -410,8 +423,22 @@ public class App
                     {
                         System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
                     }
-                    System.Console.WriteLine(lyrics[last]);
-                    if (last < lyrics.Count - 1)
+                    System.Console.WriteLine("\x1b[96m" + lyrics[last].ToString().ReplaceLineEndings("") + "\u001b[0m");
+                    if (last < lyrics.Count - 3)
+                    {
+                        System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last + 2].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last + 3].ToString().ReplaceLineEndings(""));
+
+
+                    }
+                    if (last < lyrics.Count - 2)
+                    {
+                        System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
+                        System.Console.WriteLine(lyrics[last + 2].ToString().ReplaceLineEndings(""));
+
+                    }
+                    else if (last < lyrics.Count - 1)
                     {
                         System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
                     }
@@ -434,6 +461,12 @@ public class App
                             break;
                         case ConsoleKey.LeftArrow:
                             env.SetPosition(env.GetPosition() - 5);
+                            break;
+                        case ConsoleKey.OemComma:
+                            env.Previous();
+                            break;
+                        case ConsoleKey.OemPeriod:
+                            env.Next();
                             break;
                         case ConsoleKey.UpArrow:
                             env.SetVolume((byte)Math.Clamp(env.GetVolume() + 5, 0, 100));
