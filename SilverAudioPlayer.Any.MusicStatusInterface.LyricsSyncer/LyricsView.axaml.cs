@@ -72,7 +72,7 @@ public partial class LyricsView : Window
             b = true;
             if (d.ContainsKey(CurrentLyric))
             {
-                box.Text += $"{new _DONOTUSEINTERNALTIMESPAN(_interfaceListener.GetPosition() *1000)} {d[CurrentLyric].Text}\n";
+                box.Text += $"{new LyricTimeSpan(_interfaceListener.GetPosition() *1000)} {d[CurrentLyric].Text}\n";
                 d[CurrentLyric].Foreground = red;
                 CurrentLyric++;
             }
