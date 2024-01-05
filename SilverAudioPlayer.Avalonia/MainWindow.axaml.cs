@@ -125,6 +125,8 @@ public partial class MainWindow : Window
         Closing += MainWindow_Closing;
         Opened += MainWindow_Opened;
         Settings.Click += Settings_Click;
+        CommandMenu.Click += CommandMenuClick;
+
         mainListBox.PointerMoved += TreeView_PointerMoved;
         mainListBox.PointerReleased += TreeView_PointerReleased;
         mainListBox.PointerPressed += TreeView_PointerPressed1;
@@ -355,13 +357,19 @@ public partial class MainWindow : Window
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-     
+//HotKeyManager.SetHotKey(openCommandMenu, new KeyGesture(Key.P, KeyModifiers.Control | KeyModifiers.Shift));
         this.DoAfterInitTasksF(options: new()
         {
             SetBackground = false,
             SetTransparency = true,
             SetFontFamily = true,
         }, followOptionsOnCall:false);
+    }
+
+    private void CommandMenuClick(object? sender, RoutedEventArgs e)
+    {
+        CommandPalette p=new();
+        p.Show();
     }
 
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)

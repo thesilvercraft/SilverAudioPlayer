@@ -32,7 +32,7 @@ namespace SilverAudioPlayer.Avalonia
         {
             if(CapBox.SelectedItem != null)
             {
-                Selected = (IPlayProvider)(((InfoPRecord)CapBox.SelectedItem).Item);
+                Selected = (IPlayProvider)((InfoPRecord)CapBox.SelectedItem).Item;
                 Close();
             }
         }

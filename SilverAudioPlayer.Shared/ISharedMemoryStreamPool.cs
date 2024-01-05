@@ -1,8 +1,12 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Security.Cryptography;
 using Serilog;
 
 namespace SilverAudioPlayer.Shared;
+
 /// <summary>
 /// A stream pool, a hashtable containing streams and reliance on those streams
 /// </summary>
@@ -87,7 +91,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
             Reliances.Remove(reliance.SharedStreamId);
             if (SharedStreams.FirstOrDefault(x => x.SharedStreamId == reliance.SharedStreamId) is not
                 { } sharedStream) return;
-            _logger?.Debug("return new {RelianceSharedStreamId}", reliance.SharedStreamId);
+            _logger?.Debug("remove str {RelianceSharedStreamId}", reliance.SharedStreamId);
             sharedStream.Stream.Dispose();
         }
     }

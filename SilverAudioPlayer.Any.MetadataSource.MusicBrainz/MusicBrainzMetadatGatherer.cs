@@ -3,11 +3,23 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MetaBrainz.MusicBrainz;
+using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 [Export(typeof(IAdditionalMetadataGatherer))]
 public class MusicBrainzMetadatGatherer : IAdditionalMetadataGatherer
 {
-    
+    public string Name =>  "MusicBrainz metadata gatherer";
+
+    public string Description => "";
+
+    public WrappedStream? Icon => null;
+
+    public Version? Version =>null;
+
+    public string Licenses => "";
+
+    public List<Tuple<Uri, URLType>>? Links => null;
+
     public IMetadata? GatherAdditionalMetadata(IMetadataCombo original)
     {
         try

@@ -11,11 +11,15 @@ public interface IPlayStreams : IPlay
     void LoadStream(WrappedStream stream);
     public IReadOnlyList<MimeType>? SupportedMimes { get; }
 }
-
+[Obsolete("SilverAudioPlayer doesn't make use of this yet")]
 public interface IPlayStreamsWithConfidence : IPlayStreams
 {
+    [Obsolete("SilverAudioPlayer doesn't make use of this yet")]
+
     public Confidence CanPlayStream(WrappedStream stream);
 }
+[Obsolete("SilverAudioPlayer doesn't make use of this yet")]
+
 public enum Confidence : byte
 {
     /// <summary>
@@ -35,10 +39,11 @@ public enum Confidence : byte
     /// </summary>
     Confident
 }
+[Obsolete("SilverAudioPlayer doesn't make use of this yet")]
 public interface IPlayLancer : IPlayStreams
 {
+    [Obsolete("SilverAudioPlayer doesn't make use of this yet")]
     bool EnqueueNextStream(WrappedStream stream);
-
 }
 public interface IPlay : IDisposable
 {
@@ -65,32 +70,56 @@ public interface IPlay : IDisposable
     /// <summary>
     ///     Returns the count of how many channels this audio file has
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A number that is larger than 0</returns>
     uint? ChannelCount();
 
     /// <summary>
     ///     Sets the volume level of the audio player.
     /// </summary>
-    /// <param name="volume">The volume level, a byte ranging from 1-100.</param>
+    /// <param name="volume">The volume level, a byte ranging from 0-100.</param>
     void SetVolume(byte volume);
 
     /// <summary>
     ///     Gets the position of the audio player.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A timespan with the current position of the player</returns>
     TimeSpan GetPosition();
-
+    /// <summary>
+    /// Sets the position of the player
+    /// </summary>
+    /// <param name="position">The desired position</param>
     void SetPosition(TimeSpan position);
+    /// <summary>
+    /// Gets the playback state of the player
+    /// </summary>
+    /// <returns>the playback state of the player</returns>
 
     PlaybackState? GetPlaybackState();
 
+    /// <summary>
+    /// Gets the length of the currently playing track
+    /// </summary>
+    /// <returns>the length of the currently playing track or null if its unknown or a live stream</returns>
     TimeSpan? Length();
+    /// <summary>
+    /// Gets the sample rate of the currently playing track (if applicable)
+    /// </summary>
+    /// <returns>the sample rate or null</returns>
 
     long? GetSampleRate();
-
+    /// <summary>
+    /// Gets the bit depth of the currently playing track (if applicable)
+    /// </summary>
+    /// <returns>the bit depth or null</returns>
     uint? GetBitsPerSample();
+    /// <summary>
+    /// Event which should be invoked when the track is stopped or reaches the end
+    /// </summary>
 
     event EventHandler<object> TrackEnd;
+    /// <summary>
+    /// Event which should be invoked when the player is paused
+    /// </summary>
 
     event EventHandler<object> TrackPause;
 }

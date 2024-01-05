@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GenHTTP.Core" Version="7.0.0" />
+    <PackageReference Include="GenHTTP.Core" Version="8.0.0" />
     <PackageReference Include="GoogleCast" Version="1.7.0" />
   </ItemGroup>
 

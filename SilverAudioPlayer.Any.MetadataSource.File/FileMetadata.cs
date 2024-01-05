@@ -21,7 +21,7 @@ public class FileMetadata : IMetadata
            if (!System.IO.File.Exists(possiblelrcfile)) continue;
            try
            {
-               var s = global::Opportunity.LrcParser.Lyrics.Parse(System.IO.File.ReadAllText(possiblelrcfile));
+               var s = Opportunity.LrcParser.Lyrics.Parse(System.IO.File.ReadAllText(possiblelrcfile));
                SyncedLyrics = s.Lyrics.Lines.Select(x => new LyricPhrase((int)(x.Timestamp.Ticks / TimeSpan.TicksPerMillisecond), x.Content + "\n")).ToList();
                break;
            }

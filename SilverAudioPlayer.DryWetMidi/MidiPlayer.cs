@@ -114,7 +114,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
         "A player that plays MIDIs implemented with DryWetMidi (https://github.com/melanchall/drywetmidi)";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly,
-        "SilverAudioPlayer.Win.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+        "SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi.DryWetMidiLogo.png");
 
     public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
 
@@ -170,7 +170,7 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
 
     public bool CanPlayFile(WrappedStream stream)
     {
-        return stream.MimeType == KnownMimes.MidMime;
+        return OperatingSystem.IsWindows() &&stream.MimeType == KnownMimes.MidMime;
     }
 
     public IPlay? GetPlayer(WrappedStream stream)

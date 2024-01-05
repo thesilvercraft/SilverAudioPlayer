@@ -75,7 +75,7 @@ public partial class Settings : Window
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
         List<ICodeInformation> info =
         [
-            mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).CreditInformation
+            mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).PluginCodeInformation
         ];
         var ir = GetInfoRecords(info);
         _settingsDc = new SettingsDC()
@@ -159,7 +159,7 @@ public partial class Settings : Window
     }
 
 
-    public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
+    public void ElementDoubleTapped(object _, TappedEventArgs args)
     {
         var y = (InfoPRecord?)CapBox.SelectedItem;
         ShowElementActionWindow(y, mainWindow);

@@ -41,10 +41,6 @@ public class M3UPlaylistParser : IPlaylistReader
         }
         else
         {
-            /* if (!relF.StartsWith(Path.DirectorySeparatorChar)) //Apparently not needed?
-              {
-                  relF = Path.DirectorySeparatorChar + relF;
-              }*/
             return Path.GetFullPath(Path.Combine(parent, relF));
         }
     }
@@ -52,7 +48,6 @@ public class M3UPlaylistParser : IPlaylistReader
     public bool TryParse(WrappedStream stream, out IPlaylist? playlist)
     {
         playlist = null;
-        //TODO: if url cannot be parsed without telling dotnet that it's a relative url try seeing a file exists at that location
         if (SupportedMimes.Contains((stream.MimeType)))
         {
             string? parentfolder = null;
@@ -76,8 +71,8 @@ public class M3UPlaylistParser : IPlaylistReader
                 }
 
                 var list = new List<ITrack>();
-              //  int length;
-              //  bool lengthset = false;
+                //  int length;
+                //  bool lengthset = false;
                 string? fileTitle = null;
                 while (!reader.EndOfStream)
                 {
@@ -86,7 +81,7 @@ public class M3UPlaylistParser : IPlaylistReader
                     {
                         if (line.StartsWith("#EXTINF:"))
                         {
-                          //  length = 0;
+                            //  length = 0;
                             fileTitle = null;
                             string? numeral = null;
                             bool startreadingname = false;
@@ -108,7 +103,8 @@ public class M3UPlaylistParser : IPlaylistReader
                         }
                         else if (line.StartsWith("#EXTBIN:"))
                         {
-                            throw new NotSupportedException("Embedded binary data is not supported, bailing out");
+                            return false;
+                            // throw new NotSupportedException("Embedded binary data is not supported, bailing out");
                         }
                     }
                     else
@@ -127,10 +123,9 @@ public class M3UPlaylistParser : IPlaylistReader
             }
             finally
             {
-                    s.Dispose();
+                s.Dispose();
             }
         }
-
         return false;
     }
 }

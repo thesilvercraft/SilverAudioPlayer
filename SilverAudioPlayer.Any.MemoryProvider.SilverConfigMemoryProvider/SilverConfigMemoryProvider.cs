@@ -33,12 +33,24 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
                     var loc = GetConfig(obj.Id);
                     var t = obj.Value?.GetType();
                     if (t == null)
+                     {
+                    logger?.Error("type is null");
                         continue;
+                    }
                     var genericType = typeof(CommentXmlConfigReaderNotifyWhenChanged<>).MakeGenericType([t]);
                     if (genericType == null)
+                    {
+                    logger?.Error("generic type is null");
+
                         continue;
+
+                    }
                     var reader = Activator.CreateInstance(genericType);
-                    if (reader == null || reader.GetType() != genericType) continue;
+                    if (reader == null || reader.GetType() != genericType)
+                    {
+                    logger?.Error("reader is null or reader doesnt match generic type");
+continue;
+                    }
                     if (!File.Exists(loc))
                     {
                         genericType.GetMethod("Write")?.Invoke(reader, [obj.Value, loc]);

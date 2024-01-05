@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.MainWindow"
         Title="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary" ExtendClientAreaToDecorationsHint="True">
-    <Grid Margin="25,5,5,5" ColumnDefinitions="*,*" RowDefinitions="25,100,*">
+    <Grid Margin="5,5,5,5" ColumnDefinitions="*,*" RowDefinitions="25,100,*" Name="MainGrid">
             <StackPanel Grid.Row="1" DockPanel.Dock="Top">
                 <Button Click="LoadNewFolder">Add new folder</Button>
                 <Button Click="AddEntireScreen">Add all songs from this screen</Button>

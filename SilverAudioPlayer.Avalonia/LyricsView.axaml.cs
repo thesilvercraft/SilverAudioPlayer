@@ -22,7 +22,11 @@ public partial class LyricsView : Window
     {
         this.mainWindow = mainWindow;
         MainGrid = this.FindControl<Grid>("MainGrid");
-        Dictionary<double, TextBlock> d = new();
+        if (OperatingSystem.IsLinux())
+        {
+            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
+        }
+        Dictionary<double, TextBlock> d = [];
         sv = this.FindControl<ScrollViewer>("sv");
         var red = new SolidColorBrush(Color.FromRgb(230, 255, 0));
         var white = new SolidColorBrush(KnownColor.White.ToColor());
@@ -33,7 +37,7 @@ public partial class LyricsView : Window
         {
             if (Song != mainWindow?.CurrentSong?.Guid)
             {
-                d = new Dictionary<double, TextBlock>();
+                d = [];
                 Song = mainWindow?.CurrentSong?.Guid;
                 StackPanel g = new()
                 {
@@ -45,7 +49,7 @@ public partial class LyricsView : Window
                     Orientation = Orientation.Horizontal,
                 };
                 g.Children.Add(parentPanel);
-                foreach (var lyric in mainWindow.CurrentSong.Metadata.SyncedLyrics)
+                foreach (var lyric in mainWindow?.CurrentSong?.Metadata?.SyncedLyrics ?? [])
                 {
                     TextBlock textLyricBlock = new()
                     {
@@ -74,7 +78,7 @@ public partial class LyricsView : Window
                     {
                         value.Text += lyric.Content;
                     }
-                      if (lyric.Content.EndsWith("\n"))
+                      if (lyric.Content.EndsWith('\n'))
                     {
                         StackPanel newLinePanel = new()
                         {
@@ -85,7 +89,7 @@ public partial class LyricsView : Window
                     }
                 }
             }
-var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
+            var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
             foreach (var x in d)
                 if (x.Key <= pos)
                     x.Value.Foreground = red;

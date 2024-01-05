@@ -26,13 +26,7 @@ public interface ILogicImportable
 
 
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
-    public IEnumerable<ICodeInformation> CreditInformation => GetCreditInformation();
-
-    IEnumerable<ICodeInformation> GetCreditInformation()
-    {
-        List<ICodeInformation> info =
-
-        [
+    public IEnumerable<ICodeInformation> PluginCodeInformation => [
             .. PlayProviders,
             .. MusicStatusInterfaces,
             .. MetadataProviders,
@@ -40,9 +34,10 @@ public interface ILogicImportable
             .. PlayStreamProviders,
             .. PlaylistReaders,
             .. SyncPlugins,
+            .. MetadataGatherers
         ];
-        return info;
-    }
+
+    
 }
 public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 {
@@ -563,6 +558,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
             || x.EndsWith(".webp")
             || x.EndsWith(".spotdl-cache")
             || x.EndsWith(".log")
+            || x.EndsWith(".lrc")
             || x.EndsWith(".accurip")
         ));
     }

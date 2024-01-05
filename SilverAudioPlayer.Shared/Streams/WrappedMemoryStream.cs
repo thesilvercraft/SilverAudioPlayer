@@ -23,6 +23,7 @@ public class FakedMemoryStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
+        if(MemoryArrayHolder.Bytes==null) { throw new NullReferenceException(); }
         var n = (int)(Length - Position);
         if (n > count)
             n = count;
@@ -140,6 +141,7 @@ public class WrappedMemoryStream : WrappedStream, IDisposable
     public override void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Debug.WriteLine("WrappedMemoryStream DISPOSE CALLED");
         Dispose(true);
         GC.SuppressFinalize(this);
         _data.Bytes = null;

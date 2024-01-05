@@ -195,7 +195,7 @@ public class JellyFinHelper
             }).ConfigureAwait(false);
             settings.AccessToken = authenticationResult.AccessToken;
             userDto = authenticationResult.User;
-            var logininfo = System.Text.Json.JsonSerializer.Serialize<LoginInfo>(new LoginInfo(settings.BaseUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
+            var logininfo = System.Text.Json.JsonSerializer.Serialize(new LoginInfo(settings.BaseUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
             var storageProperties = new StorageCreationPropertiesBuilder(
                     CacheFileName + ".other_secrets",
                     CacheDir)

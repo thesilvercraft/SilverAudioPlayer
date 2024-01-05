@@ -1,3 +1,4 @@
+#if CSCore
 using System.Composition;
 using CSCore;
 using NAudio.Wave;
@@ -15,3 +16,4 @@ public class LibSndFile : INaudioWaveStreamWrapper
     public WaveStream GetStream(Stream stream) => new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
 
 }
+#endif

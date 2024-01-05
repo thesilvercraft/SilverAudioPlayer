@@ -12,6 +12,7 @@
             <Setter Property="FontSize" Value="60" />
 			<Setter Property="FontWeight" Value="Bold" />
 			<Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0"/>
 		</Style>
 		<Style Selector="StackPanel">
 			<Setter Property="HorizontalAlignment" Value="Center" />

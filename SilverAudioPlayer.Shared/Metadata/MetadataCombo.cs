@@ -35,11 +35,10 @@ public class MetadataCombo : IMetadataCombo
         }
         DiscNumber = metadata.Select(x => x.DiscNumber).MaxBy(x => x is not null);
     }
-
-    public string? Title => OriginalMetadata.Select(x => x.Title).FirstOrDefault();
-    public string? Artist =>  OriginalMetadata.Select(x => x.Artist).FirstOrDefault();
-    public string? Album => OriginalMetadata.Select(x => x.Album).FirstOrDefault();
-    public string? Genre => OriginalMetadata.Select(x => x.Genre).FirstOrDefault();
+    public string? Title => OriginalMetadata.Select(x => x.Title).FirstOrDefault(x=>x!=null); 
+    public string? Artist =>  OriginalMetadata.Select(x => x.Artist).FirstOrDefault(x=>x!=null);
+    public string? Album => OriginalMetadata.Select(x => x.Album).FirstOrDefault(x=>x!=null);
+    public string? Genre => OriginalMetadata.Select(x => x.Genre).FirstOrDefault(x=>x!=null);
     public int? Year => ((int?)OriginalMetadata.Select(x => x.Year).Where(x => x is not 9999  or null).Average());
     public ulong? Bitrate => OriginalMetadata.Select(x => x.Bitrate).MaxBy(x => x is not null);
     public ulong? SampleRate => OriginalMetadata.Select(x => x.SampleRate).MaxBy(x => x is not null);

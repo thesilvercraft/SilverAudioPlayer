@@ -351,11 +351,7 @@ public class App
 
         if (canProvideMemory)
         {
-            HandleMemoryLogic(Logic.MetadataProviders);
-            HandleMemoryLogic(Logic.MusicStatusInterfaces);
-            HandleMemoryLogic(Logic.WakeLockInterfaces);
-            HandleMemoryLogic(Logic.SyncPlugins);
-            HandleMemoryLogic(Logic.PlaylistReaders);
+             HandleMemoryLogic(((ILogicImportable)Logic).PluginCodeInformation);
         }
         Logic.PlayerEnvironment = env;
         Logic.Log = logger;

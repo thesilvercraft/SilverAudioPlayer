@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.Metad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Core", "SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj", "{481CFB9D-3220-49F3-90DA-3E201E1C36C8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Win.PlayProvider.DryWetMidi", "SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Win.PlayProvider.DryWetMidi.csproj", "{F79F6739-CDB9-4CF8-8658-085053151C9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi", "SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi.csproj", "{F79F6739-CDB9-4CF8-8658-085053151C9F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows.MusicStatusInterface.CAD", "SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj", "{7F0A00DD-CDB5-436D-85EE-84289E14F6A8}"
 EndProject

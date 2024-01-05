@@ -1,22 +1,23 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.Configuration;
 using ReactiveUI;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Silver.Composition;
+using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
-using SilverMagicBytes;
+using SilverCraft.Ekonrensis.Avalonia;
+using SilverCraft.Ekorensis;
+using SilverCraft.Shared;
 using Logger = SilverAudioPlayer.Shared.Logger;
 
 namespace SilverAudioPlayer.Avalonia;
@@ -82,7 +83,8 @@ public class App : Application
     public static Config mwconfig;
     public static CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
     public static string _configPath;
-
+    public static ComandPalette ComandPalette = new();
+    public static MainWindow mainWindow;
     public static GuiSink sink = new();
     public override void OnFrameworkInitializationCompleted()
     {
@@ -160,6 +162,7 @@ public class App : Application
             Logger.GetLoggerFunc += logger.ForContext;
 
             var mw = new MainWindow();
+            mainWindow=mw;
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
             PlatformLogicHelper.SatisfyImports(mw.Logic);
@@ -205,14 +208,76 @@ public class App : Application
                     }
                 }
             }
-
+            void HandleCommandPalette(ICodeInformation item)
+            {
+                if (item is IAmConfigurable configurable)
+                {
+                    ComandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
+                    {
+                        EkonrensisWindow cw = new();
+                        cw.HandleConfiguration(configurable);
+                        cw.Show();
+                    }));
+                }
+                else if (item is IConfigurableUiPlugin configurableUiPlugin)
+                {
+                    ComandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
+                  {
+                      configurableUiPlugin.ConfigureUi(mw.Env);
+                  }));
+                }
+                if (item is IPlayStreamProvider streamProvider)
+                {
+                    ComandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
+                  {
+                      streamProvider.Use(mw.Env);
+                  }));
+                }
+                else if (item is ISyncPlugin syncPlugin)
+                {
+                    ComandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
+                 {
+                     syncPlugin.Use(mw.Env);
+                 }));
+                }
+                if (item is IMusicStatusInterface musicStatusInterface)
+                {
+                    ComandPalette.AddItem(new CommandPaletteItem("Toggle " + item.Name, "toggle " + item.GetType().Name, (x) =>
+                 {
+                     if (musicStatusInterface.IsStarted)
+                     {
+                         musicStatusInterface.StopIPC((IMusicStatusInterfaceListener)x);
+                     }
+                     else
+                     {
+                         musicStatusInterface.StartIPC((IMusicStatusInterfaceListener)x);
+                     }
+                 }));
+                }
+                if (item is IAmOnceAgainAskingYouForYourMemory memoryAsker && mw.Logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
+                {
+                    ComandPalette.AddItem(new CommandPaletteItem("Open config file for " + item.Name, "config file " + item.GetType().Name, (x) =>
+                 {
+                     LaunchActionsWindow launchActionsWindow = new();
+                     var actions = memoryAsker.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
+                             new SAction
+                             {
+                                 ActionName = "Open " + m,
+                                 ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); }
+                             })
+                         .ToList();
+                     launchActionsWindow.AddActions(actions);
+                     launchActionsWindow.Show();
+                 }));
+                }
+            }
             if (canProvideMemory)
             {
-                HandleMemoryLogic(mw.Logic.MetadataProviders);
-                HandleMemoryLogic(mw.Logic.MusicStatusInterfaces);
-                HandleMemoryLogic(mw.Logic.WakeLockInterfaces);
-                HandleMemoryLogic(mw.Logic.SyncPlugins);
-                HandleMemoryLogic(mw.Logic.PlaylistReaders);
+                HandleMemoryLogic(((ILogicImportable)mw.Logic).PluginCodeInformation);
+            }
+            foreach (var item in ((ILogicImportable)mw.Logic).PluginCodeInformation)
+            {
+                HandleCommandPalette(item);
             }
 
             mw.Logic.Log = logger;

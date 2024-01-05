@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
+using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Avalonia;
 
@@ -11,5 +12,6 @@ public partial class LogWindow : Window
         TextBox.Text = App.sink.writer.ToString();
         App.sink.New += (s) => 
             Dispatcher.UIThread.InvokeAsync(()=> TextBox.AppendText(s));
+            this.DoAfterInitTasksF();
     }
 }

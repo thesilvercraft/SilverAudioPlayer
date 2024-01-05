@@ -70,7 +70,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
             {
                 Thread.Sleep(10);
             }
-            return TimeSpan.FromMilliseconds( mp.Length);
+            return TimeSpan.FromMilliseconds(mp.Length);
         }
 
         public void Pause()
@@ -97,7 +97,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 
         public void SetVolume(byte volume)
         {
-            mp.Volume= volume;
+            mp.Volume = volume;
         }
 
         public void Stop()

@@ -1,4 +1,5 @@
 ﻿using System.Composition;
+using System.Runtime.InteropServices;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Multimedia;
 using SilverAudioPlayer.Any.PlayProvider.DryWetMidi;
@@ -16,7 +17,7 @@ public class MidiMetadataProvider : IMetadataProvider
     public string Description => "Metadata Provider that provides MIDI metadata";
 
     public WrappedStream Icon => new WrappedEmbeddedResourceStream(typeof(MidiMetadataProvider).Assembly,
-        "SilverAudioPlayer.Win.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+        "SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi.DryWetMidiLogo.png");
 
     public Version? Version => typeof(MidiMetadataProvider).Assembly.GetName().Version;
 
@@ -37,7 +38,6 @@ public class MidiMetadataProvider : IMetadataProvider
 
     public bool CanGetMetadata(WrappedStream stream)
     {
-        using var s = stream.GetStream();
         return stream.MimeType == KnownMimes.MidMime;
     }
 

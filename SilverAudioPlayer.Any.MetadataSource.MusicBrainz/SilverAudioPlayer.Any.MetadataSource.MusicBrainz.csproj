@@ -11,8 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MetaBrainz.MusicBrainz" Version="5.0.1" />
-      <PackageReference Include="MetaBrainz.MusicBrainz.CoverArt" Version="5.1.0" />
+      <PackageReference Include="MetaBrainz.MusicBrainz" Version="6.0.0" />
+      <PackageReference Include="MetaBrainz.MusicBrainz.CoverArt" Version="6.0.0" />
     </ItemGroup>
 
 </Project>

@@ -6,8 +6,19 @@ using SilverMagicBytes;
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
 [Export(typeof(INaudioWaveStreamWrapper))]
-public class AiffFileReaderWrapper : INaudioWaveStreamWrapper
+public class NAudioAiffFileReaderWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = new List<MimeType> { KnownMimes.AiffMime };
-    public WaveStream GetStream(Stream stream) => new AiffFileReader(stream);
+   public WaveStream GetStream(Stream stream) => new AiffFileReader(stream);
+
 }
+#if CSCore
+[Export(typeof(INaudioWaveStreamWrapper))]
+public class CSCoreAiffFileReaderWrapper : INaudioWaveStreamWrapper
+{
+    public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = new List<MimeType> { KnownMimes.AiffMime };
+
+    public WaveStream GetStream(Stream stream) => new CSCoreReader(new CSCore.Codecs.AIFF.AiffReader(stream));
+
+}
+#endif
