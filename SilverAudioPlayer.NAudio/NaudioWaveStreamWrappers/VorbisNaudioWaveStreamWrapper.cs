@@ -10,6 +10,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 public class VorbisNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = new List<MimeType> { KnownMimes.OGGMime };
-
+    public bool SupportedOnPlatform => true;
     public WaveStream GetStream(Stream stream) => new VorbisWaveReader(stream);
 }

@@ -33,7 +33,9 @@
         <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-        <ProjectReference Include="..\SilverCraft.SndFile\SilverCraft.SndFile.csproj" />
+        <ProjectReference Include="..\SilverCraft.SndFile\SilverCraft.SndFile.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <ProjectReference Include="..\SilverCraft.OpenMPT\SilverCraft.OpenMPT.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
+   
     </ItemGroup>
 
 

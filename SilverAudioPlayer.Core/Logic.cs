@@ -1,5 +1,6 @@
 ﻿using System.Composition;
 using System.Diagnostics;
+using System.Reactive.Linq;
 using FuzzySharp;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
@@ -37,7 +38,7 @@ public interface ILogicImportable
             .. MetadataGatherers
         ];
 
-    
+
 }
 public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 {
@@ -59,7 +60,21 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         };
         PlayerContext.GetVolume ??= () => PlayerContext._Volume;
         PlayerContext.GetLoopType ??= () => PlayerContext._LoopType;
-        PlayerContext.SetLoopType ??= lt => PlayerContext.RaiseAndSetIfChanged(ref PlayerContext._LoopType, lt);
+        PlayerContext.SetLoopType ??= lt =>
+        {
+            PlayerContext.RaiseAndSetIfChanged(ref PlayerContext._LoopType, lt);
+            if (Player != null && Player is ILoop loop)
+            {
+                if (PlayerContext._LoopType == RepeatState.One)
+                {
+                    loop.EnableLoop();
+                }
+                else
+                {
+                    loop.DisableLoop();
+                }
+            }
+        };
         ConcurrentObservableCollection<Song> queue = [];
         playercontext.GetQueue ??= () => queue;
 
@@ -184,10 +199,10 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     }
     public void SetPosition(double seconds) => Player?.SetPosition(TimeSpan.FromSeconds(seconds));
     public void SetPosition(TimeSpan pos) => Player?.SetPosition(pos);
-    
+
     public IPlaylist? TryReadPlaylist(WrappedStream playlistStream)
     {
-        var playlistReader= PlaylistReaders.FirstOrDefault(x => x.SupportedMimes.Contains(playlistStream.MimeType));
+        var playlistReader = PlaylistReaders.FirstOrDefault(x => x.SupportedMimes.Contains(playlistStream.MimeType));
         return playlistReader != null && playlistReader.TryParse(playlistStream, out var playlist) ? playlist : null;
     }
     public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin musicStatusInterface)
@@ -253,7 +268,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             {
                 Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //uhhhhhh
                 Log.Error(e, "EXCEPTION during startplaying");
@@ -275,6 +290,22 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         {
             Player.SetVolume(Volume);
             Player.Play();
+            var informPlayerOfLoop= Task.Run(async () =>
+            {
+                await Task.Delay(600);
+                if (Player != null && Player is ILoop loop)
+                {
+                    if (PlayerContext.LoopType == RepeatState.One)
+                    {
+                        loop.EnableLoop();
+                    }
+                    else
+                    {
+                        loop.DisableLoop();
+                    }
+                }
+            });
+
             SendIfStateIsNotNull();
             if (addevents)
             {
@@ -353,11 +384,11 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         StartPlaying(resetsal: resetsal);
     }
 
-     void ProcessFile(string file, bool oneFile)
+    void ProcessFile(string file, bool oneFile)
     {
-        if (file.EndsWith(".m3u") || file.EndsWith(".m3u8") ||file.EndsWith(".spl.br"))
+        if (file.EndsWith(".m3u") || file.EndsWith(".m3u8") || file.EndsWith(".spl.br"))
         {
-            var playlist=TryReadPlaylist(file.StartsWith("http") ? new WrappedHttpStream(file) : new WrappedFileStream(file));
+            var playlist = TryReadPlaylist(file.StartsWith("http") ? new WrappedHttpStream(file) : new WrappedFileStream(file));
             if (playlist == null) return;
             foreach (var song in playlist.Tracks)
             {
@@ -368,33 +399,33 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
                 }
             }
         }
-      
+
         else
         {
             AddWithURLBad(file, file.StartsWith("http"), oneFile);
         }
-      
+
     }
 
-     public void AddWithURLBad(string f, bool http, bool oneFile)
-     {
-         var psps = PlayStreamProviders.Where(x =>
-             x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(f), PlayerEnvironment));
-         if (psps.Any())
-         {
-             Task.Run(async () =>
-                 await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), PlayerEnvironment));
-             return;
-         }
-         else
-         {
-             AddSong(
-                 http
-                     ? new Song(new WrappedHttpStream(f), f, logic: this)
-                     : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
-         }
-        
-     }
+    public void AddWithURLBad(string f, bool http, bool oneFile)
+    {
+        var psps = PlayStreamProviders.Where(x =>
+            x is IPlayStreamProviderThatSupportsUrls y && y.IsUrlSupported(new(f), PlayerEnvironment));
+        if (psps.Any())
+        {
+            Task.Run(async () =>
+                await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), PlayerEnvironment));
+            return;
+        }
+        else
+        {
+            AddSong(
+                http
+                    ? new Song(new WrappedHttpStream(f), f, logic: this)
+                    : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
+        }
+
+    }
     public void ProcessFiles(IEnumerable<string> files)
     {
         var enumerable = files.ToList();
@@ -439,7 +470,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         var wrappedStreams = streams.ToList();
         if (wrappedStreams.Any() != true) return;
         var oneFile = wrappedStreams.Count == 1;
-        foreach (var file in wrappedStreams) AddSong(new Song(file, "unknown", logic:this), true);
+        foreach (var file in wrappedStreams) AddSong(new Song(file, "unknown", logic: this), true);
         if (oneFile || _isSortRequested) return;
         _isSortRequested = true;
         var sortTask = Task.Run(async () => await DoSort());
@@ -447,7 +478,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
     public void ProcessStream(WrappedStream stream)
     {
-        AddSong(new Song(stream, "unknown", logic:this));
+        AddSong(new Song(stream, "unknown", logic: this));
     }
 
     public void ClearAll()
@@ -514,7 +545,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
     }
 
 
-    public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream,IEnumerable<IMetadata>? additionalMetadata=null)
+    public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata = null)
     {
         var listofmetadatas = MetadataProviders?.Where(x => x.CanGetMetadata(stream))
             .Select(async x => (await x.GetMetadata(stream))).Select(t => t.Result).Where(i => i != null).ToList();
@@ -522,7 +553,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         {
             listofmetadatas.AddRange(additionalMetadata);
         }
-        return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas,MetadataGatherers));
+        return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas, MetadataGatherers));
     }
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)

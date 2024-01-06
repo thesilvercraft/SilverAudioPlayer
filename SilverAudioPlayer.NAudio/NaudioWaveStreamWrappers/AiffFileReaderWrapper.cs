@@ -9,7 +9,10 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 public class NAudioAiffFileReaderWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = new List<MimeType> { KnownMimes.AiffMime };
-   public WaveStream GetStream(Stream stream) => new AiffFileReader(stream);
+
+    public bool SupportedOnPlatform => true;
+
+    public WaveStream GetStream(Stream stream) => new AiffFileReader(stream);
 
 }
 #if CSCore
@@ -17,6 +20,7 @@ public class NAudioAiffFileReaderWrapper : INaudioWaveStreamWrapper
 public class CSCoreAiffFileReaderWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = new List<MimeType> { KnownMimes.AiffMime };
+    public bool SupportedOnPlatform => true;
 
     public WaveStream GetStream(Stream stream) => new CSCoreReader(new CSCore.Codecs.AIFF.AiffReader(stream));
 

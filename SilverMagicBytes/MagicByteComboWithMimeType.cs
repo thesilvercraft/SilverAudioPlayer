@@ -13,16 +13,9 @@ public class MagicByteComboWithMimeType : MagicByteCombo
     public MimeType MimeType { get; set; }
 }
 
-public class MimeType
+public class MimeType(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)
 {
-    public MimeType(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null)
-    {
-        Common = common;
-        AlternativeTypes = alternativeTypes ?? Array.Empty<string>();
-        FileExtensions = fileExtensions ?? Array.Empty<string>();
-    }
-
-    public string Common { get; set; }
-    public string[] AlternativeTypes { get; set; }
-    public string[] FileExtensions { get; set; }
+    public string Common { get; set; } = common;
+    public string[] AlternativeTypes { get; set; } = alternativeTypes ?? Array.Empty<string>();
+    public string[] FileExtensions { get; set; } = fileExtensions ?? Array.Empty<string>();
 }

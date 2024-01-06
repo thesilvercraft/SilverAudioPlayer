@@ -45,6 +45,25 @@ public interface IPlayLancer : IPlayStreams
     [Obsolete("SilverAudioPlayer doesn't make use of this yet")]
     bool EnqueueNextStream(WrappedStream stream);
 }
+public interface ISelector
+{
+    public int CurrentPattern{get;}
+    public void SetPattern(int pattern);
+    public int NumberOfPatterns {get;}
+}
+public interface ILoop
+{
+    public bool CanLoop{get;}
+      public void EnableLoop();
+    public void DisableLoop();
+}
+public interface IPlayerLoop : IPlay,ILoop
+{
+  
+}
+public interface IPlayWithSelector : IPlay,ISelector
+{
+}
 public interface IPlay : IDisposable
 {
     /// <summary>

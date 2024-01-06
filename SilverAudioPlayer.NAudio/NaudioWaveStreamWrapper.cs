@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using NAudio.Wave;
 using Silver.Composition;
-using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 
@@ -10,6 +9,7 @@ namespace SilverAudioPlayer.NAudio;
 
 public interface INaudioWaveStreamWrapper
 {
+    bool SupportedOnPlatform { get; }
     IReadOnlyList<MimeType> SupportedMimeTypes { get; }
     WaveStream GetStream(Stream stream);
 }
@@ -255,7 +255,7 @@ public class NaudioWaveStreamWrapperTypes
 
     public INaudioWaveStreamWrapper? GetWrapper(WrappedStream stream)
     {
-        return GetWrappers().First(x => x.SupportedMimeTypes.Contains(stream.MimeType));
+        return GetWrappers().First(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
     }
 
     public bool HasWrapper(WrappedStream stream)
@@ -264,7 +264,7 @@ public class NaudioWaveStreamWrapperTypes
         {
             return true;
         }
-        var res = GetWrappers().Any(x => x.SupportedMimeTypes.Contains(stream.MimeType));
+        var res = GetWrappers().Any(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
         return res;
     }
 

@@ -162,7 +162,7 @@ public class App : Application
             Logger.GetLoggerFunc += logger.ForContext;
 
             var mw = new MainWindow();
-            mainWindow=mw;
+            mainWindow = mw;
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
             PlatformLogicHelper.SatisfyImports(mw.Logic);
@@ -279,6 +279,30 @@ public class App : Application
             {
                 HandleCommandPalette(item);
             }
+
+            ComandPalette.AddItem(new CommandPaletteItem("Increase pattern", "increase pattern", (x) =>
+         {
+             if (mw.Player is ISelector s)
+             {
+                 var c = s.CurrentPattern;
+                 if (c + 1 < s.NumberOfPatterns)
+                 {
+                     s.SetPattern(c + 1);
+                 }
+             }
+         }));
+
+            ComandPalette.AddItem(new CommandPaletteItem("Decrease pattern", "decrease pattern", (x) =>
+         {
+             if (mw.Player is ISelector s)
+             {
+                 var c = s.CurrentPattern;
+                 if (c -1>0)
+                 {
+                     s.SetPattern(c - 1);
+                 }
+             }
+         }));
 
             mw.Logic.Log = logger;
             mw.Logic.ProcessFiles(desktop.Args);

@@ -6,7 +6,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
 public class CSCoreReader : WaveStream
 {
-    private IWaveSource _reader;
+    public IWaveSource _reader;
     public CSCoreReader(IWaveSource reader)
     {
         _reader = reader;

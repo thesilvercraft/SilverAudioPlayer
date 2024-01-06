@@ -22,6 +22,11 @@ public static class KnownMimes
     public static readonly MimeType M3uMime = new M3UMime();
     public static readonly MimeType SplMime = new SPLMime();
     public static readonly MimeType MKVMime =new MKVMime();
+    public static readonly MimeType ExtendedTrackerMime =  new ExtendedTrackerMime();
+    public static readonly MimeType ModTrackerMime = new ModTrackerMime();
+    public static readonly MimeType Mod3TrackerMime = new Mod3TrackerMime();
+    public static readonly MimeType S3MTrackerMime = new S3MTrackerMime();
+    public static readonly MimeType ImpulseTrackerMime =new ImpulseTrackerMime();
     public static readonly List<MimeType> KnownMimeTypes =
     [
         MidMime,
@@ -42,6 +47,11 @@ public static class KnownMimes
         SplMime,
         OctetMime,
         MKVMime,
+        ExtendedTrackerMime,
+        ModTrackerMime,
+        Mod3TrackerMime,
+        S3MTrackerMime,
+        ImpulseTrackerMime
     ];
 
     public static MimeType? GetKnownMimeByName(string Mime)
@@ -141,7 +151,6 @@ public class AACMime : CompressedAudioMime
 }
 
 
-
 public class MidMime : AudioMime
 {
     public MidMime() : base("audio/midi", ["audio/x-midi"], [".mid", ".midi"])
@@ -162,46 +171,62 @@ public class JPGMime : CompressedImageMime
     {
     }
 }
-
-public class AudioMime : MimeType
+public class ImpulseTrackerMime : TrackedAudioMime
 {
-    public AudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
-        alternativeTypes, fileExtensions)
+    public ImpulseTrackerMime() : base("audio/x-it", [], [".it"])
     {
     }
 }
-
-public class PlaylistMime : MimeType
+public class Mod3TrackerMime : TrackedAudioMime
 {
-    public PlaylistMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
-        alternativeTypes, fileExtensions)
+    public Mod3TrackerMime() : base("audio/mo3", [], [".mo3"])
     {
     }
 }
-
-public class VideoMime : MimeType
+public class S3MTrackerMime : TrackedAudioMime
 {
-    public VideoMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
-        alternativeTypes, fileExtensions)
+    public S3MTrackerMime() : base("audio/s3m", [], [".s3m"])
     {
     }
 }
-public class CompressedVideoMime : VideoMime, ICompression
+public class ModTrackerMime : TrackedAudioMime
 {
-    public CompressedVideoMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
-        string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
+    public ModTrackerMime() : base("audio/mod", ["audio/x-mod"], [".mod"])
     {
-        this.CompressionType = CompressionType;
     }
-
-    public CompressionType CompressionType { get; set; }
 }
-public class ImageMime : MimeType
+public class ExtendedTrackerMime : TrackedAudioMime
 {
-    public ImageMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : base(common,
-        alternativeTypes, fileExtensions)
+    public ExtendedTrackerMime() : base("audio/xm", Array.Empty<string>(), [".xm"])
     {
     }
+}
+public class TrackedAudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : AudioMime(common,
+    alternativeTypes, fileExtensions)
+{
+}
+public class AudioMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : MimeType(common,
+    alternativeTypes, fileExtensions)
+{
+}
+
+public class PlaylistMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : MimeType(common,
+    alternativeTypes, fileExtensions)
+{
+}
+
+public class VideoMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : MimeType(common,
+    alternativeTypes, fileExtensions)
+{
+}
+public class CompressedVideoMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
+    string[]? fileExtensions = null) : VideoMime(common, alternativeTypes, fileExtensions), ICompression
+{
+    public CompressionType CompressionType { get; set; } = CompressionType;
+}
+public class ImageMime(string common, string[]? alternativeTypes = null, string[]? fileExtensions = null) : MimeType(common,
+    alternativeTypes, fileExtensions)
+{
 }
 
 public class OctetMime : MimeType
@@ -211,26 +236,16 @@ public class OctetMime : MimeType
     }
 }
 
-public class CompressedImageMime : ImageMime, ICompression
+public class CompressedImageMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
+    string[]? fileExtensions = null) : ImageMime(common, alternativeTypes, fileExtensions), ICompression
 {
-    public CompressedImageMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
-        string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
-    {
-        this.CompressionType = CompressionType;
-    }
-
-    public CompressionType CompressionType { get; set; }
+    public CompressionType CompressionType { get; set; } = CompressionType;
 }
 
-public class CompressedAudioMime : AudioMime, ICompression
+public class CompressedAudioMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
+    string[]? fileExtensions = null) : AudioMime(common, alternativeTypes, fileExtensions), ICompression
 {
-    public CompressedAudioMime(string common, CompressionType CompressionType, string[]? alternativeTypes = null,
-        string[]? fileExtensions = null) : base(common, alternativeTypes, fileExtensions)
-    {
-        this.CompressionType = CompressionType;
-    }
-
-    public CompressionType CompressionType { get; set; }
+    public CompressionType CompressionType { get; set; } = CompressionType;
 }
 
 public interface ICompression

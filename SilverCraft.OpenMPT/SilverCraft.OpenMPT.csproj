@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ClangSharp" Version="17.0.1" />
@@ -11,5 +12,7 @@
 </ItemGroup>
 <ItemGroup>
   <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" />
+  <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+
 </ItemGroup>
 </Project>

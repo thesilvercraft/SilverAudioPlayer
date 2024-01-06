@@ -9,5 +9,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 public class WaveFileReaderWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = new List<MimeType> { KnownMimes.WAVMime };
+    public bool SupportedOnPlatform => true;
     public WaveStream GetStream(Stream stream) => new WaveFileReader(stream);
 }

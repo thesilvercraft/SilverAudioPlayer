@@ -11,7 +11,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 public class FlacNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = new List<MimeType> { KnownMimes.FLACMime };
-
+    public bool SupportedOnPlatform => true;
     public WaveStream GetStream(Stream stream) => new CSCoreReader(new FlacFile(stream));
 }
 #endif

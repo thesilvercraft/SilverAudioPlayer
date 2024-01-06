@@ -107,6 +107,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Console",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer", "SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.csproj", "{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverCraft.OpenMPT", "SilverCraft.OpenMPT\SilverCraft.OpenMPT.csproj", "{61924B88-5C23-42E9-958C-C8CB7747A586}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -727,6 +729,22 @@ Global
 		{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}.Release|x64.Build.0 = Release|Any CPU
 		{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}.Release|x86.ActiveCfg = Release|Any CPU
 		{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}.Release|x86.Build.0 = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|arm64.Build.0 = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|x64.Build.0 = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Debug|x86.Build.0 = Debug|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|arm64.ActiveCfg = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|arm64.Build.0 = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x64.ActiveCfg = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x64.Build.0 = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x86.ActiveCfg = Release|Any CPU
+		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

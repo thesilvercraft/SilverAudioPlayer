@@ -131,7 +131,7 @@ public partial class MainWindow : Window
         mainListBox.PointerReleased += TreeView_PointerReleased;
         mainListBox.PointerPressed += TreeView_PointerPressed1;
         Env = new SapAvaloniaPlayerEnviroment(this);
- 
+
         dc = new MainWindowContext(this)
         {
             SetLoopType = lt =>
@@ -143,6 +143,17 @@ public partial class MainWindow : Window
                 }
 
                 dc?.RaisePropertyChanged(nameof(dc.LoopType));
+                if (Player != null && Player is ILoop loop)
+                {
+                    if (dc.LoopType == RepeatState.One)
+                    {
+                        loop.EnableLoop();
+                    }
+                    else
+                    {
+                        loop.DisableLoop();
+                    }
+                }
             },
 
             GetLoopType = () => config.LoopType,
@@ -349,7 +360,7 @@ public partial class MainWindow : Window
                     return w.Selected;
                 });
             },
-            PlayerEnvironment= Env
+            PlayerEnvironment = Env
         };
         config.PropertyChanged += Config_PropertyChanged;
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
@@ -357,18 +368,18 @@ public partial class MainWindow : Window
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-//HotKeyManager.SetHotKey(openCommandMenu, new KeyGesture(Key.P, KeyModifiers.Control | KeyModifiers.Shift));
+        //HotKeyManager.SetHotKey(openCommandMenu, new KeyGesture(Key.P, KeyModifiers.Control | KeyModifiers.Shift));
         this.DoAfterInitTasksF(options: new()
         {
             SetBackground = false,
             SetTransparency = true,
             SetFontFamily = true,
-        }, followOptionsOnCall:false);
+        }, followOptionsOnCall: false);
     }
 
     private void CommandMenuClick(object? sender, RoutedEventArgs e)
     {
-        CommandPalette p=new();
+        CommandPalette p = new();
         p.Show();
     }
 
@@ -527,7 +538,7 @@ public partial class MainWindow : Window
                         if (IsVisible)
                         {
                             var x = Player?.GetPosition() ?? TimeSpan.FromMilliseconds(2);
-                            PB.Value = x.TotalMilliseconds;
+                            PB.Value = x.TotalMilliseconds%PB.Maximum;
                             LT.Text = x.ToString();
                         }
 
@@ -600,7 +611,7 @@ public partial class MainWindow : Window
         if (!e.Data.Contains("UniformResourceLocatorW")) return;
         {
             var url = e!.Data!.GetText();
-          
+
 
             if (!string.IsNullOrEmpty(url))
             {
@@ -617,11 +628,11 @@ public partial class MainWindow : Window
         mimeTypes.AddRange(Logic.PlayableMimes.SelectMany(y => y.AlternativeTypes));
         var fileExten = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
             .SelectMany(x => x.FileExtensions.Select(y => "*" + y)).ToList();
-        fileExten.AddRange(Logic.PlaylistReaders.SelectMany(x=>x.SupportedMimes.SelectMany(y=>y.FileExtensions)).Select(x => '*' + x).ToList());
+        fileExten.AddRange(Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes.SelectMany(y => y.FileExtensions)).Select(x => '*' + x).ToList());
         var playlistMimes = Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
-        mimeTypes.AddRange(playlistMimes.Select(y=>y.Common));
-        mimeTypes.AddRange(playlistMimes.SelectMany(y=>y.AlternativeTypes));
-    
+        mimeTypes.AddRange(playlistMimes.Select(y => y.Common));
+        mimeTypes.AddRange(playlistMimes.SelectMany(y => y.AlternativeTypes));
+
         var fileDialogFilters = new List<FilePickerFileType>
         {
             new("Audio And Playlists")
@@ -632,10 +643,10 @@ public partial class MainWindow : Window
             new("Everything else")
                 { Patterns = new List<string>() { "*" }, MimeTypes = new List<string>() { "application/octet-stream" } }
         };
-        
+
         fileDialogFilters.AddRange(Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).
             Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
-        
+
         fileDialogFilters.AddRange(playlistMimes.Where(x => x.FileExtensions.Length > 0).
             Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
 
@@ -655,7 +666,9 @@ public partial class MainWindow : Window
 
         var a = await StorageProvider.OpenFilePickerAsync(new()
         {
-            AllowMultiple = true, Title = "Add a file or files to the queue", FileTypeFilter = fileDialogFilters,
+            AllowMultiple = true,
+            Title = "Add a file or files to the queue",
+            FileTypeFilter = fileDialogFilters,
             SuggestedStartLocation = musicfolder
         });
         if (a != null) Logic.ProcessFiles(a.Select(x => x.Path.LocalPath));
@@ -683,7 +696,7 @@ public partial class MainWindow : Window
                 }
             }
 
-            if (dc.CurrentSong?.Equals(selected) !=true)
+            if (dc.CurrentSong?.Equals(selected) != true)
             {
                 selected.Dispose();
             }
@@ -710,5 +723,5 @@ public partial class MainWindow : Window
         var queue = Logic.GetQueueCopy();
         SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue), await a.OpenWriteAsync());
     }
-    
+
 }

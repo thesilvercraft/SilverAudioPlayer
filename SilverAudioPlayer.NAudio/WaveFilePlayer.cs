@@ -10,7 +10,7 @@ using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
 namespace SilverAudioPlayer.NAudio;
 
 [Export(typeof(IPlay))]
-public class WaveFilePlayer : IDisposable, IPlayStreams
+public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
 {
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
@@ -27,7 +27,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     }
     public void InitBackEnd(byte volume)
     {
-            logger?.Debug("initing backend {Windows}",OperatingSystem.IsWindows());
+        logger?.Debug("initing backend {Windows}", OperatingSystem.IsWindows());
 
 #if CSCore
         if (OperatingSystem.IsWindows())
@@ -212,8 +212,135 @@ public class WaveFilePlayer : IDisposable, IPlayStreams
     public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
         .SelectMany(x => x.SupportedMimeTypes).ToList();
 
+    public int CurrentPattern => GetCurrentPattern();
+
+    public int NumberOfPatterns => GetNumPattern();
+
+    public bool CanLoop => GetCanLoop();
+
     private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
         TrackEnd?.Invoke(sender, e);
+    }
+    bool GetCanLoop()
+    {
+        if (audioFile is ILoop mselector)
+        {
+            return mselector.CanLoop;
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ILoop cselector)
+            {
+                return cselector.CanLoop;
+
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            {
+                return selector.CanLoop;
+
+            }
+        }
+        return false;
+    }
+    int GetCurrentPattern()
+    {
+        if (audioFile is ISelector mselector)
+        {
+            return mselector.CurrentPattern;
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ISelector cselector)
+            {
+                return cselector.CurrentPattern;
+
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            {
+                return selector.CurrentPattern;
+
+            }
+        }
+        return 0;
+    }
+    int GetNumPattern()
+    {
+        if (audioFile is ISelector mselector)
+        {
+            return mselector.NumberOfPatterns;
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ISelector cselector)
+            {
+                return cselector.NumberOfPatterns;
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            {
+                return selector.NumberOfPatterns;
+            }
+        }
+        return 0;
+    }
+    public void SetPattern(int pattern)
+    {
+        if (audioFile is ISelector mselector)
+        {
+            mselector.SetPattern(pattern);
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ISelector cselector)
+            {
+                cselector.SetPattern(pattern);
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            {
+                selector.SetPattern(pattern);
+            }
+        }
+    }
+
+    public void EnableLoop()
+    {
+        if (audioFile is ILoop mselector)
+        {
+            mselector.EnableLoop();
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ILoop cselector)
+            {
+                cselector.EnableLoop();
+
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            {
+                selector.EnableLoop();
+
+            }
+        }
+    }
+
+    public void DisableLoop()
+    {
+        if (audioFile is ILoop mselector)
+        {
+            mselector.DisableLoop();
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ILoop cselector)
+            {
+                cselector.DisableLoop();
+
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            {
+                selector.DisableLoop();
+
+            }
+        }
     }
 }
