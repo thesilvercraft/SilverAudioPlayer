@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {

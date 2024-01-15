@@ -20,9 +20,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net8.0/SilverAudioPlayer.Avalonia.dll",
+            "program": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/Catenoid.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net8.0/",
+            "cwd": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/",
             "console": "externalTerminal",
             "stopAtEntry": false
         },

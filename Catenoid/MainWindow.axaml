@@ -3,10 +3,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1440" d:DesignHeight="900"
-        x:Class="SilverAudioPlayer.Avalonia.MainWindow"
-        xmlns:local="clr-namespace:SilverAudioPlayer.Avalonia;assembly=SilverAudioPlayer.Avalonia"
+        x:Class="Catenoid.MainWindow"
+        xmlns:local="clr-namespace:Catenoid;assembly=Catenoid"
         xmlns:shared="using:SilverAudioPlayer.Shared"
-        Title="SilverAudioPlayer.Avalonia" DragDrop.AllowDrop="True" Icon="/icon.ico"
+        Title="Catenoid" DragDrop.AllowDrop="True" Icon="/icon.ico"
         ExtendClientAreaToDecorationsHint="True">
 	<Window.Resources>
 		<local:NullableReplacingConverter x:Key="nullableReplacingConverter" />

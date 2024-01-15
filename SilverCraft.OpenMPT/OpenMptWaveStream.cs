@@ -60,7 +60,7 @@ public unsafe class OpenMptWaveStream : ISampleSource, ISelector, ILoop
 
     public void SetPattern(int pattern)
     {
-        NativeMethods.openmpt_module_select_subsong(infile, pattern);
+        _ = NativeMethods.openmpt_module_select_subsong(infile, pattern);
         Length = (long)(NativeMethods.openmpt_module_get_duration_seconds(infile) * WaveFormat.BytesPerSecond);
 
     }

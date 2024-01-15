@@ -8,7 +8,7 @@ using System.Text;
 using Microsoft.Win32;
 using SilverCraft.AvaloniaUtils;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public static class RegistryRegistration
 {
@@ -36,14 +36,14 @@ public static class RegistryRegistration
             UnRegisterUrlSchemeLinux(mainWindow);
         }
     }
-
+    [SupportedOSPlatform("linux")]
     private static void UnRegisterUrlSchemeLinux(MainWindow mainWindow)
     {
-         File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".local/share/applications/silveraudioplayer.desktop"));
-         DoOrAsk("rm /usr/share/pixmaps/sap.svg");
+        File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+           ".local/share/applications/Catenoid.desktop"));
+        DoOrAsk("rm /usr/share/pixmaps/sap.svg");
     }
-
+    [SupportedOSPlatform("windows")]
     public static void DeleteRegistryFolder(RegistryHive registryHive, string fullPathKeyToDelete)
     {
         using var baseKey = RegistryKey.OpenBaseKey(registryHive, RegistryView.Default);
@@ -78,7 +78,7 @@ public static class RegistryRegistration
         {
             //based and redpilled
             return File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".local/share/applications/silveraudioplayer.desktop"));
+                ".local/share/applications/Catenoid.desktop"));
         }
 
         return false;
@@ -87,7 +87,7 @@ public static class RegistryRegistration
     public static void RegisterURLSchemeLinux(MainWindow mainWindow)
     {
         var f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-            ".local/share/applications/silveraudioplayer.desktop");
+            ".local/share/applications/Catenoid.desktop");
         if (!File.Exists(f))
         {
             var playableMimes = mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
@@ -104,8 +104,8 @@ GenericName=Audio player
 Icon=sap
 Keywords=Player;Audio;Dotnet;
 MimeType=x-content/audio-player;{string.Join(';', playableMimes)};
-Name[en_GB]=SilverAudioPlayer
-Name=SilverAudioPlayer
+Name[en_GB]=Catenoid
+Name=Catenoid
 NoDisplay=false
 StartupNotify=true
 Terminal=false
@@ -113,12 +113,15 @@ TerminalOptions=
 Type=Application
 X-KDE-Protocols=http,https
 X-KDE-SubstituteUID=false
-Categories=Audio;Midi;Music;");
-            using var iconFile = File.OpenWrite("/tmp/sap.svg");
+Categories=AudioVideo;Player;Midi;Music;Audio;");
             using var iconSource = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("SilverAudioPlayer.Avalonia.icon.svg");
-            iconSource.CopyTo(iconFile);
-            DoOrAsk("mv /tmp/sap.svg /usr/share/pixmaps/sap.svg");
+                .GetManifestResourceStream("Catenoid.icon.svg");
+            if (iconSource != null)
+            {
+                using var iconFile = File.OpenWrite("/tmp/sap.svg");
+                iconSource.CopyTo(iconFile);
+                DoOrAsk("mv /tmp/sap.svg /usr/share/pixmaps/sap.svg");
+            }
         }
     }
     [SupportedOSPlatform("linux")]
@@ -127,6 +130,10 @@ Categories=Audio;Midi;Music;");
         if (File.Exists("/usr/bin/kdesu"))
         {
             Process.Start("kdesu", command);
+        }
+        else if (File.Exists("/usr/bin/pkexec"))
+        {
+            Process.Start("pkexec", command);
         }
         else
         {
@@ -168,5 +175,5 @@ Categories=Audio;Midi;Music;");
         }
     }
 
-    
+
 }

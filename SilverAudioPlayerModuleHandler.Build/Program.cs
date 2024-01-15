@@ -246,9 +246,9 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
     {
         return null;
     }
-    if (r.Name == "SilverAudioPlayer.Avalonia")
+    if (r.Name == "Catenoid")
     {
-        var asasassdasa = new string[] { "SilverAudioPlayer.Avalonia.deps.json", "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia.runtimeconfig.json" };
+        var asasassdasa = new string[] { "Catenoid.deps.json", "Catenoid", "Catenoid.runtimeconfig.json" };
 
         var range = asasassdasa.Select(x =>
             new SilverAudioPlayerModuleHandler.Build.File()
@@ -260,8 +260,8 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
         m.Debug.AddRange(range.Where(x => x.Key == true).SelectMany(x => x));
         m.Files.Add(new SilverAudioPlayerModuleHandler.Build.File()
         {
-            Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, "SilverAudioPlayer.desktop")),
-            LocationToPlaceLinux = "/usr/share/applications/SilverAudioPlayer.desktop"
+            Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, "Catenoid.desktop")),
+            LocationToPlaceLinux = "/usr/share/applications/Catenoid.desktop"
         });
         m.Files.Add(new SilverAudioPlayerModuleHandler.Build.File()
         {
@@ -270,8 +270,8 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
         });
           m.Links.Add(new()
         {
-            LocationFrom =  "/usr/bin/silveraudioplayer" ,
-            LocationTo = "/opt/silveraudioplayer/SilverAudioPlayer.Avalonia"
+            LocationFrom =  "/usr/bin/catenoid" ,
+            LocationTo = "/opt/catenoid/catenoid"
         });
      
     }

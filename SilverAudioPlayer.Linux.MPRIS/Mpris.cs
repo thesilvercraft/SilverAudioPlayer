@@ -23,6 +23,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         void start()
         {
+            _IsStarted=true;
             Task.Run(async ()=>
             {
                 try
@@ -277,6 +278,8 @@ Volume = Env?.GetVolume()/100d ?? 100d
 
         public void StopIPC(IMusicStatusInterfaceListener listener)
         {
+            _IsStarted=false;
+
         }
 
         public string Name => "MPRIS Linux MSI";

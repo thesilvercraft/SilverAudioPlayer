@@ -23,7 +23,7 @@ using Avalonia.Collections;
 using Avalonia.Platform.Storage;
 using SilverAudioPlayer.Shared.SilverPlaylist;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public class MainWindowContext : PlayerContext
 {
@@ -46,9 +46,9 @@ public class MainWindowContext : PlayerContext
             new(KnownColor.Coral.ToColor(), 0),
             new(KnownColor.SilverCraftBlue.ToColor(), 1)
         ];
-        PBForeground = WindowExtensions.envBackend.GetString("SAPPBColor")
+        _pbForeGround = PBForeground = WindowExtensions.envBackend.GetString("SAPPBColor")
             .ParseBackground(new LinearGradientBrush() { GradientStops = defPBStops });
-        GradientStops = PBForeground switch
+        _GradientStops = GradientStops = PBForeground switch
         {
             LinearGradientBrush lgb => lgb.GradientStops,
             SolidColorBrush scb => [new GradientStop(scb.Color, 0)],
@@ -189,72 +189,74 @@ public partial class MainWindow : Window
                     {
                         if (CurrentSong.Metadata.Title != null)
                         {
-                            Title = CurrentSong.TitleOrURL() + " - SilverAudioPlayer";
+                            Title = CurrentSong.TitleOrURL() + " - Catenoid";
                         }
 
-                        if (CurrentSong?.Metadata?.Pictures?.Any() != true) return;
-                        if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong) &&
-                            !AlbumArtTransparencyChanged)
+                        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
                         {
-                            if (lastsong != null && CurrentSong.Metadata.Pictures.Count != 0 &&
-                                lastsong?.Metadata?.Pictures?.Count != 0 && CurrentSong.Metadata.Pictures[0].Hash ==
-                                lastsong?.Metadata?.Pictures[0]?.Hash)
+                            if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong) &&
+                                !AlbumArtTransparencyChanged)
                             {
-                                return;
-                            }
-                        }
-
-                        AlbumArtTransparencyChanged = false;
-                        var imageData = CurrentSong.Metadata.Pictures[0].Data;
-                        if (imageData != null)
-                        {
-                            try
-                            {
-                                using var imageDataStream = imageData.GetStream();
-                                var bmp = new Bitmap(imageDataStream);
-                                Image.Source = bmp;
-                                if (config.DisableAlbumArtBlur)
+                                if (lastsong != null && CurrentSong.Metadata.Pictures.Count != 0 &&
+                                    lastsong?.Metadata?.Pictures?.Count != 0 && CurrentSong.Metadata.Pictures[0].Hash ==
+                                    lastsong?.Metadata?.Pictures[0]?.Hash)
                                 {
                                     return;
                                 }
+                            }
 
-                                using MemoryStream blur = new();
-                                using var stream = imageData.GetStream();
-                                using var wrbmp = SKBitmap.Decode(stream);
-                                var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
-                                using (var surface = SKSurface.Create(info))
+                            AlbumArtTransparencyChanged = false;
+                            var imageData = CurrentSong.Metadata.Pictures[0].Data;
+                            if (imageData != null)
+                            {
+                                try
                                 {
-                                    var canvas = surface.Canvas;
-                                    using (var paint = new SKPaint())
+                                    using var imageDataStream = imageData.GetStream();
+                                    var bmp = new Bitmap(imageDataStream);
+                                    Image.Source = bmp;
+                                    if (config.DisableAlbumArtBlur)
                                     {
-                                        paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                                        paint.ColorFilter =
-                                            SKColorFilter.CreateColorMatrix(
-                                            [
-                                                1, 0, 0, 0, 0,
+                                        return;
+                                    }
+
+                                    using MemoryStream blur = new();
+                                    using var stream = imageData.GetStream();
+                                    using var wrbmp = SKBitmap.Decode(stream);
+                                    var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
+                                    using (var surface = SKSurface.Create(info))
+                                    {
+                                        var canvas = surface.Canvas;
+                                        using (var paint = new SKPaint())
+                                        {
+                                            paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                                            paint.ColorFilter =
+                                                SKColorFilter.CreateColorMatrix(
+                                                [
+                                                    1, 0, 0, 0, 0,
                                                 0, 1, 0, 0, 0,
                                                 0, 0, 1, 0, 0,
                                                 0, 0, 0, config.AlbumArtTransparency, 0
-                                            ]);
-                                        canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
-                                    }
+                                                ]);
+                                            canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
+                                        }
 
-                                    surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
-                                        .CopyTo(blur);
-                                    blur.Position = 0;
+                                        surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
+                                            .CopyTo(blur);
+                                        blur.Position = 0;
+                                    }
+                                    var imgbrsh = new ImageBrush(new Bitmap(blur))
+                                    {
+                                        Stretch = Stretch.UniformToFill
+                                    };
+                                    var s = Background;
+                                    Background = imgbrsh;
+                                    var x = s as IDisposable;
+                                    x?.Dispose();
                                 }
-                                var imgbrsh = new ImageBrush(new Bitmap(blur))
+                                catch (Exception ex)
                                 {
-                                    Stretch = Stretch.UniformToFill
-                                };
-                                var s = Background;
-                                Background = imgbrsh;
-                                var x = s as IDisposable;
-                                x?.Dispose();
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex, "Error loading image into main window");
+                                    Log.Error(ex, "Error loading image into main window");
+                                }
                             }
                         }
                         else
@@ -538,7 +540,7 @@ public partial class MainWindow : Window
                         if (IsVisible)
                         {
                             var x = Player?.GetPosition() ?? TimeSpan.FromMilliseconds(2);
-                            PB.Value = x.TotalMilliseconds%PB.Maximum;
+                            PB.Value = x.TotalMilliseconds % PB.Maximum;
                             LT.Text = x.ToString();
                         }
 
@@ -573,7 +575,7 @@ public partial class MainWindow : Window
     }
 
 
-    private void DragOver(object sender, DragEventArgs? e)
+    private void DragOver(object? sender, DragEventArgs e)
     {
         if (e == null)
         {
@@ -588,7 +590,7 @@ public partial class MainWindow : Window
             e.DragEffects = DragDropEffects.None;
     }
 
-    private void Drop(object sender, DragEventArgs? e)
+    private void Drop(object? sender, DragEventArgs e)
     {
         if (e == null)
         {
@@ -604,7 +606,7 @@ public partial class MainWindow : Window
             var files = e!.Data.GetFiles();
             if (files != null)
             {
-                Logic.ProcessFiles(files.Select(x => x.TryGetLocalPath()));
+                Logic.ProcessFiles(files.Select(x => x.TryGetLocalPath()).Where(x => x != null).Cast<string>());
             }
         }
 
@@ -624,20 +626,13 @@ public partial class MainWindow : Window
 
     public async void AddFile(object sender, RoutedEventArgs e)
     {
-        var mimeTypes = Logic.PlayableMimes.Select(x => x.Common).ToList();
-        mimeTypes.AddRange(Logic.PlayableMimes.SelectMany(y => y.AlternativeTypes));
-        var fileExten = Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-            .SelectMany(x => x.FileExtensions.Select(y => "*" + y)).ToList();
-        fileExten.AddRange(Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes.SelectMany(y => y.FileExtensions)).Select(x => '*' + x).ToList());
-        var playlistMimes = Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
-        mimeTypes.AddRange(playlistMimes.Select(y => y.Common));
-        mimeTypes.AddRange(playlistMimes.SelectMany(y => y.AlternativeTypes));
-
+        var (mimeTypes, fileExten) = Logic.SupportedTrackAndPlaylistMimes();
+        fileExten = fileExten.Select(x => '*' + x).ToList();
         var fileDialogFilters = new List<FilePickerFileType>
         {
             new("Audio And Playlists")
             {
-                Patterns =fileExten ,
+                Patterns = fileExten,
                 MimeTypes = mimeTypes
             },
             new("Everything else")
@@ -647,7 +642,7 @@ public partial class MainWindow : Window
         fileDialogFilters.AddRange(Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).
             Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
 
-        fileDialogFilters.AddRange(playlistMimes.Where(x => x.FileExtensions.Length > 0).
+        fileDialogFilters.AddRange(Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct().Where(x => x.FileExtensions.Length > 0).
             Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
 
         var u = config.DialogStartLoc;
@@ -680,6 +675,8 @@ public partial class MainWindow : Window
         while (dc.Selection.SelectedIndexes.Count != 0)
         {
             var selected = dc.Selection.SelectedItem;
+            if (selected == null)
+                return;
             if (selected.Equals(Logic.NextSong))
             {
                 Logic.Log.Information("Selected is nextsong");
@@ -714,8 +711,8 @@ public partial class MainWindow : Window
             {
                 new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
                 {
-                    MimeTypes = new[] { "application/silverplaylist+br" },
-                    Patterns = new[] {"*.spl.br"}
+                    MimeTypes = [ "application/silverplaylist+br" ],
+                    Patterns = ["*.spl.br"]
                 }
             }
         });

@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/SilverAudioPlayer.Avalonia/SilverAudioPlayer.Avalonia.csproj"
+                "${workspaceFolder}/Catenoid/Catenoid.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

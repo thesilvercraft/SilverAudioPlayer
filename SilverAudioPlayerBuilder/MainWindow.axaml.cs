@@ -99,12 +99,12 @@ namespace SilverAudioPlayerBuilder
                     selectedArgs.Add(c.Key.Replace("*",""));
                 }
             }
-            var cmd = $"\"dotnet publish {Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia.csproj")} -c Release -p:ExtraDefineConstants=\"{string.Join("%3B", selectedArgs)}\" --interactive\"";
+            var cmd = $"\"dotnet publish {Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)).FullName).FullName).FullName).FullName, "Catenoid", "Catenoid.csproj")} -c Release -p:ExtraDefineConstants=\"{string.Join("%3B", selectedArgs)}\" --interactive\"";
             Debug.WriteLine(cmd);
             if (Environment.OSVersion.Platform==PlatformID.Unix)
             {
                 Process.Start(new ProcessStartInfo() { FileName = "sh", Arguments = "-i -c "+cmd, CreateNoWindow = false });
-               //Process.Start("xdg-open", Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "bin", "Release"));
+               //Process.Start("xdg-open", Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "Catenoid", "bin", "Release"));
             }
             else
             {
@@ -112,7 +112,7 @@ namespace SilverAudioPlayerBuilder
                 //process.WaitForExit();
                //if (process.ExitCode==0)
                // {
-                //    Process.Start("explorer.exe", Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "SilverAudioPlayer.Avalonia", "bin", "Release"));
+                //    Process.Start("explorer.exe", Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetParent(Environment.CurrentDirectory).FullName).FullName).FullName).FullName, "Catenoid", "bin", "Release"));
                 //}
             }
 

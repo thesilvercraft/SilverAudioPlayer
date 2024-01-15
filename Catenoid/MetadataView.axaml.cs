@@ -11,13 +11,13 @@ using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public partial class MetadataView : Window
 {
     private readonly DC dataContext = new();
     private readonly ILogger? Log;
-    private Song s;
+    private Song? s;
 
     public MetadataView()
     {

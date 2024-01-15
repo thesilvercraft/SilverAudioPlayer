@@ -7,7 +7,7 @@ using Avalonia.Threading;
 using Serilog;
 using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 public static class AvaloniaUtils
 {
     public static async Task SetClipboardImage(this Window window, WrappedStream stream, ILogger? logger=null)

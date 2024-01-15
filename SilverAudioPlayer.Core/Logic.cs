@@ -290,7 +290,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         {
             Player.SetVolume(Volume);
             Player.Play();
-            var informPlayerOfLoop= Task.Run(async () =>
+            var informPlayerOfLoop = Task.Run(async () =>
             {
                 await Task.Delay(600);
                 if (Player != null && Player is ILoop loop)
@@ -424,12 +424,11 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
                     ? new Song(new WrappedHttpStream(f), f, logic: this)
                     : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
         }
-
     }
     public void ProcessFiles(IEnumerable<string> files)
     {
         var enumerable = files.ToList();
-        if (enumerable?.Any() != true) return;
+        if (enumerable?.Count == 0 || enumerable == null) return;
         var oneFile = enumerable.Count == 1;
         if (oneFile && Directory.Exists(enumerable.First()))
         {
@@ -507,7 +506,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
     {
         if (_isSortRequested) return;
         _isSortRequested = true;
-        var sortTask = Task.Run(async () => await DoSort());
+        var sortTask = Task.Run(DoSort);
     }
 
     public async Task DoSort()
@@ -596,7 +595,34 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
     public List<Song> GetQueueCopy()
     {
-        return PlayerContext.Queue.ToList();
+        return [.. PlayerContext.Queue];
     }
+    private static Tuple<List<string>, List<string>> SupportedTrackMimesG(IEnumerable<MimeType> supportedMimes)
+    {
+        var mimeTypes = supportedMimes.Select(x => x.Common).ToList();
+        mimeTypes.AddRange(supportedMimes.SelectMany(y => y.AlternativeTypes));
+        var fileExt = supportedMimes.SelectMany(x => x.FileExtensions).ToList();
+        return new(mimeTypes, fileExt);
+    }
+    public Tuple<List<string>, List<string>> SupportedTrackMimes()
+    {
+        return Logic<T>.SupportedTrackMimesG(PlayableMimes);
+    }
+
+    public Tuple<List<string>, List<string>> SupportedPlaylistMimes()
+    {
+        var playlistMimes = PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
+        return Logic<T>.SupportedTrackMimesG(playlistMimes);
+    }
+    public Tuple<List<string>, List<string>> SupportedTrackAndPlaylistMimes()
+    {
+        var (a,b) = Logic<T>.SupportedTrackMimesG(PlayableMimes);
+        var (c,d)= SupportedPlaylistMimes();
+        a.AddRange(c);
+        b.AddRange(d);
+        return new (a,b);
+    }
+
+
 }
 

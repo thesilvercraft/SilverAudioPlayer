@@ -1131,7 +1131,7 @@
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia.deps.json" />
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia" />
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia.runtimeconfig.json" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.desktop" LocLin="/usr/share/applications/SilverAudioPlayer.desktop" />
+        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Catenoid.desktop" LocLin="/usr/share/applications/Catenoid.desktop" />
         <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/icon.svg" LocLin="/usr/share/pixmaps/sap.svg" />
       </Files>
       <Links>

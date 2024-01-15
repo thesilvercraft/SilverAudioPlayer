@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using DynamicData;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public class SAction
 {

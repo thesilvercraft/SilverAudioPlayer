@@ -6,7 +6,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using SilverCraft.AvaloniaUtils;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public partial class LyricsView : Window
 {

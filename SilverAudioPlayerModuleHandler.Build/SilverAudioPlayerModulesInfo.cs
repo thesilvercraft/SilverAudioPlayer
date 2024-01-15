@@ -22,12 +22,12 @@ public class Module
 public class LinuxLink
 {
     /// <summary>
-    /// The location of the link, e.g. /usr/bin/silveraudioplayer
+    /// The location of the link, e.g. /usr/bin/catenoid
     /// </summary>
     [XmlAttribute(AttributeName = "LocationFrom")]
     public string LocationFrom { get; set; }
     /// <summary>
-    /// The location the link points to, e.g. /opt/silveraudioplayer/SilverAudioPlayer.Avalonia
+    /// The location the link points to, e.g. /opt/catenoid/catenoid
     /// </summary>
     [XmlAttribute(AttributeName = "LocationTo")]
     public string LocationTo { get; set; }

@@ -11,7 +11,7 @@
 		<None Remove=".gitignore" />
 		<None Remove="icon.ico" />
 		<None Remove="icon.png" />
-		<None Update="SilverAudioPlayer.desktop">
+		<None Update="Catenoid.desktop">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

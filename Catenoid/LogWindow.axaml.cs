@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using SilverCraft.AvaloniaUtils;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public partial class LogWindow : Window
 {

@@ -4,8 +4,8 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Data.Converters;
 
-namespace SilverAudioPlayer.Avalonia;
-
+namespace Catenoid;
+//Used in MainWindow.axaml
 public class NullableReplacingConverter : IMultiValueConverter
 {
     public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
@@ -13,7 +13,7 @@ public class NullableReplacingConverter : IMultiValueConverter
         return values[0] ?? values[1];
     }
 }
-
+//Used in MainWindow.axaml
 public class RelativePointConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)

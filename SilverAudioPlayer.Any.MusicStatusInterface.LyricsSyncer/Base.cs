@@ -1,13 +1,9 @@
 ﻿using Avalonia.Threading;
 using SilverAudioPlayer.Shared;
-using SilverCraft.Ekorensis;
 using System;
 using System.Collections.Generic;
 using System.Composition;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer
 {
@@ -20,7 +16,7 @@ namespace SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer
 
         public string Name => "Lyrics syncer";
 
-        public string Description => "";
+        public string Description => "Create synced lyrics out of already existing lyrics";
 
         public WrappedStream? Icon => null;
 

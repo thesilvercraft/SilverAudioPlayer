@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace SilverAudioPlayer.Avalonia
+namespace Catenoid
 {
     public class ChooseProviderDataContext
     {

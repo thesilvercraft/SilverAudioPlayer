@@ -2,7 +2,7 @@
 using Avalonia.Media;
 using SilverCraft.AvaloniaUtils;
 
-namespace SilverAudioPlayer.Avalonia
+namespace Catenoid
 {
     public static class SAPAWindowExtensions
     {
@@ -15,7 +15,7 @@ namespace SilverAudioPlayer.Avalonia
         {
             GradientStops = defBGStops
         };
-        public static void DoAfterInitTasksF(this Window w, bool register=true, SubscriptionOptions options=null, bool followOptionsOnCall=true)
+        public static void DoAfterInitTasksF(this Window w, bool register=true, SubscriptionOptions? options=null, bool followOptionsOnCall=true)
         {
             if(WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks")==true)
             {

@@ -3,7 +3,7 @@ using Avalonia;
 using Avalonia.Dialogs;
 using Avalonia.Svg.Skia;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 internal static class Program
 {

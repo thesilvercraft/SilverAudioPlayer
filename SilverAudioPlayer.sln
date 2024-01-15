@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Any.Music
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC", "SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj", "{61B29DC7-83D0-4E06-BEB7-8117BBACE920}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverAudioPlayer.Avalonia", "SilverAudioPlayer.Avalonia\SilverAudioPlayer.Avalonia.csproj", "{2073084A-BDDE-4ED7-96BC-B0D257A75FA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catenoid", "Catenoid\Catenoid.csproj", "{2073084A-BDDE-4ED7-96BC-B0D257A75FA5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UIs", "UIs", "{01C2EEE3-40C0-47CB-8CCC-65FB9CBE277F}"
 EndProject

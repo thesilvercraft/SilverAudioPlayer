@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Diagnostics;
-using ClangSharp;
-using Opportunity.LrcParser;
 using ReactiveUI;
 using Serilog;
 using Serilog.Events;
@@ -13,25 +11,7 @@ using SilverCraft.Ekorensis;
 using Swordfish.NET.Collections;
 using Logger = SilverAudioPlayer.Shared.Logger;
 namespace SilverAudioPlayer.Console;
-public class RxObservableExceptionHandler : IObserver<Exception>
-{
-    public void OnNext(Exception value)
-    {
-        Log.Error(value,
-            "Unhandled exception caught by RxObservableExceptionHandler.OnNext");
-    }
 
-    public void OnError(Exception error)
-    {
-        Log.Error(error,
-            "Unhandled exception caught by RxObservableExceptionHandler.OnError");
-    }
-
-    public void OnCompleted()
-    {
-
-    }
-}
 [Serializable]
 public class ProvidersReturnedNullException : Exception
 {
@@ -233,37 +213,17 @@ public class ConsoleEnviroment : IHaveConfigFilesWithKnownLocations, IFullPlayer
 }
 public class App
 {
+    private static BootupLogic BootupLogic = new();
 
     public static void Main(string[] args)
     {
         Config mwconfig;
         CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
         string _configPath;
-        var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
-        if (!File.Exists(Path.Combine(AppContext.BaseDirectory, ".portable")))
-        {
-            if (OperatingSystem.IsLinux())
-            {
-                confdir = Path.Combine(
-                    Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ??
-                    Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".config"), "SilverAudioPlayer");
-            }
-            else if (OperatingSystem.IsWindows())
-            {
-                confdir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "SilverCraft", "SilverAudioPlayer");
-            }
-        }
-
-        if (!Directory.Exists(confdir))
-        {
-            Directory.CreateDirectory(confdir);
-        }
-
-        ConfigPath.Set(confdir);
+        BootupLogic.ConfigureConfigPath();
         _configPath = ConfigPath.GetPath("SilverAudioPlayer.Config.xml");
         mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
-        Shared.HttpClient.Client.DefaultRequestHeaders.Add("User-Agent", "SilverAudioPlayer/6.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)");
+        BootupLogic.ConfigureHttpClient();
         if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
         mwconfig = mwconfreader.Read(_configPath) ?? new Config();
         if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
@@ -275,34 +235,14 @@ public class App
             .WriteTo.Debug(LogEventLevel.Debug)
             .CreateLogger();
         Log.Logger = logger;
-        void OnFatalError(Exception y)
-        {
-            if (File.Exists("/usr/bin/kdialog"))
+        BootupLogic.SetupCrashFallNets((Exception y) =>
             {
-                Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"{y.ToString()}\"");
-            }
-        }
-        AppDomain.CurrentDomain.UnhandledException += (x, y) =>
-        {
-            if (y.IsTerminating)
-            {
-                Log.Fatal((Exception)y.ExceptionObject,
-                    "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating!!!");
-                OnFatalError((Exception)y.ExceptionObject);
-            }
-            else
-            {
-                Log.Error((Exception)y.ExceptionObject,
-                    "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException");
-            }
-        };
-        TaskScheduler.UnobservedTaskException += (x, y) =>
-        {
-            Log.Fatal(y.Exception,
-                "Unhandled exception caught by TaskScheduler.UnobservedTaskException, Terminating!!!");
-            OnFatalError(y.Exception);
-        };
-        RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
+                if (File.Exists("/usr/bin/kdialog"))
+                {
+                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"{y.ToString()}\"");
+                }
+            });
+
         Logger.GetLoggerFunc += logger.ForContext;
         Context context = new();
         Logic<Context> Logic = new(context);
@@ -322,10 +262,6 @@ public class App
         {
             var name = provider.GetType().Name;
             Debug.WriteLine($"Play provider {name} loaded.");
-            if (canProvideMemory && provider is IAmOnceAgainAskingYouForYourMemory asker)
-            {
-                Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
-            }
 
             if (provider.SupportedMimes != null) Logic.PlayableMimes.AddRange(provider.SupportedMimes);
         }
@@ -338,21 +274,8 @@ public class App
         });
 
 
-        void HandleMemoryLogic(IEnumerable objectsOwnedByLogic)
-        {
-            foreach (var o in objectsOwnedByLogic)
-            {
-                if (canProvideMemory && o is IAmOnceAgainAskingYouForYourMemory asker)
-                {
-                    Logic.MemoryProvider.RegisterObjectsToRemember(asker.ObjectsToRememberForMe);
-                }
-            }
-        }
+        BootupLogic.SetupMemoryLogic(Logic);
 
-        if (canProvideMemory)
-        {
-             HandleMemoryLogic(((ILogicImportable)Logic).PluginCodeInformation);
-        }
         Logic.PlayerEnvironment = env;
         Logic.Log = logger;
         if (args.Length == 0)
@@ -364,13 +287,14 @@ public class App
         System.Console.Clear();
         Logic.MainWindow_Opened(env);
         Logic.StartPlaying();
+        int prevsize=System.Console.WindowHeight;
         while (Logic.Player?.GetPlaybackState() != PlaybackState.Stopped)
         {
             while (Logic.Player?.GetPlaybackState() != PlaybackState.Stopped)
             {
-                var a = System.Console.GetCursorPosition();
+                var (Left, Top) = System.Console.GetCursorPosition();
                 System.Console.SetCursorPosition(0, 0);
-                for (int y = 0; y < a.Top; y++)
+                for (int y = 0; y < Top; y++)
                 {
                     for (int x = 0; x < 80; x++)
                     {
@@ -380,7 +304,11 @@ public class App
                     System.Console.Write('\n');
                 }
                 System.Console.SetCursorPosition(0, 0);
-
+                if(prevsize!=System.Console.WindowHeight)
+                {
+                    System.Console.Clear();
+                    prevsize=System.Console.WindowHeight;
+                }
                 System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():g}/{Logic.Player?.Length():g} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
                 if (context?.CurrentSong?.Metadata?.SyncedLyrics is IList<LyricPhrase> lyrics && lyrics.Count > 1)
                 {
@@ -397,47 +325,40 @@ public class App
                             break;
                         }
                     }
-                     if (last > 4)
+                    int recommendedI=(System.Console.WindowHeight-2)/2;
+                    if(recommendedI==0) goto SLyric2;
+
+                    for (int i = recommendedI; i > 0; i--)
                     {
-                        System.Console.WriteLine(lyrics[last - 4].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last - 3].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
+                        if (last > i)
+                        {
+                            for (int l = i; l > 0; l--)
+                            {
+                                System.Console.WriteLine(lyrics[last - l].ToString().ReplaceLineEndings(""));
+
+                            }
+                            goto SLyric1;
+
+                        }
                     }
-                    else if (last > 3)
-                    {
-                        System.Console.WriteLine(lyrics[last - 3].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
-                    }
-                     else if (last > 2)
-                    {
-                        System.Console.WriteLine(lyrics[last - 2].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
-                    }
-                    else if (last > 1)
-                    {
-                        System.Console.WriteLine(lyrics[last - 1].ToString().ReplaceLineEndings(""));
-                    }
+                SLyric1:
+
                     System.Console.WriteLine("\x1b[96m" + lyrics[last].ToString().ReplaceLineEndings("") + "\u001b[0m");
-                    if (last < lyrics.Count - 3)
+                    for (int i = recommendedI; i > 0; i--)
                     {
-                        System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last + 2].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last + 3].ToString().ReplaceLineEndings(""));
+                        if (last < lyrics.Count - i)
+                        {
+                            for (int l = 1; l <= i; l++)
+                            {
+                                System.Console.WriteLine(lyrics[last + l].ToString().ReplaceLineEndings(""));
 
+                            }
+                            goto SLyric2;
 
+                        }
                     }
-                    if (last < lyrics.Count - 2)
-                    {
-                        System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
-                        System.Console.WriteLine(lyrics[last + 2].ToString().ReplaceLineEndings(""));
+                SLyric2:;
 
-                    }
-                    else if (last < lyrics.Count - 1)
-                    {
-                        System.Console.WriteLine(lyrics[last + 1].ToString().ReplaceLineEndings(""));
-                    }
                 }
                 if (System.Console.KeyAvailable)
                 {
@@ -488,3 +409,4 @@ public class App
     }
 
 }
+

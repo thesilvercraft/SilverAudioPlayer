@@ -27,7 +27,7 @@ using SilverMagicBytes;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
     ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin,
@@ -50,7 +50,7 @@ public partial class Settings : Window
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
 
-        Logger = Shared.Logger.GetLogger(typeof(Settings));
+        Logger = SilverAudioPlayer.Shared.Logger.GetLogger(typeof(Settings));
         this.DoAfterInitTasksF();
     }
 
@@ -175,12 +175,12 @@ public partial class Settings : Window
                 configurableUiPlugin.ConfigureUi(mainWindow.Env);
                 break;
             case IAmConfigurable configurable:
-            {
-                EkonrensisWindow cw = new();
-                cw.HandleConfiguration(configurable);
-                cw.Show();
-                break;
-            }
+                {
+                    EkonrensisWindow cw = new();
+                    cw.HandleConfiguration(configurable);
+                    cw.Show();
+                    break;
+                }
         }
     }
 
@@ -198,8 +198,9 @@ public partial class Settings : Window
         LaunchActionsWindow launchActionsWindow = new();
         var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
                 new SAction
- {
-                    ActionName = "Open " + m, ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); }
+                {
+                    ActionName = "Open " + m,
+                    ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); }
                 })
             .ToList();
         launchActionsWindow.AddActions(actions);
@@ -305,10 +306,14 @@ public partial class Settings : Window
     private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",
-            TransparencyDown.SelectedItem.ToString() ??
+            TransparencyDown.SelectedItem?.ToString() ??
             WindowTransparencyLevel.AcrylicBlur.ToString()));
-        WindowExtensions.OnStyleChange.Invoke(this,
-            new(null, [(WindowTransparencyLevel)TransparencyDown.SelectedItem], null));
+        if (TransparencyDown.SelectedItem is not null)
+        {
+            WindowExtensions.OnStyleChange.Invoke(this,
+                        new(null, [(WindowTransparencyLevel)TransparencyDown.SelectedItem], null));
+        }
+
     }
 
     private void RegisterClick(object? sender, RoutedEventArgs e)
@@ -360,7 +365,7 @@ public partial class Settings : Window
         {
             var t = ColorBoxPB.Text;
             mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush()
-                { GradientStops = defPBStops }));
+            { GradientStops = defPBStops }));
             WindowExtensions.envBackend.SetEnv("SAPPBColor", t);
         }, DispatcherPriority.Normal);
     }

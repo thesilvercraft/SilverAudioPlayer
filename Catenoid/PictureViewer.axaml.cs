@@ -7,11 +7,11 @@ using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public partial class PictureViewer : Window
 {
-    private readonly IReadOnlyList<IPicture> pictures;
+    private readonly IReadOnlyList<IPicture> pictures = [];
     private int pos;
     private readonly DContext x;
     private readonly ILogger? Log;
@@ -20,20 +20,20 @@ public partial class PictureViewer : Window
     {
         InitializeComponent();
         this.DoAfterInitTasksF();
-        x = new DContext { Picture = null};DataContext = x;
+        x = new DContext { Picture = null }; DataContext = x;
         Log = Logger.GetLogger(typeof(MetadataView));
     }
 
     public PictureViewer(IReadOnlyList<IPicture>? pictures) : this()
     {
-         if(pictures==null)
+        if (pictures == null)
         {
             Close();
             Log?.Error("The pictureviewer was initialised with NULL pictures???????");
             return;
         }
         this.pictures = pictures;
-        if(pictures?.Count<0)
+        if (pictures?.Count < 0)
         {
             Close();
             Log?.Error("The pictureviewer was initialised with no pictures???????");
@@ -44,7 +44,10 @@ public partial class PictureViewer : Window
     void ChangePicture()
     {
         using var data = pictures[pos].Data?.GetStream();
-        x.Picture = new Bitmap(data);
+        if (data != null)
+        {
+            x.Picture = new Bitmap(data);
+        }
     }
     private void Left(object? sender, RoutedEventArgs e)
     {
@@ -62,13 +65,17 @@ public partial class PictureViewer : Window
 
     private async void Copy(object? sender, RoutedEventArgs e)
     {
-        await this.SetClipboardImage(pictures[pos].Data, Log);
+        var wrappedStream = pictures[pos].Data;
+        if (wrappedStream != null)
+        {
+            await this.SetClipboardImage(wrappedStream, Log);
+        }
     }
 
 }
 public class DContext : ReactiveObject
 {
-    private Bitmap? picture=null;
+    private Bitmap? picture = null;
 
     public Bitmap? Picture
     {

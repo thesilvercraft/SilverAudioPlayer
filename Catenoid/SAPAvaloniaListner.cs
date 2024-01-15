@@ -10,7 +10,7 @@ using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Ekorensis;
 
-namespace SilverAudioPlayer.Avalonia;
+namespace Catenoid;
 
 public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IFullPlayerEnvironment
 {
@@ -44,19 +44,19 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IF
         return mainWindow.Logic.FilterFiles(files);
     }
 
-    public string Name => "SilverAudioPlayer.Avalonia";
+    public string Name => "Catenoid";
 
-    public string Description => "AvaloniaUI (https://github.com/AvaloniaUI/Avalonia) UI for SilverAudioPlayer";
+    public string Description => "A modular hackable audio player.";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SapAvaloniaPlayerEnviroment).Assembly,
-        "SilverAudioPlayer.Avalonia.icon.svg");
+        "Catenoid.icon.svg");
 
     public Version? Version => typeof(SapAvaloniaPlayerEnviroment).Assembly.GetName().Version;
 
     public List<Tuple<Uri, URLType>>? Links =>
     [
         new Tuple<Uri, URLType>(
-            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Avalonia"),
+            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/Catenoid"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri($"https://www.nuget.org/packages/Avalonia/{typeof(Window).Assembly.GetName().Version}"),
@@ -71,10 +71,9 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IF
     }
 
 
-    public async Task<List<Song>?> GetQueue()
+    public Task<List<Song>?> GetQueue()
     {
-        //TODO ASK USER BEFORE GIVING OVER QUEUE
-        return mainWindow.Logic.GetQueueCopy();
+        return Task.FromResult(mainWindow.Logic.GetQueueCopy());
     }
 
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
@@ -169,7 +168,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-SilverAudioPlayer.Avalonia
+Catenoid
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
