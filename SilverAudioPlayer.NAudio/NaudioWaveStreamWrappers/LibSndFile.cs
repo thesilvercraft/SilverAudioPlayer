@@ -47,7 +47,7 @@ public class LibMPT : INaudioWaveStreamWrapper
     static readonly string[] DllLoc = ["libopenmpt.so.0","/usr/lib/x86_64-linux-gnu/libopenmpt.so.0",
     "libopenmpt.dll","/usr/lib/x86_64-linux-gnu/libopenmpt.so.0.4.4","/usr/lib/i386-linux-gnu/libopenmpt.so.0",
     "/usr/lib/i386-linux-gnu/libopenmpt.so.0.4.4", "/usr/lib/aarch64-linux-gnu/libopenmpt.so.0.4.4",
-    "/usr/lib/aarch64-linux-gnu/libopenmpt.so.0",
+    "/usr/lib/aarch64-linux-gnu/libopenmpt.so.0","/usr/lib/libopenmpt.so","/usr/lib/libopenmpt.so.0","usr/lib/libopenmpt.so.0.4.4",
    ];
 
     public WaveStream GetStream(Stream stream) => new CSCoreReader(new OpenMptWaveStream(stream).ToWaveSource());

@@ -31,7 +31,7 @@ public sealed class CallbackHelper
 
 public class PortAudioSoundOut : ISoundOut
 {
-    public float Volume { get => 1; set => Debug.WriteLine("TODO"); }
+    public float Volume { get; set; }
 
     public IWaveSource WaveSource { get; set; }
     ISampleSource SampleSource { get; set; }
@@ -54,7 +54,6 @@ public class PortAudioSoundOut : ISoundOut
     }
     void OnStop()
     {
-        Stopped.Invoke(this, new());
         Task.Run(() =>
         {
             unsafe
@@ -62,9 +61,10 @@ public class PortAudioSoundOut : ISoundOut
                 NativeMethods.Pa_CloseStream(stream);
                 stream = null;
             }
-            WaveSource=null;
-            SampleSource=null;
+            WaveSource = null;
+            SampleSource = null;
             c = null;
+            Stopped.Invoke(this, new());
         });
 
     }
@@ -115,7 +115,7 @@ public class PortAudioSoundOut : ISoundOut
         var r = SampleSource.Read(buffer, 0, buffer.Length);
         for (i = 0; i < (int)frameCount * channels; i++)
         {
-            *(outputBuffer++) = buffer[i];
+            *(outputBuffer++) = buffer[i] * Volume;
         }
         if (r < buffer.Length)
         {
@@ -127,28 +127,38 @@ public class PortAudioSoundOut : ISoundOut
 
     public unsafe void Pause()
     {
-        var err = NativeMethods.Pa_StopStream(stream);
-        PlaybackState = PlaybackState.Paused;
-
+        if (PlaybackState == PlaybackState.Playing)
+        {
+            var err = NativeMethods.Pa_StopStream(stream);
+            PlaybackState = PlaybackState.Paused;
+        }
     }
 
     public unsafe void Play()
     {
-        var err = NativeMethods.Pa_StartStream(stream);
-        PlaybackState = PlaybackState.Playing;
+        if (PlaybackState != PlaybackState.Playing)
+        {
+            var err = NativeMethods.Pa_StartStream(stream);
+            PlaybackState = PlaybackState.Playing;
+        }
     }
 
     public unsafe void Resume()
     {
-        var err = NativeMethods.Pa_StartStream(stream);
-        PlaybackState = PlaybackState.Playing;
-
+        if (PlaybackState == PlaybackState.Paused)
+        {
+            var err = NativeMethods.Pa_StartStream(stream);
+            PlaybackState = PlaybackState.Playing;
+        }
     }
 
     public unsafe void Stop()
     {
-        var err = NativeMethods.Pa_StopStream(stream);
-        PlaybackState = PlaybackState.Stopped;
-        OnStop();
+        if (PlaybackState != PlaybackState.Stopped)
+        {
+            var err = NativeMethods.Pa_StopStream(stream);
+            PlaybackState = PlaybackState.Stopped;
+            OnStop();
+        }
     }
 }
