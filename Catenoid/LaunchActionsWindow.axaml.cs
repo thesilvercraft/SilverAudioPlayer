@@ -24,15 +24,18 @@ public class ActionDataContext
 
 public partial class LaunchActionsWindow : Window
 {
-    private readonly ActionDataContext x;
+    private readonly ActionDataContext x = new ActionDataContext();
 
     public LaunchActionsWindow()
     {
         InitializeComponent();
-        x = new ActionDataContext();
         DataContext = x;
         LB = this.FindControl<ListBox>("LB");
         this.DoAfterInitTasksF();
+    }
+    public LaunchActionsWindow(List<SAction> action) :this()
+    {
+        x.Actions.AddRange(action);
     }
 
     public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
@@ -40,8 +43,5 @@ public partial class LaunchActionsWindow : Window
         ((SAction?)LB.SelectedItem)?.Invoke();
     }
 
-    public void AddActions(List<SAction> action)
-    {
-        x.Actions.AddRange(action);
-    }
+   
 }

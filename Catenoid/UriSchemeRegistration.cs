@@ -88,6 +88,7 @@ public static class RegistryRegistration
     {
         var f = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             ".local/share/applications/Catenoid.desktop");
+        Directory.CreateDirectory(Path.GetDirectoryName(f));
         if (!File.Exists(f))
         {
             var playableMimes = mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)

@@ -26,7 +26,7 @@ public class LibSndFile : INaudioWaveStreamWrapper
     static readonly string[] DllLoc = ["libsndfile.so","/usr/lib/x86_64-linux-gnu/libsndfile.so",
     "libsndfile.dll","/usr/lib/x86_64-linux-gnu/libsndfile.so.1","/usr/lib/x86_64-linux-gnu/libsndfile.so.1.0.37",
     "/usr/lib/i386-linux-gnu/libsndfile.so.1","/usr/lib/i386-linux-gnu/libsndfile.so.1.0.37",
-    "/usr/lib/aarch64-linux-gnu/libsndfile.so.1","/usr/lib/aarch64-linux-gnu/libsndfile.so.1.0.28"];
+    "/usr/lib/aarch64-linux-gnu/libsndfile.so.1","/usr/lib/aarch64-linux-gnu/libsndfile.so.1.0.28", "/usr/lib/libsndfile.so", "/usr/lib/libsndfile.so.1","/usr/lib/libsndfile.so.1.0.37"];
 
     public WaveStream GetStream(Stream stream) => new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
 

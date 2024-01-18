@@ -10,7 +10,6 @@ namespace Catenoid
     public class ChooseProviderDataContext
     {
         public ObservableCollection<InfoPRecord> playProviders { get; set; } = [];
-        public bool? SetAsDefaultIfPresent { get; set; } = false;
         public bool? SetAsDefaultForFileType { get; set; } = false;
 
     }
@@ -32,20 +31,19 @@ namespace Catenoid
         {
             if(CapBox.SelectedItem != null)
             {
-                Selected = (IPlayProvider)((InfoPRecord)CapBox.SelectedItem).Item;
+                Selected = (ICodeInformation)((InfoPRecord)CapBox.SelectedItem).Item;
                 Close();
             }
         }
-        public bool? SetAsDefaultIfPresent =>dc.SetAsDefaultIfPresent;
         public bool? SetAsDefaultForFileType => dc.SetAsDefaultForFileType;
 
-        public IPlayProvider? Selected = null;
+        public ICodeInformation? Selected = null;
      
 
-        public void SetProviders(IEnumerable<IPlayProvider> providers )
+        public void SetProviders(IEnumerable<ICodeInformation> providers )
         {
             dc.playProviders.Clear();
-            dc.playProviders.AddRange(Settings.GetInfoRecords(providers.Cast<ICodeInformation>().ToList()).Item1);
+            dc.playProviders.AddRange(Settings.GetInfoRecords(providers.ToList()).Item1);
         }
     }
 }

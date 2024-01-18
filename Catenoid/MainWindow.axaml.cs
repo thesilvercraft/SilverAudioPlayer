@@ -311,33 +311,7 @@ public partial class MainWindow : Window
                 {
                     return x.FirstOrDefault();
                 }
-
-                if (preferredplayer != null)
-                {
-                    var y = x.FirstOrDefault(x => x.GetType() == preferredplayer);
-                    if (y != null)
-                    {
-                        return y;
-                    }
-                }
-
-                if (!config.PreferredPlayers.TryGetValue(m.MimeType.Common, out var v))
-                    return await Dispatcher.UIThread.InvokeAsync(async () =>
-                    {
-                        ChooseProvider w = new();
-                        w.SetProviders(x);
-                        await w.ShowDialog(this);
-                        if (w.SetAsDefaultIfPresent == true)
-                        {
-                            preferredplayer = w.Selected?.GetType();
-                        }
-
-                        if (w.SetAsDefaultForFileType != true) return w.Selected;
-                        config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
-
-                        reader.Write(config, App._configPath);
-                        return w.Selected;
-                    });
+                if (config.PreferredPlayers.TryGetValue(m.MimeType.Common, out var v))
                 {
                     var y = x.FirstOrDefault(x => x.GetType().FullName == v);
                     if (y != null)
@@ -345,22 +319,18 @@ public partial class MainWindow : Window
                         return y;
                     }
                 }
+                return (IPlayProvider?)await Dispatcher.UIThread.InvokeAsync(async () =>
+                     {
+                         ChooseProvider w = new();
+                         w.SetProviders(x);
+                         await w.ShowDialog(this);
 
-                return await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    ChooseProvider w = new();
-                    w.SetProviders(x);
-                    await w.ShowDialog(this);
-                    if (w.SetAsDefaultIfPresent == true)
-                    {
-                        preferredplayer = w.Selected?.GetType();
-                    }
+                         if (w.SetAsDefaultForFileType != true) return w.Selected;
+                         config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
 
-                    if (w.SetAsDefaultForFileType != true) return w.Selected;
-                    config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
-                    reader.Write(config, App._configPath);
-                    return w.Selected;
-                });
+                         reader.Write(config, App._configPath);
+                         return w.Selected;
+                     });
             },
             PlayerEnvironment = Env
         };
@@ -402,7 +372,6 @@ public partial class MainWindow : Window
         }
     }
 
-    Type? preferredplayer;
 
     public Logic<MainWindowContext> Logic { get; set; }
 

@@ -7,7 +7,7 @@
         Title="Choose player"
 		ExtendClientAreaToDecorationsHint="True"
 		Icon="/icon.ico">
-	<Grid RowDefinitions="25,*,25,25" Margin="5">
+	<Grid RowDefinitions="25,*,25" Margin="5">
 		<TextBlock Grid.Row="0">Choose player:</TextBlock>
 		<ListBox Grid.Row="1" Name="CapBox" ItemsSource="{Binding playProviders}" Background="Transparent">
 			<ListBox.ItemTemplate>
@@ -23,7 +23,6 @@
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-		<CheckBox Grid.Row="2" IsThreeState="False" IsChecked="{Binding SetAsDefaultIfPresent}">Set as default for this instance</CheckBox>
-		<CheckBox Grid.Row="3" IsThreeState="False" IsChecked="{Binding SetAsDefaultForFileType}">Set as default for this file type</CheckBox>
+		<CheckBox Grid.Row="2" IsThreeState="False" IsChecked="{Binding SetAsDefaultForFileType}">Set as default for this file type</CheckBox>
 	</Grid>
 </Window>

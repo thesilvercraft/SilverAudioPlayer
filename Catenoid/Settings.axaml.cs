@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
@@ -127,7 +125,7 @@ public partial class Settings : Window
                 item,
                 item is IAmConfigurable or IConfigurableUiPlugin,
                 item is IPlayStreamProvider,
-                item is IAmOnceAgainAskingYouForYourMemory,
+                item is IAmOnceAgainAskingYouForYourMemory or IHaveConfigFilesWithKnownLocations,
                 item is ISyncPlugin,
                 item is IMusicStatusInterface
             ));
@@ -187,6 +185,11 @@ public partial class Settings : Window
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
+        if (y is { DataContext: InfoPRecord { IsAskingMemoryProvider: true, Item: IHaveConfigFilesWithKnownLocations knownLocations } })
+        {
+            ShowLaunchActionsFiles(knownLocations.KnownConfigFileLocations);
+            return;
+        }
         if (y is not
             {
                 DataContext: InfoPRecord
@@ -195,18 +198,37 @@ public partial class Settings : Window
                 }
             } ||
             mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
-        LaunchActionsWindow launchActionsWindow = new();
-        var actions = configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
+        ShowLaunchActionsFiles(configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)));
+
+    }
+    void ShowLaunchActionsFiles(IEnumerable<string> files, bool folder = true)
+    {
+        ShowLaunchActionsWindow(files.Select(m =>
                 new SAction
                 {
                     ActionName = "Open " + m,
-                    ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); }
+                    ActionToInvoke = () =>
+                    {
+                        if (folder)
+                        {
+                            EnvironmentExtensions.OpenFolder(m);
+                        }
+                        else
+                        {
+                            EnvironmentExtensions.OpenBrowser(m);
+                        }
+                    }
                 })
-            .ToList();
-        launchActionsWindow.AddActions(actions);
-        launchActionsWindow.Show();
+            .ToList());
     }
-
+   static void ShowLaunchActionsWindow(List<SAction> actions)
+    {
+        Dispatcher.UIThread.Post(() =>
+      {
+          LaunchActionsWindow launchActionsWindow = new(actions);
+          launchActionsWindow.Show();
+      }, DispatcherPriority.Normal);
+    }
     public void PlayProviderClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
@@ -251,7 +273,6 @@ public partial class Settings : Window
     public static void ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)
     {
         if (element == null) return;
-        LaunchActionsWindow launchActionsWindow = new();
         if (element.Item.Links == null)
         {
             return;
@@ -298,9 +319,7 @@ public partial class Settings : Window
                 });
                 break;
         }
-
-        launchActionsWindow.AddActions(actions);
-        launchActionsWindow.Show();
+        ShowLaunchActionsWindow(actions);
     }
 
     private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -335,8 +354,8 @@ public partial class Settings : Window
         {
             IsReadOnly = true,
             Text = Legalese,
-            VerticalAlignment = global::Avalonia.Layout.VerticalAlignment.Stretch,
-            HorizontalAlignment = global::Avalonia.Layout.HorizontalAlignment.Stretch
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
         };
         w.Content = tb;
         w.DoAfterInitTasksF();
@@ -500,7 +519,7 @@ public class SettingsDC : ReactiveObject
     public IImage? ProductIcon
     {
         get => _productIcon;
-        set => this.RaiseAndSetIfChanged(ref _productIcon, value, "ProductIcon");
+        set => this.RaiseAndSetIfChanged(ref _productIcon, value, nameof(ProductIcon));
     }
 
     public IImage? _productIcon;

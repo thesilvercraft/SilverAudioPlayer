@@ -16,14 +16,16 @@
             "stopAtEntry": false
         },
         {
-            "name": ".NET Core Launch (console)",
+            "name": ".NET Core Launch (catenoid)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/Catenoid.dll",
             "args": [],
+            "env":{
+                "DISPLAY":":0"
+            },
             "cwd": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/",
-            "console": "externalTerminal",
             "stopAtEntry": false
         },
         {

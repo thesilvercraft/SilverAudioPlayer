@@ -1,11 +1,15 @@
 ﻿using System.Composition;
 using System.Diagnostics;
 using Audioz_playerZ;
-using CSCore.SoundOut;
 using NAudio.Wave;
 using Serilog;
 using SilverAudioPlayer.Shared;
+#if CSCore
+using SilverCraft.PortAudio;
+using CSCore.SoundOut;
+#endif
 using SilverMagicBytes;
+
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
 namespace SilverAudioPlayer.NAudio;
 
@@ -39,7 +43,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
         else
         {
-            outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
+            outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut());
         }
 #else
      outputDevice = new WaveOutEvent()

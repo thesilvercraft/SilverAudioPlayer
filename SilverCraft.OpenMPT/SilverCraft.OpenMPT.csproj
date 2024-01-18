@@ -13,6 +13,5 @@
 <ItemGroup>
   <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" />
   <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-
 </ItemGroup>
 </Project>

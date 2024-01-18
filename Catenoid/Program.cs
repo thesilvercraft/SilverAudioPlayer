@@ -14,6 +14,7 @@ internal static class Program
     public static void Main(string[] args)
     {
         var a = BuildAvaloniaApp();
+   
         if (Environment.GetEnvironmentVariable("SAPUseNativeDialog")=="yes") a = a.UseManagedSystemDialogs();
         a.StartWithClassicDesktopLifetime(args);
     }

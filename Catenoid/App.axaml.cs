@@ -207,7 +207,6 @@ public class App : Application
            
             BootupLogic.SetupCommandPalette(mw.Logic, ComandPalette, (item, memoryAsker, l) =>
             {
-                LaunchActionsWindow launchActionsWindow = new();
                 var actions = memoryAsker.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
                         new SAction
                         {
@@ -215,7 +214,7 @@ public class App : Application
                             ActionToInvoke = () => { EnvironmentExtensions.OpenBrowser(m); }
                         })
                     .ToList();
-                launchActionsWindow.AddActions(actions);
+                LaunchActionsWindow launchActionsWindow = new(actions);
                 launchActionsWindow.Show();
             }, (configurable) =>
             {

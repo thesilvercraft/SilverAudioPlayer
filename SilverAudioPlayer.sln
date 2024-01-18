@@ -109,6 +109,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.Music
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverCraft.OpenMPT", "SilverCraft.OpenMPT\SilverCraft.OpenMPT.csproj", "{61924B88-5C23-42E9-958C-C8CB7747A586}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverCraft.PortAudio", "SilverCraft.PortAudio\SilverCraft.PortAudio.csproj", "{4DCB106D-9371-41DF-B1EB-41C7EF961182}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -745,6 +747,22 @@ Global
 		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x64.Build.0 = Release|Any CPU
 		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x86.ActiveCfg = Release|Any CPU
 		{61924B88-5C23-42E9-958C-C8CB7747A586}.Release|x86.Build.0 = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|arm64.Build.0 = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|x64.Build.0 = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Debug|x86.Build.0 = Debug|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|arm64.ActiveCfg = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|arm64.Build.0 = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|x64.ActiveCfg = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|x64.Build.0 = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|x86.ActiveCfg = Release|Any CPU
+		{4DCB106D-9371-41DF-B1EB-41C7EF961182}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

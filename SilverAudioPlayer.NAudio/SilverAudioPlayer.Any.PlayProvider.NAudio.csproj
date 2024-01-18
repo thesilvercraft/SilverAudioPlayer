@@ -35,6 +35,7 @@
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
         <ProjectReference Include="..\SilverCraft.SndFile\SilverCraft.SndFile.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
         <ProjectReference Include="..\SilverCraft.OpenMPT\SilverCraft.OpenMPT.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <ProjectReference Include="..\SilverCraft.PortAudio\SilverCraft.PortAudio.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
    
     </ItemGroup>
 

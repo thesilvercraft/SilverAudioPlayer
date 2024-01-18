@@ -47,7 +47,6 @@
 								<Button  IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
 								<Button  IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
 								<CheckBox  IsVisible="{Binding IsMusicStatusInterface}" IsCheckedChanged="EnableMSI" IsChecked="{Binding Item.IsStarted,Mode=OneWay}"/>
-
 							</StackPanel>
 						</Grid>
 					</DataTemplate>
