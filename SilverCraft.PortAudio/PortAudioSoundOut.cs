@@ -1,7 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CSCore;
 using CSCore.SoundOut;
+using CSCore.Streams;
 using PortAudio;
 
 namespace SilverCraft.PortAudio;
@@ -26,7 +28,6 @@ public class PortAudioSoundOut : ISoundOut
 
     public IWaveSource? WaveSource { get; set; }
     ISampleSource? SampleSource { get; set; }
-
     public PlaybackState PlaybackState { get; set; } = PlaybackState.Stopped;
 
     public event EventHandler<PlaybackStoppedEventArgs>? Stopped;
@@ -69,6 +70,7 @@ public class PortAudioSoundOut : ISoundOut
             throw new Exception($"PortAudio failed, error code {err} ({Marshal.PtrToStringAnsi((IntPtr)NativeMethods.Pa_GetErrorText(err))}) in method {callerName} in {path}:{num}");
         }
     }
+    public ushort Buffer { get; set; } = 50;
     public void Initialize(IWaveSource source)
     {
         if (!isPAInit)
@@ -80,6 +82,8 @@ public class PortAudioSoundOut : ISoundOut
             }
             isPAInit = true;
         }
+        WaveSource?.Dispose();
+        SampleSource?.Dispose();
         WaveSource = source;
         SampleSource = source.ToSampleSource();
         unsafe
@@ -90,7 +94,7 @@ public class PortAudioSoundOut : ISoundOut
                                          SampleSource.WaveFormat.Channels,
                                         NativeMethods.paFloat32,
                                         SampleSource.WaveFormat.SampleRate,
-                                        (nuint)(0.05d *  SampleSource.WaveFormat.SampleRate),//frames per buffer      
+                                        (nuint)(Buffer / 1000d * WaveSource.WaveFormat.SampleRate),//frames per buffer      
                                         c.CallBack,
                                         0));
             this.stream = stream;
@@ -100,22 +104,20 @@ public class PortAudioSoundOut : ISoundOut
     int channels;
     private unsafe int CallBackMethod(void* input, void* output, ulong frameCount, PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, nint userData)
     {
+        Thread.CurrentThread.Priority = ThreadPriority.Highest;
         float* outputBuffer = (float*)output;
-        int i;
-        float[] buffer = new float[(uint)frameCount * channels];
-        var r = SampleSource?.Read(buffer, 0, buffer.Length);
-        if (Volume == 1)
+        int bufferLength = (int)frameCount * channels;
+        float[] buffer = new float[bufferLength];
+        var r = SampleSource?.Read(buffer, 0, bufferLength);
+        r ??= 0;
+
+        fixed (float* bufferStart = buffer)
         {
-            for (i = 0; i < (int)frameCount * channels; i++)
+            float* bufferI = bufferStart;
+            float* bufferEnd = bufferStart + r.Value;
+            while (bufferI < bufferEnd)
             {
-                *outputBuffer++ = buffer[i];
-            }
-        }
-        else
-        {
-            for (i = 0; i < (int)frameCount * channels; i++)
-            {
-                *outputBuffer++ = buffer[i] * Volume;
+                *outputBuffer++ = *bufferI++;
             }
         }
 

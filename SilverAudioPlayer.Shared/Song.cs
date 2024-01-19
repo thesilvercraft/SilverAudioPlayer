@@ -11,6 +11,14 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
     public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic=null)
     {
         URI = "";
+        if(data is WrappedFileStream w)
+        {
+            URI=w.URL;
+        }
+        else if(data is WrappedHttpStream h)
+        {
+            URI=h.Url;
+        }
         Stream = data;
         Name = name;
         Metadata = metadata;
@@ -25,11 +33,13 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
             var b = metadata?.Artist?.GetHashCode()??-1;
             var c = metadata?.Album?.GetHashCode()??-1;
             var d = metadata?.Genre?.GetHashCode()??-1;
-            List<byte> by = new();
-            by.AddRange(BitConverter.GetBytes(a));
-            by.AddRange(BitConverter.GetBytes(b));
-            by.AddRange(BitConverter.GetBytes(c));
-            by.AddRange(BitConverter.GetBytes(d));
+            List<byte> by =
+            [
+                .. BitConverter.GetBytes(a),
+                .. BitConverter.GetBytes(b),
+                .. BitConverter.GetBytes(c),
+                .. BitConverter.GetBytes(d),
+            ];
             Guid = new Guid(by.ToArray());
         }
         else

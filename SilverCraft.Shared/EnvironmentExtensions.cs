@@ -38,7 +38,7 @@ public static class EnvironmentExtensions
                     Arguments = $"--session --print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 {method} array:string:\"{folder}\" string:\"\"",
                     UseShellExecute = true
                 }
-            };
+            };      
             dbusProcess.Start();
         }
         else

@@ -453,26 +453,18 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
                 ProcessFile(path, oneFile);
             }
         }
-
-        if (_isSortRequested) return;
-        _isSortRequested = true;
-        var sortTask = Task.Run(async () => await DoSort());
+        SuggestDoingSort();
     }
 
     public void ProcessStreams(IEnumerable<WrappedStream> streams)
     {
-        if (streams is null)
-        {
-            throw new ArgumentNullException(nameof(streams));
-        }
-
+        ArgumentNullException.ThrowIfNull(streams);
         var wrappedStreams = streams.ToList();
-        if (wrappedStreams.Any() != true) return;
+        if (wrappedStreams.Count == 0) return;
         var oneFile = wrappedStreams.Count == 1;
         foreach (var file in wrappedStreams) AddSong(new Song(file, "unknown", logic: this), true);
-        if (oneFile || _isSortRequested) return;
-        _isSortRequested = true;
-        var sortTask = Task.Run(async () => await DoSort());
+        if (oneFile) return;
+        SuggestDoingSort();
     }
 
     public void ProcessStream(WrappedStream stream)
@@ -497,18 +489,20 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
     public void AddSong(Song song, bool expectmore = false)
     {
         PlayerContext.Queue.Add(song);
-        if (expectmore || _isSortRequested) return;
-        _isSortRequested = true;
-        var sortTask = Task.Run(async () => await DoSort());
+        if (expectmore) return;
+        SuggestDoingSort();
     }
 
     public void DoneAddingSongs()
+    {
+        SuggestDoingSort();
+    }
+    void SuggestDoingSort()
     {
         if (_isSortRequested) return;
         _isSortRequested = true;
         var sortTask = Task.Run(DoSort);
     }
-
     public async Task DoSort()
     {
         await Task.Delay(200);
@@ -540,14 +534,14 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
     public async Task<IPlay?> GetPlayerFromStream(WrappedStream stream)
     {
-        return (await ChoosePlayProvider(PlayProviders?.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream);
+        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream);
     }
 
 
     public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata = null)
     {
         var listofmetadatas = MetadataProviders?.Where(x => x.CanGetMetadata(stream))
-            .Select(async x => (await x.GetMetadata(stream))).Select(t => t.Result).Where(i => i != null).ToList();
+            .Select(async x => await x.GetMetadata(stream)).Select(t => t.Result).Where(i => i != null).ToList();
         if (additionalMetadata != null)
         {
             listofmetadatas.AddRange(additionalMetadata);
@@ -616,11 +610,11 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
     }
     public Tuple<List<string>, List<string>> SupportedTrackAndPlaylistMimes()
     {
-        var (a,b) = Logic<T>.SupportedTrackMimesG(PlayableMimes);
-        var (c,d)= SupportedPlaylistMimes();
+        var (a, b) = Logic<T>.SupportedTrackMimesG(PlayableMimes);
+        var (c, d) = SupportedPlaylistMimes();
         a.AddRange(c);
         b.AddRange(d);
-        return new (a,b);
+        return new(a, b);
     }
 
 

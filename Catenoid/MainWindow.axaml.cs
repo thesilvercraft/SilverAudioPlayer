@@ -22,6 +22,7 @@ using SkiaSharp;
 using Avalonia.Collections;
 using Avalonia.Platform.Storage;
 using SilverAudioPlayer.Shared.SilverPlaylist;
+using SilverCraft.Shared;
 
 namespace Catenoid;
 
@@ -191,7 +192,28 @@ public partial class MainWindow : Window
                         {
                             Title = CurrentSong.TitleOrURL() + " - Catenoid";
                         }
-
+                        if (CurrentSong?.Metadata?.SyncedLyrics?.Count is not null and not 0)
+                        {
+                            if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2))
+                            {
+                                LyricsButton.Foreground = (IBrush)result2;
+                             }
+                            else
+                            {
+                                Log.Error("Failed to find SystemControlForegroundAccentBrush?");
+                            }
+                        }
+                        else
+                        {
+                           if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2))
+                            {
+                                LyricsButton.Foreground =  (IBrush)result2;
+                             }
+                            else
+                            {
+                                Log.Error("Failed to find SystemControlForegroundBaseHighBrush?");
+                            }
+                        }
                         if (CurrentSong?.Metadata?.Pictures?.Any() == true)
                         {
                             if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong) &&
@@ -538,7 +560,7 @@ public partial class MainWindow : Window
 
     public void RemoveTrack()
     {
-        Dispatcher.UIThread.InvokeAsync(() => Title = "SilverAudioPlayer");
+        Dispatcher.UIThread.InvokeAsync(() => Title = "Catenoid");
         Logic.RemoveTrack();
         token?.Cancel();
     }
@@ -586,7 +608,7 @@ public partial class MainWindow : Window
 
             if (!string.IsNullOrEmpty(url))
             {
-                Logic.ProcessFiles(new[] { url });
+                Logic.ProcessFiles([url]);
             }
         }
     }
@@ -605,7 +627,7 @@ public partial class MainWindow : Window
                 MimeTypes = mimeTypes
             },
             new("Everything else")
-                { Patterns = new List<string>() { "*" }, MimeTypes = new List<string>() { "application/octet-stream" } }
+                { Patterns = ["*"], MimeTypes = ["application/octet-stream"] }
         };
 
         fileDialogFilters.AddRange(Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).
@@ -670,20 +692,30 @@ public partial class MainWindow : Window
             dc.Queue.Remove(selected);
         }
     }
-
+    private void ShowInFolder(object? sender, RoutedEventArgs e)
+    {
+        foreach (var selected in dc.Selection.SelectedItems)
+        {
+            var url = selected?.URI;
+            if (!string.IsNullOrEmpty(url))
+            {
+                EnvironmentExtensions.OpenFolder(url);
+            }
+        }
+    }
     private async void SaveQueue(object? sender, RoutedEventArgs e)
     {
         var a = await StorageProvider.SaveFilePickerAsync(new()
         {
             DefaultExtension = ".spl.br",
-            FileTypeChoices = new[]
-            {
+            FileTypeChoices =
+            [
                 new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
                 {
                     MimeTypes = [ "application/silverplaylist+br" ],
                     Patterns = ["*.spl.br"]
                 }
-            }
+            ]
         });
         if (a == null) return;
         var queue = Logic.GetQueueCopy();
