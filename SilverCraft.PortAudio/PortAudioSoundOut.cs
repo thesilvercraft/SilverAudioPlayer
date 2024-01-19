@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CSCore;
 using CSCore.SoundOut;
@@ -7,15 +7,6 @@ using PortAudio;
 namespace SilverCraft.PortAudio;
 
 
-/*typedef int PaStreamCallback( const void *input,
-                                      void *output,
-                                      ,
-                                      const PaStreamCallbackTimeInfo* timeInfo,
-                                      PaStreamCallbackFlags statusFlags,
-                                      void *userData ) ;
-*/
-// unmanaged[Cdecl]<void*, void*, nuint, PaStreamCallbackTimeInfo*, nuint, void*, int>
-//delegate* unmanaged[Cdecl]<void*, void*, ulong, PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, IntPtr, int>
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 public unsafe delegate int StreamCallBack(void* input, void* output, ulong frameCount, PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, IntPtr userData);
 
@@ -33,12 +24,12 @@ public class PortAudioSoundOut : ISoundOut
 {
     public float Volume { get; set; }
 
-    public IWaveSource WaveSource { get; set; }
-    ISampleSource SampleSource { get; set; }
+    public IWaveSource? WaveSource { get; set; }
+    ISampleSource? SampleSource { get; set; }
 
     public PlaybackState PlaybackState { get; set; } = PlaybackState.Stopped;
 
-    public event EventHandler<PlaybackStoppedEventArgs> Stopped;
+    public event EventHandler<PlaybackStoppedEventArgs>? Stopped;
 
     public void Dispose()
     {
@@ -49,37 +40,43 @@ public class PortAudioSoundOut : ISoundOut
             {
                 throw new Exception($"PortAudio failed to terminate, error code {err}");
             }
+            c = null;
             isPAInit = false;
         }
+        GC.SuppressFinalize(this);
     }
     void OnStop()
     {
+        PlaybackState = PlaybackState.Stopped;
         Task.Run(() =>
         {
             unsafe
             {
-                NativeMethods.Pa_CloseStream(stream);
+                ThrowIfError(NativeMethods.Pa_CloseStream(stream));
                 stream = null;
             }
-            WaveSource = null;
-            SampleSource = null;
-            c = null;
-            Stopped.Invoke(this, new());
+            Stopped?.Invoke(this, new());
         });
 
     }
     unsafe PaStream* stream;
     public static bool isPAInit = false;
-    CallbackHelper c;
+    CallbackHelper? c;
+    unsafe void ThrowIfError(int err, [CallerMemberName] string callerName = "", [CallerFilePath] string path = "", [CallerLineNumber] int num = 0)
+    {
+        if (err != (int)PaErrorCode.paNoError)
+        {
+            throw new Exception($"PortAudio failed, error code {err} ({Marshal.PtrToStringAnsi((IntPtr)NativeMethods.Pa_GetErrorText(err))}) in method {callerName} in {path}:{num}");
+        }
+    }
     public void Initialize(IWaveSource source)
     {
-        int err;
         if (!isPAInit)
         {
-            err = NativeMethods.Pa_Initialize();
-            if (err != (int)PaErrorCode.paNoError)
+            ThrowIfError(NativeMethods.Pa_Initialize());
+            unsafe
             {
-                throw new Exception($"PortAudio failed to initialise, error code {err}");
+                c = new(CallBackMethod);
             }
             isPAInit = true;
         }
@@ -88,20 +85,15 @@ public class PortAudioSoundOut : ISoundOut
         unsafe
         {
             PaStream* stream;
-            c = new(CallBackMethod);
-            err = NativeMethods.Pa_OpenDefaultStream(&stream,
+            ThrowIfError(NativeMethods.Pa_OpenDefaultStream(&stream,
                                         0,
                                          SampleSource.WaveFormat.Channels,
                                         NativeMethods.paFloat32,
                                         SampleSource.WaveFormat.SampleRate,
-                                        NativeMethods.paFramesPerBufferUnspecified,//frames per buffer      
+                                        (nuint)(0.05d *  SampleSource.WaveFormat.SampleRate),//frames per buffer      
                                         c.CallBack,
-                                        0);
+                                        0));
             this.stream = stream;
-            if (err != (int)PaErrorCode.paNoError)
-            {
-                throw new Exception($"PortAudio failed to create stream, error code {err}");
-            }
         }
         channels = SampleSource.WaveFormat.Channels;
     }
@@ -110,13 +102,23 @@ public class PortAudioSoundOut : ISoundOut
     {
         float* outputBuffer = (float*)output;
         int i;
-        //fun shit time
         float[] buffer = new float[(uint)frameCount * channels];
-        var r = SampleSource.Read(buffer, 0, buffer.Length);
-        for (i = 0; i < (int)frameCount * channels; i++)
+        var r = SampleSource?.Read(buffer, 0, buffer.Length);
+        if (Volume == 1)
         {
-            *(outputBuffer++) = buffer[i] * Volume;
+            for (i = 0; i < (int)frameCount * channels; i++)
+            {
+                *outputBuffer++ = buffer[i];
+            }
         }
+        else
+        {
+            for (i = 0; i < (int)frameCount * channels; i++)
+            {
+                *outputBuffer++ = buffer[i] * Volume;
+            }
+        }
+
         if (r < buffer.Length)
         {
             OnStop();
@@ -129,7 +131,7 @@ public class PortAudioSoundOut : ISoundOut
     {
         if (PlaybackState == PlaybackState.Playing)
         {
-            var err = NativeMethods.Pa_StopStream(stream);
+            ThrowIfError(NativeMethods.Pa_StopStream(stream));
             PlaybackState = PlaybackState.Paused;
         }
     }
@@ -138,7 +140,7 @@ public class PortAudioSoundOut : ISoundOut
     {
         if (PlaybackState != PlaybackState.Playing)
         {
-            var err = NativeMethods.Pa_StartStream(stream);
+            ThrowIfError(NativeMethods.Pa_StartStream(stream));
             PlaybackState = PlaybackState.Playing;
         }
     }
@@ -147,7 +149,7 @@ public class PortAudioSoundOut : ISoundOut
     {
         if (PlaybackState == PlaybackState.Paused)
         {
-            var err = NativeMethods.Pa_StartStream(stream);
+            ThrowIfError(NativeMethods.Pa_StartStream(stream));
             PlaybackState = PlaybackState.Playing;
         }
     }
@@ -156,8 +158,7 @@ public class PortAudioSoundOut : ISoundOut
     {
         if (PlaybackState != PlaybackState.Stopped)
         {
-            var err = NativeMethods.Pa_StopStream(stream);
-            PlaybackState = PlaybackState.Stopped;
+            ThrowIfError(NativeMethods.Pa_StopStream(stream));
             OnStop();
         }
     }
