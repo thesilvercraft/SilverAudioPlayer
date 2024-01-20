@@ -1,5 +1,4 @@
-using System.Windows.Input;
-using SilverAudioPlayer.Shared;
+namespace SilverAudioPlayer.Shared;
 
 public interface ICommandPaletteItem
 {
@@ -7,17 +6,11 @@ public interface ICommandPaletteItem
     public string Id {get;}
     public void Execute(IPlayerEnvironment environment);
 }
-public class CommandPaletteItem : ICommandPaletteItem
+public class CommandPaletteItem(string name, string id, Action<IPlayerEnvironment> exec) : ICommandPaletteItem
 {
-    public CommandPaletteItem(string name, string id, Action<IPlayerEnvironment> exec)
-    {
-        HumanName=name;
-        Id=id;
-        _exec=exec;
-    }
-    public string HumanName{get;}
-    public string Id {get;}
-    Action<IPlayerEnvironment> _exec;
+    public string HumanName { get; } = name;
+    public string Id { get; } = id;
+    Action<IPlayerEnvironment> _exec = exec;
     public void Execute(IPlayerEnvironment environment)
     {
         _exec(environment);
@@ -25,7 +18,7 @@ public class CommandPaletteItem : ICommandPaletteItem
 }
 public class ComandPalette
 {
-    List<ICommandPaletteItem> Items=[];
+    readonly List<ICommandPaletteItem> Items=[];
     public void AddItems(IEnumerable<ICommandPaletteItem> commandPaletteItems)
     {
         Items.AddRange(commandPaletteItems);
@@ -39,7 +32,7 @@ public class ComandPalette
         if(string.IsNullOrWhiteSpace(term))
             return Items;
         var i = Items.OrderBy(x=>LevenshteinDistance.Compute(x.HumanName.ToLower(),term.ToLower()));
-        return i.ToList();
+        return [.. i];
     }
 }
 /// <summary>

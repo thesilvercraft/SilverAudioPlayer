@@ -17,7 +17,7 @@ Dictionary<string, string> PackageNames = [];
     switch (arg.ToLower())
     {
         case "gi" or "generateindex":*/
-        
+
 GenIndex();
 /*  break;
 case "bs" or "builddebian":*/
@@ -29,11 +29,16 @@ default:
 }
 }
 */
+//BuildFirstPart(Arch2ndPart, "arch");
 
 
-//GenPkg();
 return;
 
+
+string? CreateAndFillNeededDirForPackageArch(string basePath, string pathBegin, Module mod)
+{
+    throw new NotImplementedException();
+}
 
 string GetParent(string path, int n) => n > 0 ? GetParent(Directory.GetParent(path).FullName, n - 1) : Directory.GetParent(path).FullName;
 void Debian2ndPart(string parent, SilverAudioPlayerModulesInfo info, string output)
@@ -129,11 +134,11 @@ Description: {mod.Name} for SilverAudioPlayer
             Console.Error.WriteLine($"\x1b[41mFile to link {to} doesnt exist???? Try regenerating after regenererating index");
             return null;
         }
-          var realLoc = Path.GetDirectoryName(from);
-                if (!string.IsNullOrWhiteSpace(realLoc))
-                {
-                    Directory.CreateDirectory(realLoc);
-                }
+        var realLoc = Path.GetDirectoryName(from);
+        if (!string.IsNullOrWhiteSpace(realLoc))
+        {
+            Directory.CreateDirectory(realLoc);
+        }
         File.CreateSymbolicLink(from, to);
     }
     return path;
@@ -242,7 +247,7 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
         Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, x))
     }));
     m.Dependencies.AddRange(r.Dependencies.Select(x => x.Name));
-    if (!m.Files.Any())
+    if (m.Files.Count == 0)
     {
         return null;
     }
@@ -268,12 +273,12 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
             Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, "icon.svg")),
             LocationToPlaceLinux = "/usr/share/pixmaps/sap.svg"
         });
-          m.Links.Add(new()
+        m.Links.Add(new()
         {
-            LocationFrom =  "/usr/bin/catenoid" ,
+            LocationFrom = "/usr/bin/catenoid",
             LocationTo = "/opt/catenoid/catenoid"
         });
-     
+
     }
     info.Modules.Add(m);
     return r.Name;
@@ -282,7 +287,7 @@ void ProcessModule(string dir, SilverAudioPlayerModulesInfo info, string parent)
 {
 
     var projects = Directory.GetFiles(dir, "*.csproj").ToList();
-    if (!projects.Any()) return;
+    if (projects.Count == 0) return;
     var project = Path.GetFileNameWithoutExtension(projects[0]);
     if (info.Modules.Any(x => x.Name == project))
     {

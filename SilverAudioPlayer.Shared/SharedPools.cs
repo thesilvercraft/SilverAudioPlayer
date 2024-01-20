@@ -15,15 +15,10 @@ namespace SilverAudioPlayer.Shared
     {
         public static ISharedPool<T> Instance = new SharedPool<T>();
     }
-    public class Shared<T> where T : IDisposable
+    public class Shared<T>(T obj, string sharedId) where T : IDisposable
     {
-        public Shared(T obj)
-        {
-            Object = obj;
-        }
-
-        public string SharedId { get; internal set; }
-        public T Object { get; internal set; }
+        public string SharedId { get; internal set; } = sharedId;
+        public T Object { get; internal set; } = obj;
     }
     class SharedPool<T> : ISharedPool<T> where T : IDisposable
     {
@@ -77,10 +72,7 @@ namespace SilverAudioPlayer.Shared
             }
             else
             {
-                Shared<T> shared = new(ws)
-                {
-                    SharedId = hash
-                };
+                Shared<T> shared = new(ws,hash);
                 Shared.Add(shared); return shared;
             }
         }
@@ -108,6 +100,7 @@ namespace SilverAudioPlayer.Shared
         public void Dispose()
         {
             SharedMemoryTPoolInstance<T>.Instance.RemoveReliance(this);
+            GC.SuppressFinalize(this);
         }
     }
 

@@ -13,6 +13,7 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
     public void Dispose()
     {
         foreach (var fsw in fileSystemWatchers) fsw.Dispose();
+        GC.SuppressFinalize(this);
     }
     public override void Write(T config, string path)
     {

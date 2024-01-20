@@ -2,6 +2,7 @@ using System;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using ReactiveUI;
+using SilverAudioPlayer.Shared;
 
 namespace Catenoid;
 public class ComandPaletteWindowDataContext : ReactiveObject

@@ -97,29 +97,23 @@ public delegate nint VirtualTell(IntPtr userData);
             Tell = tell ?? throw new ArgumentNullException(nameof(tell));
         }
 
-        private bool Equals(openmpt_stream_callbacks other)
+        private readonly bool Equals(openmpt_stream_callbacks other)
         {
             return  Seek.Equals(other.Seek) && Read.Equals(other.Read) &&
                    Tell.Equals(other.Tell);
         }
 
-        public override bool Equals(object? obj)
+        public override readonly bool Equals(object? obj)
         {
             return obj is openmpt_stream_callbacks @virtual && Equals(@virtual);
         }
 
         public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Seek.GetHashCode();
-                hashCode = (hashCode * 397) ^ Read.GetHashCode();
-                hashCode = (hashCode * 397) ^ Tell.GetHashCode();
-                return hashCode;
-            }
-        }
+    {
+        return HashCode.Combine(Seek, Read, Tell);
+    }
 
-        public static bool operator ==(openmpt_stream_callbacks left, openmpt_stream_callbacks right)
+    public static bool operator ==(openmpt_stream_callbacks left, openmpt_stream_callbacks right)
         {
             return left.Equals(right);
         }

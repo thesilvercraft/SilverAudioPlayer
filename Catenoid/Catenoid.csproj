@@ -57,28 +57,27 @@
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		<!--Discord (alpha)-->
 		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
-		<!--ChromeCast (POC)-->
-<!--		<DefineConstants>$(DefineConstants)CAST</DefineConstants>-->
+		<!--ChromeCast (alpha)-->
+		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
 		<!--VLC (Alpha)-->
-		<!--<DefineConstants>$(DefineConstants)VLC</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
 <!--        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
-		<!--Fortnite - windows (POC)-->
+		<!--Fortnite - windows (alpha)-->
 <!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
 		<!--CD Art Display - windows 7+-->
 <!--    <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
 		<!--LINUX ONLY-->
-		<!--MPRIS DBUS STUFF - linux - pre POC -->
+		<!--MPRIS DBUS STUFF - linux - pre alpha -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
-		<!-- sync plugin  - POC -->
+		<!-- sync plugin  - alpha -->
     	<DefineConstants>$(DefineConstants)LSync</DefineConstants>
-		<!-- linux platform - POC -->
+		<!-- linux platform - alpha -->
 		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
-		<!-- managed midi - POC -->
-		
+		<!-- managed midi - alpha -->
 		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
-		<!-- music brainz - pre POC -->
+		<!-- music brainz - POC -->
 
 <!--		<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
 		

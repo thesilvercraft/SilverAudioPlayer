@@ -6,7 +6,7 @@ source=()
 arch=('any')
 license=('GPL')
 url="https://gitlab.com/silvercraft/SilverAudioPlayer"
-depends=("dotnet-runtime-6.0" "kdesu")
+depends=("dotnet-runtime-6.0")
 makedepends=("dotnet-sdk-6.0")
 conflicts=()
 optdepends=()
@@ -18,6 +18,6 @@ build() {{
 	dotnet publish -c Publish
 }}
 package() {{
-  mkdir -p "${{pkgdir}}/opt/silveraudioplayer"
-  cp bin/Publish/net8.0/publish silveraudioplayer
+  mkdir -p "${{pkgdir}}/opt/catenoid"
+  cp bin/Publish/net8.0/publish "${{pkgdir}}/opt/catenoid"
 }}

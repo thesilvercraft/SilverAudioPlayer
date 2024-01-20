@@ -86,8 +86,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
         }
         var youTube = YouTube.Default;
         var video =await youTube.GetAllVideosAsync(given.ToString());
-        var uri = video.FirstOrDefault(x =>
-            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis)?.Uri;
+        var uri = video.Where(x =>
+            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis).OrderByDescending(x=>x.AudioBitrate).FirstOrDefault()?.Uri;
         if (uri != null)
         {
             listener.LoadSong(new WrappedHttpStream(uri));

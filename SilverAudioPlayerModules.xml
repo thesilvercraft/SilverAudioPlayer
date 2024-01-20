@@ -1,334 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SilverAudioPlayerModulesInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Modules>
-    <Module Name="SilverCraft.Ekonrensis.Avalonia">
-      <Dependencies>
-        <string>Avalonia</string>
-        <string>SilverCraft.AvaloniaUtils</string>
-        <string>SilverCraft.Ekorensis</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/SilverCraft.Ekonrensis.Avalonia.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Avalonia">
-      <Dependencies>
-        <string>Avalonia.Remote.Protocol</string>
-        <string>MicroCom.Runtime</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Base.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Controls.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.DesignerSupport.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Dialogs.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Markup.Xaml.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Markup.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Metal.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.MicroCom.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.OpenGL.dll" />
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Avalonia.Remote.Protocol">
-      <Dependencies />
-      <Files>
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/Avalonia.Remote.Protocol.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="MicroCom.Runtime">
-      <Dependencies />
-      <Files>
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/MicroCom.Runtime.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverCraft.AvaloniaUtils">
-      <Dependencies>
-        <string>Avalonia</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/SilverCraft.AvaloniaUtils.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverCraft.Ekorensis">
-      <Dependencies />
-      <Files>
-        <File Name="SilverCraft.Ekonrensis.Avalonia/bin/Release/net8.0/publish/SilverCraft.Ekorensis.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>SilverCraft.SilverConfig</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="DynamicData">
-      <Dependencies>
-        <string>System.Reactive</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/DynamicData.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Opportunity.LrcParser">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/Opportunity.LrcParser.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="ReactiveUI">
-      <Dependencies>
-        <string>DynamicData</string>
-        <string>Splat</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/ReactiveUI.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Serilog">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/Serilog.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverCraft.SilverConfig">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/SilverCraft.SilverConfig.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Splat">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/Splat.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Composition.AttributedModel">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/System.Composition.AttributedModel.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Composition.Convention">
-      <Dependencies>
-        <string>System.Composition.AttributedModel</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/System.Composition.Convention.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Composition.Hosting">
-      <Dependencies>
-        <string>System.Composition.Runtime</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/System.Composition.Hosting.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Composition.Runtime">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/System.Composition.Runtime.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Composition.TypedParts">
-      <Dependencies>
-        <string>System.Composition.AttributedModel</string>
-        <string>System.Composition.Hosting</string>
-        <string>System.Composition.Runtime</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/System.Composition.TypedParts.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Reactive">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/System.Reactive.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Shared">
-      <Dependencies>
-        <string>Opportunity.LrcParser</string>
-        <string>ReactiveUI</string>
-        <string>Serilog</string>
-        <string>SilverCraft.Ekorensis</string>
-        <string>SilverCraft.SilverConfig</string>
-        <string>SilverMagicBytes</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/SilverAudioPlayer.Shared.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverMagicBytes">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider/bin/Release/net8.0/publish/SilverMagicBytes.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Win.PlayProvider.DryWetMidi">
-      <Dependencies>
-        <string>Melanchall.DryWetMidi</string>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net8.0/publish/SilverAudioPlayer.Win.PlayProvider.DryWetMidi.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Melanchall.DryWetMidi">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net8.0/publish/Melanchall.DryWetMidi.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.libVLC">
-      <Dependencies>
-        <string>LibVLCSharp</string>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.libVLC/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.libVLC.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="LibVLCSharp">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.libVLC/bin/Release/net8.0/publish/LibVLCSharp.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>VideoLibrary</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Newtonsoft.Json">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib/bin/Release/net8.0/publish/Newtonsoft.Json.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="VideoLibrary">
-      <Dependencies>
-        <string>Newtonsoft.Json</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib/bin/Release/net8.0/publish/libvideo.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary">
-      <Dependencies>
-        <string>Avalonia</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>SilverCraft.AvaloniaUtils</string>
-        <string>Swordfish.NET.CollectionsV3</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Swordfish.NET.CollectionsV3">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Swordfish.NET.CollectionsV3.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayListReader.M3U">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayListReader.M3U/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayListReader.M3U.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.MetadataSource.File">
-      <Dependencies>
-        <string>Opportunity.LrcParser</string>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.MetadataSource.File/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MetadataSource.File.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio/bin/Release/net8.0/publish/SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
     <Module Name="SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP">
       <Dependencies>
         <string>CatBox.NET</string>
@@ -359,6 +31,16 @@
       </Dependencies>
       <Files>
         <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/DiscordRPC.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="DynamicData">
+      <Dependencies>
+        <string>System.Reactive</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/DynamicData.dll" />
       </Files>
       <Links />
       <Debug />
@@ -442,31 +124,265 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Any.MetadataSource.Z440AtlCore">
-      <Dependencies>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>z440.atl.core</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.MetadataSource.Z440AtlCore/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Ude.NetStandard">
+    <Module Name="Newtonsoft.Json">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.MetadataSource.Z440AtlCore/bin/Release/net8.0/publish/Ude.NetStandard.dll" />
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/Newtonsoft.Json.dll" />
       </Files>
       <Links />
       <Debug />
     </Module>
-    <Module Name="z440.atl.core">
+    <Module Name="Opportunity.LrcParser">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/Opportunity.LrcParser.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="ReactiveUI">
       <Dependencies>
-        <string>Ude.NetStandard</string>
+        <string>DynamicData</string>
+        <string>Splat</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.MetadataSource.Z440AtlCore/bin/Release/net8.0/publish/ATL.dll" />
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/ReactiveUI.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/Serilog.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverCraft.SilverConfig">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverCraft.SilverConfig.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Splat">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/Splat.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Composition.AttributedModel">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/System.Composition.AttributedModel.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Composition.Convention">
+      <Dependencies>
+        <string>System.Composition.AttributedModel</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/System.Composition.Convention.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Composition.Hosting">
+      <Dependencies>
+        <string>System.Composition.Runtime</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/System.Composition.Hosting.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Composition.Runtime">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/System.Composition.Runtime.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Composition.TypedParts">
+      <Dependencies>
+        <string>System.Composition.AttributedModel</string>
+        <string>System.Composition.Hosting</string>
+        <string>System.Composition.Runtime</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/System.Composition.TypedParts.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Reactive">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/System.Reactive.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Shared">
+      <Dependencies>
+        <string>Opportunity.LrcParser</string>
+        <string>ReactiveUI</string>
+        <string>Serilog</string>
+        <string>SilverCraft.Ekorensis</string>
+        <string>SilverCraft.SilverConfig</string>
+        <string>SilverMagicBytes</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverAudioPlayer.Shared.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverCraft.Ekorensis">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverCraft.Ekorensis.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverMagicBytes">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverMagicBytes.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayListReader.SPL">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayListReader.SPL/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayListReader.SPL.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>VideoLibrary</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="VideoLibrary">
+      <Dependencies>
+        <string>Newtonsoft.Json</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.VideoLib/bin/Release/net8.0/publish/libvideo.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Linux.PlatformHelper.Linux">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>Tmds.DBus</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Linux.PlatformHelper.Linux/bin/Release/net8.0/publish/SilverAudioPlayer.Linux.PlatformHelper.Linux.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Tmds.DBus">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Linux.PlatformHelper.Linux/bin/Release/net8.0/publish/Tmds.DBus.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverCraft.Shared">
+      <Dependencies />
+      <Files>
+        <File Name="SilverCraft.Shared/bin/Release/net8.0/publish/SilverCraft.Shared.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary">
+      <Dependencies>
+        <string>Avalonia</string>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.AvaloniaUtils</string>
+        <string>Swordfish.NET.CollectionsV3</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Avalonia">
+      <Dependencies>
+        <string>Avalonia.Remote.Protocol</string>
+        <string>MicroCom.Runtime</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Base.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Controls.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.DesignerSupport.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Dialogs.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Markup.Xaml.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Markup.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Metal.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.MicroCom.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.OpenGL.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Avalonia.Remote.Protocol">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Avalonia.Remote.Protocol.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="MicroCom.Runtime">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/MicroCom.Runtime.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverCraft.AvaloniaUtils">
+      <Dependencies>
+        <string>Avalonia</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/SilverCraft.AvaloniaUtils.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Swordfish.NET.CollectionsV3">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary/bin/Release/net8.0/publish/Swordfish.NET.CollectionsV3.dll" />
       </Files>
       <Links />
       <Debug />
@@ -760,10 +676,20 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="Tmds.DBus">
+    <Module Name="Ude.NetStandard">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Tmds.DBus.dll" />
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/Ude.NetStandard.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="z440.atl.core">
+      <Dependencies>
+        <string>Ude.NetStandard</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/ATL.dll" />
       </Files>
       <Links />
       <Debug />
@@ -788,12 +714,45 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayListReader.SPL">
+    <Module Name="SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.SilverConfig</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.MetadataSource.File">
+      <Dependencies>
+        <string>Opportunity.LrcParser</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MetadataSource.File.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.MetadataSource.Z440AtlCore">
+      <Dependencies>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>z440.atl.core</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayListReader.M3U">
       <Dependencies>
         <string>SilverAudioPlayer.Shared</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayListReader.SPL.dll" />
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayListReader.M3U.dll" />
       </Files>
       <Links />
       <Debug />
@@ -806,6 +765,8 @@
         <string>NLayer.NAudioSupport</string>
         <string>Silver.Composition</string>
         <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.OpenMPT</string>
+        <string>SilverCraft.PortAudio</string>
         <string>SilverCraft.SndFile</string>
       </Dependencies>
       <Files>
@@ -838,21 +799,28 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Linux.PlatformHelper.Linux">
+    <Module Name="SilverCraft.OpenMPT">
       <Dependencies>
+        <string>CSCore</string>
+        <string>ClangSharp</string>
+        <string>ClangSharp.Interop</string>
         <string>SilverAudioPlayer.Shared</string>
-        <string>Tmds.DBus</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverAudioPlayer.Linux.PlatformHelper.Linux.dll" />
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverCraft.OpenMPT.dll" />
       </Files>
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverCraft.Shared">
-      <Dependencies />
+    <Module Name="SilverCraft.PortAudio">
+      <Dependencies>
+        <string>CSCore</string>
+        <string>ClangSharp</string>
+        <string>ClangSharp.Interop</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverCraft.Shared.dll" />
+        <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverCraft.PortAudio.dll" />
       </Files>
       <Links />
       <Debug />
@@ -865,6 +833,25 @@
       </Dependencies>
       <Files>
         <File Name="SilverAudioPlayer.Console/bin/Release/net8.0/publish/SilverCraft.SndFile.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi">
+      <Dependencies>
+        <string>Melanchall.DryWetMidi</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Melanchall.DryWetMidi">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DryWetMidi/bin/Release/net8.0/publish/Melanchall.DryWetMidi.dll" />
       </Files>
       <Links />
       <Debug />
@@ -925,7 +912,7 @@
     <Module Name="Microsoft.Win32.SystemEvents">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net8.0/publish/runtimes/win/lib/net6.0/Microsoft.Win32.SystemEvents.dll" />
+        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net8.0/publish/runtimes/win/lib/net8.0/Microsoft.Win32.SystemEvents.dll" />
         <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net8.0/publish/Microsoft.Win32.SystemEvents.dll" />
       </Files>
       <Links />
@@ -936,68 +923,7 @@
         <string>Microsoft.Win32.SystemEvents</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net8.0/publish/runtimes/unix/lib/net6.0/System.Drawing.Common.dll" />
-        <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net8.0/publish/runtimes/win/lib/net6.0/System.Drawing.Common.dll" />
         <File Name="SilverAudioPlayer.Any.MetadataSource.MusicBrainz/bin/Release/net8.0/publish/System.Drawing.Common.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin">
-      <Dependencies>
-        <string>Jellyfin.Sdk</string>
-        <string>Microsoft.Identity.Client.Extensions.Msal</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>SilverCraft.AvaloniaUtils</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Jellyfin.Sdk">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/Jellyfin.Sdk.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.Identity.Client">
-      <Dependencies>
-        <string>Microsoft.IdentityModel.Abstractions</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/Microsoft.Identity.Client.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.Identity.Client.Extensions.Msal">
-      <Dependencies>
-        <string>Microsoft.Identity.Client</string>
-        <string>System.Security.Cryptography.ProtectedData</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/Microsoft.Identity.Client.Extensions.Msal.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.IdentityModel.Abstractions">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/Microsoft.IdentityModel.Abstractions.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Security.Cryptography.ProtectedData">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll" />
-        <File Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin/bin/Release/net8.0/publish/System.Security.Cryptography.ProtectedData.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1022,78 +948,26 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Any.SilverJuke">
+    <Module Name="SilverAudioPlayer.Any.PlayProvider.libVLC">
       <Dependencies>
-        <string>Serilog.Extensions.Hosting</string>
+        <string>LibVLCSharp</string>
         <string>SilverAudioPlayer.Shared</string>
       </Dependencies>
       <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/SilverAudioPlayer.Any.SilverJuke.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayProvider.libVLC/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.libVLC.dll" />
       </Files>
       <Links />
       <Debug />
     </Module>
-    <Module Name="Microsoft.OpenApi">
+    <Module Name="LibVLCSharp">
       <Dependencies />
       <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/Microsoft.OpenApi.dll" />
+        <File Name="SilverAudioPlayer.Any.PlayProvider.libVLC/bin/Release/net8.0/publish/LibVLCSharp.dll" />
       </Files>
       <Links />
       <Debug />
     </Module>
-    <Module Name="Serilog.Extensions.Hosting">
-      <Dependencies>
-        <string>Microsoft.Extensions.DependencyInjection.Abstractions</string>
-        <string>Microsoft.Extensions.Logging.Abstractions</string>
-        <string>Serilog</string>
-        <string>Serilog.Extensions.Logging</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/Serilog.Extensions.Hosting.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Serilog.Extensions.Logging">
-      <Dependencies>
-        <string>Microsoft.Extensions.Logging</string>
-        <string>Serilog</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/Serilog.Extensions.Logging.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Swashbuckle.AspNetCore.Swagger">
-      <Dependencies>
-        <string>Microsoft.OpenApi</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/Swashbuckle.AspNetCore.Swagger.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Swashbuckle.AspNetCore.SwaggerGen">
-      <Dependencies>
-        <string>Swashbuckle.AspNetCore.Swagger</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/Swashbuckle.AspNetCore.SwaggerGen.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Swashbuckle.AspNetCore.SwaggerUI">
-      <Dependencies />
-      <Files>
-        <File Name="SilverJuke/bin/Release/net8.0/publish/Swashbuckle.AspNetCore.SwaggerUI.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Avalonia">
+    <Module Name="Catenoid">
       <Dependencies>
         <string>Avalonia.AvaloniaEdit</string>
         <string>Avalonia.Desktop</string>
@@ -1109,9 +983,12 @@
         <string>SilverAudioPlayer.Any.MetadataSource.File</string>
         <string>SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</string>
         <string>SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP</string>
+        <string>SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer</string>
         <string>SilverAudioPlayer.Any.PlayListReader.M3U</string>
         <string>SilverAudioPlayer.Any.PlayListReader.SPL</string>
+        <string>SilverAudioPlayer.Any.PlayProvider.ManagedMidi</string>
         <string>SilverAudioPlayer.Any.PlayProvider.NAudio</string>
+        <string>SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.JellyFin</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.VideoLib</string>
@@ -1127,24 +1004,24 @@
         <string>Svg.Skia</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia.deps.json" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Avalonia.runtimeconfig.json" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Catenoid.desktop" LocLin="/usr/share/applications/Catenoid.desktop" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/icon.svg" LocLin="/usr/share/pixmaps/sap.svg" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Catenoid.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Catenoid.deps.json" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Catenoid" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Catenoid.runtimeconfig.json" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Catenoid.desktop" LocLin="/usr/share/applications/Catenoid.desktop" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/icon.svg" LocLin="/usr/share/pixmaps/sap.svg" />
       </Files>
       <Links>
-        <LinuxLink LocationFrom="/usr/bin/silveraudioplayer" LocationTo="/opt/silveraudioplayer/SilverAudioPlayer.Avalonia" />
+        <LinuxLink LocationFrom="/usr/bin/catenoid" LocationTo="/opt/catenoid/catenoid" />
       </Links>
       <Debug />
     </Module>
     <Module Name="Avalonia.Angle.Windows.Natives">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-arm64/native/av_libglesv2.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-x64/native/av_libglesv2.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-x86/native/av_libglesv2.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-arm64/native/av_libglesv2.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-x64/native/av_libglesv2.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-x86/native/av_libglesv2.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1154,7 +1031,7 @@
         <string>Avalonia</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/AvaloniaEdit.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/AvaloniaEdit.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1168,7 +1045,7 @@
         <string>Avalonia.X11</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.Desktop.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Desktop.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1179,7 +1056,7 @@
         <string>Tmds.DBus.Protocol</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.FreeDesktop.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.FreeDesktop.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1189,8 +1066,8 @@
         <string>Avalonia</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.Native.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/osx/native/libAvaloniaNative.dylib" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Native.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/osx/native/libAvaloniaNative.dylib" />
       </Files>
       <Links />
       <Debug />
@@ -1204,7 +1081,7 @@
         <string>SkiaSharp.NativeAssets.Linux</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.Skia.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Skia.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1217,7 +1094,7 @@
         <string>Svg.Skia</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.Svg.Skia.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Svg.Skia.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1227,7 +1104,7 @@
         <string>Avalonia</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.Themes.Fluent.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Themes.Fluent.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1239,7 +1116,7 @@
         <string>System.Drawing.Common</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.Win32.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Win32.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1251,7 +1128,7 @@
         <string>Avalonia.Skia</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Avalonia.X11.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.X11.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1259,7 +1136,7 @@
     <Module Name="ExCSS">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ExCSS.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ExCSS.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1270,7 +1147,7 @@
         <string>HarfBuzzSharp.NativeAssets.macOS</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/HarfBuzzSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/HarfBuzzSharp.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1280,10 +1157,10 @@
         <string>HarfBuzzSharp</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-arm/native/libHarfBuzzSharp.so" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-arm64/native/libHarfBuzzSharp.so" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-musl-x64/native/libHarfBuzzSharp.so" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-x64/native/libHarfBuzzSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-arm/native/libHarfBuzzSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-arm64/native/libHarfBuzzSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-musl-x64/native/libHarfBuzzSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-x64/native/libHarfBuzzSharp.so" />
       </Files>
       <Links />
       <Debug />
@@ -1291,7 +1168,7 @@
     <Module Name="HarfBuzzSharp.NativeAssets.macOS">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/osx/native/libHarfBuzzSharp.dylib" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/osx/native/libHarfBuzzSharp.dylib" />
       </Files>
       <Links />
       <Debug />
@@ -1299,9 +1176,9 @@
     <Module Name="HarfBuzzSharp.NativeAssets.Win32">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-arm64/native/libHarfBuzzSharp.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-x64/native/libHarfBuzzSharp.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-x86/native/libHarfBuzzSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-arm64/native/libHarfBuzzSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-x64/native/libHarfBuzzSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-x86/native/libHarfBuzzSharp.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1309,7 +1186,7 @@
     <Module Name="Humanizer.Core">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Humanizer.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Humanizer.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1319,7 +1196,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/af/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/af/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1329,7 +1206,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ar/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ar/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1339,7 +1216,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/az/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/az/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1349,7 +1226,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/bg/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/bg/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1359,7 +1236,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/bn-BD/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/bn-BD/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1369,7 +1246,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/cs/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/cs/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1379,7 +1256,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/da/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/da/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1389,7 +1266,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/de/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/de/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1399,7 +1276,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/el/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/el/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1409,7 +1286,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/es/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/es/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1419,7 +1296,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/fa/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/fa/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1429,7 +1306,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/fi-FI/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/fi-FI/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1439,7 +1316,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/fr/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/fr/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1449,7 +1326,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/fr-BE/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/fr-BE/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1459,7 +1336,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/he/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/he/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1469,7 +1346,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/hr/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/hr/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1479,7 +1356,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/hu/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/hu/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1489,7 +1366,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/hy/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/hy/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1499,7 +1376,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/id/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/id/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1509,7 +1386,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/is/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/is/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1519,7 +1396,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/it/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/it/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1529,7 +1406,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ja/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ja/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1539,7 +1416,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ko-KR/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ko-KR/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1549,7 +1426,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ku/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ku/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1559,7 +1436,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/lv/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/lv/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1569,7 +1446,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ms-MY/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ms-MY/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1579,7 +1456,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/mt/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/mt/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1589,7 +1466,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/nb/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/nb/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1599,7 +1476,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/nb-NO/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/nb-NO/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1609,7 +1486,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/nl/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/nl/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1619,7 +1496,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/pl/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/pl/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1629,7 +1506,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/pt/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/pt/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1639,7 +1516,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ro/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ro/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1649,7 +1526,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ru/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ru/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1659,7 +1536,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/sk/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/sk/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1669,7 +1546,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/sl/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/sl/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1679,7 +1556,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/sr/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/sr/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1689,7 +1566,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/sr-Latn/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/sr-Latn/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1699,7 +1576,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/sv/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/sv/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1709,7 +1586,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/th-TH/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/th-TH/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1719,7 +1596,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/tr/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/tr/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1729,7 +1606,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/uk/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/uk/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1739,7 +1616,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/uz-Cyrl-UZ/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/uz-Cyrl-UZ/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1749,7 +1626,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/uz-Latn-UZ/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/uz-Latn-UZ/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1759,7 +1636,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/vi/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/vi/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1769,7 +1646,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/zh-CN/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/zh-CN/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1779,7 +1656,7 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/zh-Hans/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/zh-Hans/Humanizer.resources.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1789,7 +1666,76 @@
         <string>Humanizer.Core</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/zh-Hant/Humanizer.resources.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/zh-Hant/Humanizer.resources.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Jellyfin.Sdk">
+      <Dependencies />
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Jellyfin.Sdk.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Identity.Client">
+      <Dependencies>
+        <string>Microsoft.IdentityModel.Abstractions</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.Identity.Client.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Identity.Client.Extensions.Msal">
+      <Dependencies>
+        <string>Microsoft.Identity.Client</string>
+        <string>System.Security.Cryptography.ProtectedData</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.Identity.Client.Extensions.Msal.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.IdentityModel.Abstractions">
+      <Dependencies />
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.IdentityModel.Abstractions.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.OpenApi">
+      <Dependencies />
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.OpenApi.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog.Extensions.Hosting">
+      <Dependencies>
+        <string>Microsoft.Extensions.DependencyInjection.Abstractions</string>
+        <string>Microsoft.Extensions.Logging.Abstractions</string>
+        <string>Serilog</string>
+        <string>Serilog.Extensions.Logging</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Serilog.Extensions.Hosting.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog.Extensions.Logging">
+      <Dependencies>
+        <string>Microsoft.Extensions.Logging</string>
+        <string>Serilog</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Serilog.Extensions.Logging.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1797,7 +1743,7 @@
     <Module Name="ShimSkiaSharp">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/ShimSkiaSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/ShimSkiaSharp.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1808,7 +1754,7 @@
         <string>SkiaSharp.NativeAssets.macOS</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SkiaSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/SkiaSharp.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1819,7 +1765,7 @@
         <string>SkiaSharp</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SkiaSharp.HarfBuzz.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/SkiaSharp.HarfBuzz.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1829,10 +1775,10 @@
         <string>SkiaSharp</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-arm/native/libSkiaSharp.so" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-arm64/native/libSkiaSharp.so" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-musl-x64/native/libSkiaSharp.so" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/linux-x64/native/libSkiaSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-arm/native/libSkiaSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-arm64/native/libSkiaSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-musl-x64/native/libSkiaSharp.so" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/linux-x64/native/libSkiaSharp.so" />
       </Files>
       <Links />
       <Debug />
@@ -1840,7 +1786,7 @@
     <Module Name="SkiaSharp.NativeAssets.macOS">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/osx/native/libSkiaSharp.dylib" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/osx/native/libSkiaSharp.dylib" />
       </Files>
       <Links />
       <Debug />
@@ -1848,9 +1794,9 @@
     <Module Name="SkiaSharp.NativeAssets.Win32">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-arm64/native/libSkiaSharp.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-x64/native/libSkiaSharp.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win-x86/native/libSkiaSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-arm64/native/libSkiaSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-x64/native/libSkiaSharp.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win-x86/native/libSkiaSharp.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1860,7 +1806,7 @@
         <string>ExCSS</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Svg.Custom.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Svg.Custom.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1871,7 +1817,7 @@
         <string>Svg.Custom</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Svg.Model.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Svg.Model.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1884,7 +1830,35 @@
         <string>Svg.Model</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Svg.Skia.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/Svg.Skia.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Swashbuckle.AspNetCore.Swagger">
+      <Dependencies>
+        <string>Microsoft.OpenApi</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Swashbuckle.AspNetCore.Swagger.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Swashbuckle.AspNetCore.SwaggerGen">
+      <Dependencies>
+        <string>Swashbuckle.AspNetCore.Swagger</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Swashbuckle.AspNetCore.SwaggerGen.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Swashbuckle.AspNetCore.SwaggerUI">
+      <Dependencies />
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Swashbuckle.AspNetCore.SwaggerUI.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1892,7 +1866,7 @@
     <Module Name="System.CodeDom">
       <Dependencies />
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/System.CodeDom.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/System.CodeDom.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1902,18 +1876,64 @@
         <string>System.CodeDom</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/runtimes/win/lib/net8.0/System.Management.dll" />
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/System.Management.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win/lib/net8.0/System.Management.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/System.Management.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Security.Cryptography.ProtectedData">
+      <Dependencies />
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/System.Security.Cryptography.ProtectedData.dll" />
       </Files>
       <Links />
       <Debug />
     </Module>
     <Module Name="Tmds.DBus.Protocol">
+      <Dependencies />
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Tmds.DBus.Protocol.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer">
       <Dependencies>
-        <string>System.IO.Pipelines</string>
+        <string>Avalonia</string>
+        <string>Avalonia.AvaloniaEdit</string>
+        <string>Avalonia.Desktop</string>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.AvaloniaUtils</string>
+        <string>System.Management</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/Tmds.DBus.Protocol.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin">
+      <Dependencies>
+        <string>Jellyfin.Sdk</string>
+        <string>Microsoft.Identity.Client.Extensions.Msal</string>
+        <string>SilverAudioPlayer.Shared</string>
+        <string>SilverCraft.AvaloniaUtils</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.SilverJuke">
+      <Dependencies>
+        <string>Serilog.Extensions.Hosting</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/SilverAudioPlayer.Any.SilverJuke.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1928,230 +1948,29 @@
         <string>System.Management</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Avalonia/bin/Release/net8.0/publish/SilverAudioPlayer.Any.Sync.dll" />
+        <File Name="Catenoid/bin/Release/net8.0/publish/SilverAudioPlayer.Any.Sync.dll" />
       </Files>
       <Links />
       <Debug />
     </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast">
+    <Module Name="SilverCraft.Ekonrensis.Avalonia">
       <Dependencies>
-        <string>GoogleCast</string>
+        <string>Avalonia</string>
+        <string>SilverCraft.AvaloniaUtils</string>
+        <string>SilverCraft.Ekorensis</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/SilverCraft.Ekonrensis.Avalonia.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio">
+      <Dependencies>
         <string>SilverAudioPlayer.Shared</string>
       </Dependencies>
       <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.ChromeCast.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Api">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Api.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Engine">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.ErrorHandling</string>
-        <string>GenHTTP.Modules.IO</string>
-        <string>GenHTTP.Modules.Placeholders</string>
-        <string>System.IO.Pipelines</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Engine.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Basics">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>System.Linq.Async</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Basics.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.ClientCaching">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Basics</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.ClientCaching.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Compression">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Compression.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.ErrorHandling">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Pages</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.ErrorHandling.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.IO">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Basics</string>
-        <string>GenHTTP.Modules.Pages</string>
-        <string>System.Linq.Async</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.IO.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Layouting">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Basics</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Layouting.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Pages">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Basics</string>
-        <string>Microsoft.IO.RecyclableMemoryStream</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Pages.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Placeholders">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Basics</string>
-        <string>GenHTTP.Modules.IO</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Placeholders.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Practices">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.ClientCaching</string>
-        <string>GenHTTP.Modules.Compression</string>
-        <string>GenHTTP.Modules.IO</string>
-        <string>GenHTTP.Modules.Security</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Practices.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GenHTTP.Modules.Security">
-      <Dependencies>
-        <string>GenHTTP.Api</string>
-        <string>GenHTTP.Modules.Basics</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Security.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="GoogleCast">
-      <Dependencies>
-        <string>Microsoft.Extensions.DependencyInjection</string>
-        <string>Zeroconf</string>
-        <string>protobuf-net</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GoogleCast.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.Bcl.AsyncInterfaces">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/Microsoft.Bcl.AsyncInterfaces.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.IO.RecyclableMemoryStream">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/Microsoft.IO.RecyclableMemoryStream.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="protobuf-net">
-      <Dependencies>
-        <string>protobuf-net.Core</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/protobuf-net.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="protobuf-net.Core">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/protobuf-net.Core.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.IO.Pipelines">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/System.IO.Pipelines.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="System.Linq.Async">
-      <Dependencies>
-        <string>Microsoft.Bcl.AsyncInterfaces</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/System.Linq.Async.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Zeroconf">
-      <Dependencies>
-        <string>System.Reactive</string>
-      </Dependencies>
-      <Files>
-        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/Zeroconf.dll" />
+        <File Name="SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio/bin/Release/net8.0/publish/SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.dll" />
       </Files>
       <Links />
       <Debug />
