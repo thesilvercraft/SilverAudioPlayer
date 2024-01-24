@@ -21,9 +21,16 @@ public sealed class CallbackHelper
     public StreamCallBack CallBack { get; set; }
 }
 //https://www.portaudio.com/docs/v19-doxydocs/writing_a_callback.html
-
 public class PortAudioSoundOut : ISoundOut
 {
+    public PortAudioSoundOut()
+    {
+
+    }
+    public PortAudioSoundOut(ushort bufferLength) : this()
+    {
+        Buffer = bufferLength;
+    }
     public float Volume { get; set; }
 
     public IWaveSource? WaveSource { get; set; }
@@ -31,7 +38,18 @@ public class PortAudioSoundOut : ISoundOut
     public PlaybackState PlaybackState { get; set; } = PlaybackState.Stopped;
 
     public event EventHandler<PlaybackStoppedEventArgs>? Stopped;
-
+    public static bool IsSupported()
+    {
+        try
+        {
+            _ = NativeMethods.Pa_GetVersion();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
     public void Dispose()
     {
         if (!isPAInit)
@@ -104,7 +122,7 @@ public class PortAudioSoundOut : ISoundOut
     int channels;
     private unsafe int CallBackMethod(void* input, void* output, ulong frameCount, PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, nint userData)
     {
-        Thread.CurrentThread.Priority = ThreadPriority.Highest;
+        Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
         float* outputBuffer = (float*)output;
         int bufferLength = (int)frameCount * channels;
         float[] buffer = new float[bufferLength];

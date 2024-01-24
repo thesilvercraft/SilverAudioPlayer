@@ -29,29 +29,43 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         CSCore.LogLocation.GetFunc = Logger.GetLogger;
     }
+    public static bool IsBackendAvaliable()
+    {
+#if CSCore
+        return OperatingSystem.IsWindows() || PortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
+#else
+        return OperatingSystem.IsWindows();
+#endif
+    }
+
     public void InitBackEnd(byte volume)
     {
-        logger?.Debug("initing backend {Windows}", OperatingSystem.IsWindows());
 
 #if CSCore
-        if (OperatingSystem.IsWindows())
+        if (!OperatingSystem.IsWindows())
         {
+            if (PortAudioSoundOut.IsSupported())
+            {
+                logger?.Debug("initing backend CSCorePlayer PortAudioSoundOut");
+                outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut(50));
+            }
+            if (ALSoundOut.IsSupported)
+            {
+                logger?.Debug("initing backend CSCorePlayer ALSoundOut");
+                outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
+            }
+        }
+        else
+#endif
+        {
+            logger?.Debug("initing backend naudio WaveOutEvent");
+
             outputDevice = new WaveOutEvent()
             {
                 Volume = volume / 100f
             };
         }
-        else
-        {
-            outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut());
-        }
-#else
-     outputDevice = new WaveOutEvent()
-            {
-                Volume = volume / 100f
-            };
 
-#endif
     }
 
     public byte Volume { get; set; } = 70;
@@ -237,12 +251,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             if (cSCoreReader._reader is ILoop cselector)
             {
                 return cselector.CanLoop;
-
             }
             else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
             {
                 return selector.CanLoop;
-
             }
         }
         return false;
@@ -258,12 +270,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             if (cSCoreReader._reader is ISelector cselector)
             {
                 return cselector.CurrentPattern;
-
             }
             else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
             {
                 return selector.CurrentPattern;
-
             }
         }
         return 0;

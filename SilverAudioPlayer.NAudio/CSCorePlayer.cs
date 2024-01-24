@@ -25,6 +25,7 @@ public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
     public void Dispose()
     {
         _soundOut.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public void Play()
