@@ -1,219 +1,196 @@
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Tmds.DBus;
 
 [assembly: InternalsVisibleTo(Tmds.DBus.Connection.DynamicAssemblyName)]
-namespace SilverAudioPlayer.Linux.MPRIS
+namespace DBusInterop
 {
     [DBusInterface("org.mpris.MediaPlayer2.Player")]
     interface IPlayer : IDBusObject
     {
         Task NextAsync();
-        Task PreviousAsync();
         Task PauseAsync();
-        Task PlayPauseAsync();
-        Task StopAsync();
         Task PlayAsync();
+        Task PlayPauseAsync();
+        Task PreviousAsync();
         Task SeekAsync(long Offset);
         Task SetPositionAsync(ObjectPath TrackId, long Position);
-        Task OpenUriAsync(string Uri);
+        Task StopAsync();
         Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null);
         Task<object> GetAsync(string prop);
         Task<PlayerProperties> GetAllAsync();
+
+
         Task SetAsync(string prop, object val);
         Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
     }
 
     [Dictionary]
-    class PlayerProperties
+    public class PlayerProperties
     {
-        public string PlaybackStatus
-        {
-            get;
-
-            set;
-        }
-
-        public string LoopStatus
-        {
-            get;
-
-            set;
-        }
-
-        public double Rate
-        {
-            get;
-
-            set;
-        }
-
-        public bool Shuffle
-        {
-            get;
-
-            set;
-        }
-
-        public IDictionary<string, object> Metadata
-        {
-            get;
-
-            set;
-        }
-
-        public double Volume
-        {
-            get;
-
-            set;
-        }
-
-        public long Position
-        {
-            get;
-
-            set;
-        }
-
-        public double MinimumRate
-        {
-            get;
-
-            set;
-        }
-
-        public double MaximumRate
-        {
-            get;
-
-            set;
-        }
-
-        public bool CanGoNext
-        {
-            get;
-
-            set;
-        }
-
-        public bool CanGoPrevious
-        {
-            get;
-
-            set;
-        }
-
-        public bool CanPlay
-        {
-            get;
-
-            set;
-        }=true;
-
-        public bool CanPause
-        {
-            get;
-
-            set;
-        }=true;
-
-        public bool CanSeek
-        {
-            get;
-
-            set;
-        }=true;
-
+        private bool _CanControl = default(bool);
         public bool CanControl
         {
-            get;
+            get
+            {
+                return _CanControl;
+            }
 
-            set;
-        }=true;
+            set
+            {
+                _CanControl = (value);
+            }
+        }
+
+        private bool _CanGoNext = default(bool);
+        public bool CanGoNext
+        {
+            get
+            {
+                return _CanGoNext;
+            }
+
+            set
+            {
+                _CanGoNext = (value);
+            }
+        }
+
+        private bool _CanGoPrevious = default(bool);
+        public bool CanGoPrevious
+        {
+            get
+            {
+                return _CanGoPrevious;
+            }
+
+            set
+            {
+                _CanGoPrevious = (value);
+            }
+        }
+
+        private bool _CanPause = default(bool);
+        public bool CanPause
+        {
+            get
+            {
+                return _CanPause;
+            }
+
+            set
+            {
+                _CanPause = (value);
+            }
+        }
+
+        private bool _CanPlay = default(bool);
+        public bool CanPlay
+        {
+            get
+            {
+                return _CanPlay;
+            }
+
+            set
+            {
+                _CanPlay = (value);
+            }
+        }
+
+        private bool _CanSeek = default(bool);
+        public bool CanSeek
+        {
+            get
+            {
+                return _CanSeek;
+            }
+
+            set
+            {
+                _CanSeek = (value);
+            }
+        }
+
+        private IDictionary<string, object> _Metadata = default(IDictionary<string, object>);
+        public IDictionary<string, object> Metadata
+        {
+            get
+            {
+                return _Metadata;
+            }
+
+            set
+            {
+                _Metadata = (value);
+            }
+        }
+
+        private string _PlaybackStatus = default(string);
+        public string PlaybackStatus
+        {
+            get
+            {
+                return _PlaybackStatus;
+            }
+
+            set
+            {
+                _PlaybackStatus = (value);
+            }
+        }
+
+        private long _Position = default(long);
+        public long Position
+        {
+            get
+            {
+                return _Position;
+            }
+
+            set
+            {
+                _Position = (value);
+            }
+        }
+
+        private double _Volume = default(double);
+        public double Volume
+        {
+            get
+            {
+                return _Volume;
+            }
+
+            set
+            {
+                _Volume = (value);
+            }
+        }
     }
 
-
-    [DBusInterface("org.mpris.MediaPlayer2.Playlists")]
-    interface IPlaylists : IDBusObject
+   /* static class PlayerExtensions
     {
-        Task ActivatePlaylistAsync(ObjectPath PlaylistId);
-        Task<(ObjectPath, string, string)[]> GetPlaylistsAsync(uint Index, uint MaxCount, string Order, bool ReverseOrder);
-        Task<IDisposable> WatchPlaylistChangedAsync(Action<(ObjectPath playlist, string, string)> handler, Action<Exception> onError = null);
-        Task<object> GetAsync(string prop);
-        Task<PlaylistsProperties> GetAllAsync();
-        Task SetAsync(string prop, object val);
-        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
-    }
-
-    [Dictionary]
-    class PlaylistsProperties
-    {
-        public uint PlaylistCount
-        {
-            get;
-
-            set;
-        }
-
-        public string[] Orderings
-        {
-            get;
-
-            set;
-        }
-
-        public (bool, (ObjectPath, string, string)) ActivePlaylist
-        {
-            get;
-
-            set;
-        }
-    }
-
-
-
-    [DBusInterface("org.mpris.MediaPlayer2.TrackList")]
-    interface ITrackList : IDBusObject
-    {
-        Task<IDictionary<string, object>[]> GetTracksMetadataAsync(ObjectPath[] TrackIds);
-        Task AddTrackAsync(string Uri, ObjectPath AfterTrack, bool SetAsCurrent);
-        Task RemoveTrackAsync(ObjectPath TrackId);
-        Task GoToAsync(ObjectPath TrackId);
-        Task<IDisposable> WatchTrackListReplacedAsync(Action<(ObjectPath[] tracks, ObjectPath currentTrack)> handler, Action<Exception> onError = null);
-        Task<IDisposable> WatchTrackAddedAsync(Action<(IDictionary<string, object> metadata, ObjectPath afterTrack)> handler, Action<Exception> onError = null);
-        Task<IDisposable> WatchTrackRemovedAsync(Action<ObjectPath> handler, Action<Exception> onError = null);
-        Task<IDisposable> WatchTrackMetadataChangedAsync(Action<(ObjectPath trackId, IDictionary<string, object> metadata)> handler, Action<Exception> onError = null);
-        Task<object> GetAsync(string prop);
-        Task<TrackListProperties> GetAllAsync();
-        Task SetAsync(string prop, object val);
-        Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
-    }
-
-    [Dictionary]
-    class TrackListProperties
-    {
-        public ObjectPath[] Tracks
-        {
-            get;
-
-            set;
-        }
-
-        public bool CanEditTracks
-        {
-            get;
-
-            set;
-        }
-    }
-
-
+        public static Task<bool> GetCanControlAsync(this IPlayer o) => o.GetAsync<bool>("CanControl");
+        public static Task<bool> GetCanGoNextAsync(this IPlayer o) => o.GetAsync<bool>("CanGoNext");
+        public static Task<bool> GetCanGoPreviousAsync(this IPlayer o) => o.GetAsync<bool>("CanGoPrevious");
+        public static Task<bool> GetCanPauseAsync(this IPlayer o) => o.GetAsync<bool>("CanPause");
+        public static Task<bool> GetCanPlayAsync(this IPlayer o) => o.GetAsync<bool>("CanPlay");
+        public static Task<bool> GetCanSeekAsync(this IPlayer o) => o.GetAsync<bool>("CanSeek");
+        public static Task<IDictionary<string, object>> GetMetadataAsync(this IPlayer o) => o.GetAsync<IDictionary<string, object>>("Metadata");
+        public static Task<string> GetPlaybackStatusAsync(this IPlayer o) => o.GetAsync<string>("PlaybackStatus");
+        public static Task<long> GetPositionAsync(this IPlayer o) => o.GetAsync<long>("Position");
+        public static Task<double> GetVolumeAsync(this IPlayer o) => (double)o.GetAsync("Volume");
+        public static Task SetVolumeAsync(this IPlayer o, double val) => o.SetAsync("Volume", val);
+    }*/
 
     [DBusInterface("org.mpris.MediaPlayer2")]
     interface IMediaPlayer2 : IDBusObject
     {
-        Task RaiseAsync();
         Task QuitAsync();
+        Task RaiseAsync();
         Task<object> GetAsync(string prop);
         Task<MediaPlayer2Properties> GetAllAsync();
         Task SetAsync(string prop, object val);
@@ -221,70 +198,100 @@ namespace SilverAudioPlayer.Linux.MPRIS
     }
 
     [Dictionary]
-    public class MediaPlayer2Properties
+    class MediaPlayer2Properties
     {
+        private bool _CanQuit = default(bool);
         public bool CanQuit
         {
-            get;
+            get
+            {
+                return _CanQuit;
+            }
 
-            set;
+            set
+            {
+                _CanQuit = (value);
+            }
         }
 
-        public bool Fullscreen
-        {
-            get;
-
-            set;
-        }
-
-        public bool CanSetFullscreen
-        {
-            get;
-
-            set;
-        }
-
+        private bool _CanRaise = default(bool);
         public bool CanRaise
         {
-            get;
+            get
+            {
+                return _CanRaise;
+            }
 
-            set;
+            set
+            {
+                _CanRaise = (value);
+            }
         }
 
-        public bool HasTrackList
-        {
-            get;
-
-            set;
-        }
-
-        public string Identity
-        {
-            get;
-
-            set;
-        }
-
+        private string _DesktopEntry = default(string);
         public string DesktopEntry
         {
-            get;
+            get
+            {
+                return _DesktopEntry;
+            }
 
-            set;
+            set
+            {
+                _DesktopEntry = (value);
+            }
         }
 
+        private string _Identity = default(string);
+        public string Identity
+        {
+            get
+            {
+                return _Identity;
+            }
+
+            set
+            {
+                _Identity = (value);
+            }
+        }
+
+        private string[] _SupportedUriSchemes = default(string[]);
         public string[] SupportedUriSchemes
         {
-            get;
+            get
+            {
+                return _SupportedUriSchemes;
+            }
 
-            set;
+            set
+            {
+                _SupportedUriSchemes = (value);
+            }
         }
 
+        private string[] _SupportedMimeTypes = default(string[]);
         public string[] SupportedMimeTypes
         {
-            get;
-            set;
+            get
+            {
+                return _SupportedMimeTypes;
+            }
+
+            set
+            {
+                _SupportedMimeTypes = (value);
+            }
         }
     }
-
-
+/*
+    static class MediaPlayer2Extensions
+    {
+        public static Task<bool> GetCanQuitAsync(this IMediaPlayer2 o) => o.GetAsync<bool>("CanQuit");
+        public static Task<bool> GetCanRaiseAsync(this IMediaPlayer2 o) => o.GetAsync<bool>("CanRaise");
+        public static Task<string> GetDesktopEntryAsync(this IMediaPlayer2 o) => o.GetAsync<string>("DesktopEntry");
+        public static Task<string> GetIdentityAsync(this IMediaPlayer2 o) => o.GetAsync<string>("Identity");
+        public static Task<string[]> GetSupportedUriSchemesAsync(this IMediaPlayer2 o) => o.GetAsync<string[]>("SupportedUriSchemes");
+        public static Task<string[]> GetSupportedMimeTypesAsync(this IMediaPlayer2 o) => o.GetAsync<string[]>("SupportedMimeTypes");
+    }*/
 }
