@@ -68,6 +68,7 @@ public class SilverJuke : IMusicStatusInterface
         app.MapGet("/stop", listener.Stop).WithName("Stop");
         app.MapGet("/albumart", () =>
         {
+            Thread.CurrentThread.Priority=ThreadPriority.BelowNormal;
             var currentTrack = listener.GetCurrentTrack();
             if ( currentTrack?.Metadata == null || currentTrack?.Metadata?.Pictures?.Count==0)
             {

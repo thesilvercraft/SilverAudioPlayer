@@ -21,12 +21,10 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         Task.Run(async () =>
         {
             var propertyChanges = new PropertyChanges(new KeyValuePair<string, object>[1]
-        {
-            new KeyValuePair<string, object>("PlaybackStatus", await GetPlaybackStatusAsync())
-        });
-
+            {
+                new("PlaybackStatus", await GetPlaybackStatusAsync())
+            });
             PropertyChanged.Invoke(propertyChanges);
-
         });
     }
 
@@ -36,12 +34,10 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         Task.Run(async () =>
         {
             var propertyChanges = new PropertyChanges(new KeyValuePair<string, object>[1]
-        {
-            new KeyValuePair<string, object>("Metadata", await GetMetadataAsync())
-        });
-
+            {
+                new("Metadata", await GetMetadataAsync())
+            });
             PropertyChanged.Invoke(propertyChanges);
-
         });
 
     }
@@ -98,14 +94,14 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     {
         if (Env is IPlayStreamProviderListener l)
         {
-            l.ProcessFiles(new[] { Uri });
+            l.ProcessFiles([Uri]);
         }
         return Task.CompletedTask;
     }
 
     public Task<IDictionary<string, object>> GetMetadataAsync()
     {
-        // Return some mock metadata
+        //https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
         var track = Env?.GetCurrentTrack();
         return Task.FromResult<IDictionary<string, object>>(new Dictionary<string, object>()
             {
@@ -114,15 +110,18 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
                 {"mpris:artUrl", "http://localhost:36169/albumart"},
                 {"xesam:title", track?.Metadata?.Title ?? "nothing"},
                 {"xesam:album", track?.Metadata?.Album ?? "no"},
-                {"xesam:artist", new string[] {track?.Metadata?.Artist??"none"}}
+                {"xesam:artist", new string[] {track?.Metadata?.Artist??"none"}},
+                {"xesam:discNumber", track?.Metadata?.DiscNumber??0},
+                {"xesam:trackNumber", track?.Metadata?.TrackNumber??0},
+                {"xesam:genre", track?.Metadata?.Genre??""},
+                {"xesam:asText", track?.Metadata?.Lyrics??""},
+
             });
 
     }
 
     public Task<string> GetPlaybackStatusAsync()
     {
-        // Return some mock status
-        //"Playing", "Paused" or "Stopped". 
         return Task.FromResult(Env?.GetState() switch
         {
             PlaybackState.Playing => "Playing",
@@ -133,97 +132,73 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
 
     public Task<string> GetLoopStatusAsync()
     {
-        // Return some mock status
-        return Task.FromResult("None");
+
+        return Task.FromResult(Env.GetRepeat() switch
+        {
+            RepeatState.None => "None",
+            RepeatState.One => "Track",
+            RepeatState.Queue => "Playlist",
+            _ => throw new NotImplementedException()
+        });
     }
 
     public Task SetLoopStatusAsync(string value)
     {
-        Console.WriteLine($"Set loop status {value}");
+        Env.SetRepeat(value switch
+        {
+            "None" => RepeatState.None,
+            "Track" => RepeatState.One,
+            "Playlist" => RepeatState.Queue,
+            _ => throw new NotImplementedException()
+        });
         return Task.CompletedTask;
     }
 
-    public Task<double> GetRateAsync()
-    {
-        // Return some mock rate
-        return Task.FromResult(1.0);
-    }
+    public Task<double> GetRateAsync() => Task.FromResult(1.0);
 
     public Task SetRateAsync(double value)
     {
-        Console.WriteLine($"Set rate {value}");
+        Debug.WriteLine($"Set rate {value}");
         return Task.CompletedTask;
     }
 
-    public Task<bool> GetShuffleAsync()
-    {
-        // Return some mock shuffle
-        return Task.FromResult(false);
-    }
+    public Task<bool> GetShuffleAsync() => Task.FromResult(false);
 
     public Task SetShuffleAsync(bool value)
     {
-        Console.WriteLine($"Set shuffle {value}");
+        Debug.WriteLine($"Set shuffle {value}");
         return Task.CompletedTask;
     }
 
-    public Task<long> GetVolumeAsync()
-    {
-        // Return some mock volume
-        return Task.FromResult(100L);
-    }
+    public Task<double> GetVolumeAsync() => Task.FromResult(Env.GetVolume() / 100d);
 
-    public Task SetVolumeAsync(long value)
+    public Task SetVolumeAsync(double value)
     {
-        Console.WriteLine($"Set volume {value}");
+        Debug.WriteLine($"Set volume {value}");
+        if (value is <= 1 and >= 0)
+        {
+            Env.SetVolume((byte)(value * 100d));
+        }
         return Task.CompletedTask;
     }
 
-    public Task<long> GetPositionAsync()
-    {
-        return Task.FromResult((long)(Env.GetPosition() * 1000 * 1000));
-    }
+    public Task<long> GetPositionAsync() => Task.FromResult((long)(Env.GetPosition() * 1000 * 1000));
 
-    public Task<double> GetMinimumRateAsync()
-    {
-        return Task.FromResult(1.0);
-    }
+    public Task<double> GetMinimumRateAsync() => Task.FromResult(1.0);
 
-    public Task<double> GetMaximumRateAsync()
-    {
-        return Task.FromResult(1.0);
-    }
+    public Task<double> GetMaximumRateAsync() => Task.FromResult(1.0);
 
-    public Task<bool> GetCanGoNextAsync()
-    {
-        return Task.FromResult(true);
-    }
+    public Task<bool> GetCanGoNextAsync() => Task.FromResult(true);
 
-    public Task<bool> GetCanGoPreviousAsync()
-    {
-        return Task.FromResult(true);
-    }
+    public Task<bool> GetCanGoPreviousAsync() => Task.FromResult(true);
 
-    public Task<bool> GetCanPlayAsync()
-    {
-        return Task.FromResult(true);
-    }
+    public Task<bool> GetCanPlayAsync() => Task.FromResult(true);
 
-    public Task<bool> GetCanPauseAsync()
-    {
-        return Task.FromResult(true);
-    }
+    public Task<bool> GetCanPauseAsync() => Task.FromResult(true);
 
-    public Task<bool> GetCanSeekAsync()
-    {
-        return Task.FromResult(true);
-    }
+    public Task<bool> GetCanSeekAsync() => Task.FromResult(true);
 
-    public Task<bool> GetCanControlAsync()
-    {
-        // Return some mock capability
-        return Task.FromResult(true);
-    }
+    public Task<bool> GetCanControlAsync() => Task.FromResult(true);
 
     public ObjectPath ObjectPath => new ObjectPath("/org/mpris/MediaPlayer2");
 
@@ -242,24 +217,23 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     {
         Debug.WriteLine(prop);
         prop = prop.ToLower();
-        switch (prop)
+        return prop switch
         {
-            case "cancontrol":
-            case "cangonext":
-            case "cangoprevious":
-            case "canpause":
-            case "canseek":
-                return Task.FromResult<object>(true);
-            case "metadata":
-                return await GetMetadataAsync();
-            case "playbackstatus":
-                return Task.FromResult<object>(await GetPlaybackStatusAsync());
-            case "position":
-                return Task.FromResult<object>(await GetPositionAsync());
-            case "volume":
-                return Task.FromResult<object>(await GetVolumeAsync());
-        }
-        throw new NotImplementedException();
+            "cancontrol" or "cangonext" or "cangoprevious" or "canpause" or "canseek" or "canplay" => true,
+            "canraise" or "canquit"=>false,
+            "desktopentry"=>DesktopEntry,
+            "minimumrate" or "maximumrate" or "rate" => 1d,
+            "metadata" => await GetMetadataAsync(),
+            "playbackstatus" => await GetPlaybackStatusAsync(),
+            "position" => await GetPositionAsync(),
+            "volume" => await GetVolumeAsync(),
+            "identity" => Identity,
+            "shuffle" => await GetShuffleAsync(),
+            "loopstatus" => GetLoopStatusAsync(),
+            "supportedmimetypes" => await Mimes(),
+            "SupportedUriSchemes" => supportedUri,
+            _ => throw new NotImplementedException(),
+        };
     }
 
     public async Task<PlayerProperties> GetAllAsync()
@@ -282,7 +256,12 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
 
     public Task SetAsync(string prop, object val)
     {
-        throw new NotImplementedException();
+        if (prop.ToLowerInvariant() == "volume")
+        {
+            SetVolumeAsync((double)val);
+        }
+        return Task.CompletedTask;
+
     }
 
     Task<IDisposable> IPlayer.WatchPropertiesAsync(Action<PropertyChanges> handler)
@@ -304,20 +283,26 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     public Task RaiseAsync()
     {
         return Task.CompletedTask;
-
     }
-
+    async Task<string[]> Mimes()
+    {
+        var tm = await Env.SupportedMimeTypes();
+        List<string> mimes = [.. tm.Select(x => x.Common), .. tm.SelectMany(x => x.AlternativeTypes)];
+        return [.. mimes];
+    }
+    string[] supportedUri = ["file", "http", "https"];
+    const string Identity="Catenoid";
+    const string  DesktopEntry="Catenoid";
     async Task<MediaPlayer2Properties> IMediaPlayer2.GetAllAsync()
     {
         return new MediaPlayer2Properties()
         {
-            CanQuit = true,
-            CanRaise = true,
-            DesktopEntry = "catenoid.desktop",
-            Identity = "Catenoid",
-            SupportedUriSchemes = ["http", "https"],
-            SupportedMimeTypes = ["audio/mod"],
-
+            CanQuit = false,
+            CanRaise = false,
+            DesktopEntry = DesktopEntry,
+            Identity = Identity,
+            SupportedUriSchemes = supportedUri,
+            SupportedMimeTypes = await Mimes(),
         };
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Ekorensis;
+using SilverMagicBytes;
 
 namespace Catenoid;
 
@@ -141,7 +143,10 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IF
         //If someone thinks otherwise feel free to add code to this method
     }
 
-
+    public Task<IReadOnlyList<MimeType>> SupportedMimeTypes()
+    {
+        return Task.FromResult<IReadOnlyList<MimeType>>(mainWindow.Logic.PlayableMimes);
+    }
     public string GetLyrics()
     {
         return mainWindow.dc.CurrentSong?.Metadata?.Lyrics;

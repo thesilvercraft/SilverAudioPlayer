@@ -122,7 +122,7 @@ public class PortAudioSoundOut : ISoundOut
     int channels;
     private unsafe int CallBackMethod(void* input, void* output, ulong frameCount, PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, nint userData)
     {
-        Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+        Thread.CurrentThread.Priority = ThreadPriority.Highest;
         float* outputBuffer = (float*)output;
         int bufferLength = (int)frameCount * channels;
         float[] buffer = new float[bufferLength];

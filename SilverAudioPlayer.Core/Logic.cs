@@ -148,12 +148,12 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         switch (s)
         {
             case PlaybackState.Stopped:
+            case PlaybackState.Paused:
                 Parallel.ForEach(WakeLockInterfaces, msI => msI.UnWakeLock());
                 break;
             case PlaybackState.Playing:
                 Parallel.ForEach(WakeLockInterfaces, msI => msI.WakeLock());
                 break;
-            case PlaybackState.Paused:
             case PlaybackState.Buffering:
             default:
                 break;
