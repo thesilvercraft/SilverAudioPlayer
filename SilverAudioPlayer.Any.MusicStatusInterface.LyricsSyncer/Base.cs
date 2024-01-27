@@ -45,7 +45,10 @@ namespace SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer
                 Debug.WriteLine($"{e.Name} Has lyrics but they aren't synced");
                 Dispatcher.UIThread.InvokeAsync(new Action(() =>
                 {
-                    LyricsView v = new(_listner);
+                    LyricsView v = new(_listner)
+                    {
+                        ShowActivated = false
+                    };
                     v.Show();
                 }));
               

@@ -80,15 +80,15 @@
 						<TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00" />
 					</Grid>
 					<Grid ColumnDefinitions="*,*,*,*,*,*,*" Grid.Row="2" Margin="0,1,1,1">
-						<Button Name="PlayButton" Grid.Column="0" >Play</Button>
+						<Button Name="PlayButton" Grid.Column="0">Play</Button>
 						<Button Name="PauseButton" Grid.Column="1">Pause</Button>
-						<Button Name="StopButton" Grid.Column="2">Stop/Skip</Button>
-						<Button Name="RepeatButton" Grid.Column="3">
+						<Button Name="StopButton" Grid.Column="2" HotKey="Ctrl+Right">Stop/Skip</Button>
+						<Button Name="RepeatButton" Grid.Column="3" HotKey="Ctrl+R">
 							<TextBlock Text="{Binding LoopType}" />
 						</Button>
-						<Button Grid.Column="4" Name="LyricsButton" Click="LyricsButton_Click" HotKey="Ctrl+L">Lyrics</Button>
-						<Button Name="Settings" Grid.Column="5" HotKey="Ctrl+Shift+,">Settings</Button>
-						<Button Name="CommandMenu" Grid.Column="6" HotKey="Ctrl+Shift+P">Command Menu</Button>
+						<Button Grid.Column="4" Name="LyricsButton" Click="LyricsButton_Click" HotKey="W">Lyrics</Button>
+						<Button Name="Settings" Grid.Column="5" HotKey="Ctrl+,">Settings</Button>
+						<Button Name="CommandMenu" Grid.Column="6" HotKey="Ctrl+Shift+P">Commands</Button>
 
 					</Grid>
 					<Slider Name="VolumeBar" Grid.Row="3" Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"

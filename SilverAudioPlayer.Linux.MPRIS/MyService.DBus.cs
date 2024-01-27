@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Tmds.DBus;
-
+//https://specifications.freedesktop.org/mpris-spec/latest/
 [assembly: InternalsVisibleTo(Tmds.DBus.Connection.DynamicAssemblyName)]
 namespace DBusInterop
 {
@@ -18,11 +15,10 @@ namespace DBusInterop
         Task SeekAsync(long Offset);
         Task SetPositionAsync(ObjectPath TrackId, long Position);
         Task StopAsync();
+        Task OpenUriAsync(string Uri);
         Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null);
         Task<object> GetAsync(string prop);
         Task<PlayerProperties> GetAllAsync();
-
-
         Task SetAsync(string prop, object val);
         Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler);
     }

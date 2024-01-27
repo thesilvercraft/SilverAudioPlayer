@@ -54,7 +54,7 @@ public class DiscordPlayTrackerConfig : INotifyPropertyChanged, ICanBeToldThatAP
 
     [Comment("The uploader to use")] public Uploader Uploader { get; set; } = Uploader.None;
 
-    [XmlIgnore] public bool AllowedToRead {get;set;}= true;
+    [XmlIgnore] public bool AllowedToRead { get; set; } = true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 }
@@ -69,7 +69,7 @@ public enum Uploader
 [Export(typeof(IMusicStatusInterface))]
 public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
 {
-    private const string AppName = "SilverAudioPlayer";
+    private const string AppName = "Catenoid";
 
     private const string PauseTextState = "Paused";
     private const string PauseTextSState = "Paused";
@@ -97,6 +97,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
 
     string id = "926595775574712370";
+    private static readonly string[] optionsForUploader = new string[] { "None", "Catbox", "Imgur" };
 
     public DiscordPlayTracker()
     {
@@ -105,7 +106,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
         {
             new SimpleDropDown()
             {
-                GetOptions = () => new string[] { "None", "Catbox", "Imgur" },
+                GetOptions = () => optionsForUploader,
                 GetPlaceholder = () => "None",
                 GetSelection = () =>
                 {
@@ -113,7 +114,6 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
                     {
                         return x.Uploader.ToString();
                     }
-
                     return Uploader.None.ToString();
                 },
                 SetSelection = (s) =>
@@ -136,6 +136,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
     public void Dispose()
     {
         client?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public void PlayerStateChanged(object e, PlaybackState newstate)
@@ -150,7 +151,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
                 if (Env.GetCurrentTrack != null)
                 {
                     var ct = Env.GetCurrentTrack();
-                    SPlay(ct.URI, ct);
+                    SPlay(ct);
                 }
 
                 break;
@@ -159,7 +160,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
                 if (Env.GetCurrentTrack != null)
                 {
                     var ct = Env.GetCurrentTrack();
-                    SPause(ct.URI, ct);
+                    SPause(ct);
                 }
 
                 break;
@@ -172,7 +173,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
     public void TrackChangedNotification(object e, Song? newtrack)
     {
-        ChangeSong(newtrack.URI, newtrack);
+        ChangeSong(newtrack);
     }
 
     public string Name => "Discord RP";
@@ -235,10 +236,10 @@ SilverAudioPlayer.DiscordRP
     public bool IsStarted => _IsStarted;
     private bool _IsStarted;
 
-    public void ChangeSong(string? loc, Song? a)
+    public void ChangeSong(Song? a)
     {
         if (!_IsStarted) return;
-        var bigimage = GetAlbumArt(loc, a);
+        var bigimage = GetAlbumArt(a);
         SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
             StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
             bigimage == null ? AppName : a.Metadata?.Album ?? AppName, "start", PlayTextState);
@@ -254,7 +255,7 @@ SilverAudioPlayer.DiscordRP
         };
     }
 
-    public string? GetAlbumArt(string? loc, Song? a)
+    public string? GetAlbumArt(Song? a)
     {
         if (richPresenceURLs != null)
         {
@@ -266,41 +267,50 @@ SilverAudioPlayer.DiscordRP
         return tracks.GetValueOrDefault(artistandalbum, null);
     }
 
-    public void SPause(string? loc, Song? a)
+    public void SPause(Song? a)
     {
         if (!_IsStarted) return;
-
         if (a != null)
         {
-            var bigimage = GetAlbumArt(loc, a);
-            SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
-                StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
-                bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PauseStateRPSMLICN, PauseTextState);
-        }
-        else
-        {
-            SetStatus(Path.GetFileNameWithoutExtension(loc), PauseTextSState, "sap", AppName, PauseStateRPSMLICN,
-                PauseTextState);
+            if (a.Metadata != null)
+            {
+                var bigimage = GetAlbumArt(a);
+                SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PauseTextSState),
+                    StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
+                    bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PauseStateRPSMLICN, PauseTextState);
+            }
+            else
+            {
+                SetStatus(Path.GetFileNameWithoutExtension(a.URI), PauseTextSState, "sap", AppName, PauseStateRPSMLICN,
+                    PauseTextState);
+            }
         }
     }
 
-    public void SPlay(string? loc, Song? a)
+    public void SPlay(Song? a)
     {
         if (!_IsStarted) return;
 
-
         if (a != null)
         {
-            var bigimage = GetAlbumArt(loc, a);
-            SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PlayTextSState),
-                StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
-                bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PlayStateRPSMLICN, PlayTextState);
+            if (a.Metadata != null)
+            {
+                var bigimage = GetAlbumArt(a);
+                SetStatus(StatusOrNotToStatus(a.Metadata?.Title ?? a.Name, PlayTextSState),
+                    StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
+                    bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PlayStateRPSMLICN, PlayTextState);
+            }
+            else
+            {
+                SetStatus(Path.GetFileNameWithoutExtension(a.URI), PlayTextSState, "sap", AppName, PlayStateRPSMLICN,
+                    PlayTextState);
+            }
         }
         else
         {
-            SetStatus(Path.GetFileNameWithoutExtension(loc), PlayTextSState, "sap", AppName, PlayStateRPSMLICN,
-                PlayTextState);
+            SStop();
         }
+
     }
 
     public void SStop()
@@ -341,15 +351,17 @@ SilverAudioPlayer.DiscordRP
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
-        _IsStarted = true;
         client = new DiscordRpcClient(id)
         {
             SkipIdenticalPresence = false,
             Logger = new SerilogLogger(),
         };
-        client.OnError += (_, e) => Debug.WriteLine($"An error occurred with Discord RPC Client: {e.Code} {e.Message}");
-
-        client.Initialize();
+        _IsStarted = client.Initialize();
+        if (!_IsStarted)
+        {
+            StopIPC(listener);
+            return;
+        }
         listener.PlayerStateChanged += PlayerStateChanged;
         listener.TrackChangedNotification += TrackChangedNotification;
         if (ConfigObject.Value is not DiscordPlayTrackerConfig) return;
@@ -372,7 +384,6 @@ SilverAudioPlayer.DiscordRP
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
-        Debug.WriteLine("disable called");
         _IsStarted = false;
         listener.PlayerStateChanged -= PlayerStateChanged;
         listener.TrackChangedNotification -= TrackChangedNotification;

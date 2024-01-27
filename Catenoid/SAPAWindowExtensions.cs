@@ -1,4 +1,6 @@
-﻿using Avalonia.Controls;
+﻿using System.Diagnostics;
+using System.IO;
+using Avalonia.Controls;
 using Avalonia.Media;
 using SilverCraft.AvaloniaUtils;
 
@@ -22,6 +24,14 @@ namespace Catenoid
                 return;
             }
             w.DoAfterInitTasks(register, defBackground:defBrush, options:options, followOptionsOnCall:followOptionsOnCall);
+        }
+        public  const string CopiedToClipboard="Copied to clipboard";
+        public static void Toast(string Content)
+        {
+            if(File.Exists("/bin/notify-send"))
+            {
+                Process.Start("notify-send", $"-a Catenoid -i sap.svg -u low\"{Content}\"");
+            }
         }
     }
 }

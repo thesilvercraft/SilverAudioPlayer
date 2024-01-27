@@ -457,6 +457,7 @@ public partial class Settings : Window
         if (e.InitialPressMouseButton == MouseButton.Right)
         {
             Clipboard?.SetTextAsync(CurrentSource);
+            SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
         }
     }
 

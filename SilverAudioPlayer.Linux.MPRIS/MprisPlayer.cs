@@ -103,10 +103,11 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     {
         //https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
         var track = Env?.GetCurrentTrack();
+        var g=track?.Guid.ToString("N");
         return Task.FromResult<IDictionary<string, object>>(new Dictionary<string, object>()
             {
                 {"mpris:length",( (long?)Env?.GetDuration()??10)*1000*1000},
-                {"mpris:trackid", new ObjectPath("/org/mpris/MediaPlayer2/Track/"+"0")},
+                {"mpris:trackid", new ObjectPath("/org/mpris/MediaPlayer2/Track/"+( string.IsNullOrWhiteSpace(g)? "NoTrack": g))},
                 {"mpris:artUrl", "http://localhost:36169/albumart"},
                 {"xesam:title", track?.Metadata?.Title ?? "nothing"},
                 {"xesam:album", track?.Metadata?.Album ?? "no"},

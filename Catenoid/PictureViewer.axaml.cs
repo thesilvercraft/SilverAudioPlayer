@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
@@ -69,9 +71,9 @@ public partial class PictureViewer : Window
         if (wrappedStream != null)
         {
             await this.SetClipboardImage(wrappedStream, Log);
+            SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
         }
     }
-
 }
 public class DContext : ReactiveObject
 {
