@@ -16,7 +16,7 @@ public class SplPlaylistParser : IPlaylistReader
     public Version? Version => typeof(SplPlaylistParser).Assembly.GetName().Version; 
     public string Licenses => "GPL3";
     public List<Tuple<Uri, URLType>>? Links { get; } = [];
-    public IReadOnlyList<MimeType> SupportedMimes { get; } = new[] { KnownMimes.SplMime };
+    public IReadOnlyList<MimeType> SupportedMimes { get; } = [KnownMimes.SplMime];
 
     public bool TryParse(WrappedStream stream, out IPlaylist? playlist)
     {
@@ -26,7 +26,7 @@ public class SplPlaylistParser : IPlaylistReader
             var splylist = SilverPlaylistHelper.DeserializeBrotli(fs);
             if (splylist != null)
             {
-                playlist = new SilverPlayListI (splylist);
+                playlist = new SilverPlayListI(splylist);
                 return true;
             }
         }

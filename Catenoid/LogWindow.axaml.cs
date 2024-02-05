@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using SilverCraft.AvaloniaUtils;
 
 namespace Catenoid;
 
@@ -10,8 +10,7 @@ public partial class LogWindow : Window
     {
         InitializeComponent();
         TextBox.Text = App.sink.writer.ToString();
-        App.sink.New += (s) => 
-            Dispatcher.UIThread.InvokeAsync(()=> TextBox.AppendText(s));
-            this.DoAfterInitTasksF();
+        App.sink.New += (s) => Task.Run(() => Dispatcher.UIThread.InvokeAsync(() => TextBox.AppendText(s)));
+        this.DoAfterInitTasksF();
     }
 }

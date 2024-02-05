@@ -45,7 +45,7 @@ public class LinuxWakeLock : IWakeLockProvider
         Task.Run(async () =>
         {
             Cookie = await _screenSaver.InhibitAsync(
-                "org.mpris.MediaPlayer2.sap.i" + Environment.ProcessId,
+                "Catenoid",
                 "Playing music");
             Debug.WriteLine("Obtained cookie {0}", Cookie);
         });

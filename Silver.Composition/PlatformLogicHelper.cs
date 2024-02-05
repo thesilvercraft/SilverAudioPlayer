@@ -174,7 +174,7 @@ public static class PlatformLogicHelper
 
         foreach (var catalog in catalogs)
         {
-            catalog.Change += (sender, s) =>
+           /* catalog.Change += (sender, s) =>
             {
                 var a = assemblies.First(x => x.Path == s);
                 a.Dispose();
@@ -183,7 +183,7 @@ public static class PlatformLogicHelper
             {
                 var a = assemblies.First(x => x.Path == s);
                 a.Dispose();
-            };
+            };*/
         }
     }
 

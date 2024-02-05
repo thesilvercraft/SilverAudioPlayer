@@ -14,28 +14,30 @@ namespace SilverAudioPlayer.Linux.MPRIS
         public Mpris()
         {
         }
-
+        Connection connection;
         void start()
         {
+            if (_IsStarted)
+            {
+                return;
+            }
             _IsStarted = true;
             Task.Run(async () =>
             {
                 try
                 {
-                    var connection = new Connection(Address.Session);
-                    {
-                        await connection.ConnectAsync();
-                        var player = new MprisPlayer(Env);
-                        await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.catenoid.i_" + Environment.ProcessId);
-                        await connection.RegisterObjectAsync(player);
-                    }
+                    connection = new Connection(Address.Session);
+                    connection.StateChanged+=ConnectionOnStateChanged;
+                    await connection.ConnectAsync();
+                    var player = new MprisPlayer(Env);
+                    await connection.RegisterObjectAsync(player);
+                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.catenoid.i_" + Environment.ProcessId);
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine(e);
                     throw;
                 }
-
             });
         }
 
@@ -43,7 +45,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
             if (e.State == ConnectionState.Disconnected && _IsStarted)
             {
-                start();
+               _IsStarted=false;
             }
             Debug.WriteLine(e.DisconnectReason);
         }
@@ -52,12 +54,6 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
         }
         public ObjectPath ObjectPath { get; } = new ObjectPath("/org/mpris/MediaPlayer2");
-
-
-
-
-
-
         private IMusicStatusInterfaceListener Env;
         public void StartIPC(IMusicStatusInterfaceListener listener)
         {
@@ -65,12 +61,10 @@ namespace SilverAudioPlayer.Linux.MPRIS
             start();
         }
 
-
-
-
         public void StopIPC(IMusicStatusInterfaceListener listener)
         {
             _IsStarted = false;
+            connection.Dispose();
         }
 
         public string Name => "MPRIS Linux MSI";

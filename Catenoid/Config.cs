@@ -19,6 +19,8 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 
     public bool DisableAlbumArtBlur { get; set; } = false;
     public float AlbumArtTransparency { get; set; } = 0.25f;
+    [Comment("Does the audio player save the tracks in a playlist upon closing?")]
+    public bool AutoSave {get;set;}=false;
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];
     public ConfigStyle UserLogPreferences = ConfigStyle.Unknown;
@@ -36,7 +38,7 @@ public enum ConfigStyle
     /// </summary>
     Unknown,
     /// <summary>
-    /// absolutely no logs
+    /// absolutely no logs, unless debugger is attached on debug build
     /// </summary>
     None,
     /// <summary>
@@ -44,7 +46,7 @@ public enum ConfigStyle
     /// </summary>
     LogWindow,
     /// <summary>
-    /// log to file
+    /// log to system
     /// </summary>
-    File
+    System
 }

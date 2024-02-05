@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,6 +60,7 @@ public partial class Settings : Window
         TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
         CapBox = this.FindControl<ListBox>("CapBox");
         ProductIconButton = this.FindControl<Button>("ProductIconButton");
+        AutoSaveCheckBox = this.FindControl<CheckBox>("AutoSaveCheckBox");
         ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
             RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
@@ -82,12 +84,23 @@ public partial class Settings : Window
             ProductName = mainWindow.Env.Name,
             ProductDescription = mainWindow.Env.Description,
             ProductIcon = ir.Item1.First().Icon,
+            Config = mainWindow.config
         };
 
         DataContext = _settingsDc;
         Legalese = ir.Item2;
     }
 
+    private void AutoSaveCheckBoxChecked(object? sender, RoutedEventArgs e)
+    {
+        if (AutoSaveCheckBox != null)
+        {
+            mainWindow.config.AutoSave = AutoSaveCheckBox.IsChecked ?? true;
+            if (!mainWindow.config.AllowedToRead) return;
+            mainWindow.reader.Write(mainWindow.config, App._configPath);
+        }
+
+    }
 
     private SettingsDC _settingsDc;
 
@@ -147,7 +160,7 @@ public partial class Settings : Window
         {
             var img = new SvgImage
             {
-                Source = new()
+                Source = new(new Uri("http://localhost:12312"))
             };
             img.Source.Load(stream.GetStream());
             return img;
@@ -221,7 +234,7 @@ public partial class Settings : Window
                 })
             .ToList());
     }
-   static void ShowLaunchActionsWindow(List<SAction> actions)
+    static void ShowLaunchActionsWindow(List<SAction> actions)
     {
         Dispatcher.UIThread.Post(() =>
       {
@@ -441,9 +454,9 @@ public partial class Settings : Window
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString());
-            var img = new SvgImage
+            var img = new SvgImage()
             {
-                Source = new SvgSource()
+                Source = new(new Uri("http://localhost:12312"))
             };
             using var s = new MemoryStream(Encoding.UTF8.GetBytes(realisedTemplate));
             img.Source.Load(s);
@@ -516,6 +529,7 @@ public class SettingsDC : ReactiveObject
     public ObservableCollection<InfoPRecord> Items { get; set; }
     public string ProductName { get; internal set; }
     public string ProductDescription { get; internal set; }
+    public Config Config { get; set; }
 
     public IImage? ProductIcon
     {

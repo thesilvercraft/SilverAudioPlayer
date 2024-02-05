@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -11,16 +10,13 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DynamicData.Kernel;
-using ReactiveUI;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Parsing;
 using Silver.Composition;
-using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.Ekonrensis.Avalonia;
-using SilverCraft.Ekorensis;
 using SilverCraft.Shared;
 using Logger = SilverAudioPlayer.Shared.Logger;
 
@@ -152,13 +148,28 @@ public class App : Application
             {
                 //todo: show user dialog to choose
             }
-            //todo: logging based on config
-            var logger = new LoggerConfiguration()
-                .WriteTo.Sink(sink, LogEventLevel.Debug)
-                .WriteTo.Debug(LogEventLevel.Debug)
-                .CreateLogger();
-            LogWindow lw = new();
+            var loggerConfig = new LoggerConfiguration();
+            #if DEBUG
+            if (Debugger.IsAttached)
+            {
+                loggerConfig.WriteTo.Debug(LogEventLevel.Debug);
+            }
+            #endif
+            if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
+            {
+                loggerConfig.WriteTo.Sink(sink);
+            }
+            else if(mwconfig.UserLogPreferences == ConfigStyle.System)
+            {
+                loggerConfig.WriteTo.Console();
+
+            }
+            var logger = loggerConfig.CreateLogger();
+            if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
+            {
+                 LogWindow lw = new();
             lw.Show();
+            }
             Log.Logger = logger;
             BootupLogic.SetupCrashFallNets((Exception y) =>
             {
@@ -166,7 +177,7 @@ public class App : Application
                 File.WriteAllText(a, sink.writer.ToString());
                 if (File.Exists("/usr/bin/kdialog"))
                 {
-                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"A more detailed account on what happened is saved in {a}\n{y.ToString()}\"");
+                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{y}\"");
                 }
             });
             Logger.GetLoggerFunc += logger.ForContext;
@@ -188,8 +199,6 @@ public class App : Application
             foreach (var provider in mw.Logic.PlayProviders)
             {
                 var name = provider.GetType().Name;
-                Debug.WriteLine($"Play provider {name} loaded.");
-               
                 if (provider.SupportedMimes != null) mw.Logic.PlayableMimes.AddRange(provider.SupportedMimes);
             }
 
@@ -204,7 +213,7 @@ public class App : Application
                 mw.Logic.MemoryProvider?.RegisterObjectsToRemember(mainwindowMemory.ObjectsToRememberForMe);
             }
             BootupLogic.SetupMemoryLogic(mw.Logic);
-           
+
             BootupLogic.SetupCommandPalette(mw.Logic, ComandPalette, (item, memoryAsker, l) =>
             {
                 var actions = memoryAsker.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
@@ -222,10 +231,8 @@ public class App : Application
                 cw.HandleConfiguration(configurable);
                 cw.Show();
             });
-            
-          
-
             mw.Logic.ProcessFiles(desktop.Args);
+            mw.Startup();
         }
 
         base.OnFrameworkInitializationCompleted();

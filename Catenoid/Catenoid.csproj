@@ -50,17 +50,15 @@
 		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 		<!--NAudio-->
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
-		<!--NAudio + Naudio.Vorbis-->
-		<DefineConstants>$(DefineConstants)NAVORB</DefineConstants>
 		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		<!--Discord (alpha)-->
-		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants>
+		<!-- <DefineConstants>$(DefineConstants)DISCRD</DefineConstants> -->
 		<!--ChromeCast (alpha)-->
-		<DefineConstants>$(DefineConstants)CAST</DefineConstants>
+		<!-- <DefineConstants>$(DefineConstants)CAST</DefineConstants> -->
 		<!--VLC (Alpha)-->
-		<DefineConstants>$(DefineConstants)VLC</DefineConstants>
+		<!-- <DefineConstants>$(DefineConstants)VLC</DefineConstants> -->
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
 <!--        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
@@ -92,7 +90,8 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.6" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.7" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
@@ -125,18 +124,18 @@
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.5" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.9" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.6" />
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.7" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-		<PackageReference Include="ReactiveUI" Version="19.5.39" />
+		<PackageReference Include="ReactiveUI" Version="19.5.41" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="Svg.Skia" Version="1.0.0.9" />
+		<PackageReference Include="Svg.Skia" Version="1.0.0.13" />
 		<PackageReference Include="System.Composition" Version="8.0.0" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.6" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.7" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.4" />
 	</ItemGroup>
 

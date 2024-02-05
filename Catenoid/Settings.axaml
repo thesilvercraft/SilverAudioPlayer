@@ -10,7 +10,7 @@
 	<Grid RowDefinitions="25,*" Name="MainGrid">
 		<TextBlock Grid.Row="0" Text="Settings"/>
 	<ScrollViewer Grid.Row="1">
-		<Grid RowDefinitions="200,30,30,30,30,30,30,*" ColumnDefinitions="*,*">
+		<Grid RowDefinitions="200,30,30,30,30,30,30,30,*" ColumnDefinitions="*,*">
 			<Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
 				<TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductName}" FontSize="50" Margin="5" />
 				<TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="25" Margin="5" />
@@ -29,8 +29,10 @@
 			<Button Grid.Row="3" Click="ChangeColor" Grid.Column="1">Change window color</Button>
 			<AutoCompleteBox Grid.Row="4" Grid.Column="0" Name="ColorBoxPB" ItemsSource="{Binding AutoSuggestColours}" />
 			<Button Grid.Row="4" Grid.Column="1" Click="ChangeColorPB">Change progress bar</Button>
-			<TextBlock Grid.Row="6" Grid.Column="0" Text="Plugins:" FontSize="25" Margin="5" />
-			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="7"
+			<CheckBox Grid.Row="5"  Name="AutoSaveCheckBox"  Grid.Column="0" IsChecked="{Binding Config.AutoSave}" IsCheckedChanged="AutoSaveCheckBoxChecked"/>
+			<TextBlock Grid.Row="5" Grid.Column="1" Text="Autosave"/>
+			<TextBlock Grid.Row="7" Grid.Column="0" Text="Plugins:" FontSize="25" Margin="5" />
+			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="8"
 			         DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2" Grid.Column="0">
 				<ListBox.ItemTemplate>
 					<DataTemplate>

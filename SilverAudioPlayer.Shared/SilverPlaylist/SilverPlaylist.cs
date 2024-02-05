@@ -48,6 +48,7 @@ public class Sources
 [XmlRoot(ElementName = "Song")]
 public class SerializedSong
 {
+    [XmlAttribute(AttributeName = "Id")] public Guid Id { get; set; }
     [XmlElement(ElementName = "Sources")] public Sources Sources { get; set; }
     [XmlAttribute(AttributeName = "Name")] public string? Name { get; set; }
 
@@ -67,13 +68,11 @@ public class SerializedSong
     public string? MusicBrainz { get; set; }
 }
 
-
 [XmlRoot(ElementName = "SilverPlayList")]
 public class SilverPlayList
 {
     [XmlElement(ElementName = "SharedMetadata")]
     public SharedMetadata? SharedMetadata { get; set; }
-
     [XmlElement(ElementName = "Song")] public List<SerializedSong> Song { get; set; }
 
     [XmlAttribute(AttributeName = "Version")]
@@ -121,7 +120,7 @@ public static class SilverPlaylistHelper
 
     public const string CurrentPlaylistVersion = "elephant";
 
-    public static SilverPlayList FromQueueCopy(IEnumerable<Song> songs)
+    public static SilverPlayList FromQueueCopy(IEnumerable<Song> songs, IMusicStatusInterfaceListener? msiInterface = null)
     {
         SilverPlayList playList = new()
         {
@@ -146,11 +145,24 @@ public static class SilverPlaylistHelper
 
             var s = new SerializedSong()
             {
-                Name = song.Metadata?.Title, Album = song.Metadata?.Album, AlbumPos =
+                Id = song.Guid,
+                Name = song.Metadata?.Title,
+                Album = song.Metadata?.Album,
+                AlbumPos =
                     $"{song.Metadata?.DiscNumber ?? 0}/{song.Metadata?.TrackNumber ?? 0}",
-                Artist = song.Metadata?.Artist, Sources = new() { Source = new() { source } }
+                Artist = song.Metadata?.Artist,
+                Sources = new() { Source = new() { source } }
             };
             playList.Song.Add(s);
+        }
+        if (msiInterface != null)
+        {
+            var currentSong = msiInterface.GetCurrentTrack();
+            if (currentSong != null && songs.Select((v, i) => new {s = v, i = i}).FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is {} i)
+            {
+                playList.CurrentIndex=i.ToString();
+                playList.CurrentIndexPosition=msiInterface.GetPosition().ToString();
+            }
         }
 
         return playList;

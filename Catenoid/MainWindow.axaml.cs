@@ -114,7 +114,7 @@ public partial class MainWindow : Window
 
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
-        // Closing += (s, e) => Player?.Stop();
+        Closing += MWOnClosing;
         PlayButton.Click += PlayButton_Click;
         PauseButton.Click += PauseButton_Click;
         StopButton.Click += StopButton_Click;
@@ -197,7 +197,7 @@ public partial class MainWindow : Window
                             if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2))
                             {
                                 LyricsButton.Foreground = (IBrush)result2;
-                             }
+                            }
                             else
                             {
                                 Log.Error("Failed to find SystemControlForegroundAccentBrush?");
@@ -205,10 +205,10 @@ public partial class MainWindow : Window
                         }
                         else
                         {
-                           if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2))
+                            if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2))
                             {
-                                LyricsButton.Foreground =  (IBrush)result2;
-                             }
+                                LyricsButton.Foreground = (IBrush)result2;
+                            }
                             else
                             {
                                 Log.Error("Failed to find SystemControlForegroundBaseHighBrush?");
@@ -362,7 +362,6 @@ public partial class MainWindow : Window
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
         RepeatButton.Click += RepeatButton_Click;
-        //HotKeyManager.SetHotKey(openCommandMenu, new KeyGesture(Key.P, KeyModifiers.Control | KeyModifiers.Shift));
         this.DoAfterInitTasksF(options: new()
         {
             SetBackground = false,
@@ -370,6 +369,58 @@ public partial class MainWindow : Window
             SetFontFamily = true,
         }, followOptionsOnCall: false);
     }
+    public void Startup()
+    {
+        FindPrevShutdownAndLoad();
+
+    }
+    void FindPrevShutdownAndLoad()
+    {
+        if (config.AutoSave && dc.Queue.Count == 0)
+        {
+            var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+            if (Directory.Exists(dirpath))
+            {
+                var filepath = Path.Combine(dirpath, "AutoSave.spl.br");
+                if (File.Exists(filepath))
+                {
+                    var pl = Logic.TryReadPlaylist(new WrappedFileStream(filepath));
+                    if (pl == null) return;
+                    foreach (var song in pl.Tracks)
+                    {
+                        foreach (var source in song.TrackLoadInfos)
+                        {
+                            Logic.AddWithURLBad(source.URL, source.Source == "http", false);
+                            break;
+                        }
+                    }
+                    if(pl.IndexOfActive!=null && dc.Queue.Count>pl.IndexOfActive)
+                    {
+                        Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value], true);
+                        if(dc.Queue.Count>pl.IndexOfActive-1)
+                        {
+                        Logic.NextSong=dc.Queue[pl.IndexOfActive.Value+1];
+                        }
+                        Logic.SetPosition(pl.PositionOfActive??1);
+                    }
+                }
+            }
+
+        }
+    }
+
+    private void MWOnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (config.AutoSave && dc.Queue.Count != 0)
+        {
+            var queue = Logic.GetQueueCopy();
+            var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+            Directory.CreateDirectory(dirpath);
+            using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
+            SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
+        }
+    }
+
 
     private void CommandMenuClick(object? sender, RoutedEventArgs e)
     {
@@ -719,7 +770,7 @@ public partial class MainWindow : Window
         });
         if (a == null) return;
         var queue = Logic.GetQueueCopy();
-        SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue), await a.OpenWriteAsync());
+        SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), await a.OpenWriteAsync());
     }
 
 }

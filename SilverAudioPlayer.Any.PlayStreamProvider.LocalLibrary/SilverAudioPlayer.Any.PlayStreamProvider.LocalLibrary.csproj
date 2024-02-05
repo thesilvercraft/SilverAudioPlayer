@@ -13,9 +13,9 @@
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
         
-        <PackageReference Include="Avalonia" Version="11.0.6" />
+        <PackageReference Include="Avalonia" Version="11.0.7" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.6" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.7" />
         <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.4" />
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />
     </ItemGroup>

@@ -31,7 +31,7 @@ namespace Catenoid
         {
             if(CapBox.SelectedItem != null)
             {
-                Selected = (ICodeInformation)((InfoPRecord)CapBox.SelectedItem).Item;
+                Selected = ((InfoPRecord)CapBox.SelectedItem).Item;
                 Close();
             }
         }
