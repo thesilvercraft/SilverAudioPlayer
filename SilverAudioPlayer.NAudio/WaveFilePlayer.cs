@@ -46,20 +46,19 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             if (PortAudioSoundOut.IsSupported())
             {
-                logger?.Debug("initing backend CSCorePlayer PortAudioSoundOut");
+                logger?.Information("initing backend CSCorePlayer PortAudioSoundOut");
                 outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut(50));
             }
             if (ALSoundOut.IsSupported)
             {
-                logger?.Debug("initing backend CSCorePlayer ALSoundOut");
+                logger?.Information("initing backend CSCorePlayer ALSoundOut");
                 outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
             }
         }
         else
 #endif
         {
-            logger?.Debug("initing backend naudio WaveOutEvent");
-
+            logger?.Information("initing backend naudio WaveOutEvent");
             outputDevice = new WaveOutEvent()
             {
                 Volume = volume / 100f
@@ -327,12 +326,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             if (cSCoreReader._reader is ILoop cselector)
             {
                 cselector.EnableLoop();
-
             }
             else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
             {
                 selector.EnableLoop();
-
             }
         }
     }
@@ -348,12 +345,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             if (cSCoreReader._reader is ILoop cselector)
             {
                 cselector.DisableLoop();
-
             }
             else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
             {
                 selector.DisableLoop();
-
             }
         }
     }

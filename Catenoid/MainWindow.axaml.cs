@@ -372,7 +372,6 @@ public partial class MainWindow : Window
     public void Startup()
     {
         FindPrevShutdownAndLoad();
-
     }
     void FindPrevShutdownAndLoad()
     {
@@ -397,10 +396,6 @@ public partial class MainWindow : Window
                     if(pl.IndexOfActive!=null && dc.Queue.Count>pl.IndexOfActive)
                     {
                         Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value], true);
-                        if(dc.Queue.Count>pl.IndexOfActive-1)
-                        {
-                        Logic.NextSong=dc.Queue[pl.IndexOfActive.Value+1];
-                        }
                         Logic.SetPosition(pl.PositionOfActive??1);
                     }
                 }
@@ -411,7 +406,7 @@ public partial class MainWindow : Window
 
     private void MWOnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (config.AutoSave && dc.Queue.Count != 0)
+        if (config.AutoSave)
         {
             var queue = Logic.GetQueueCopy();
             var dirpath = ConfigPath.GetPath("Playlists/Autosave/");

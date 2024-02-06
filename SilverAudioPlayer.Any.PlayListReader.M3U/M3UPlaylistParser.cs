@@ -17,7 +17,7 @@ public class M3UPlaylistParser : IPlaylistReader
     public Version? Version => typeof(M3UPlaylistParser).Assembly.GetName().Version;
     public string Licenses => "";
     public List<Tuple<Uri, URLType>>? Links => null;
-    public IReadOnlyList<MimeType> SupportedMimes => new[] { KnownMimes.M3uMime };
+    public IReadOnlyList<MimeType> SupportedMimes => [KnownMimes.M3uMime];
     private const string Header = "#EXTM3U";
 
     /// <summary>
@@ -48,7 +48,7 @@ public class M3UPlaylistParser : IPlaylistReader
     public bool TryParse(WrappedStream stream, out IPlaylist? playlist)
     {
         playlist = null;
-        if (SupportedMimes.Contains((stream.MimeType)))
+        if (SupportedMimes.Contains(stream.MimeType))
         {
             string? parentfolder = null;
             if (stream is WrappedFileStream wfs)
@@ -77,6 +77,8 @@ public class M3UPlaylistParser : IPlaylistReader
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
+                    if(line.Length==0)
+                     continue;
                     if (line[0] == '#')
                     {
                         if (line.StartsWith("#EXTINF:"))

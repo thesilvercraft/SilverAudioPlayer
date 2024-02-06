@@ -13,7 +13,7 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 
     [Comment("1-100 number, linearity not guaranteed.")]
     public byte Volume { get; set; } = 70;
-    [Comment("Folder suggested to OS when the open file dialog is chosen, can be 'Music','Desktop','Downloads','Pictures','Videos'  (user's special folders), any other valid folder path or nothing, if its nothing the os wont be given a suggested starting point.")]
+    [Comment("Folder suggested to OS when the open file dialog is chosen, can be 'Music','Desktop','Downloads','Pictures','Videos' (user's special folders), any other valid folder path or nothing, if its nothing the os wont be given a suggested starting point.")]
 
     public string DialogStartLoc { get; set; } = "";
 
@@ -23,7 +23,8 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     public bool AutoSave {get;set;}=false;
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];
-    public ConfigStyle UserLogPreferences = ConfigStyle.Unknown;
+    [Comment("How much and Where should the player log? (Unknown, None (no player core logs, parts of the player may ignore this and implement their own logging even if they really shouldn't), LogWindow (log in memory, show in a window, on crash save said memory's last 50k characters), System (log to stdout) )")]
+    public ConfigStyle UserLogPreferences {get;set;} = ConfigStyle.Unknown;
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {
         PropertyChanged?.Invoke(e, a);

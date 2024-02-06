@@ -1,9 +1,7 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CSCore;
 using CSCore.SoundOut;
-using CSCore.Streams;
 using PortAudio;
 
 namespace SilverCraft.PortAudio;

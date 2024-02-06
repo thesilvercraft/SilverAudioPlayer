@@ -155,7 +155,7 @@ public static class SilverPlaylistHelper
             };
             playList.Song.Add(s);
         }
-        if (msiInterface != null)
+        if (msiInterface != null && msiInterface.GetState()!= PlaybackState.Stopped)
         {
             var currentSong = msiInterface.GetCurrentTrack();
             if (currentSong != null && songs.Select((v, i) => new {s = v, i = i}).FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is {} i)

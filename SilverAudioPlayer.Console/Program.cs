@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using ReactiveUI;
 using Serilog;
 using Serilog.Events;
@@ -8,6 +7,7 @@ using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
+using SilverMagicBytes;
 using Swordfish.NET.Collections;
 using Logger = SilverAudioPlayer.Shared.Logger;
 namespace SilverAudioPlayer.Console;
@@ -200,8 +200,6 @@ public class ConsoleEnviroment : IHaveConfigFilesWithKnownLocations, IFullPlayer
     public string[] KnownConfigFileLocations =>
     [
         ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "SilverCraftAvaloniav1Shared", "dotfile.json")
     ];
 
     public IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)
@@ -210,6 +208,8 @@ public class ConsoleEnviroment : IHaveConfigFilesWithKnownLocations, IFullPlayer
         //window.HandleConfiguration(elements);
         return null;
     }
+
+    public Task<IReadOnlyList<MimeType>> SupportedMimeTypes() => Task.FromResult<IReadOnlyList<MimeType>>(Logic.PlayableMimes);
 }
 public class App
 {

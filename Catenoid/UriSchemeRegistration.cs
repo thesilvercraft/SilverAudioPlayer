@@ -39,6 +39,7 @@ public static class RegistryRegistration
     [SupportedOSPlatform("linux")]
     private static void UnRegisterUrlSchemeLinux(MainWindow mainWindow)
     {
+        Process.Start("xdg-mime",$"uninstall {AppContext.BaseDirectory}/custom-mime/silvercraft-spl.xml");
         File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
            ".local/share/applications/Catenoid.desktop"));
         DoOrAsk("rm /usr/share/pixmaps/sap.svg");
@@ -91,10 +92,8 @@ public static class RegistryRegistration
         Directory.CreateDirectory(Path.GetDirectoryName(f));
         if (!File.Exists(f))
         {
-            var playableMimes = mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-                .SelectMany(x => x.AlternativeTypes).ToList();
-            playableMimes.AddRange(mainWindow.Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0)
-                .Select(x => x.Common));
+            var allMimes=mainWindow.Logic.SupportedTrackAndPlaylistMimes();
+            var playableMimes = allMimes.Item1;
             File.WriteAllText(f, @$"[Desktop Entry]
 Comment[en_GB]=The SilverCraft Audio Player
 Comment=The SilverCraft Audio Player
@@ -117,6 +116,7 @@ X-KDE-SubstituteUID=false
 Categories=AudioVideo;Player;Midi;Music;Audio;");
             using var iconSource = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Catenoid.icon.svg");
+            Process.Start("xdg-mime",$"install {AppContext.BaseDirectory}/custom-mime/silvercraft-spl.xml");
             if (iconSource != null)
             {
                 using var iconFile = File.OpenWrite("/tmp/sap.svg");

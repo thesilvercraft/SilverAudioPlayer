@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+    <mime-type type="application/silverplaylist+br">
+        <comment>Brotli encoded silver playlist file</comment>
+        <acronym>SPL</acronym>
+        <glob pattern="*.spl.br"/>
+        <magic><match value="Spl" type="string" offset="0"/></magic>
+    </mime-type>
+</mime-info>
