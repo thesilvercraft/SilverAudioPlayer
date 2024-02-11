@@ -13,10 +13,9 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var a = BuildAvaloniaApp();
-   
-        if (Environment.GetEnvironmentVariable("SAPUseNativeDialog")=="yes") a = a.UseManagedSystemDialogs();
-        a.StartWithClassicDesktopLifetime(args);
+        var app = BuildAvaloniaApp();
+        if (Environment.GetEnvironmentVariable("SAPUseNativeDialog")=="yes") app = app.UseManagedSystemDialogs();
+        app.StartWithClassicDesktopLifetime(args);
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

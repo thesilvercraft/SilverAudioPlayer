@@ -125,7 +125,7 @@ public static class SilverPlaylistHelper
         SilverPlayList playList = new()
         {
             Version = CurrentPlaylistVersion,
-            Song = new(),
+            Song = [],
             SharedMetadata = new(),
         };
         foreach (var song in songs)

@@ -1,14 +1,11 @@
-﻿namespace SilverMagicBytes;
+namespace SilverMagicBytes;
 
 public static class KnownMimes
 {
     public static readonly MimeType MP3Mime = new Mp3Mime();
     public static readonly MimeType FLACMime = new FlacMime();
-
     public static readonly MimeType WAVMime = new WAVMime();
-
     public static readonly MimeType AiffMime = new AiffMime();
-
     public static readonly MimeType MidMime = new MidMime();
     public static readonly MimeType PngMime = new PngMime();
     public static readonly MimeType JPGMime = new JPGMime();
@@ -18,7 +15,7 @@ public static class KnownMimes
     public static readonly MimeType SVGMime = new SVGMime();
     public static readonly MimeType Mp4Mime = new Mp4Mime();
     public static readonly MimeType MpegMime = new MpegMime();
-    public static readonly MimeType Mp2Mime = new Mp2Mime();
+    public static readonly MimeType Mp2Mime = MpegMime;
     public static readonly MimeType M3uMime = new M3UMime();
     public static readonly MimeType SplMime = new SPLMime();
     public static readonly MimeType MKVMime =new MKVMime();
@@ -105,16 +102,11 @@ public class Mp4Mime : CompressedVideoMime
 }
 public class MpegMime : CompressedVideoMime
 {
-    public MpegMime() : base("video/mpeg", CompressionType.Lossy, ["audio/mp2;"], [".ts", ".tsv", ".tsa", ".mpg", ".mpeg"])
+    public MpegMime() : base("video/mpeg", CompressionType.Lossy, ["audio/mp2"], [".ts", ".tsv", ".tsa", ".mpg", ".mpeg",".m2p", ".vob"])
     {
     }
 }
-public class Mp2Mime : CompressedVideoMime
-{
-    public Mp2Mime() : base("video/mpeg", CompressionType.Lossy, Array.Empty<string>(), [".m2p", ".vob", ".mpg", ".mpeg"])
-    {
-    }
-}
+
 public class AiffMime : CompressedAudioMime
 {
     public AiffMime() : base("audio/aiff", CompressionType.Lossy, ["audio/x-aiff"], [".aiff", ".aif", ".aifc"])
@@ -123,7 +115,7 @@ public class AiffMime : CompressedAudioMime
 }
 public class FlacMime : CompressedAudioMime
 {
-    public FlacMime() : base("audio/flac", CompressionType.Lossless, Array.Empty<string>(), [".flac"])
+    public FlacMime() : base("audio/flac", CompressionType.Lossless, [], [".flac"])
     {
     }
 }
@@ -145,7 +137,7 @@ public class OGGMime : CompressedAudioMime
 
 public class AACMime : CompressedAudioMime
 {
-    public AACMime() : base("audio/aac", CompressionType.Lossy, Array.Empty<string>(), [".aac"])
+    public AACMime() : base("audio/aac", CompressionType.Lossy, [], [".aac"])
     {
     }
 }
@@ -160,14 +152,14 @@ public class MidMime : AudioMime
 
 public class PngMime : CompressedImageMime
 {
-    public PngMime() : base("image/png", CompressionType.Lossless, Array.Empty<string>(), [".png"])
+    public PngMime() : base("image/png", CompressionType.Lossless, [], [".png"])
     {
     }
 }
 
 public class JPGMime : CompressedImageMime
 {
-    public JPGMime() : base("image/jpeg", CompressionType.Lossy, Array.Empty<string>(), [".jpg", ".jpeg"])
+    public JPGMime() : base("image/jpeg", CompressionType.Lossy, [], [".jpg", ".jpeg"])
     {
     }
 }
@@ -197,7 +189,7 @@ public class ModTrackerMime : TrackedAudioMime
 }
 public class ExtendedTrackerMime : TrackedAudioMime
 {
-    public ExtendedTrackerMime() : base("audio/xm", Array.Empty<string>(), [".xm"])
+    public ExtendedTrackerMime() : base("audio/xm", [], [".xm"])
     {
     }
 }
