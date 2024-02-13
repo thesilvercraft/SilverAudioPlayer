@@ -251,11 +251,11 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             }
         }
         Player?.Stop();
-        bool addevents = true;
+        bool newPlayer = true;
         if (Player is IPlayStreams p && p.SupportedMimes?.Contains(PlayerContext.CurrentSong.Stream.MimeType) == true)
         {
             //Worth a shot?
-            addevents = false;
+            newPlayer = false;
             Log.Debug("Using old player");
             p.LoadStream(PlayerContext.CurrentSong.Stream);
         }
@@ -284,7 +284,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 "I do not know how to play " + PlayerContext.CurrentSong.URI);
             return;
         }
-        Serilog.Log.Information("Got player of type {PlayerType}", Player.GetType());
+        Serilog.Log.Information("Got player of type {PlayerType} New: {newPlayer}", Player.GetType(), newPlayer);
         _ = Task.Run(() => TrackChangedNotification(PlayerContext.CurrentSong));
         if (play)
         {
@@ -307,7 +307,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             });
 
             SendIfStateIsNotNull();
-            if (addevents)
+            if (newPlayer)
             {
                 Player.TrackEnd += OutputDevice_PlaybackStopped;
             }

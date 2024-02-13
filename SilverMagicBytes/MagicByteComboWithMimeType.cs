@@ -21,7 +21,8 @@ public class MagicByteComboWithMimeType : MagicByteCombo
         {
             return true;
         }
-        bool IsComboSame(byte?[] a, byte?[] b)
+
+        static bool IsComboSame(byte?[] a, byte?[] b)
         {
             if (a.Length != b.Length)
                 return false;
@@ -56,7 +57,8 @@ public class MimeType(string common, string[]? alternativeTypes = null, string[]
         }
         if (obj is MimeType other)
         {
-            return other.Common == Common;
+            return other.Common == Common || other.AlternativeTypes.Contains(Common) || 
+            AlternativeTypes.Contains(other.Common) || AlternativeTypes.Any(x=>other.AlternativeTypes.Contains(x));
         }
         return false;
     }

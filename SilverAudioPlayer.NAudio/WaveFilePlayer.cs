@@ -49,7 +49,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 logger?.Information("initing backend CSCorePlayer PortAudioSoundOut");
                 outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut(50));
             }
-            if (ALSoundOut.IsSupported)
+            else if (ALSoundOut.IsSupported)
             {
                 logger?.Information("initing backend CSCorePlayer ALSoundOut");
                 outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
@@ -178,7 +178,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         ArgumentNullException.ThrowIfNull(stream);
         if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
         {
-            logger?.Debug("Doing silly stuff for mkv");
+            logger?.Warning("Doing silly stuff for mkv");
 
             var a = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".webm";
             var b = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".opus";

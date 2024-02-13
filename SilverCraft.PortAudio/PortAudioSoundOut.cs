@@ -133,7 +133,7 @@ public class PortAudioSoundOut : ISoundOut
             float* bufferEnd = bufferStart + r.Value;
             while (bufferI < bufferEnd)
             {
-                *outputBuffer++ = *bufferI++;
+                *outputBuffer++ = *bufferI++*Volume;
             }
         }
 
