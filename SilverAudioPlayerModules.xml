@@ -167,6 +167,14 @@
       <Links />
       <Debug />
     </Module>
+    <Module Name="SilverMagicBytes">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverMagicBytes.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
     <Module Name="Splat">
       <Dependencies />
       <Files>
@@ -250,14 +258,6 @@
       <Dependencies />
       <Files>
         <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverCraft.Ekorensis.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverMagicBytes">
-      <Dependencies />
-      <Files>
-        <File Name="SilverAudioPlayer.DiscordRP/bin/Release/net8.0/publish/SilverMagicBytes.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1892,7 +1892,9 @@
       <Debug />
     </Module>
     <Module Name="Tmds.DBus.Protocol">
-      <Dependencies />
+      <Dependencies>
+        <string>System.IO.Pipelines</string>
+      </Dependencies>
       <Files>
         <File Name="Catenoid/bin/Release/net8.0/publish/Tmds.DBus.Protocol.dll" />
       </Files>
@@ -1961,6 +1963,229 @@
       </Dependencies>
       <Files>
         <File Name="Catenoid/bin/Release/net8.0/publish/SilverCraft.Ekonrensis.Avalonia.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast">
+      <Dependencies>
+        <string>GoogleCast</string>
+        <string>SilverAudioPlayer.Shared</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayProvider.ChromeCast.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Api">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Api.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Engine">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.ErrorHandling</string>
+        <string>GenHTTP.Modules.IO</string>
+        <string>GenHTTP.Modules.Placeholders</string>
+        <string>System.IO.Pipelines</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Engine.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Basics">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>System.Linq.Async</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Basics.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.ClientCaching">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Basics</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.ClientCaching.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Compression">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Compression.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.ErrorHandling">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Pages</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.ErrorHandling.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.IO">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Basics</string>
+        <string>GenHTTP.Modules.Pages</string>
+        <string>System.Linq.Async</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.IO.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Layouting">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Basics</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Layouting.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Pages">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Basics</string>
+        <string>Microsoft.IO.RecyclableMemoryStream</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Pages.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Placeholders">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Basics</string>
+        <string>GenHTTP.Modules.IO</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Placeholders.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Practices">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.ClientCaching</string>
+        <string>GenHTTP.Modules.Compression</string>
+        <string>GenHTTP.Modules.IO</string>
+        <string>GenHTTP.Modules.Security</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Practices.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GenHTTP.Modules.Security">
+      <Dependencies>
+        <string>GenHTTP.Api</string>
+        <string>GenHTTP.Modules.Basics</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GenHTTP.Modules.Security.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="GoogleCast">
+      <Dependencies>
+        <string>Microsoft.Extensions.DependencyInjection</string>
+        <string>Zeroconf</string>
+        <string>protobuf-net</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/GoogleCast.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.Bcl.AsyncInterfaces">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/Microsoft.Bcl.AsyncInterfaces.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Microsoft.IO.RecyclableMemoryStream">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/Microsoft.IO.RecyclableMemoryStream.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="protobuf-net">
+      <Dependencies>
+        <string>protobuf-net.Core</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/protobuf-net.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="protobuf-net.Core">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/protobuf-net.Core.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.IO.Pipelines">
+      <Dependencies />
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/System.IO.Pipelines.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="System.Linq.Async">
+      <Dependencies>
+        <string>Microsoft.Bcl.AsyncInterfaces</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/System.Linq.Async.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Zeroconf">
+      <Dependencies>
+        <string>System.Reactive</string>
+      </Dependencies>
+      <Files>
+        <File Name="SilverAudioPlayer.Any.PlayProvider.ChromeCast/bin/Release/net8.0/publish/Zeroconf.dll" />
       </Files>
       <Links />
       <Debug />

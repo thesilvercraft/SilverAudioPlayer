@@ -21,7 +21,7 @@ Dictionary<string, string> PackageNames = [];
 GenIndex();
 /*  break;
 case "bs" or "builddebian":*/
-BuildFirstPart(Debian2ndPart, "debian");
+//BuildFirstPart(Debian2ndPart, "debian");
 /*    break;
 default:
     Console.WriteLine("Ayo bro, uh pass arguments and stuff\n gi \t OR \t generateindex \t - creates the index needed for other stuff\n bd \t OR \t builddebian \t - builds packages for debian in build/debian");

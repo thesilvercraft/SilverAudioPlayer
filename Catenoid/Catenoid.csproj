@@ -53,7 +53,6 @@
 		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 		<!--NAudio-->
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
-		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
 		<!--Discord (alpha)-->
@@ -70,7 +69,7 @@
 		<!--CD Art Display - windows 7+-->
 <!--    <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
 		<!--LINUX ONLY-->
-		<!--MPRIS DBUS STUFF - linux - pre alpha -->
+		<!--MPRIS DBUS STUFF - linux -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
 		<!-- sync plugin  - alpha -->
     	<DefineConstants>$(DefineConstants)LSync</DefineConstants>
@@ -78,6 +77,9 @@
 		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
 		<!-- managed midi - alpha -->
 		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
+		<!-- silverjuke web interface-->
+		<DefineConstants>$(DefineConstants)juke</DefineConstants>
+
 		<!-- music brainz - POC -->
 
 <!--		<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
@@ -124,7 +126,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
 		<ProjectReference Include="..\SilverCraft.Ekonrensis.Avalonia\SilverCraft.Ekonrensis.Avalonia.csproj" />
 		<ProjectReference Include="..\SilverCraft.Shared\SilverCraft.Shared.csproj" />
-		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
+		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" Condition="$(TargetFramework.Contains('juke'))" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
