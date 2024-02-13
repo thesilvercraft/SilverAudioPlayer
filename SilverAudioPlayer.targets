@@ -4,7 +4,7 @@
         <VersionPrefix>7.0.0-dev</VersionPrefix>
         <Optimize>True</Optimize>
         <DebugType>Portable</DebugType>
-            <PreserveCompilationContext>false</PreserveCompilationContext>
+        <PreserveCompilationContext>false</PreserveCompilationContext>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <Optimize>False</Optimize>
