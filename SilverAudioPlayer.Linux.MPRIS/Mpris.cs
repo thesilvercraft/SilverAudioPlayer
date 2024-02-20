@@ -15,6 +15,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
         }
         Connection connection;
+        MprisPlayer player;
         void start()
         {
             if (_IsStarted)
@@ -29,7 +30,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
                     connection = new Connection(Address.Session);
                     connection.StateChanged+=ConnectionOnStateChanged;
                     await connection.ConnectAsync();
-                    var player = new MprisPlayer(Env);
+                    player =new MprisPlayer(Env);
                     await connection.RegisterObjectAsync(player);
                     await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.catenoid.i_" + Environment.ProcessId);
                 }
@@ -64,6 +65,8 @@ namespace SilverAudioPlayer.Linux.MPRIS
         public void StopIPC(IMusicStatusInterfaceListener listener)
         {
             _IsStarted = false;
+            Debug.WriteLine("Mpris stopipc");
+            connection.UnregisterObject(player);
             connection.Dispose();
         }
 

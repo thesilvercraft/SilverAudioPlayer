@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Xml.Serialization;
+using Avalonia.Controls;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
 
@@ -21,6 +22,10 @@ public class Config : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
     public float AlbumArtTransparency { get; set; } = 0.25f;
     [Comment("Does the audio player save the tracks in a playlist upon closing?")]
     public bool AutoSave {get;set;}=false;
+    public bool SaveLoadLoc{get;set;}=true;
+    public int[] Pos{get;set;}=[0,0];
+    public double[] Size{get;set;}=[0,0];
+    public WindowState State{get;set;}=WindowState.Maximized;
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];
     [Comment("How much and Where should the player log? (Unknown, None (no player core logs, parts of the player may ignore this and implement their own logging even if they really shouldn't), LogWindow (log in memory, show in a window, on crash save said memory's last 50k characters), System (log to stdout) )")]

@@ -133,7 +133,7 @@ public class PortAudioSoundOut : ISoundOut
             float* bufferEnd = bufferStart + r.Value;
             while (bufferI < bufferEnd)
             {
-                *outputBuffer++ = *bufferI++*Volume;
+                *outputBuffer++ = *bufferI++ * Volume;
             }
         }
 
@@ -174,6 +174,12 @@ public class PortAudioSoundOut : ISoundOut
 
     public unsafe void Stop()
     {
+        if (PlaybackState == PlaybackState.Paused)
+        {
+            PlaybackState = PlaybackState.Stopped;
+            OnStop();
+            return;
+        }
         if (PlaybackState != PlaybackState.Stopped)
         {
             ThrowIfError(NativeMethods.Pa_StopStream(stream));

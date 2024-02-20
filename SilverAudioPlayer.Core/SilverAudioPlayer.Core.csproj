@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.7" />
+        <PackageReference Include="Avalonia" Version="11.0.9" />
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
     </ItemGroup>

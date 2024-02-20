@@ -114,7 +114,6 @@ public partial class MainWindow : Window
 
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
-        Closing += MWOnClosing;
         PlayButton.Click += PlayButton_Click;
         PauseButton.Click += PauseButton_Click;
         StopButton.Click += StopButton_Click;
@@ -393,10 +392,10 @@ public partial class MainWindow : Window
                             break;
                         }
                     }
-                    if(pl.IndexOfActive!=null && dc.Queue.Count>pl.IndexOfActive)
+                    if (pl.IndexOfActive != null && dc.Queue.Count > pl.IndexOfActive)
                     {
                         Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value], true);
-                        Logic.SetPosition(pl.PositionOfActive??1);
+                        Logic.SetPosition(pl.PositionOfActive ?? 1);
                     }
                 }
             }
@@ -404,17 +403,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void MWOnClosing(object? sender, WindowClosingEventArgs e)
-    {
-        if (config.AutoSave)
-        {
-            var queue = Logic.GetQueueCopy();
-            var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
-            Directory.CreateDirectory(dirpath);
-            using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
-            SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
-        }
-    }
+
 
 
     private void CommandMenuClick(object? sender, RoutedEventArgs e)
@@ -511,6 +500,14 @@ public partial class MainWindow : Window
     private void MainWindow_Opened(object? sender, EventArgs e)
     {
         Logic.MainWindow_Opened(Env);
+        if (config.SaveLoadLoc)
+        {
+            WindowStartupLocation=WindowStartupLocation.Manual;
+            Position = new(config.Pos[0], config.Pos[1]); //TODO FIX
+            Width = config.Size[0];
+            Height = config.Size[1];
+            WindowState = config.State;
+        }
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
@@ -521,6 +518,21 @@ public partial class MainWindow : Window
         Logic.StopAutoLoading = true;
         Player?.Stop();
         Player = null;
+        if (config.AutoSave)
+        {
+            var queue = Logic.GetQueueCopy();
+            var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+            Directory.CreateDirectory(dirpath);
+            using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
+            SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
+        }
+        if (config.SaveLoadLoc)
+        {
+            config.Pos = [Position.X, Position.Y];
+            config.Size = [Width, Height];
+            config.State = WindowState;
+            reader.Write(config, App._configPath);
+        }
         Environment.Exit(0);
     }
 

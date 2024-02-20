@@ -57,7 +57,7 @@ public partial class Settings : Window
     {
         ColorBox = this.FindControl<AutoCompleteBox>("ColorBox");
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
-        TransparencyDown = this.FindControl<ComboBox>("TransparencyDown");
+        TransparencyText = this.FindControl<TextBox>("TransparencyText");
         CapBox = this.FindControl<ListBox>("CapBox");
         ProductIconButton = this.FindControl<Button>("ProductIconButton");
         AutoSaveCheckBox = this.FindControl<CheckBox>("AutoSaveCheckBox");
@@ -68,9 +68,9 @@ public partial class Settings : Window
             WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString("SAPTransparency") ??
                                                              "Mica,AcrylicBlur,None");
 
-        TransparencyDown.SelectedItem = TransparencyLevelHint[0];
+        TransparencyText.Text =  WindowExtensions.envBackend.GetString("SAPTransparency");
 
-        TransparencyDown.SelectionChanged += TransparencyDown_SelectionChanged;
+        TransparencyText.TextChanged += TransparencyTextChanged;
         ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
         ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
         List<ICodeInformation> info =
@@ -89,6 +89,18 @@ public partial class Settings : Window
 
         DataContext = _settingsDc;
         Legalese = ir.Item2;
+    }
+    private void TransparencyTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        var text=TransparencyText.Text;
+         Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",
+             text??
+            WindowTransparencyLevel.AcrylicBlur.ToString()));
+        if (text is not null)
+        {
+            WindowExtensions.OnStyleChange.Invoke(this,
+                        new(null, WindowExtensions.GetTransparencyLevelsFromString(text), null));
+        }
     }
 
     private void AutoSaveCheckBoxChecked(object? sender, RoutedEventArgs e)
@@ -335,18 +347,7 @@ public partial class Settings : Window
         ShowLaunchActionsWindow(actions);
     }
 
-    private void TransparencyDown_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",
-            TransparencyDown.SelectedItem?.ToString() ??
-            WindowTransparencyLevel.AcrylicBlur.ToString()));
-        if (TransparencyDown.SelectedItem is not null)
-        {
-            WindowExtensions.OnStyleChange.Invoke(this,
-                        new(null, [(WindowTransparencyLevel)TransparencyDown.SelectedItem], null));
-        }
-
-    }
+   
 
     private void RegisterClick(object? sender, RoutedEventArgs e)
     {

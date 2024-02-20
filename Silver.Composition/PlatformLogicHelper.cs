@@ -53,8 +53,8 @@ public class WrappedDirectoryCatalog : IDisposable
                            | NotifyFilters.Size | NotifyFilters.FileName,
             IncludeSubdirectories = true
         };
-        _watcher.Changed += (x, y) => { Change.Invoke(this, y.FullPath); };
-        _watcher.Deleted += (x, y) => { Delete.Invoke(this, y.FullPath); };
+        _watcher.Changed += (x, y) => { Change?.Invoke(this, y.FullPath); };
+        _watcher.Deleted += (x, y) => { Delete?.Invoke(this, y.FullPath); };
     }
 
     public event EventHandler<string> Change;

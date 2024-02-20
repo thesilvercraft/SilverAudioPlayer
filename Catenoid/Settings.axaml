@@ -24,7 +24,7 @@
 			</Grid>
 			<Button Grid.Row="1" Grid.Column="0" Click="RegisterClick">Register/Unregister in registry</Button>
 			<Button Grid.Row="2" Click="ToggleTransparency" Grid.Column="1">Toggle transparency</Button>
-			<ComboBox Name="TransparencyDown" Grid.Row="2" Grid.Column="0" ItemsSource="{Binding TransparencyTypes}" />
+			<TextBox Name="TransparencyText" Grid.Row="2" Grid.Column="0" />
 			<AutoCompleteBox Grid.Row="3" Grid.Column="0" Name="ColorBox" ItemsSource="{Binding AutoSuggestColours}" />
 			<Button Grid.Row="3" Click="ChangeColor" Grid.Column="1">Change window color</Button>
 			<AutoCompleteBox Grid.Row="4" Grid.Column="0" Name="ColorBoxPB" ItemsSource="{Binding AutoSuggestColours}" />

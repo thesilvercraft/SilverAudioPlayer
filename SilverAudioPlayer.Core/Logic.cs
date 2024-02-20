@@ -419,10 +419,17 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         }
         else
         {
-            AddSong(
-                http
-                    ? new Song(new WrappedHttpStream(f), f, logic: this)
-                    : new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
+            if (!http)
+            {
+                if (File.Exists(f))
+                {
+                    AddSong(new Song(new WrappedFileStream(f), f, logic: this), !oneFile);
+                }
+            }
+            else
+            {
+                AddSong(new Song(new WrappedHttpStream(f), f, logic: this), !oneFile);
+            }
         }
     }
     public void ProcessFiles(IEnumerable<string> files)
