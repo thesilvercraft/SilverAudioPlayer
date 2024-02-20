@@ -17,20 +17,31 @@ cache:
     - '$NUGET_PACKAGES_DIRECTORY'
   policy: pull-push
 
-build:
+build-linux:
   stage: build
   script:
-    - 'choco install dotnet-8.0-sdk -y || true'
     - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="BuildFor$PLATFORM_GL" --no-restore'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="BuildForlinux" --no-restore'
   after_script:
-    - mv Catenoid/bin/Release/net8.0/publish ./catenoid-publish
+    - 'mv Catenoid/bin/Release/net8.0/publish ./catenoid-publish'
   artifacts:
     expire_in: 1 week 
     paths:
       - catenoid-publish
-  parallel:
-    matrix:
-      - PLATFORM_GL: [linux, windows]
   tags:
-    - ${PLATFORM_GL}
+    - linux
+
+build-windows:
+  stage: build
+  script:
+    - 'choco install dotnet-8.0-sdk -y'
+    - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="BuildForwindows" --no-restore'
+  after_script:
+    - 'mv Catenoid\bin\Release\net8.0\publish ./catenoid-publish'
+  artifacts:
+    expire_in: 1 week 
+    paths:
+      - catenoid-publish
+  tags:
+    - windows
