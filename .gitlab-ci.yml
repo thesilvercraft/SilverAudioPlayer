@@ -17,7 +17,7 @@ build:
   stage: build
   script:
     - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 --no-restore'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="${PLATFORM_GL}" --no-restore'
   after_script:
     - mv Catenoid/bin/Release/net8.0/publish ./catenoid-publish
   artifacts:
@@ -26,6 +26,6 @@ build:
       - catenoid-publish
   parallel:
     matrix:
-      - PLATFORM: [linux, windows]
+      - PLATFORM_GL: [linux, windows]
   tags:
-    - ${PLATFORM}
+    - ${PLATFORM_GL}

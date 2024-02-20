@@ -9,7 +9,9 @@
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <Optimize>False</Optimize>
     </PropertyGroup>
-
+    <ItemGroup>
+        <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="All"/>
+    </ItemGroup>
 <!--    <PropertyGroup Condition="'$(VersionSuffix)' != '' And '$(BuildNumber)' != ''">-->
 <!--        <Version>$(VersionPrefix)-$(VersionSuffix)-$(BuildNumber)</Version>-->
 <!--        <AssemblyVersion>$(VersionPrefix).$(BuildNumber)</AssemblyVersion>-->

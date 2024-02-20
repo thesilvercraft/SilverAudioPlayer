@@ -79,11 +79,14 @@
 		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
 		<!-- silverjuke web interface-->
 		<DefineConstants>$(DefineConstants)juke</DefineConstants>
-
 		<!-- music brainz - POC -->
-
-<!--		<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
-		
+<!--	<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
+	</PropertyGroup>
+	<PropertyGroup Condition="$(DefineConstants.Contains('BuildFor'))">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<DefineConstants>$(DefineConstants)JFZATLNALLibCASTLSyncjuke</DefineConstants>
+		<DefineConstants Condition="$(DefineConstants.Contains('BuildForlinux'))">$(DefineConstants)MPRISLPlatformMMIDI</DefineConstants>
+		<DefineConstants Condition="$(DefineConstants.Contains('BuildForwindows'))">$(DefineConstants)SMTCFRTCADDWMID</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
