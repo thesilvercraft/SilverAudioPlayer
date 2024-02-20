@@ -21,7 +21,7 @@ build-linux:
   stage: build
   script:
     - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="BuildForlinux" --no-restore'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForlinux" --no-restore'
   after_script:
     - 'mv Catenoid/bin/Release/net8.0/publish ./catenoid-publish'
   artifacts:
@@ -36,9 +36,9 @@ build-windows:
   script:
     - 'choco install dotnet-8.0-sdk -y'
     - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="BuildForwindows" --no-restore'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForwindows" --no-restore'
   after_script:
-    - 'mv Catenoid\bin\Release\net8.0\publish ./catenoid-publish'
+    - 'mv Catenoid\bin\Release\net8.0*\publish ./catenoid-publish'
   artifacts:
     expire_in: 1 week 
     paths:
