@@ -1,5 +1,14 @@
 image: mcr.microsoft.com/dotnet/sdk:latest
+stages:
+  - pre-build
+  - build
 
+install_dotnet:
+  stage: pre-build
+  script:
+    - choco install dotnet-8.0-sdk
+  rules:
+    - if: $CI_OS_NAME == "Windows"
 variables:
   OBJECTS_DIRECTORY: 'obj'
   NUGET_PACKAGES_DIRECTORY: '.nuget'
