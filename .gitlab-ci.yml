@@ -3,12 +3,6 @@ stages:
   - pre-build
   - build
 
-install_dotnet:
-  stage: pre-build
-  script:
-    - choco install dotnet-8.0-sdk
-  rules:
-  - if: '$CI_RUNNER_TAGS =~ /windows/'
 
 variables:
   OBJECTS_DIRECTORY: 'obj'
@@ -26,6 +20,7 @@ cache:
 build:
   stage: build
   script:
+    - 'choco install dotnet-8.0-sdk -y || true'
     - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
     - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -p:ExtraDefineConstants="BuildFor$PLATFORM_GL" --no-restore'
   after_script:
