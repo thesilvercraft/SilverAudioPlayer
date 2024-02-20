@@ -24,19 +24,3 @@ build:
     expire_in: 1 week 
     paths:
       - catenoid-publish
-test-build:
-  stage: test-build
-  parallel: matrix
-  variables:
-    PLATFORM: [linux-x64, win-x64]
-  tags:
-    - $ {PLATFORM}
-  script:
-    - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -f net8.0 -r $ {PLATFORM} --no-restore'
-  after_script:
-    - mv Catenoid/bin/Release/net8.0/$ {PLATFORM}/publish ./catenoid-publish-$ {PLATFORM}
-  artifacts:
-    expire_in: 1 week 
-    paths:
-      - catenoid-publish-$ {PLATFORM}
