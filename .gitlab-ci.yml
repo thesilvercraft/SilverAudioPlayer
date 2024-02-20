@@ -24,3 +24,8 @@ build:
     expire_in: 1 week 
     paths:
       - catenoid-publish
+  parallel:
+    matrix:
+      - PLATFORM: [linux, windows]
+  tags:
+    - ${PLATFORM}
