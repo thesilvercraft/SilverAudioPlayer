@@ -35,8 +35,7 @@ build-windows:
   stage: build
   script:
     - 'choco install dotnet-8.0-sdk -y'
-    - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
-    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForwindows" --no-restore'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForwindows"'
   after_script:
     - 'mv Catenoid\bin\Release\net8.0*\publish ./catenoid-publish'
   artifacts:
