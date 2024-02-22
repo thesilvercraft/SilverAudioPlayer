@@ -128,7 +128,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
 		<ProjectReference Include="..\SilverCraft.Ekonrensis.Avalonia\SilverCraft.Ekonrensis.Avalonia.csproj" />
 		<ProjectReference Include="..\SilverCraft.Shared\SilverCraft.Shared.csproj" />
-		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" Condition="$(TargetFramework.Contains('juke'))" />
+		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" Condition="$(DefineConstants.Contains('juke'))" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />

@@ -19,6 +19,6 @@ class SilverPlayListI : IPlaylist
     }
 
     public IEnumerable<ITrack> Tracks { get; } 
-    public int? IndexOfActive { get; }
-    public double? PositionOfActive { get; }
+    public int? IndexOfActive { get; internal set;}
+    public double? PositionOfActive { get;internal set;}
 }

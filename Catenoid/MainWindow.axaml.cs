@@ -159,10 +159,13 @@ public partial class MainWindow : Window
             GetLoopType = () => config.LoopType,
             VolumeChanged = vol =>
             {
-                config.Volume = vol;
+                if (config.Volume != vol)
+                {
+                    config.Volume = vol;
+                    reader.Write(config, App._configPath);
+                }
                 Player?.SetVolume(vol);
-                if (!config.AllowedToRead) return;
-                reader.Write(config, App._configPath);
+                dc?.RaisePropertyChanged(nameof(dc.Volume));
             },
             GetVolume = () => config.Volume,
             ResetUIScrollBar = () =>
@@ -404,14 +407,11 @@ public partial class MainWindow : Window
     }
 
 
-
-
     private void CommandMenuClick(object? sender, RoutedEventArgs e)
     {
         CommandPalette p = new();
         p.Show();
     }
-
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender != reader) return;
@@ -502,7 +502,7 @@ public partial class MainWindow : Window
         Logic.MainWindow_Opened(Env);
         if (config.SaveLoadLoc)
         {
-            WindowStartupLocation=WindowStartupLocation.Manual;
+            WindowStartupLocation = WindowStartupLocation.Manual;
             Position = new(config.Pos[0], config.Pos[1]); //TODO FIX
             Width = config.Size[0];
             Height = config.Size[1];
@@ -513,11 +513,6 @@ public partial class MainWindow : Window
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
     {
         Logic.StopAutoLoading = true;
-        Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMsi(dangthing, Env));
-        if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
-        Logic.StopAutoLoading = true;
-        Player?.Stop();
-        Player = null;
         if (config.AutoSave)
         {
             var queue = Logic.GetQueueCopy();
@@ -526,6 +521,11 @@ public partial class MainWindow : Window
             using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
             SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
         }
+        Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMsi(dangthing, Env));
+        if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
+        Logic.StopAutoLoading = true;
+        Player?.Stop();
+        Player = null;
         if (config.SaveLoadLoc)
         {
             config.Pos = [Position.X, Position.Y];
