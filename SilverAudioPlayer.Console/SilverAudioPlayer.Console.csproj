@@ -11,8 +11,6 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="!$(DefineConstants.Contains('IGNORECSPROJ'))">
 		<!--Customize SilverAudioPlayer here-->
-		<!--JellyFin - alpha-->
-		<!-- <DefineConstants>$(DefineConstants)JF</DefineConstants> -->
 		<!--DryWetMidi-->
 <!--		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
 		<!--Z440AtlCore-->
@@ -78,7 +76,6 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.Sync\SilverAudioPlayer.Any.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin\SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.csproj" Condition="$(DefineConstants.Contains('JF'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Win.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
