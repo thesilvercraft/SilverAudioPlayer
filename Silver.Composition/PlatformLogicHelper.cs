@@ -9,9 +9,14 @@ namespace Silver.Composition;
 public class WrappedAssembly : IDisposable
 {
     UnloadableAssemblyLoadContext alc = new();
-    private Assembly Assembly { get; set; }
+    internal Assembly Assembly { get; set; }
     public string Path { get; set; }
-
+    internal WrappedAssembly(Assembly a) 
+    {
+        Assembly=a;
+        alc=null;
+        Path=null;
+    }
     public WrappedAssembly(string path)
     {
         Path = path;
@@ -22,7 +27,7 @@ public class WrappedAssembly : IDisposable
 
     public void Dispose()
     {
-        if (alc.IsCollectible)
+        if (alc!=null && alc.IsCollectible)
         {
             alc.Unload();
         }
@@ -122,7 +127,7 @@ public static class PlatformLogicHelper
         {
             var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped")
                 ?.MakeGenericMethod(field.PropertyType.GetGenericArguments()[0])
-                .Invoke(null, new[] { assemblies });
+                .Invoke(null, [assemblies]);
             if (field.PropertyType.IsInstanceOfType(res))
             {
                 if (tolist)
@@ -139,7 +144,7 @@ public static class PlatformLogicHelper
             else
             {
                 Console.WriteLine(
-                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res.GetType()}");
+                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res?.GetType()?.ToString()?? "null type"}");
             }
         }
 
@@ -168,13 +173,13 @@ public static class PlatformLogicHelper
             else
             {
                 Console.WriteLine(
-                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {(res?.GetType()?.ToString() ?? "null type")}");
+                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res?.GetType()?.ToString() ?? "null type"}");
             }
         }
 
         foreach (var catalog in catalogs)
         {
-           /* catalog.Change += (sender, s) =>
+            /*catalog.Change += (sender, s) =>
             {
                 var a = assemblies.First(x => x.Path == s);
                 a.Dispose();
@@ -186,7 +191,14 @@ public static class PlatformLogicHelper
             };*/
         }
     }
-
+    /// <summary>
+    /// For use to not load the same thing twice, you might not want to use this
+    /// </summary>
+    /// <param name="a">the already loaded assembly</param>
+    public static void AddManualAssembly(Assembly a)
+    {
+        assemblies.Add(new WrappedAssembly(a));
+    }
     public static void RefreshCatalogsAndAssemblies()
     {
         if (assemblies.Count == 0)

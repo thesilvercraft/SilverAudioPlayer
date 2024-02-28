@@ -16,11 +16,11 @@ public interface INaudioWaveStreamWrapper
 
 public static class NaudioWaveStreamWrapperTypeHolder
 {
-    private static readonly NaudioWaveStreamWrapperTypes instnc = new();
+    private static NaudioWaveStreamWrapperTypes? instnc = null;
 
     public static NaudioWaveStreamWrapperTypes Get()
     {
-        return instnc;
+        return instnc ??= new();
     }
 }
 
@@ -779,7 +779,6 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
         var player = new WaveFilePlayer();
         player.LoadStream(stream);
         return player;
-
     }
 
     public Task OnStartup()
