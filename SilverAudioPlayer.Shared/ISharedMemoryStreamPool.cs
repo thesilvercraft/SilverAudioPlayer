@@ -36,7 +36,6 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
         {
             if (SharedStreams.FirstOrDefault(x => x.Hash == hash) is { } sharedStream)
                 return sharedStream;
-            //TODO: maybe use files instead of just memorystreams
             var memoryStream = new WrappedMemoryStream(bytes);
             var sharedStream2 = new SharedStream(memoryStream, hash);
 
@@ -46,7 +45,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
         }
     }
 
-    public SharedStream GetFromWrappedStream(WrappedStream ws)
+    public SharedStream GetFromWrappedStream(WrappedStream ws) //TODO: group by path if wrappedfilestream
     {
         lock (_reliancesLock)
         {

@@ -26,6 +26,7 @@
                 "DISPLAY":":0"
             },
             "cwd": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/",
+            "justMyCode": false,
             "stopAtEntry": false
         },
         {
