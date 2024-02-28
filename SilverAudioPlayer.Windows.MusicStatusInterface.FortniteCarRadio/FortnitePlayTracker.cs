@@ -1,10 +1,7 @@
-﻿using DynamicData.Experimental;
-using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.ConfigScreen;
+﻿using SilverAudioPlayer.Shared;
 using System.Composition;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.Versioning;
+using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio;
 
@@ -39,8 +36,8 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
 
     public FortnitePlayTracker()
     {
-        ConfigurableElements = new List<IConfigurableElement>
-        {
+        ConfigurableElements =
+        [
             new SimpleTextBox
                 { GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolDef.ToString(), GetPlaceholder= ()=>"L", SetContent = c => {
                      Debug.WriteLine("l1");
@@ -70,14 +67,13 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
                  { if(ConfigObject.Value is FortniteCarRadioConfig x)
                     {
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolDef"));
-
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolVeh"));
                      }
                  }
                 }
-        };
+        ];
     }
-    public List<IConfigurableElement> GetElements()
+    public IEnumerable<IConfigurableElement> GetElements()
     {
         return ConfigurableElements;
     }

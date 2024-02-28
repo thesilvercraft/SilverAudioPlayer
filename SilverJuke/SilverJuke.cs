@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Any.SilverJuke;
@@ -25,20 +26,25 @@ public class SilverJuke : IMusicStatusInterface
 
     public string Licenses => "SilverJuke is licensed under the GPL 3.0 license.\n";
 
-    public List<Tuple<Uri, URLType>>? Links => new();
+    public List<Tuple<Uri, URLType>>? Links => [];
     public bool IsStarted => _IsStarted;
     private bool _IsStarted;
     public void Dispose()
     {
-        app.DisposeAsync();
+        app?.DisposeAsync();
     }
     WebApplication? app;
+    
     IMusicStatusInterfaceListener listener;
+    private ILogger _logger;
+
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
+        _logger = Logger.GetLogger(typeof(SilverJuke));
         _IsStarted = true;
         this.listener = listener;
         var builder = WebApplication.CreateBuilder();
+        builder.Host.UseSerilog(_logger);
         builder.WebHost.UseUrls("http://localhost:36169");
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -62,6 +68,7 @@ public class SilverJuke : IMusicStatusInterface
         app.MapGet("/stop", listener.Stop).WithName("Stop");
         app.MapGet("/albumart", () =>
         {
+            Thread.CurrentThread.Priority=ThreadPriority.BelowNormal;
             var currentTrack = listener.GetCurrentTrack();
             if ( currentTrack?.Metadata == null || currentTrack?.Metadata?.Pictures?.Count==0)
             {

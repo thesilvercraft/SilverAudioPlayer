@@ -1,0 +1,46 @@
+image: mcr.microsoft.com/dotnet/sdk:latest
+stages:
+  - pre-build
+  - build
+
+
+variables:
+  OBJECTS_DIRECTORY: 'obj'
+  NUGET_PACKAGES_DIRECTORY: '.nuget'
+  SOURCE_CODE_PATH: '*/*/'
+  GIT_SUBMODULE_STRATEGY: recursive
+cache:
+  key: "$CI_JOB_STAGE-$CI_COMMIT_REF_SLUG"
+  paths:
+    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/project.assets.json'
+    - '$SOURCE_CODE_PATH$OBJECTS_DIRECTORY/*.csproj.nuget.*'
+    - '$NUGET_PACKAGES_DIRECTORY'
+  policy: pull-push
+
+build-linux:
+  stage: build
+  script:
+    - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForlinux" --no-restore'
+  after_script:
+    - 'mv Catenoid/bin/Release/net8.0/publish ./catenoid-publish'
+  artifacts:
+    expire_in: 1 week 
+    paths:
+      - catenoid-publish
+  tags:
+    - linux
+
+build-windows:
+  stage: build
+  script:
+    - 'choco install dotnet-8.0-sdk -y'
+    - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForwindows"'
+  after_script:
+    - 'mv Catenoid\bin\Release\net8.0*\publish ./catenoid-publish'
+  artifacts:
+    expire_in: 1 week 
+    paths:
+      - catenoid-publish
+  tags:
+    - windows

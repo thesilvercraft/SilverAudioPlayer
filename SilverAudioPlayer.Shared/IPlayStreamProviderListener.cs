@@ -1,6 +1,6 @@
 namespace SilverAudioPlayer.Shared;
 
-public interface IPlayStreamProviderListener: IPlayerEnviroment
+public interface IPlayStreamProviderListener: IPlayerEnvironment
 {
     void LoadSong(WrappedStream s);
     public void ProcessFiles(IEnumerable<string> files);

@@ -2,7 +2,7 @@
 	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -13,10 +13,10 @@
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
         
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia" Version="11.0.9" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
-        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.0-rc1.1" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.9" />
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />
     </ItemGroup>
 
@@ -31,5 +31,10 @@
       <Reference Include="Swordfish.NET.CollectionsV3">
         <HintPath>..\..\..\..\..\..\home\silver\.nuget\packages\swordfish.net.collectionsv3\3.3.12\lib\netstandard2.0\Swordfish.NET.CollectionsV3.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="icon.svg" />
+      <EmbeddedResource Include="icon.svg" />
     </ItemGroup>
 </Project>

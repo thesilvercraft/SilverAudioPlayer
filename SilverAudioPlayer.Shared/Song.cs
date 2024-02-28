@@ -1,58 +1,64 @@
-﻿using System.Text.RegularExpressions;
-using ReactiveUI;
+﻿using ReactiveUI;
+using SilverAudioPlayer.Core;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverMagicBytes;
-
-//using VideoLibrary;
 
 namespace SilverAudioPlayer.Shared;
 
 public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, IDisposable
 {
-    //https://reactgo.com/javascript-check-string-url/
-    public readonly Regex URLRegex =
-        new(
-            "^(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$",
-            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled | RegexOptions.ECMAScript);
-
     private IMetadata? _Metadata;
-
-    public Song(string uri, string name, Guid guid, IMetadata? metadata = null)
-    {
-        URI = uri.TrimEnd('\0');
-        if (URLRegex.IsMatch(uri))
-            /*Uri actualurl = new(uri.StartsWith("http")?uri:"https://"+uri);
-            if(actualurl.Host== "www.youtube.com" || actualurl.Host == "youtube.com" || actualurl.Host == "youtu.be" || actualurl.Host == "music.youtube.com")
-            {
-                var y = YouTube.Default.GetAllVideos(uri);
-                var z = y.First(x => x.Resolution == -1 && ( x.AudioFormat == AudioFormat.Vorbis));
-                Stream = new WrappedYTStream(z);
-
-            }
-            else
-            {*/
-            Stream = new WrappedHttpStream(uri);
-        //}
-        else
-            Stream = new WrappedFileStream(uri);
-        Name = name;
-        Guid = guid;
-        Metadata = metadata;
-    }
-
-    public Song(WrappedStream data, string name, Guid guid, IMetadata? metadata = null)
+    public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic=null)
     {
         URI = "";
+        if(data is WrappedFileStream w)
+        {
+            URI=w.URL;
+        }
+        else if(data is WrappedHttpStream h)
+        {
+            URI=h.Url;
+        }
         Stream = data;
         Name = name;
-        Guid = guid;
         Metadata = metadata;
-    }
+        if (logic is not null)
+        {
+            Metadata ??= Task.Run(async () => await logic.GetMetadataFromStream(Stream)!).GetAwaiter().GetResult();
+        }
 
+        if (metadata is not null)
+        {
+            var a = metadata?.Title?.GetHashCode()??-1;
+            var b = metadata?.Artist?.GetHashCode()??-1;
+            var c = metadata?.Album?.GetHashCode()??-1;
+            var d = metadata?.Genre?.GetHashCode()??-1;
+            List<byte> by =
+            [
+                .. BitConverter.GetBytes(a),
+                .. BitConverter.GetBytes(b),
+                .. BitConverter.GetBytes(c),
+                .. BitConverter.GetBytes(d),
+            ];
+            Guid = new Guid(by.ToArray());
+        }
+        else
+        {
+            Guid = Guid.NewGuid();
+        }
+    }
+    
     public WrappedStream Stream { get; set; }
     public string URI { get; set; }
     public string Name { get; set; }
+    /// <summary>
+    /// A Guid assigned to this song by the constructor of the Song object
+    /// A collection of the hashes of the metadata Title, Artist, Album and Genre objects (-1 when null) OR a completely random hash
+    /// </summary>
     public Guid Guid { get; set; }
-
+    /// <summary>
+    /// The song's metadata, it can be also a <see cref="IMetadataCombo"/>
+    /// </summary>
     public IMetadata? Metadata
     {
         get => _Metadata;
@@ -91,8 +97,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
 
     public string TitleOrURL()
     {
-        if (string.IsNullOrEmpty(Metadata?.Title)) return URI;
-        return Metadata.Title;
+        return string.IsNullOrEmpty(Metadata?.Title) ? URI : Metadata.Title;
     }
 
     public string ArtistAlbumOptional(bool thingyatstart = false, bool thingyatend = false)
@@ -101,8 +106,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
             return $"{(thingyatstart ? "-" : "")} {Metadata.Artist} - {Metadata.Album} {(thingyatend ? "-" : "")}";
         if (Metadata?.Artist != null)
             return $"{(thingyatstart ? "-" : "")} {Metadata.Artist} {(thingyatend ? "-" : "")}";
-        if (Metadata?.Album != null) return $"{(thingyatstart ? "-" : "")} {Metadata.Album} {(thingyatend ? "-" : "")}";
-        return "";
+        return Metadata?.Album != null ? $"{(thingyatstart ? "-" : "")} {Metadata.Album} {(thingyatend ? "-" : "")}" : "";
     }
 
     public override string ToString()
@@ -121,37 +125,6 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
     }
 }
 
-/*
-public class WrappedYTStream : WrappedStream
-{
-
-    public WrappedYTStream(YouTubeVideo z)
-    {
-        this.z = z;
-        switch (z.AudioFormat)
-        {
-            case AudioFormat.Aac:
-                m = KnownMimes.AACMime;
-                break;
-            case AudioFormat.Vorbis:
-            case AudioFormat.Opus:
-                m = KnownMimes.OGGMime;
-                break;
-            case AudioFormat.Unknown:
-                break;
-        }
-    }
-
-    MimeType m;
-    private YouTubeVideo z;
-
-    public override MimeType MimeType => m;
-
-    public override Stream GetStream()
-    {
-        return z.Stream();
-    }
-}*/
 public static class MimeTypeExtensions
 {
     public static string RealMimeTypeToFakeMimeType(this MimeType realmime)

@@ -2,13 +2,13 @@
 	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GenHTTP.Core" Version="6.4.0" />
+    <PackageReference Include="GenHTTP.Core" Version="8.1.0" />
     <PackageReference Include="GoogleCast" Version="1.7.0" />
   </ItemGroup>
 

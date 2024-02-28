@@ -1,0 +1,17 @@
+﻿#if CSCore
+using System.Composition;
+using CSCore.Codecs.FLAC;
+using NAudio.Wave;
+using SilverAudioPlayer.NAudio;
+using SilverMagicBytes;
+
+namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
+
+[Export(typeof(INaudioWaveStreamWrapper))]
+public class FlacNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
+{
+    public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.FLACMime];
+    public bool SupportedOnPlatform => true;
+    public WaveStream GetStream(Stream stream) => new CSCoreReader(new FlacFile(stream));
+}
+#endif

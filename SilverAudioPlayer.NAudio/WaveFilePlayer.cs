@@ -2,22 +2,68 @@
 using System.Diagnostics;
 using Audioz_playerZ;
 using NAudio.Wave;
+using Serilog;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Unix.PlayProviderExtension.Naudio.ASound;
-using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
+#if CSCore
+using SilverCraft.PortAudio;
+using CSCore.SoundOut;
+#endif
+using SilverMagicBytes;
 
+using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;
 namespace SilverAudioPlayer.NAudio;
 
 [Export(typeof(IPlay))]
-public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
+public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
 {
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
-
+    ILogger? logger;
     public WaveFilePlayer()
     {
-            outputDevice = new WaveOutEvent();
-            //outputDevice = new SharpPlayerOutput();
+        Debug.WriteLine("NewInstance of WaveFilePlayer");
+        logger = Logger.GetLogger(typeof(WaveFilePlayer));
+    }
+
+    static WaveFilePlayer()
+    {
+        CSCore.LogLocation.GetFunc = Logger.GetLogger;
+    }
+    public static bool IsBackendAvaliable()
+    {
+#if CSCore
+        return OperatingSystem.IsWindows() || PortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
+#else
+        return OperatingSystem.IsWindows();
+#endif
+    }
+
+    public void InitBackEnd(byte volume)
+    {
+
+#if CSCore
+        if (!OperatingSystem.IsWindows())
+        {
+            if (PortAudioSoundOut.IsSupported())
+            {
+                logger?.Information("initing backend CSCorePlayer PortAudioSoundOut");
+                outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut(50));
+            }
+            else if (ALSoundOut.IsSupported)
+            {
+                logger?.Information("initing backend CSCorePlayer ALSoundOut");
+                outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
+            }
+        }
+        else
+#endif
+        {
+            logger?.Information("initing backend naudio WaveOutEvent");
+            outputDevice = new WaveOutEvent()
+            {
+                Volume = volume / 100f
+            };
+        }
 
     }
 
@@ -26,10 +72,23 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public void Dispose()
     {
+        Debug.WriteLine("Disposing WaveFilePlayer");
+        GC.SuppressFinalize(this);
+        foreach (var file in FilesToCleanUp.ToArray())
+        {
+            File.Delete(file);
+            FilesToCleanUp.Remove(file);
+        }
         if (outputDevice != null)
         {
             outputDevice.Dispose();
             outputDevice = null;
+        }
+        audioFile?.Dispose();
+        logger = null;
+        if (LoadedStream is { CanRead: true })
+        {
+            LoadedStream.Dispose();
         }
     }
 
@@ -41,7 +100,6 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     public void Stop()
     {
         outputDevice?.Stop();
-        outputDevice?.Dispose();
     }
 
     public void Pause()
@@ -63,9 +121,9 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public TimeSpan GetPosition()
     {
-        if (outputDevice != null && audioFile is WaveStream ws) return ws.CurrentTime;
+        if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
         //this should not happen
-        Debug.WriteLine("PlayProvider.NAudio THISSHOULDNOTHAPPEN");
+        logger?.Error("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS :(");
         return TimeSpan.Zero;
     }
 
@@ -81,7 +139,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
             global::NAudio.Wave.PlaybackState.Stopped => PlaybackState.Stopped,
             global::NAudio.Wave.PlaybackState.Playing => PlaybackState.Playing,
             global::NAudio.Wave.PlaybackState.Paused => PlaybackState.Paused,
-            _ => throw new NotSupportedException()
+            _ => null
         };
     }
 
@@ -99,9 +157,7 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
 
     public long? GetSampleRate()
     {
-        if (audioFile != null) return audioFile.WaveFormat.SampleRate;
-
-        return null;
+        return audioFile?.WaveFormat.SampleRate;
     }
 
     public uint? GetBitsPerSample()
@@ -114,63 +170,186 @@ public class WaveFilePlayer : IPlay, IDisposable, IPlayStreams
     public event EventHandler<object> TrackEnd;
 
     public event EventHandler<object> TrackPause;
-
+    public WrappedStream? LoadedWrappedStream { get; set; }
+    public Stream? LoadedStream { get; set; }
+    readonly List<string> FilesToCleanUp = [];
     public void LoadStream(WrappedStream stream)
     {
-        if (stream is null) throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
+        if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
+        {
+            logger?.Warning("Doing silly stuff for mkv");
 
+            var a = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".webm";
+            var b = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".opus";
+            using var fileWrite = File.OpenWrite(a);
+            stream.Use(x => x.CopyTo(fileWrite));
+            fileWrite.Close();
+            FilesToCleanUp.Add(a);
+            FilesToCleanUp.Add(b);
+            var c = Process.Start("/usr/bin/mkvextract", $"{a} tracks 0:{b}");
+            c.WaitForExit();
+            File.Delete(a);
+            FilesToCleanUp.Remove(a);
+            if (c.ExitCode == 0)
+            {
+                stream = new WrappedFileStream(b);
+            }
+            else
+            {
+                //nevermind
+            }
+        }
         var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(stream);
         if (wrapper != null)
         {
             Decoder = wrapper.GetType().FullName + " (" + stream.MimeType + ")";
-            audioFile = wrapper.GetStream(stream);
+            LoadedStream = stream.GetStream();
+            audioFile = wrapper.GetStream(LoadedStream);
         }
         else if (stream is WrappedFileStream wf)
         {
             Decoder = "NAudio.Wave.AudioFileReader";
             audioFile = new AudioFileReader(wf.URL);
         }
+        logger?.Information("Using {Decoder}", Decoder);
 
         if (outputDevice == null)
-            outputDevice = new WaveOutEvent
-            {
-                Volume = Volume / 100f
-            };
+        {
+            InitBackEnd(Volume);
+            outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
+        }
         else
             outputDevice.Stop();
-        outputDevice.Init(audioFile);
-        outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
+
+        outputDevice?.Init(audioFile);
+        LoadedWrappedStream = stream;
     }
+
+    public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
+        .SelectMany(x => x.SupportedMimeTypes).ToList();
+
+    public int CurrentPattern => GetCurrentPattern();
+
+    public int NumberOfPatterns => GetNumPattern();
+
+    public bool CanLoop => GetCanLoop();
 
     private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
         TrackEnd?.Invoke(sender, e);
     }
-
-
-    /* public virtual void LoadFile(string file)
-     {
-         if (string.IsNullOrWhiteSpace(file))
-         {
-             throw new ArgumentException("The name of the file must not be null or empty", nameof(file));
-         }
-         var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(file);
-         if (wrapper != null)
-         {
-             Decoder = wrapper.GetType().FullName + " (" + Path.GetExtension(file)[0..].ToUpperInvariant() + ")";
-             audioFile = wrapper.GetStream(file);
-         }
-         else
-         {
-             Decoder = "NAudio.Wave.AudioFileReader";
-             audioFile = new AudioFileReader(file);
-         }
-         DoStuffAfterFile();
-     }
-    */
-
-    internal void DoStuffAfterFile()
+    bool GetCanLoop()
     {
-       
+        if (audioFile is ILoop mselector)
+        {
+            return mselector.CanLoop;
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ILoop cselector)
+            {
+                return cselector.CanLoop;
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            {
+                return selector.CanLoop;
+            }
+        }
+        return false;
+    }
+    int GetCurrentPattern()
+    {
+        if (audioFile is ISelector mselector)
+        {
+            return mselector.CurrentPattern;
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ISelector cselector)
+            {
+                return cselector.CurrentPattern;
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            {
+                return selector.CurrentPattern;
+            }
+        }
+        return 0;
+    }
+    int GetNumPattern()
+    {
+        if (audioFile is ISelector mselector)
+        {
+            return mselector.NumberOfPatterns;
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ISelector cselector)
+            {
+                return cselector.NumberOfPatterns;
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            {
+                return selector.NumberOfPatterns;
+            }
+        }
+        return 0;
+    }
+    public void SetPattern(int pattern)
+    {
+        if (audioFile is ISelector mselector)
+        {
+            mselector.SetPattern(pattern);
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ISelector cselector)
+            {
+                cselector.SetPattern(pattern);
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            {
+                selector.SetPattern(pattern);
+            }
+        }
+    }
+
+    public void EnableLoop()
+    {
+        if (audioFile is ILoop mselector)
+        {
+            mselector.EnableLoop();
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ILoop cselector)
+            {
+                cselector.EnableLoop();
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            {
+                selector.EnableLoop();
+            }
+        }
+    }
+
+    public void DisableLoop()
+    {
+        if (audioFile is ILoop mselector)
+        {
+            mselector.DisableLoop();
+        }
+        else if (audioFile is Any.PlayProvider.NAudio.NaudioWaveStreamWrappers.CSCoreReader cSCoreReader)
+        {
+            if (cSCoreReader._reader is ILoop cselector)
+            {
+                cselector.DisableLoop();
+            }
+            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            {
+                selector.DisableLoop();
+            }
+        }
     }
 }

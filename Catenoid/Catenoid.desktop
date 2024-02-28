@@ -1,0 +1,21 @@
+[Desktop Entry]
+Comment[en_GB]=The SilverCraft Audio Player
+Comment=The SilverCraft Audio Player
+Path=/opt/catenoid
+Exec=/usr/bin/catenoid %U
+GenericName[en_GB]=Audio player
+GenericName=Audio player
+Categories=Audio;Player;Recorder;
+Icon=sap
+Keywords=Player;Audio;
+MimeType=x-content/audio-player;audio/vnd.wave;audio/wav;audio/x-wav;audio/x-vorbis+ogg;audio/ogg;application/ogg;audio/x-aiff;audio/mp2;audio/x-midi;audio/mp4;audio/aac;audio/wave;audio/flac;audio/mpeg;audio/vorbis;audio/aiff;video/mpeg;audio/midi;
+Name[en_GB]=Catenoid
+Name=Catenoid
+NoDisplay=false
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-Protocols=http,https
+X-KDE-SubstituteUID=false
+Categories=AudioVideo;Player;Midi;Music;Audio;

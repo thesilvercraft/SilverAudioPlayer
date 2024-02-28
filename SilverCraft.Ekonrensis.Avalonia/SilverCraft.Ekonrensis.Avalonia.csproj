@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.0.9" />
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="ConfigureWindow.axaml.cs">
+        <DependentUpon>ConfigureWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+  
+  
+    <ItemGroup>
+      <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj" />
+    </ItemGroup>
+</Project>

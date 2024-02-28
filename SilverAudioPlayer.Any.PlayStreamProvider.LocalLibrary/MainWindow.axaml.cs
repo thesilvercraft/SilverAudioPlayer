@@ -1,34 +1,18 @@
-using System.Collections.ObjectModel;
-using System.Composition;
 using System.Diagnostics;
+using System.IO;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
+using Serilog;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.AvaloniaUtils;
 using Swordfish.NET.Collections;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
-
-[Export(typeof(IPlayStreamProvider))]
-public class LocalLibraryPlayStreamProvider : IPlayStreamProvider
-{
-    public void Use(IPlayStreamProviderListener env)
-    {
-        MainWindow mw = new(env);
-        mw.Show();
-    }
-
-    public string Name => "Local Library";
-    public string Description => "Allows you to sort and play local files";
-    public WrappedStream? Icon => null;
-    public Version? Version => typeof(LocalLibraryPlayStreamProvider).Assembly.GetName().Version;
-    public string Licenses => "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\nGPL3.0";
-    public List<Tuple<Uri, URLType>>? Links { get; }
-}
-
 
 public interface WrappedShowable
 {
@@ -39,11 +23,11 @@ public interface WrappedShowable
 public class WrappedAlbum : WrappedShowable
 {
     public string Name { get; set; }
-    public Bitmap? Cover => Songs[0].Cover;
+    public Bitmap? Cover => Songs.Count>0 ? Songs[0].Cover : null;
     public string AlbumArtist { get; set; }
-    public ConcurrentObservableCollection<WrappedSong> Songs { get; } = new();
+    public AvaloniaList<WrappedSong> Songs { get; } = [];
 }
-public class WrappedSong : WrappedShowable
+public class WrappedSong : WrappedShowable, IDisposable
 {
     public WrappedSong(IMetadata meta, string url)
     {
@@ -54,24 +38,66 @@ public class WrappedSong : WrappedShowable
     public IMetadata Metadata;
     public string Name => Metadata.Title;
     public int? TrackNumber => Metadata.TrackNumber;
-    public Bitmap? Cover => DecodeCover();
+    public Bitmap? Cover =>c??= DecodeCover();
+    public Bitmap? c;
+    RelianceOnShared<Bitmap> Reliance;
+
     public Bitmap? DecodeCover()
     {
-        if(Metadata.Pictures.Count>0)
+        try
         {
-            using var stream = Metadata.Pictures[0].Data.GetStream();
-            return Bitmap.DecodeToHeight(stream, 400);
+            if (Metadata.Pictures != null && Metadata.Pictures.Count > 0)
+            {
+                if(SharedMemoryTPoolInstance<Bitmap>.Instance.ContainsHash(Metadata.Pictures[0].Hash))
+                {
+                    var b =SharedMemoryTPoolInstance<Bitmap>.Instance.GetWithHash(Metadata.Pictures[0].Hash);
+                    Reliance = new(b);
+                    return b.Object;
+
+                }
+                else
+                {
+                    var imageData = Metadata.Pictures[0].Data;
+                    if (imageData != null)
+                    {
+
+
+                        using var imageDataStream = imageData.GetStream();
+                        var bmp = new Bitmap(imageDataStream);
+                        var b = SharedMemoryTPoolInstance<Bitmap>.Instance.AddT(bmp, Metadata.Pictures[0].Hash);
+                        Reliance = new(b);
+
+                        return bmp;
+
+
+                    }
+                }
+              
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error(e,"Error loading cover");
+            Debug.WriteLine(e);
         }
         return null;
     }
 
     public string AlbumArtist => Metadata.Artist;
+
+    
+   
+    public void Dispose()
+    {
+        Reliance.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }
 public class GuiBinding : ReactiveObject
 {
-    public ConcurrentObservableCollection<WrappedAlbum> WrappedAlbums { get; set; } = new();
-    public ConcurrentObservableCollection<WrappedSong> WrappedSongs { get => _WrappedSongs; set => this.RaiseAndSetIfChanged(ref _WrappedSongs, value); }
-    private ConcurrentObservableCollection<WrappedSong> _WrappedSongs = new();
+    public AvaloniaList<WrappedAlbum> WrappedAlbums { get; set; } = [];
+    public AvaloniaList<WrappedSong> WrappedSongs { get => _WrappedSongs; set => this.RaiseAndSetIfChanged(ref _WrappedSongs, value); }
+    private AvaloniaList<WrappedSong> _WrappedSongs = [];
 
 }
 
@@ -89,18 +115,29 @@ public partial class MainWindow : Window
         {
             return;
         }
+        MainGrid = this.FindControl<Grid>("MainGrid");
+         if (OperatingSystem.IsLinux())
+        {
+            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
+        }
         this.DoAfterInitTasks(true);
     }
     private void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
         Env.LoadSongs(_binding.WrappedSongs.Select(song => new WrappedFileStream(song.Url)).ToList()); //TODO GET SORTED PROPERLY
     }
-    public MainWindow(IPlayStreamProviderListener env) : this()
+    public MainWindow(IPlayStreamProviderListener env, LocalLibraryPlayStreamProviderConfig value) : this()
     {
         Env = env;
+        config = value;
+        foreach (var f in config.Directories)
+        {
+            Task.Run(()=>LoadFolder(f));
+        }
     }
-    Dictionary<string, Bitmap> bitmaps = new();
-    public async Task<WrappedSong?> ProcessFileAsync(string file, CancellationToken ct=default)
+    LocalLibraryPlayStreamProviderConfig? config;
+    Dictionary<string, Bitmap> bitmaps = [];
+    public async Task<WrappedSong?> ProcessFileAsync(string file, CancellationToken ct = default)
     {
         try
         {
@@ -109,54 +146,69 @@ public partial class MainWindow : Window
         }
         catch (Exception e)
         {
-            Debug.WriteLine(e);
+            Debug.WriteLine(file);
+            Log.Error(e,"Error ProcessFileasync in LocalLib");
         }
         return null;
+    }
+    async void LoadFolder(string dir)
+    {
+        var files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories);
+        object a = new();
+        List<WrappedSong> songs = [];
+        await Parallel.ForEachAsync(Env.FilterFiles(files), new ParallelOptions() { MaxDegreeOfParallelism = 5 }, async (file, ct) =>
+        {
+            try
+            {
+                var song = await ProcessFileAsync(file, ct);
+                if (song != null)
+                {
+                    lock (a)
+                    {
+                        songs.Add(song);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error in processfile in parrallel foreach");
+            }
+        });
+        var albums = songs.GroupBy(x => x.Metadata.Album);
+        foreach (var album in albums.Where(a => a.Key != null))
+        {
+            if (_binding.WrappedAlbums.FirstOrDefault(x => x.Name == album.Key) is { } wrappedAlbum)
+            {
+                wrappedAlbum.Songs.AddRange(album.ToList());
+            }
+            else
+            {
+                var albuml = album.ToList();
+                var wrapped = new WrappedAlbum()
+                {
+                    AlbumArtist = albuml[0]?.Metadata?.Artist ?? "ERROR",
+                    Name = albuml[0]?.Metadata?.Album ?? "ERROR",
+                };
+
+                wrapped.Songs.AddRange(album.ToList());
+                _binding.WrappedAlbums.Add(wrapped);
+            }
+        }
     }
     private async void LoadNewFolder(object? sender, RoutedEventArgs e)
     {
         OpenFolderDialog ofd = new();
         var f = await ofd.ShowAsync(this);
-        var restOfTask = Task.Run(async () =>
+
+        if (f != null)
         {
-            if (f != null)
-            {
-                var files = Directory.GetFiles(f, "*", SearchOption.AllDirectories);
-                object a = new();
-                List<WrappedSong> songs = new();
-                await Parallel.ForEachAsync(Env.FilterFiles(files), new ParallelOptions() { MaxDegreeOfParallelism = 10 }, async (file, ct) => {
-                    var song= await ProcessFileAsync(file, ct);
-                    if(song!=null)
-                    {
-                        lock (a)
-                        {
-                            songs.Add(song);
-                        }
-                    }
-                });
-                var albums = songs.GroupBy(x => x.Metadata.Album);
-            foreach (var album in albums)
-                {
-                    if(_binding.WrappedAlbums.FirstOrDefault(x => x.Name == album.Key) is { } wrappedAlbum)
-                    {
-                        wrappedAlbum.Songs.AddRange(album.ToList());
-                    }
-                    else
-                    {
-                        Bitmap? cover = null;
-                        var albuml = album.ToList();
-                        var wrapped = new WrappedAlbum()
-                        {
-                            AlbumArtist = albuml[0].Metadata.Artist,
-                            Name = albuml[0].Metadata.Album,
-                        };
-                        wrapped.Songs.AddRange(album.ToList());
-                        _binding.WrappedAlbums.Add(wrapped);
-                    }
-                }
-                
-            }
-        });
+
+            LoadFolder(f);
+            config.Directories.Add(f);
+            ((ICanBeToldThatAPartOfMeIsChanged)config).PropertyChanged(config, new("Directories"));
+
+        }
+
 
     }
 

@@ -94,9 +94,6 @@ internal class MidiPlayer : IPlay, IPlayProvider
     {
         ps = PlaybackState.Stopped;
         player.Stop();
-        player.Dispose();
-        midiOut.Dispose();
-        midiOut = null;
     }
 
     public long? GetSampleRate()
@@ -109,10 +106,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
         return null;
     }
 
-    public IPlayProviderListner ProviderListener
-    {
-        set => _ = value;
-    }
+
 
     public string Name => "DryWetMidi MidiPlayer";
 
@@ -120,21 +114,21 @@ internal class MidiPlayer : IPlay, IPlayProvider
         "A player that plays MIDIs implemented with DryWetMidi (https://github.com/melanchall/drywetmidi)";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(MidiPlayer).Assembly,
-        "SilverAudioPlayer.Any.PlayProvider.DryWetMidi.DryWetMidiLogo.png");
+        "SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi.DryWetMidiLogo.png");
 
     public Version? Version => typeof(MidiPlayer).Assembly.GetName().Version;
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
-            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"),
+            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri(
                 $"https://www.nuget.org/packages/Melanchall.DryWetMidi/{typeof(OutputDevice).Assembly.GetName().Version}"),
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/melanchall/drywetmidi"), URLType.LibraryCode)
-    };
+    ];
 
     public string Licenses => @"DryWetMidi (https://github.com/melanchall/drywetmidi)
 MIT License
@@ -158,7 +152,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-SilverAudioPlayer.Any.PlayProvider.DryWetMidi
+SilverAudioPlayer.Win.PlayProvider.DryWetMidi
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -176,7 +170,7 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
 
     public bool CanPlayFile(WrappedStream stream)
     {
-        return stream.MimeType == KnownMimes.MidMime;
+        return OperatingSystem.IsWindows() &&stream.MimeType == KnownMimes.MidMime;
     }
 
     public IPlay? GetPlayer(WrappedStream stream)
@@ -225,5 +219,11 @@ SilverAudioPlayer.Any.PlayProvider.DryWetMidi
         };
         player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
         player.OutputDevice = midiOut;
+    }
+
+    public void Dispose()
+    {
+        midiOut.Dispose();
+        player.Dispose();
     }
 }

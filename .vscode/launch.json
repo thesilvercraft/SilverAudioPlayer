@@ -5,14 +5,28 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": "C#: SilverAudioPlayer.Console Debug",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net6.0/SilverAudioPlayer.Avalonia.dll",
+            "program": "${workspaceFolder}/SilverAudioPlayer.Console/bin/Debug/net8.0/SilverAudioPlayer.Console.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/SilverAudioPlayer.Avalonia/bin/Debug/net6.0/",
-            "console": "internalConsole",
+            "cwd": "${workspaceFolder}/SilverAudioPlayer.Console/bin/Debug/net8.0/",
+            "console": "externalTerminal",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Launch (catenoid)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/Catenoid.dll",
+            "args": [],
+            "env":{
+                "DISPLAY":":0"
+            },
+            "cwd": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/",
+            "justMyCode": false,
             "stopAtEntry": false
         },
         {

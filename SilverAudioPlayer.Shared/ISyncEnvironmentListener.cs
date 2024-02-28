@@ -1,6 +1,6 @@
 namespace SilverAudioPlayer.Shared;
 
-public interface ISyncEnvironmentListener : IPlayerEnviroment
+public interface ISyncEnvironmentListener : IPlayerEnvironment
 {
     
     public Task<List<Song>?> GetQueue();

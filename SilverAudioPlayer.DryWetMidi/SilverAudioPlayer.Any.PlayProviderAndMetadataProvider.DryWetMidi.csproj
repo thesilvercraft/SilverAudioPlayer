@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="../SilverAudioPlayer.targets" />
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="DryWetMidiLogo.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="DryWetMidiLogo.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Melanchall.DryWetMidi" Version="7.0.2" />
+        <PackageReference Include="System.Composition" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+    </ItemGroup>
+
+</Project>

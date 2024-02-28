@@ -7,261 +7,67 @@ using System.Diagnostics;
 namespace SilverAudioPlayer.Linux.MPRIS
 {
     [Export(typeof(IMusicStatusInterface))]
-    public class Mpris :IMusicStatusInterface, IMediaPlayer2,IPlayer
+    public class Mpris : IMusicStatusInterface
     {
-        public event Action<PropertyChanges> OnPropertiesChanged;
         public bool IsStarted => _IsStarted;
         private bool _IsStarted;
-        public Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler)
-        {
-            Debug.WriteLine("Someone cares?");
-            return SignalWatcher.AddAsync(this, nameof(OnPropertiesChanged), handler);
-        }
         public Mpris()
         {
-            Task.Run(async ()=>
+        }
+        Connection connection;
+        MprisPlayer player;
+        void start()
+        {
+            if (_IsStarted)
+            {
+                return;
+            }
+            _IsStarted = true;
+            Task.Run(async () =>
             {
                 try
                 {
-                    var connection = new Connection(Address.Session!);
+                    connection = new Connection(Address.Session);
+                    connection.StateChanged+=ConnectionOnStateChanged;
                     await connection.ConnectAsync();
-                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.sap.i"+Environment.ProcessId);
-                    await connection.RegisterObjectAsync(this);
+                    player =new MprisPlayer(Env);
+                    await connection.RegisterObjectAsync(player);
+                    await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.catenoid.i_" + Environment.ProcessId);
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine(e);
                     throw;
                 }
-             
             });
+        }
+
+        private void ConnectionOnStateChanged(object? sender, ConnectionStateChangedEventArgs e)
+        {
+            if (e.State == ConnectionState.Disconnected && _IsStarted)
+            {
+               _IsStarted=false;
+            }
+            Debug.WriteLine(e.DisconnectReason);
         }
 
         public void Dispose()
         {
         }
         public ObjectPath ObjectPath { get; } = new ObjectPath("/org/mpris/MediaPlayer2");
-
-      
-       
-        public async Task RaiseAsync()
-        {
-        }
-
-        public async Task QuitAsync()
-        {
-        }
-
-    
-        public Task NextAsync()
-        {
-            Env.Next();
-            return Task.CompletedTask;
-        }
-
-        public Task PreviousAsync()
-        {
-            Env.Previous();
-            return Task.CompletedTask;
-        }
-
-        public Task PauseAsync()
-        {
-            Env.Pause();
-            return Task.CompletedTask;
-        }
-
-        public Task PlayPauseAsync()
-        {
-            Env.PlayPause();
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync()
-        {
-            Env.Stop();
-            return Task.CompletedTask;
-        }
-
-        public Task PlayAsync()
-        {
-            Env.Play();
-            return Task.CompletedTask;
-        }
-
-        public Task SeekAsync(long Offset)
-        {
-            Debug.WriteLine("[MPRIS] SeekAsync");
-            Env.SetPosition(Env.GetPosition()+(Offset/1000000d));
-            return Task.CompletedTask;
-        }
-
-        public Task SetPositionAsync(ObjectPath TrackId, long Position)
-        {
-            Debug.WriteLine("[MPRIS] SetPositionAsync");
-            Env.SetPosition(Position);
-            return Task.CompletedTask;
-
-        }
-
-        public Task OpenUriAsync(string Uri)
-        {
-            if (Env is IPlayStreamProviderListener l)
-            {
-                l.ProcessFiles(new []{Uri});
-            }
-            return Task.CompletedTask;
-        }
-
-        private Action<long> OnSeeked;
-        public async Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)
-        {
-            OnSeeked = handler;
-            return this;
-        }
-
-        string InternalStatus()
-        {
-            return Env?.GetState() switch
-            {
-                PlaybackState.Playing=>"Playing",
-                PlaybackState.Paused => "Paused",
-                _ => "Stopped"
-            };
-        }
-
-
-        public async Task<object> GetAsync(string prop)
-        {
-            switch (prop.ToLowerInvariant())
-            {
-                case "playbackstatus":
-                return InternalStatus();
-                case "canseek": 
-                case "canpause": 
-                case "canplay": 
-                case "cangonext": 
-                case "cangoprevious": 
-                case "cancontrol": 
-                    return true;
-                case "minimumrate": 
-                case "maximumrate": 
-                case "rate": 
-                    return 1;
-                //Metadata
-                case "position":
-                    return (long)Env.GetPosition()*1000*1000;
-                case "volume":
-                    return Env.GetVolume() / 255;
-                case "loopstatus":
-                    return GetLoopStatus();
-                case "identity":
-                    return "SilverAudioPlayer";
-                case "shuffle":
-                    return false;
-                case "metadata":
-                    return GetMetadata();
-            }
-            Debug.WriteLine("[MPRIS] Failing to answer for "+prop);
-
-            return null;
-        }
-
-        Dictionary<string, object> GetMetadata()
-        {
-            var track = Env?.GetCurrentTrack();
-            return new Dictionary<string, object>()
-            {
-                {"mpris:length",( (long?)Env?.GetDuration()??10)*1000*1000},
-                {"mpris:trackid", new ObjectPath("/org/silvercraft/t"+track?.Guid.ToString("N"))},
-                {"mpris:artUrl", "http://localhost:36169/albumart"}, 
-                {"xesam:title", track?.Metadata?.Title ?? "nothing"},
-                {"xesam:album", track?.Metadata?.Album ?? "no"},
-                {"xesam:artist", new string[] {track?.Metadata?.Artist??"none"}}
-            };
-        }
-        string GetLoopStatus()
-        {
-            //   LoopStatus None Track Playlist 
-            return  "None";
-        }
-        Task<PlayerProperties> IPlayer.GetAllAsync()
-        {
-            return Task.FromResult(new PlayerProperties()
-            {
-PlaybackStatus =InternalStatus(),
-Rate = 1,
-MaximumRate = 1,
-MinimumRate = 1,
-CanControl = true,
-CanPause = true,
-CanPlay = true,
-CanGoNext = true,
-CanGoPrevious = true,
-CanSeek = true,
-Metadata = GetMetadata(),
-Volume = Env?.GetVolume()/100d ?? 100d
-
-            });
-        }
-
-        public Task<MediaPlayer2Properties> GetAllAsync()
-        {
-            return Task.FromResult(new MediaPlayer2Properties()
-            {
-                HasTrackList = false,
-                CanQuit = false,
-                CanRaise = false,
-                DesktopEntry = "silveraudioplayer",
-                Identity = "SilverAudioPlayer",
-                SupportedUriSchemes = new []{"http","https"},
-                SupportedMimeTypes = new []{"audio/ogg","audio/flac"},
-            });
-        }
-
-        public Task SetAsync(string prop, object val)
-        {
-            if (prop == "Volume" && val is double v)
-            {
-                Env.SetVolume((byte)(v*100));
-            }
-            else
-            {
-                Debug.WriteLine("[MPRIS] NOT SETTING "+prop);
-            }
-            return Task.CompletedTask;
-        }
-
         private IMusicStatusInterfaceListener Env;
         public void StartIPC(IMusicStatusInterfaceListener listener)
         {
             Env = listener;
-            Env.PlayerStateChanged += PlayerStateChanged;
-            Env.TrackChangedNotification += TrackChanged;
-        }
-        private void TrackChanged(object? sender, Song e)
-        {
-            OnPropertiesChanged?.Invoke(new PropertyChanges(new List<KeyValuePair<string,object>>()
-            {
-                new("Metadata", GetMetadata()),
-            }.ToArray()));
-        }
-
-        private void PlayerStateChanged(object? sender, PlaybackState e)
-        {
-            OnPropertiesChanged?.Invoke(new PropertyChanges(new List<KeyValuePair<string,object>>()
-            {
-                new("PlaybackStatus", Env?.GetState() switch
-                {
-                    PlaybackState.Playing=>"Playing",
-                    PlaybackState.Paused => "Paused",
-                    _ => "Stopped"
-                }),
-            }.ToArray()));
+            start();
         }
 
         public void StopIPC(IMusicStatusInterfaceListener listener)
         {
+            _IsStarted = false;
+            Debug.WriteLine("Mpris stopipc");
+            connection.UnregisterObject(player);
+            connection.Dispose();
         }
 
         public string Name => "MPRIS Linux MSI";
@@ -271,10 +77,10 @@ Volume = Env?.GetVolume()/100d ?? 100d
 
         public Version? Version => typeof(Mpris).Assembly.GetName().Version;
         public string Licenses => "GPL3.0";
-        public List<Tuple<Uri, URLType>>? Links => new()
-        {
+        public List<Tuple<Uri, URLType>>? Links =>
+        [
             new Tuple<Uri, URLType>(
-                new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.MPRIS"),
+                new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.MPRIS"),
                 URLType.Code),
             new Tuple<Uri, URLType>(
                 new Uri("https://specifications.freedesktop.org/mpris-spec/latest/"),
@@ -285,11 +91,11 @@ Volume = Env?.GetVolume()/100d ?? 100d
             new Tuple<Uri, URLType>(
                 new Uri("https://github.com/tmds/Tmds.DBus"),
                 URLType.LibraryCode)
-        };
-        
+        ];
 
-       
 
-     
+
+
+
     }
 }

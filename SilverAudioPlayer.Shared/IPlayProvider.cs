@@ -5,7 +5,6 @@ namespace SilverAudioPlayer.Shared;
 public interface IPlayProvider : ICodeInformation
 {
     public IReadOnlyList<MimeType>? SupportedMimes { get; }
-    public IPlayProviderListner ProviderListener { set; }
 
     /// <summary>
     ///     Determines if the following provider can play a certain file
@@ -26,13 +25,3 @@ public interface IPlayProvider : ICodeInformation
     Task OnStartup();
 }
 
-public interface IWakeLockProvider : ICodeInformation
-{
-    public void WakeLock();
-    public void UnWakeLock();
-}
-
-public interface IPlayProviderListner
-{
-    IPlayerEnviroment GetEnviroment();
-}

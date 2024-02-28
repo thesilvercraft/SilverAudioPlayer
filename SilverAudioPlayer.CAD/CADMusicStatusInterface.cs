@@ -1,10 +1,10 @@
 ﻿using System.Composition;
-using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Serilog;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.CAD;
 
@@ -48,7 +48,7 @@ public class CADMusicStatusInterface : Form, IMusicStatusInterface
     public List<Tuple<Uri, URLType>>? Links => new()
     {
         new Tuple<Uri, URLType>(
-            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.CAD"),
+            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.CAD"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri("https://web.archive.org/web/20120721202025/http://www.cdartdisplay.com/download/cad-sdk-2.1.zip"),

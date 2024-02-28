@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using LibVLCSharp.Shared;
+﻿using LibVLCSharp.Shared;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using System.Composition;
@@ -13,7 +12,6 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
         public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.FLACMime, KnownMimes.AACMime,
           KnownMimes.AiffMime, KnownMimes.WAVMime, KnownMimes.MP3Mime, KnownMimes.MidMime, KnownMimes.Mp2Mime, KnownMimes.Mp4Mime, KnownMimes.MpegMime, KnownMimes.OGGMime };
 
-        public IPlayProviderListner ProviderListener { set => _ = value; }
 
         public string Name => "VLC playprovider";
 
@@ -530,10 +528,10 @@ necessary.  Here is a sample; alter the names:
 
 That's all there is to it!";
 
-        public List<Tuple<Uri, URLType>>? Links => new List<Tuple<Uri, URLType>>() {
+        public List<Tuple<Uri, URLType>>? Links => [
             new(new("https://www.nuget.org/packages/LibVLCSharp"),URLType.PackageManager),
         new(new("https://code.videolan.org/videolan/LibVLCSharp"),URLType.LibraryCode),
-        new(new("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.libVLC"),URLType.PackageManager)};
+        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.libVLC"),URLType.PackageManager)];
 
         public bool CanPlayFile(WrappedStream stream)
         {

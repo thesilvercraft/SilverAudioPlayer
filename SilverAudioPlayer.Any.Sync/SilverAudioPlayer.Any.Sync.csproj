@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../SilverAudioPlayer.targets" />
 	<PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <LangVersion>default</LangVersion>
@@ -15,14 +15,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-rc1.1" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
+        <PackageReference Include="Avalonia" Version="11.0.9" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.9" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
-        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="11.0.0-rc1.1" />
-        <PackageReference Include="System.Management" Version="8.0.0-preview.4.23259.5" />
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
+        <PackageReference Include="System.Management" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>

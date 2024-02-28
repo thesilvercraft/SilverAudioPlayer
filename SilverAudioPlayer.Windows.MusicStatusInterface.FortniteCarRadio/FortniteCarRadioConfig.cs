@@ -16,9 +16,8 @@ namespace SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio
         [Comment("Volume when in vechicle")]
         public byte VolVeh { get; set; } = 100;
 
-        [XmlIgnore] public bool _AllowedRead = true;
+        [XmlIgnore] public bool AllowedToRead { get; set; } = true;
 
-        [XmlIgnore] public bool AllowedToRead => _AllowedRead;
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }

@@ -1,0 +1,146 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1440" d:DesignHeight="900"
+        x:Class="Catenoid.MainWindow"
+        xmlns:local="clr-namespace:Catenoid;assembly=Catenoid"
+        xmlns:shared="using:SilverAudioPlayer.Shared"
+        Title="Catenoid" DragDrop.AllowDrop="True" Icon="/icon.ico"
+        ExtendClientAreaToDecorationsHint="True">
+	<Window.Resources>
+		<local:NullableReplacingConverter x:Key="nullableReplacingConverter" />
+		<local:RelativePointConverter x:Key="relativePointConverter" />
+	</Window.Resources>
+	<Window.Styles>
+		<Style Selector="ProgressBar">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ProgressBar">
+						<Grid>
+							<Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}">
+								<Panel>
+									<Border Name="PART_Indicator"
+                                            IsVisible="{Binding !IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}">
+										<Border.Background>
+											<LinearGradientBrush StartPoint="0,0"
+                                                                 EndPoint="{Binding Bounds.Width, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource relativePointConverter}}"
+                                                                 GradientStops="{Binding GradientStops}" />
+										</Border.Background>
+									</Border>
+									<Border Name="PART_IndeterminateIndicator"
+                                            Background="{TemplateBinding Foreground}"
+                                            IsVisible="{Binding IsIndeterminate, RelativeSource={RelativeSource TemplatedParent}}" />
+								</Panel>
+							</Border>
+							<LayoutTransformControl Name="PART_LayoutTransformControl"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    IsVisible="{Binding ShowProgressText, RelativeSource={RelativeSource TemplatedParent}}" />
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Height" Value="70" />
+			<Setter Property="Margin" Value="2,0,2,0" />
+		</Style>
+		<Style Selector="TextBlock.Playing">
+			<Setter Property="Foreground" Value="#D000FF" />
+		</Style>
+		<Style Selector="TreeViewItem:selected">
+			<Setter Property="Background" Value="#3A2595" />
+		</Style>
+		<Style Selector="TextBlock.c">
+			<Setter Property="FontSize" Value="20" />
+		</Style>
+	</Window.Styles>
+
+
+	<Grid RowDefinitions="25,260,*" Margin="5" Name="MainGrid">
+		<TextBlock Text="{Binding Title}" Margin="5" />
+		<Border Grid.Row="1">
+			<Grid ColumnDefinitions="256,*">
+				<Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
+					<Image Height="256" Width="256" Name="Image" />
+				</Border>
+				<Grid Margin="10,10,0,10" Grid.Column="1" RowDefinitions="50,25,75,50">
+					<ProgressBar Name="PB" Grid.Row="0" Height="50"
+                                 Margin="0,0,10,10" />
+					<Grid Margin="1,0,10,0" Grid.Row="1">
+						<TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00" />
+						<TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00" />
+					</Grid>
+					<Grid ColumnDefinitions="*,*,*,*,*,*,*" Grid.Row="2" Margin="0,1,1,1">
+						<Button Name="PlayButton" Grid.Column="0">Play</Button>
+						<Button Name="PauseButton" Grid.Column="1">Pause</Button>
+						<Button Name="StopButton" Grid.Column="2" HotKey="Ctrl+Right">Stop/Skip</Button>
+						<Button Name="RepeatButton" Grid.Column="3" HotKey="Ctrl+R">
+							<TextBlock Text="{Binding LoopType}" />
+						</Button>
+						<Button Grid.Column="4" Name="LyricsButton" Click="LyricsButton_Click" HotKey="W">Lyrics</Button>
+						<Button Name="Settings" Grid.Column="5" HotKey="Ctrl+,">Settings</Button>
+						<Button Name="CommandMenu" Grid.Column="6" HotKey="Ctrl+Shift+P">Commands</Button>
+
+					</Grid>
+					<Slider Name="VolumeBar" Grid.Row="3" Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"
+                            Padding="20,0,20,0" />
+				</Grid>
+			</Grid>
+		</Border>
+			<ListBox ItemsSource="{Binding Queue}" Selection="{Binding Selection}"  Name="mainListBox"
+                 DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"
+                 Background="Transparent" Grid.IsSharedSizeScope="True" Grid.Row="2" >
+				
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Remove Selected" Click="RemoveSelected" />
+						<MenuItem Header="Clear Queue" Click="ClearAll" />
+						<MenuItem Header="Show selected in explorer" Click="ShowInFolder" />
+						<MenuItem Header="Browse From Dialog" Click="AddFile" />
+						<MenuItem Header="Save current queue" Click="SaveQueue" />
+					</ContextMenu>
+				</ListBox.ContextMenu>
+
+				<ListBox.DataTemplates>
+					<DataTemplate DataType="{x:Type shared:Song}">
+						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" PointerPressed="TreeView_PointerPressed1" >
+							<TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
+								<TextBlock.Text>
+									<MultiBinding StringFormat="CD{0}/{1}">
+										<Binding Path="Metadata.DiscNumber" />
+										<Binding Path="Metadata.TrackNumber" />
+									</MultiBinding>
+								</TextBlock.Text>
+							</TextBlock>
+							<TextBlock Classes="c c2" Grid.Column="1" HorizontalAlignment="Center">
+								<TextBlock.Text>
+									<MultiBinding Converter="{StaticResource ResourceKey=nullableReplacingConverter}">
+										<Binding Path="Metadata.Title" />
+										<Binding Path="URI" />
+									</MultiBinding>
+								</TextBlock.Text>
+							</TextBlock>
+							<TextBlock Classes="c c3" Text="{Binding Metadata.Artist}" Grid.Column="2"
+									   HorizontalAlignment="Center" />
+							<TextBlock Classes="c c4" Text="{Binding Metadata.Album}" Grid.Column="3"
+									   HorizontalAlignment="Center" />
+					
+						</Grid>
+
+					</DataTemplate>
+				</ListBox.DataTemplates>
+			</ListBox>
+		
+	</Grid>
+
+
+</Window>

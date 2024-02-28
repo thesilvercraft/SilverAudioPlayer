@@ -2,7 +2,7 @@
     <Import Project="../SilverAudioPlayer.targets" />
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
@@ -11,14 +11,19 @@
 
     <ItemGroup>
         <PackageReference Include="CatBox.NET" Version="0.3.0" />
-        <PackageReference Include="DiscordRichPresence" Version="1.1.3.18" />
+        <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
         <PackageReference Include="Imgur.API" Version="5.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="System.Composition" Version="8.0.0-preview.4.23259.5" />
+        <PackageReference Include="System.Composition" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="drp.svg" />
+      <EmbeddedResource Include="drp.svg" />
     </ItemGroup>
 
 </Project>

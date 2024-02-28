@@ -1,5 +1,6 @@
 using System.Composition;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.MetadataSource.File;
 
@@ -10,20 +11,21 @@ public class FileMetadataProvider : IMetadataProvider
 
     public string Description => "Metadata Provider that provides from files";
 
-    public WrappedStream Icon => null;
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(FileMetadataProvider).Assembly,
+        "SilverAudioPlayer.Any.MetadataSource.File.icon.svg");
 
     public Version? Version => typeof(FileMetadataProvider).Assembly.GetName().Version;
 
     public string Licenses => "GPL";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri(
-                "https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.File"),
+                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.File"),
             URLType.Code),
         
-    };
+    ];
 
     public bool CanGetMetadata(WrappedStream stream)
     {

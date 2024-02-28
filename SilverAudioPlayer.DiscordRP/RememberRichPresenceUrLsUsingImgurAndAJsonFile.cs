@@ -34,7 +34,6 @@ public class RememberRichPresenceUrLsUsingImgurAndAJsonFile : IRememberRichPrese
         cached = new List<MscArtFile>(cached) { new(a.Hash, res) }.ToArray();
         SetCache();
         return res;
-
     }
 
     public virtual string? Upload(WrappedStream bits)
@@ -48,10 +47,7 @@ public class RememberRichPresenceUrLsUsingImgurAndAJsonFile : IRememberRichPrese
         }
         finally
         {
-            if (bits.ShouldDisposeStream)
-            {
-                stream.Dispose();
-            }
+            stream.Dispose();
         }
     }
 

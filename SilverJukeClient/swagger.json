@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "SilverAudioPlayer.Avalonia",
+    "title": "SilverAudioPlayer",
     "version": "1.0"
   },
   "paths": {
     "/state": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "GetState",
         "responses": {
@@ -28,7 +28,7 @@
     "/track": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "GetCurrentTrack",
         "responses": {
@@ -48,7 +48,7 @@
     "/duration": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "GetDuration",
         "responses": {
@@ -69,7 +69,7 @@
     "/position": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "GetPosition",
         "responses": {
@@ -90,7 +90,7 @@
     "/lyrics": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "GetLyrics",
         "responses": {
@@ -110,7 +110,7 @@
     "/play": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "Play",
         "responses": {
@@ -123,7 +123,7 @@
     "/pause": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "Pause",
         "responses": {
@@ -136,7 +136,7 @@
     "/playpause": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "PlayPause",
         "responses": {
@@ -149,7 +149,7 @@
     "/next": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "Next",
         "responses": {
@@ -162,7 +162,7 @@
     "/previous": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "Previous",
         "responses": {
@@ -175,7 +175,7 @@
     "/stop": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "Stop",
         "responses": {
@@ -188,7 +188,7 @@
     "/albumart": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "GetBestRepresentation",
         "responses": {
@@ -201,7 +201,7 @@
     "/loadfile": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "ProcessFile",
         "parameters": [
@@ -224,7 +224,7 @@
     "/loadfiles": {
       "get": {
         "tags": [
-          "SilverAudioPlayer.Avalonia"
+          "SilverAudioPlayer"
         ],
         "operationId": "ProcessFiles",
         "requestBody": {

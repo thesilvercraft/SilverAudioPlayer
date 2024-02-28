@@ -1,25 +1,16 @@
 ﻿using System.Composition;
 using NAudio.Wave;
 using NLayer.NAudioSupport;
-using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.NAudio;
 using SilverMagicBytes;
 
-namespace SilverAudioPlayer.NAudio.NaudioWaveStreamWrappers;
+namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
 [Export(typeof(INaudioWaveStreamWrapper))]
 public class Mp3FileReaderReaderWrapper : INaudioWaveStreamWrapper
 {
-    public IReadOnlyList<MimeType> SupportedMimeTypes => new List<MimeType> { KnownMimes.MP3Mime };
-
-    public byte GetPlayingAbility(WrappedStream stream)
-    {
-        if (stream.MimeType == KnownMimes.MP3Mime) return 40;
-        return 0;
-    }
-
-    public WaveStream GetStream(WrappedStream stream)
-    {
-        var builder = new Mp3FileReaderBase.FrameDecompressorBuilder(wf => new Mp3FrameDecompressor(wf));
-        return new Mp3FileReaderBase(stream.GetStream(), builder);
-    }
+    public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.MP3Mime];
+    public bool SupportedOnPlatform => true;
+    readonly Mp3FileReaderBase.FrameDecompressorBuilder builder = new(wf => new Mp3FrameDecompressor(wf));
+    public WaveStream GetStream(Stream stream) => new Mp3FileReaderBase(stream, builder);
 }

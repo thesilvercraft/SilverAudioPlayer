@@ -1,20 +1,19 @@
-﻿namespace SilverAudioPlayer.Shared;
+﻿using SilverAudioPlayer.Shared.Metadata;
+
+namespace SilverAudioPlayer.Shared;
 
 public interface IMusicStatusInterface : IDisposable, ICodeInformation
 {
     void StartIPC(IMusicStatusInterfaceListener listener);
     void StopIPC(IMusicStatusInterfaceListener listener);
     bool IsStarted { get; }
-
-
-
 }
 public interface IMusicStatusInterfaceListenerAdmin : IMusicStatusInterfaceListener
 {
     public void FireTrackChangedNotification(Song? currentSong);
     public void FirePlayerStateChanged(PlaybackState state);
 }
-public interface IMusicStatusInterfaceListener : IPlayerEnviroment
+public interface IMusicStatusInterfaceListener : IPlayerEnvironment
 {
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front);
     void Play();

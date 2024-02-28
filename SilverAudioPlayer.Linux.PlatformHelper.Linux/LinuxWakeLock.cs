@@ -1,6 +1,5 @@
 ﻿using System.Composition;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using SilverAudioPlayer.Shared;
 using Tmds.DBus;
 using ScreenSaver.DBus;
@@ -27,10 +26,10 @@ public class LinuxWakeLock : IWakeLockProvider
 
     public string Licenses => "GPL3.0";
 
-    public List<Tuple<Uri, URLType>>? Links => new()
-    {
+    public List<Tuple<Uri, URLType>>? Links =>
+    [
         new Tuple<Uri, URLType>(
-            new Uri("https://github.com/thesilvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.PlatformHelper.Linux"),
+            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.PlatformHelper.Linux"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri("https://specifications.freedesktop.org/idle-inhibit-spec/latest/re01.html"),
@@ -38,7 +37,7 @@ public class LinuxWakeLock : IWakeLockProvider
         new Tuple<Uri, URLType>(
             new Uri("https://github.com/tmds/Tmds.DBus"),
             URLType.LibraryCode)
-    };
+    ];
 
     private uint? Cookie = null;
     public void WakeLock()
@@ -46,7 +45,7 @@ public class LinuxWakeLock : IWakeLockProvider
         Task.Run(async () =>
         {
             Cookie = await _screenSaver.InhibitAsync(
-                "org.mpris.MediaPlayer2.sap.i" + Environment.ProcessId,
+                "Catenoid",
                 "Playing music");
             Debug.WriteLine("Obtained cookie {0}", Cookie);
         });

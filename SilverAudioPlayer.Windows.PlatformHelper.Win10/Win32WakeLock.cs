@@ -1,6 +1,5 @@
 ﻿using System.Composition;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Windows.PlatformHelper.Win;
@@ -19,16 +18,16 @@ public class Win32WakeLock : IWakeLockProvider
 
     public string Licenses => "GPL3.0";
 
-    public List<Tuple<Uri, URLType>> Links => new()
-    {
+    public List<Tuple<Uri, URLType>> Links =>
+    [
         new Tuple<Uri, URLType>(
             new Uri(
-                "https://github.com/thesilvercraft/SilverAudioPlayer/SilverAudioPlayer.Windows.PlatformHelper.Win10"),
+                "https://gitlab.com/silvercraft/SilverAudioPlayer/SilverAudioPlayer.Windows.PlatformHelper.Win10"),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri("https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate"),
             URLType.LibraryDocumentation)
-    };
+    ];
 
     public void WakeLock()
     {
