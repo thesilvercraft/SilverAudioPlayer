@@ -91,8 +91,8 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
 
     public void ConfigureUi(IConfigurableListener env)
     {
-        var window = env.TryGetWindow(new List<IConfigurableElement>
-        {
+        var window = env.TryGetWindow(
+        [
             new SimpleCheckBox
             {
                 GetContent = () => "Allow MIDI reading", Checked = c =>
@@ -103,7 +103,8 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
                 },
                 GetChecked = GetAllowedMidi
             }
-        });
+        ]);
+        window?.SetTitle($"Configuring {Name}");
         window?.Show();
     }
 }

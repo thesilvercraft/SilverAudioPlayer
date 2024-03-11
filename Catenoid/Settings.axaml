@@ -12,8 +12,8 @@
 	<ScrollViewer Grid.Row="1">
 		<Grid RowDefinitions="200,30,30,30,30,30,30,30,*" ColumnDefinitions="*,*">
 			<Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
-				<TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductName}" FontSize="50" Margin="5" />
-				<TextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="25" Margin="5" />
+				<SelectableTextBlock Grid.Column="1" Grid.Row="1" Text="{Binding ProductName}" FontSize="50" Margin="5" />
+				<SelectableTextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="25" Margin="5" />
 				<Button Name="ProductIconButton" Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Click="ProductIconClick" Width="200"
 				        Height="200">
 					<Image Name="ProductIconImage" Source="{Binding ProductIcon}" Width="190" Height="190" VerticalAlignment="Center"
@@ -38,9 +38,9 @@
 					<DataTemplate>
 						<Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
 							<StackPanel Grid.Column="1">
-								<TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
-								<TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
-								<TextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
+								<SelectableTextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
+								<SelectableTextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
+								<SelectableTextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
 							</StackPanel>
 							<Image Source="{Binding Icon}" Grid.Column="0" />
 							<StackPanel Orientation="Horizontal" Grid.Column="1"  HorizontalAlignment="Right">

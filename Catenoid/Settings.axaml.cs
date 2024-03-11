@@ -199,9 +199,7 @@ public partial class Settings : Window
                 break;
             case IAmConfigurable configurable:
                 {
-                    EkonrensisWindow cw = new();
-                    cw.HandleConfiguration(configurable);
-                    cw.Show();
+                    EkorensisUtils.LaunchConfigurableWindow(configurable);
                     break;
                 }
         }
@@ -323,9 +321,7 @@ public partial class Settings : Window
                     ActionName = "🔧Configure",
                     ActionToInvoke = () =>
                     {
-                        EkonrensisWindow cw = new();
-                        cw.HandleConfiguration(configurable);
-                        cw.Show();
+                        EkorensisUtils.LaunchConfigurableWindow(configurable);
                     }
                 });
                 break;

@@ -58,30 +58,47 @@ public partial class MetadataView : Window
             case int:
                 return;
             case IList tlist:
-            {
-                var c = tlist.Count;
-                switch (c)
                 {
-                    case 0:
+                    var c = tlist.Count;
+                    switch (c)
                     {
-                        var pf = new Field("empty","this IList is empty");
+                        case 0:
+                            {
+                                var pf = new Field("empty", "this IList is empty");
+                                parentfield.SubFields.Add(pf);
+                                return;
+                            }
+                        case > 200:
+                            c = 200;
+                            break;
+                    }
+
+                    for (var i = 0; i < c; i++)
+                    {
+                        var item = tlist[i];
+                        var pf = new Field(i.ToString(), item?.ToString() ?? "null");
+                        parentfield.SubFields.Add(pf);
+                        if (item is not null) ProcessSubProperties(item, pf, allowedlength - 1);
+                    }
+                    return;
+                }
+            case IDictionary tdict:
+                {
+                    if (tdict.Count == 0)
+                    {
+                        var pf = new Field("empty", "this IDictionary is empty");
                         parentfield.SubFields.Add(pf);
                         return;
                     }
-                    case > 200:
-                        c = 200;
-                        break;
+                    foreach (var key in tdict.Keys)
+                    {
+                        var item = tdict[key];
+                        var pf = new Field(key?.ToString() ?? "null", item?.ToString() ?? "null");
+                        parentfield.SubFields.Add(pf);
+                        if (item is not null) ProcessSubProperties(item, pf, allowedlength - 1);
+                    }
+                    return;
                 }
-
-                for (var i = 0; i < c; i++)
-                {
-                    var item = tlist[i];
-                    var pf = new Field(i.ToString(), item?.ToString() ?? "null");
-                    parentfield.SubFields.Add(pf);
-                    if (item is not null) ProcessSubProperties(item, pf, allowedlength - 1);
-                }
-                return;
-            }
         }
 
         var typeofmetadata = thing.GetType();

@@ -66,6 +66,7 @@ public class SplPlaylistParser : IPlaylistReader, IAmOnceAgainAskingYouForYourMe
                 GetChecked = GetAllowedBlankOutPos
             },
         ]);
+        window?.SetTitle("Configuring SilverPlaylist reader");
         window?.Show();
     }
 

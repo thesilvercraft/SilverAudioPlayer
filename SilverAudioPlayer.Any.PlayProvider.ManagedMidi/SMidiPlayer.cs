@@ -166,7 +166,7 @@ SilverAudioPlayer.Win.PlayProvider.MidiPlayer
         return Enabled && stream.MimeType == KnownMimes.MidMime;
     }
 
-    public IPlay? GetPlayer(WrappedStream stream)
+    public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment)
     {
         midiOut ??= MidiAccessManager.Default.OpenOutputAsync(MidiAccessManager.Default.Outputs.First().Id).Result;
          mf = MidiMusic.Read(stream.GetStream());

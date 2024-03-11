@@ -541,7 +541,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
     public async Task<IPlay?> GetPlayerFromStream(WrappedStream stream)
     {
-        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream);
+        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream, PlayerEnvironment);
     }
 
 

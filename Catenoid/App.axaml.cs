@@ -16,7 +16,6 @@ using Serilog.Events;
 using Serilog.Parsing;
 using Silver.Composition;
 using SilverAudioPlayer.Shared;
-using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Shared;
 using Logger = SilverAudioPlayer.Shared.Logger;
 
@@ -149,26 +148,25 @@ public class App : Application
                 //todo: show user dialog to choose
             }
             var loggerConfig = new LoggerConfiguration();
-            #if DEBUG
+#if DEBUG
             if (Debugger.IsAttached)
             {
                 loggerConfig.WriteTo.Debug(LogEventLevel.Debug);
             }
-            #endif
+#endif
             if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
             {
                 loggerConfig.WriteTo.Sink(sink);
             }
-            else if(mwconfig.UserLogPreferences == ConfigStyle.System)
+            else if (mwconfig.UserLogPreferences == ConfigStyle.System)
             {
                 loggerConfig.WriteTo.Console();
-
             }
             var logger = loggerConfig.CreateLogger();
             if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
             {
-                 LogWindow lw = new();
-            lw.Show();
+                LogWindow lw = new();
+                lw.Show();
             }
             Log.Logger = logger;
             BootupLogic.SetupCrashFallNets((Exception y) =>
@@ -225,12 +223,7 @@ public class App : Application
                     .ToList();
                 LaunchActionsWindow launchActionsWindow = new(actions);
                 launchActionsWindow.Show();
-            }, (configurable) =>
-            {
-                EkonrensisWindow cw = new();
-                cw.HandleConfiguration(configurable);
-                cw.Show();
-            });
+            }, EkorensisUtils.LaunchConfigurableWindow);
             mw.Logic.ProcessFiles(desktop.Args);
             mw.Startup();
         }

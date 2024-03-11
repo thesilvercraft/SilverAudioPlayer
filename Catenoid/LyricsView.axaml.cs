@@ -26,7 +26,7 @@ public partial class LyricsView : Window
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
-        Dictionary<double, TextBlock> d = [];
+        Dictionary<double, SelectableTextBlock> d = [];
         sv = this.FindControl<ScrollViewer>("sv");
         var red = new SolidColorBrush(Color.FromRgb(230, 255, 0));
         var white = new SolidColorBrush(KnownColor.White.ToColor());
@@ -51,13 +51,13 @@ public partial class LyricsView : Window
                 g.Children.Add(parentPanel);
                 foreach (var lyric in mainWindow?.CurrentSong?.Metadata?.SyncedLyrics ?? [])
                 {
-                    TextBlock textLyricBlock = new()
+                    SelectableTextBlock textLyricBlock = new()
                     {
                         Text = lyric.Content.Replace("\n","").Replace("\r","\r")
                     };
                   
 
-                    if (!d.TryGetValue(lyric.TimeStampInMilliSeconds, out TextBlock? value))
+                    if (!d.TryGetValue(lyric.TimeStampInMilliSeconds, out SelectableTextBlock? value))
                     {
                         parentPanel.Children.Add(textLyricBlock);
                         d.Add(lyric.TimeStampInMilliSeconds, textLyricBlock);

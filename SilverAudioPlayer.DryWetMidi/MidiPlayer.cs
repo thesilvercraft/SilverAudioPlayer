@@ -173,7 +173,7 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
         return OperatingSystem.IsWindows() &&stream.MimeType == KnownMimes.MidMime;
     }
 
-    public IPlay? GetPlayer(WrappedStream stream)
+    public IPlay? GetPlayer(WrappedStream stream,IPlayerEnvironment? playerEnvironmen)
     {
         midiOut ??= OutputDevice.GetByIndex(0);
         mf = MidiFile.Read(stream.GetStream());

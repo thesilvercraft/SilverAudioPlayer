@@ -977,19 +977,18 @@
         <string>Microsoft.Extensions.Configuration.Json</string>
         <string>ReactiveUI</string>
         <string>Serilog.Settings.Configuration</string>
+        <string>Serilog.Sinks.Console</string>
         <string>Serilog.Sinks.Debug</string>
         <string>Serilog.Sinks.File</string>
         <string>SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider</string>
         <string>SilverAudioPlayer.Any.MetadataSource.File</string>
         <string>SilverAudioPlayer.Any.MetadataSource.Z440AtlCore</string>
-        <string>SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP</string>
         <string>SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer</string>
         <string>SilverAudioPlayer.Any.PlayListReader.M3U</string>
         <string>SilverAudioPlayer.Any.PlayListReader.SPL</string>
         <string>SilverAudioPlayer.Any.PlayProvider.ManagedMidi</string>
         <string>SilverAudioPlayer.Any.PlayProvider.NAudio</string>
         <string>SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi</string>
-        <string>SilverAudioPlayer.Any.PlayStreamProvider.JellyFin</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary</string>
         <string>SilverAudioPlayer.Any.PlayStreamProvider.VideoLib</string>
         <string>SilverAudioPlayer.Any.SilverJuke</string>
@@ -1113,7 +1112,6 @@
       <Dependencies>
         <string>Avalonia</string>
         <string>Avalonia.Angle.Windows.Natives</string>
-        <string>System.Drawing.Common</string>
       </Dependencies>
       <Files>
         <File Name="Catenoid/bin/Release/net8.0/publish/Avalonia.Win32.dll" />
@@ -1671,43 +1669,6 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="Jellyfin.Sdk">
-      <Dependencies />
-      <Files>
-        <File Name="Catenoid/bin/Release/net8.0/publish/Jellyfin.Sdk.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.Identity.Client">
-      <Dependencies>
-        <string>Microsoft.IdentityModel.Abstractions</string>
-      </Dependencies>
-      <Files>
-        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.Identity.Client.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.Identity.Client.Extensions.Msal">
-      <Dependencies>
-        <string>Microsoft.Identity.Client</string>
-        <string>System.Security.Cryptography.ProtectedData</string>
-      </Dependencies>
-      <Files>
-        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.Identity.Client.Extensions.Msal.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="Microsoft.IdentityModel.Abstractions">
-      <Dependencies />
-      <Files>
-        <File Name="Catenoid/bin/Release/net8.0/publish/Microsoft.IdentityModel.Abstractions.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
     <Module Name="Microsoft.OpenApi">
       <Dependencies />
       <Files>
@@ -1736,6 +1697,16 @@
       </Dependencies>
       <Files>
         <File Name="Catenoid/bin/Release/net8.0/publish/Serilog.Extensions.Logging.dll" />
+      </Files>
+      <Links />
+      <Debug />
+    </Module>
+    <Module Name="Serilog.Sinks.Console">
+      <Dependencies>
+        <string>Serilog</string>
+      </Dependencies>
+      <Files>
+        <File Name="Catenoid/bin/Release/net8.0/publish/Serilog.Sinks.Console.dll" />
       </Files>
       <Links />
       <Debug />
@@ -1882,15 +1853,6 @@
       <Links />
       <Debug />
     </Module>
-    <Module Name="System.Security.Cryptography.ProtectedData">
-      <Dependencies />
-      <Files>
-        <File Name="Catenoid/bin/Release/net8.0/publish/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll" />
-        <File Name="Catenoid/bin/Release/net8.0/publish/System.Security.Cryptography.ProtectedData.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
     <Module Name="Tmds.DBus.Protocol">
       <Dependencies>
         <string>System.IO.Pipelines</string>
@@ -1912,19 +1874,6 @@
       </Dependencies>
       <Files>
         <File Name="Catenoid/bin/Release/net8.0/publish/SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.dll" />
-      </Files>
-      <Links />
-      <Debug />
-    </Module>
-    <Module Name="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin">
-      <Dependencies>
-        <string>Jellyfin.Sdk</string>
-        <string>Microsoft.Identity.Client.Extensions.Msal</string>
-        <string>SilverAudioPlayer.Shared</string>
-        <string>SilverCraft.AvaloniaUtils</string>
-      </Dependencies>
-      <Files>
-        <File Name="Catenoid/bin/Release/net8.0/publish/SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.dll" />
       </Files>
       <Links />
       <Debug />

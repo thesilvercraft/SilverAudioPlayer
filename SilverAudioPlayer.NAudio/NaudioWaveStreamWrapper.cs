@@ -1,8 +1,12 @@
-﻿using System.Composition;
+﻿using System.ComponentModel;
+using System.Composition;
 using System.Diagnostics;
+using System.Xml.Serialization;
 using NAudio.Wave;
 using Silver.Composition;
 using SilverAudioPlayer.Shared;
+using SilverConfig;
+using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.NAudio;
@@ -23,10 +27,68 @@ public static class NaudioWaveStreamWrapperTypeHolder
         return instnc ??= new();
     }
 }
-
-[Export(typeof(IPlayProvider))]
-public class NaudioWaveStreamWrapper : IPlayProvider
+public class WaveConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
+    [Comment("Should the wave module try reading the album replaygain first or should it try the track replaygain first")]
+
+    public bool PreferAlbumReplayGain { get; set; } = true;
+    public bool EnableReplayGain { get; set; } = true;
+    [Comment("When gathering replaygain information use the peak if avaliable to calculate whether the amplification does not clip (aka doesnt go above 1)")]
+    public bool TrySafeReplayGain { get; set; } = true;
+    [Comment("The preamp to use for tracks without replaygain information (in dB), replaygain must be enabled, TrySafeReplayGain WONT SAVE YOU")]
+    public float PreampNoReplayGain { get; set; } = 0;
+    [Comment("The preamp to use for tracks with replaygain information (in dB), replaygain must be enabled")]
+    public float PreampReplayGain { get; set; } = 0;
+    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
+    {
+        PropertyChanged?.Invoke(e, a);
+    }
+    [XmlIgnore] public bool AllowedToRead { get; set; } = true;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+}
+[Export(typeof(IPlayProvider))]
+public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin
+{
+    public ObjectToRemember ConfigObject =
+    new(Guid.Parse("2374197d-6fad-4285-a7f9-5b349debc4be"), new WaveConfig());
+
+    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject];
+
+    public void ConfigureUi(IConfigurableListener env)
+    {
+        var window = env.TryGetWindow(
+        [
+            new SimpleCheckBox
+            {
+                GetContent = () => "Prefer album ReplayGain", Checked = c =>
+                {
+                    if (ConfigObject.Value is not WaveConfig x) return;
+                    x.PreferAlbumReplayGain = c;
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreferAlbumReplayGain"));
+                },
+                GetChecked = ()=>{
+                     if (ConfigObject.Value is not WaveConfig x) return true;
+                   return x.PreferAlbumReplayGain;
+                }
+            },
+            new SimpleCheckBox
+            {
+                GetContent = () => "Enable ReplayGain", Checked = c =>
+                {
+                    if (ConfigObject.Value is not WaveConfig x) return;
+                    x.EnableReplayGain = c;
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("EnableReplayGain"));
+                },
+                GetChecked = ()=>{
+                     if (ConfigObject.Value is not WaveConfig x) return true;
+                   return x.EnableReplayGain;
+                }
+            }
+        ]);
+        window?.SetTitle($"Configuring {Name}");
+        window?.Show();
+    }
 
     public string Name => "NAudio Player";
 
@@ -772,12 +834,14 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
     {
         return WaveFilePlayer.IsBackendAvaliable() && NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(stream);
     }
-
-    public IPlay? GetPlayer(WrappedStream stream)
+    WaveFilePlayer player = new();
+    public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment)
     {
         if (!CanPlayFile(stream)) return null;
-        var player = new WaveFilePlayer();
+        player.Config = (WaveConfig)ConfigObject.Value;
         player.LoadStream(stream);
+        player.playerEnvironment = playerEnvironment;
+
         return player;
     }
 

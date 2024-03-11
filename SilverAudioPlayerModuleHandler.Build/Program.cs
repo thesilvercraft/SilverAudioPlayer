@@ -4,7 +4,7 @@ using SilverAudioPlayerModuleHandler.Build;
 using File = System.IO.File;
 using SilverAudioPlayerModuleHandler;
 using Microsoft.Extensions.DependencyModel;
-string Version = "7.0.0-dev";
+string Version = "7.1.0";
 //Q&A
 //What the hell is this?
 //This code is currently responsible for creating the SilverAudioPlayerModules.xml file which might be used in the future

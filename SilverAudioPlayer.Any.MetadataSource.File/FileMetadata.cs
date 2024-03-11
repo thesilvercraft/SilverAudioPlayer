@@ -58,9 +58,12 @@ public class FileMetadata : IMetadata
         {
             Debug.WriteLine(covr);
             WrappedFileStream wfs = new(covr);
-            using var imagetohash = wfs.GetStream();
-            imagetohash.Position = 0;
-            _internalPictures?.Add(new Picture(wfs));
+            if (wfs.MimeType is SilverMagicBytes.ImageMime)
+            {
+                using var imagetohash = wfs.GetStream();
+                imagetohash.Position = 0;
+                _internalPictures?.Add(new Picture(wfs));
+            }
         }
     }
 
@@ -91,5 +94,7 @@ public class FileMetadata : IMetadata
     public IList<LyricPhrase>? SyncedLyrics { get; set; }
     private List<IPicture>? _internalPictures = [];
     public IReadOnlyList<IPicture>? Pictures => _internalPictures;
+
+    public IDictionary<string, string>? Enteries {get;}
 }
 
