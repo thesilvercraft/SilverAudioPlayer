@@ -16,6 +16,7 @@ namespace SilverAudioPlayer.NAudio;
 [Export(typeof(IPlay))]
 public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
 {
+    public bool IsTrackLoaded => audioFile!=null;
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
     ILogger? logger;
@@ -97,6 +98,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void Stop()
     {
         outputDevice?.Stop();
+        audioFile?.Dispose();
+        audioFile=null;
     }
 
     public void Pause()
@@ -200,7 +203,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public TimeSpan GetPosition()
     {
         if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
-        //this should not happen
+        //this should not happen, but it has, anddddddd eh i might fix it later
         logger?.Error("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS :(");
         return TimeSpan.Zero;
     }

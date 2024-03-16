@@ -141,5 +141,9 @@ public interface IPlay : IDisposable
     /// </summary>
 
     event EventHandler<object> TrackPause;
+    /// <summary>
+    /// Query if a track is loaded or if the player is empty
+    /// </summary>
+    bool IsTrackLoaded {get;} 
 }
 

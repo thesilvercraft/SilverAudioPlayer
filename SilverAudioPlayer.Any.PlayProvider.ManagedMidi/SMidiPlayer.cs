@@ -161,6 +161,8 @@ SilverAudioPlayer.Win.PlayProvider.MidiPlayer
 
     public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType> { KnownMimes.MidMime };
 
+    public bool IsTrackLoaded => ps!=PlaybackState.Stopped;
+
     public bool CanPlayFile(WrappedStream stream)
     {
         return Enabled && stream.MimeType == KnownMimes.MidMime;
@@ -176,6 +178,7 @@ SilverAudioPlayer.Win.PlayProvider.MidiPlayer
             ps = PlaybackState.Stopped;
             TrackEnd?.Invoke(this, this);
         };
+        ps=PlaybackState.Paused;
        // player. += (a, b) => TrackPause?.Invoke(a, b);
         return this;
     }
