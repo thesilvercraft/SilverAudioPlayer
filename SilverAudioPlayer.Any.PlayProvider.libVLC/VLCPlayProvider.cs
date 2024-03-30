@@ -5,24 +5,24 @@ using System.Composition;
 
 namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 {
-    [Export(typeof(IPlayProvider))]
-    public class VLCPlayProvider : IPlayProvider
-    {
-        LibVLC libvlc = new();
-        public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.FLACMime, KnownMimes.AACMime,
+  [Export(typeof(IPlayProvider))]
+  public class VLCPlayProvider : IPlayProvider
+  {
+    LibVLC libvlc = new();
+    public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.FLACMime, KnownMimes.AACMime,
           KnownMimes.AiffMime, KnownMimes.WAVMime, KnownMimes.MP3Mime, KnownMimes.MidMime, KnownMimes.Mp2Mime, KnownMimes.Mp4Mime, KnownMimes.MpegMime, KnownMimes.OGGMime };
 
 
-        public string Name => "VLC playprovider";
+    public string Name => "VLC playprovider";
 
-        public string Description => "A playerprovider that provides using libVLC";
+    public string Description => "A playerprovider that provides using libVLC";
 
-        public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(VLCPlayProvider).Assembly,
-          "SilverAudioPlayer.Any.PlayProvider.libVLC.VlcIcon.svg");
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(VLCPlayProvider).Assembly,
+      "SilverAudioPlayer.Any.PlayProvider.libVLC.VlcIcon.svg");
 
-        public Version? Version => typeof(VLCPlayProvider).Assembly.GetName().Version;
+    public Version? Version => typeof(VLCPlayProvider).Assembly.GetName().Version;
 
-        public string Licenses => @"libvlcsharp
+    public string Licenses => @"libvlcsharp
                   GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
 
@@ -528,26 +528,24 @@ necessary.  Here is a sample; alter the names:
 
 That's all there is to it!";
 
-        public List<Tuple<Uri, URLType>>? Links => [
-            new(new("https://www.nuget.org/packages/LibVLCSharp"),URLType.PackageManager),
+    public List<Tuple<Uri, URLType>>? Links => [
+        new(new("https://www.nuget.org/packages/LibVLCSharp"),URLType.PackageManager),
         new(new("https://code.videolan.org/videolan/LibVLCSharp"),URLType.LibraryCode),
         new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.libVLC"),URLType.PackageManager)];
 
-        public bool CanPlayFile(WrappedStream stream)
-        {
-            return true;
-
-        }
-
-        public IPlay? GetPlayer(WrappedStream stream)
-        {
-            return new VLCPlayer(new MediaPlayer(new Media(libvlc, new StreamMediaInput(stream.GetStream()))));
-        }
-
-        public Task OnStartup()
-        {
-            return Task.CompletedTask;
-        }
+    public bool CanPlayFile(WrappedStream stream)
+    {
+      return true;
     }
 
+    public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment = null)
+    {
+      return new VLCPlayer(new MediaPlayer(new Media(libvlc, new StreamMediaInput(stream.GetStream()))));
+    }
+
+    public Task OnStartup()
+    {
+      return Task.CompletedTask;
+    }
+  }
 }
