@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,8 +79,12 @@ public class SapAvaloniaPlayerEnviroment : IHaveConfigFilesWithKnownLocations,IF
 
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
     {
+        if(pictures.Count==0)
+        {
+            return null;
+        }
         var res = pictures?.Where(x => x.PicType == type);
-        return res?.Any() == true ? res?.First() : pictures?.FirstOrDefault();
+        return res?.Any() == true ? res?.First() : pictures[0];
     }
 
     public void Play() => mainWindow.Logic.Play();
@@ -200,5 +203,10 @@ Catenoid
         EkonrensisWindow window = new();
         window.HandleConfiguration(elements);
         return window;
+    }
+
+    public IDictionary<string, string>? GetEnteriesForCurrentTrack()
+    {
+        return mainWindow?.dc?.CurrentSong?.Metadata?.Enteries;
     }
 }

@@ -126,6 +126,10 @@ public class ConsoleEnviroment : IHaveConfigFilesWithKnownLocations, IFullPlayer
     {
         return context.CurrentSong;
     }
+     public IDictionary<string, string>? GetEnteriesForCurrentTrack()
+    {
+        return context?.CurrentSong?.Metadata?.Enteries;
+    }
 
     public double GetDuration() => Logic.Player?.Length()?.TotalSeconds ??
                                    (context.CurrentSong?.Metadata?.Duration / 1000) ?? 2;

@@ -20,7 +20,7 @@ cache:
 build-linux:
   stage: build
   script:
-    - 'dotnet restore --force --packages $NUGET_PACKAGES_DIRECTORY'
+    - 'dotnet restore SilverAudioPlayer.sln --force --packages $NUGET_PACKAGES_DIRECTORY'
     - 'dotnet publish Catenoid/Catenoid.csproj -c Release -p:ExtraDefineConstants="BuildForlinux" --no-restore'
   after_script:
     - 'mv Catenoid/bin/Release/net8.0/publish ./catenoid-publish'

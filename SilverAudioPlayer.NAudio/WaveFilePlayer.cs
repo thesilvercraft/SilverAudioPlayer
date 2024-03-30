@@ -16,6 +16,7 @@ namespace SilverAudioPlayer.NAudio;
 [Export(typeof(IPlay))]
 public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
 {
+    public bool IsTrackLoaded => audioFile!=null;
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
     ILogger? logger;
@@ -38,7 +39,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 #endif
     }
 
-    public void InitBackEnd(byte volume)
+    public void InitBackEnd()
     {
 
 #if CSCore
@@ -59,10 +60,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 #endif
         {
             logger?.Information("initing backend naudio WaveOutEvent");
-            outputDevice = new WaveOutEvent()
-            {
-                Volume = volume / 100f
-            };
+            outputDevice = new WaveOutEvent();
         }
 
     }
@@ -100,6 +98,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void Stop()
     {
         outputDevice?.Stop();
+        audioFile?.Dispose();
+        audioFile=null;
     }
 
     public void Pause()
@@ -112,17 +112,98 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         outputDevice?.Play();
     }
-
+    public IPlayerEnvironment? playerEnvironment;
+    public WaveConfig Config;
+    float ReplayGainMultiplier = 1;
+    bool SearchForReplayGain = true;
+    float dBToRatio(float dB)
+    {
+        return MathF.Pow(10, dB / 20);
+    }
     public void SetVolume(byte volume)
     {
-        Volume = volume;
-        if (outputDevice != null) outputDevice.Volume = volume / 100f;
+        if (!SearchForReplayGain)
+        {
+            Volume = volume;
+            if (outputDevice != null) outputDevice.Volume = volume * ReplayGainMultiplier / 100f;
+        }
+        else
+        {
+            SearchForReplayGain = false;
+            if (playerEnvironment != null)
+            {
+                var e = playerEnvironment.GetEnteriesForCurrentTrack();
+                bool TryGetReplayGain(bool album)
+                {
+                    if (e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_GAIN", out string al) && float.TryParse(al.Split(' ')[0], out var r))
+                    {
+                        ReplayGainMultiplier = dBToRatio(r);
+                        return true;
+                    }
+                    return false;
+                }
+                float? TryGetReplayGainPeak(bool album)
+                {
+                    if (e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out string al) && float.TryParse(al, out var r))
+                    {
+                        return r;
+                    }
+                    return null;
+                }
+                bool rgSuccess = false;
+                bool Album = false;
+                if (Config.PreferAlbumReplayGain)
+                {
+                    rgSuccess = TryGetReplayGain(true);
+                    Album = true;
+                    if (!rgSuccess)
+                    {
+                        rgSuccess = TryGetReplayGain(false);
+                        Album = false;
+                    }
+                }
+                else
+                {
+                    rgSuccess = TryGetReplayGain(false);
+                    Album = false;
+                    if (!rgSuccess)
+                    {
+                        rgSuccess = TryGetReplayGain(true);
+                        Album = true;
+                    }
+                }
+                if (rgSuccess)
+                {
+                    if (Config.TrySafeReplayGain && TryGetReplayGainPeak(Album) is { } val)
+                    {
+                        if (val != 1)
+                        {
+                            ReplayGainMultiplier *= dBToRatio( Config.PreampReplayGain);
+                        }
+                        if (val * ReplayGainMultiplier > 1)
+                        {
+                            Debug.WriteLine($"RGM {ReplayGainMultiplier} PEAKS");
+                            ReplayGainMultiplier = 1f / val;
+                            Debug.WriteLine($"RGM went to max safe {ReplayGainMultiplier}");
+                        }
+                    }
+                    else
+                    {
+                        ReplayGainMultiplier *= dBToRatio(Config.PreampReplayGain);
+                    }
+                }
+                else
+                {
+                    ReplayGainMultiplier = dBToRatio(Config.PreampNoReplayGain);
+                }
+            }
+        }
     }
 
     public TimeSpan GetPosition()
     {
         if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
-        //this should not happen
+        //this should not happen, but it has, anddddddd eh i might fix it later
         logger?.Error("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS :(");
         return TimeSpan.Zero;
     }
@@ -216,12 +297,14 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
         if (outputDevice == null)
         {
-            InitBackEnd(Volume);
+            InitBackEnd();
             outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
         }
         else
             outputDevice.Stop();
-
+        ReplayGainMultiplier = 1;
+        SearchForReplayGain = Config.EnableReplayGain;
+        SetVolume(Volume);
         outputDevice?.Init(audioFile);
         LoadedWrappedStream = stream;
     }

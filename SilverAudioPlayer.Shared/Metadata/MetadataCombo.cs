@@ -39,7 +39,7 @@ public class MetadataCombo : IMetadataCombo
     public string? Artist =>  OriginalMetadata.Select(x => x.Artist).FirstOrDefault(x=>x!=null);
     public string? Album => OriginalMetadata.Select(x => x.Album).FirstOrDefault(x=>x!=null);
     public string? Genre => OriginalMetadata.Select(x => x.Genre).FirstOrDefault(x=>x!=null);
-    public int? Year => ((int?)OriginalMetadata.Select(x => x.Year).Where(x => x is not 9999  or null).Average());
+    public int? Year => (int?)OriginalMetadata.Select(x => x.Year).Where(x => x is not 9999  or null).Average();
     public ulong? Bitrate => OriginalMetadata.Select(x => x.Bitrate).MaxBy(x => x is not null);
     public ulong? SampleRate => OriginalMetadata.Select(x => x.SampleRate).MaxBy(x => x is not null);
     public uint? Channels => OriginalMetadata.Select(x => x.Channels).MaxBy(x => x is not null);
@@ -52,6 +52,8 @@ public class MetadataCombo : IMetadataCombo
     public string? Lyrics => OriginalMetadata.Select(x => x.Lyrics).Where(x => x != null).MaxBy(x => !string.IsNullOrEmpty(x));
     public IList<LyricPhrase>? SyncedLyrics { get; }
     public IReadOnlyList<IPicture>? Pictures => OriginalMetadata.Select(x => x.Pictures).MaxBy(x => x?.Count);
+
+    public IDictionary<string, string>? Enteries => OriginalMetadata.Select(x=>x.Enteries).MaxBy(x=>x?.Count);
 
     public void Dispose()
     {

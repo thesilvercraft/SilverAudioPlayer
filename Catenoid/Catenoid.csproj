@@ -96,7 +96,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.0.10" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
@@ -129,18 +129,18 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.6" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-		<PackageReference Include="ReactiveUI" Version="19.5.41" />
+		<PackageReference Include="ReactiveUI" Version="19.6.1" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-		<PackageReference Include="Svg.Skia" Version="1.0.0.13" />
+		<PackageReference Include="Svg.Skia" Version="1.0.0.17" />
 		<PackageReference Include="System.Composition" Version="8.0.0" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
 	</ItemGroup>
 

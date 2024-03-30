@@ -742,10 +742,14 @@ Public License instead of this License.  But first, please read
       return (SupportedMimes.Contains(stream.MimeType));//TODO make sure user has chromecast
     }
 
-    public IPlay? GetPlayer(WrappedStream stream)
+
+    public Task OnStartup()
     {
-      //TODO IMPLEMENT PROPER CHECK FOR CHROMECASTS
-      //If you get an error saying `System.InvalidOperationException: 'Sequence contains no elements` on the line below no chromecasts were detected
+      return Task.CompletedTask;
+    }
+
+    public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment = null)
+    {
       var chromecasts = Task.Run(async () => { return await (new DeviceLocator().FindReceiversAsync()); }).GetAwaiter().GetResult().ToList();
       var c = ((ChromeCastSettings)ConfigObject.Value).ChromeCast;
       IReceiver? chromecast = !string.IsNullOrWhiteSpace(c) ? chromecasts.First(x => x.Id == c || x.FriendlyName == c || x.IPEndPoint.Address.ToString() == c) : chromecasts.First();
@@ -756,11 +760,6 @@ Public License instead of this License.  But first, please read
        }).GetAwaiter().GetResult();
       return new ChromeCastPlayer(stream, sender, chromecast);
     }
-
-    public Task OnStartup()
-    {
-      return Task.CompletedTask;
-    }
   }
 
   public class ChromeCastPlayer : IPlay
@@ -769,6 +768,9 @@ Public License instead of this License.  But first, please read
     MediaStatus? state = null;
     GenHTTP.Modules.IO.Providers.ContentProviderBuilder? content = null;
     GenHTTP.Api.Infrastructure.IServerHost? server = null;
+
+    public bool IsTrackLoaded => GetPlaybackState() != PlaybackState.Stopped;
+
     public ChromeCastPlayer(WrappedStream stream, Sender sender, IReceiver chromecast)
     {
       mediaChannel = sender.GetChannel<IMediaChannel>();

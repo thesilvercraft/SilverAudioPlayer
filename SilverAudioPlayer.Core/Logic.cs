@@ -219,7 +219,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public void Play()
     {
-        if (Player != null)
+        if (Player != null && Player.IsTrackLoaded)
         {
             Player?.Play();
             SendIfStateIsNotNull();
@@ -243,6 +243,10 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             if (PlayerContext.Queue.Count > 0)
             {
                 PlayerContext.CurrentSong = PlayerContext.Queue[0];
+                if (PlayerContext.Queue.Count >= 2)
+                {
+                    NextSong = PlayerContext.Queue[0];
+                }
             }
             else
             {
@@ -364,6 +368,11 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
                 PlayerContext.CurrentSong?.Dispose();
                 HandleSongChanging(NextSong, true);
                 NextSong = null;
+            }
+            else
+            {
+                PlayerContext.CurrentSong?.Dispose();
+                PlayerContext.CurrentSong = null;
             }
         }
         Serilog.Log.Information("StopAutoLoading set to false in OutputDevice_PlaybackStopped");
@@ -541,7 +550,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
 
     public async Task<IPlay?> GetPlayerFromStream(WrappedStream stream)
     {
-        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream);
+        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream, PlayerEnvironment);
     }
 
 

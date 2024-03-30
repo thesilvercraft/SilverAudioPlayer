@@ -35,7 +35,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
     {
         return (uint?)mf.GetChannels().Count();
     }
-
+    public bool IsTrackLoaded => ps!=PlaybackState.Stopped;
     public PlaybackState? GetPlaybackState()
     {
         if (player?.IsRunning == true) return PlaybackState.Playing;
@@ -173,7 +173,7 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
         return OperatingSystem.IsWindows() &&stream.MimeType == KnownMimes.MidMime;
     }
 
-    public IPlay? GetPlayer(WrappedStream stream)
+    public IPlay? GetPlayer(WrappedStream stream,IPlayerEnvironment? playerEnvironmen)
     {
         midiOut ??= OutputDevice.GetByIndex(0);
         mf = MidiFile.Read(stream.GetStream());
@@ -184,6 +184,7 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
             TrackEnd?.Invoke(a, b);
         };
         player.Stopped += (a, b) => TrackPause?.Invoke(a, b);
+        ps=PlaybackState.Paused;
         player.OutputDevice = midiOut;
         return this;
     }

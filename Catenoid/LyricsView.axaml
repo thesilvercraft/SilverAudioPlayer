@@ -8,7 +8,7 @@
         ExtendClientAreaToDecorationsHint="True"
 	    Icon="/icon.ico">
     <Window.Styles>
-        <Style Selector="TextBlock">
+        <Style Selector="SelectableTextBlock">
             <Setter Property="FontSize"  Value="40" />
 			<Setter Property="FontWeight" Value="Bold" />
 			<Setter Property="TextAlignment" Value="Center" />

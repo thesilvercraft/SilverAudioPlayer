@@ -46,7 +46,10 @@ public interface IMetadata : IDisposable
     /// Comments embedded in the metadata of a song
     /// </summary>
     public string[]? Comments { get; }
-
+    /// <summary>
+    /// Comments that are key value pairs
+    /// </summary>
+    public IDictionary<string, string>? Enteries {get;}
     /// <summary>
     ///  Duration in milliseconds according to the metadata
     /// </summary>
@@ -58,9 +61,9 @@ public interface IMetadata : IDisposable
     /// <summary>
     /// Synchronised lyrics embedded in the song's metadata
     /// </summary>
-    public IList<LyricPhrase>? SyncedLyrics { get;  }
+    public IList<LyricPhrase>? SyncedLyrics { get; }
     /// <summary>
     /// Pictures embedded in the song's metadata
     /// </summary>
-    public IReadOnlyList<IPicture>? Pictures { get;  }
+    public IReadOnlyList<IPicture>? Pictures { get; }
 }

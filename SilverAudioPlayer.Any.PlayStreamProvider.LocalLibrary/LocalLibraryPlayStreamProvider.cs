@@ -6,17 +6,21 @@ using SilverAudioPlayer.Shared;
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
 
 [Export(typeof(IPlayStreamProvider))]
-public class LocalLibraryPlayStreamProvider : IPlayStreamProvider,IAmOnceAgainAskingYouForYourMemory
+public class LocalLibraryPlayStreamProvider : IPlayStreamProvider, IAmOnceAgainAskingYouForYourMemory
 {
-    
+
     public ObjectToRemember ConfigObject =
         new(Guid.Parse("a829f767-72e9-4337-b44b-01f0d2bc7869"), new LocalLibraryPlayStreamProviderConfig());
 
-    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
-
+    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject];
+    LocalLibraryMediaIndexer indexer;
     public void Use(IPlayStreamProviderListener env)
     {
-        MainWindow mw = new(env, (LocalLibraryPlayStreamProviderConfig)ConfigObject.Value);
+        if (indexer == null)
+        {
+            indexer = new(env, (LocalLibraryPlayStreamProviderConfig)ConfigObject.Value);
+        }
+        MainWindow mw = new(indexer, (LocalLibraryPlayStreamProviderConfig)ConfigObject.Value, env);
         mw.Show();
     }
 
@@ -35,10 +39,10 @@ public class LocalLibraryPlayStreamProviderConfig : INotifyPropertyChanged, ICan
     {
         PropertyChanged?.Invoke(e, a);
     }
-      [XmlArray("Directories")]
-  [XmlArrayItem("Directory")]
-    public List<string> Directories {get;set;}=[];
-    [XmlIgnore] public bool AllowedToRead {get;set;}= true;
+    [XmlArray("Directories")]
+    [XmlArrayItem("Directory")]
+    public List<string> Directories { get; set; } = [];
+    [XmlIgnore] public bool AllowedToRead { get; set; } = true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 }

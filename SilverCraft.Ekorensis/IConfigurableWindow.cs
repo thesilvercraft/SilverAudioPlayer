@@ -10,4 +10,9 @@ public interface IConfigurableWindow
     /// Opens and shows the window
     /// </summary>
     void Show();
+    /// <summary>
+    /// Sets the title
+    /// </summary>
+    /// <param name="title">string value of desired window title</param>
+    void SetTitle(string title);
 }

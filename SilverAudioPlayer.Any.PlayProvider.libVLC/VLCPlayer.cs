@@ -6,6 +6,9 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
     public class VLCPlayer : IPlay
     {
         public MediaPlayer mp;
+
+        public bool IsTrackLoaded => mp.State is VLCState.Playing or  VLCState.Opening or  VLCState.Buffering or  VLCState.Paused or VLCState.NothingSpecial;
+
         public VLCPlayer(MediaPlayer mp)
         {
             this.mp = mp;
@@ -102,7 +105,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 
         public void Stop()
         {
-            Task.Run(() => mp.Stop());  
+            Task.Run(mp.Stop);  
         }
 
         public void Dispose()

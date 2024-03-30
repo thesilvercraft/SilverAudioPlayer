@@ -67,6 +67,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
             _IsStarted = false;
             Debug.WriteLine("Mpris stopipc");
             connection.UnregisterObject(player);
+            player.CleanDirUp();
             connection.Dispose();
         }
 

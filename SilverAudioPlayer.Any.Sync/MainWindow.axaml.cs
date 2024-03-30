@@ -1,52 +1,39 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaEdit;
-using Humanizer;
 using SilverAudioPlayer.Shared;
+using SilverConfig;
 using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Any.Sync;
 
-public class Device
-{
-    public string Model;
-    public string MountPoint;
-    public DriveType Type;
-    public long Size = 0;
-    public long Usage = 0;
-    public string Format;
-    public override string ToString()
-    {
-        return $"{Model} {MountPoint} {Type} {Format} {Usage.Bytes()}/{Size.Bytes()}";
-    }
-}
 public partial class MainWindow : Window
 {
     public MainWindow()
     {
-
         InitializeComponent();
         DeviceBox = this.FindControl<ComboBox>("DeviceBox");
         TextBox = this.FindControl<TextEditor>("TextBox");
         RefreshDevices();
+        Closing += (e, o) => { o.Cancel = Lock; };
         if (WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks") == true)
         {
             return;
         }
         this.DoAfterInitTasks(true);
-        Closing += (e, o) => { o.Cancel = Lock; };
     }
-
+    internal SyncConfig config;
     public bool Lock = false;
 
     private ISyncEnvironmentListener env;
@@ -56,137 +43,34 @@ public partial class MainWindow : Window
         this.env = env;
     }
 
-    public string[] BlockList = ["/boot/efi", "/boot"];
     public void RefreshDevices()
     {
         if (OperatingSystem.IsWindows())
         {
-            RefreshDevicesWindows();
+            FileSystemHelper.RefreshDevicesWindows((x) =>
+            {
+                DeviceBox.ItemsSource = x;
+            });
         }
         else if (OperatingSystem.IsLinux())
         {
-            RefreshDevicesLinux();
-        }
-    }
-
-
-
-    [SupportedOSPlatform("windows")]
-    public void RefreshDevicesWindows()
-    {
-        var collection = new ObservableCollection<Device>();
-        DeviceBox.ItemsSource = collection;
-        var driveinfo = DriveInfo.GetDrives();
-
-        foreach (var queryObj in driveinfo)
-        {
-            Device device = new()
+            FileSystemHelper.RefreshDevicesLinux((x) =>
             {
-                Model = queryObj.VolumeLabel,
-                MountPoint = queryObj.RootDirectory.FullName,
-                Type = queryObj.DriveType,
-                Usage = queryObj.TotalSize - queryObj.TotalFreeSpace,
-                Size = queryObj.TotalSize,
-                Format = queryObj.DriveFormat,
-            };
-
-            collection.Add(device);
-        }
-
-    }
-    [SupportedOSPlatform("linux")]
-
-    public void RefreshDevicesLinux()
-    {
-        var mtab = File.ReadAllLines("/etc/mtab");
-        var collection = new ObservableCollection<Device>();
-        DeviceBox.ItemsSource = collection;
-        var driveinfo = DriveInfo.GetDrives();
-
-        foreach (var mount in mtab)
-        {
-            if (mount.StartsWith("/dev/sd") || mount.StartsWith("/dev/nvme"))
-            {
-                var dev = mount.Split(" ");
-                if (!BlockList.Contains(dev[1]))
-                {
-                    var devn = dev[0].Split("/").Last();
-                    for (int x = devn.Length - 1; x > 0; x--)
-                    {
-                        if (!char.IsDigit(devn[x]))
-                        {
-                            if (devn.StartsWith("nvme") && devn[x] == 'p')
-                            {
-                                devn = devn[..(x)];
-                            }
-                            else
-                            {
-                                devn = devn[..(x + 1)];
-                            }
-                            break;
-
-                        }
-                    }
-                    var a = File.ReadAllText($"/sys/block/{devn}/removable");
-                    
-                    Device device = new()
-                    {
-                        Model = File.ReadAllText($"/sys/block/{devn}/device/model"),
-                        MountPoint = dev[1],
-                        Type = DriveType.Unknown,
-                        Format= dev[2]
-                    };
-
-                    var d = driveinfo.FirstOrDefault(x => x.Name == dev[1]);
-                    if (d != null)
-                    {
-                        device.Usage = d.TotalSize - d.TotalFreeSpace;
-                        device.Size = d.TotalSize;
-                        device.Type = d.DriveType;
-                    }
-                    collection.Add(device);
-
-                }
-            }
+                DeviceBox.ItemsSource = x;
+            });
         }
     }
+
+
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
         RefreshDevices();
     }
 
-    public string InvalidPathCharactersForFormat(string format)
-    {
-        return format.ToLower() switch
-        {
-            "exfat" or "fat" or "vfat" => "*?.,;:/\\|+=<>[]\"\0",
-            "ntfs" or "fuseblk" => "/\0",
-            "btrfs" or "ext4" or "ext3" =>"\0"
-        };
-    }
-    public string InvalidFileCharactersForFormat(string format)
-    {
-        return format.ToLower() switch
-        {
-            "exfat" or "fat" or "vfat" => "*?,;:/\\|+=<>[]\"\0",
-            "ntfs" or "fuseblk" => "/\0",
-            "btrfs" or "ext4" or "ext3" =>"\0"
-        };
-    }
-    public string Clean(string i, string notallowed)
-    {
-        foreach (var invalid in notallowed) 
-        {
-            i = i.Replace(invalid, '_');
-        }
-
-        return i;
-    }
-   
     public async Task SyncAsync(Device dev)
     {
         Lock = true;
-        
+
         if (dev == null)
         {
             return;
@@ -207,72 +91,89 @@ public partial class MainWindow : Window
         {
             Dispatcher.UIThread.Post(() =>
             {
-                if (ScrollToBottom.IsChecked == true)
-                {
-                    TextBox.AppendText(Text + "\n");
-                }
+                TextBox.AppendText(Text + "\n");
             }, DispatcherPriority.Background);
         }
-        double FullSize = list.Where(x => x?.Metadata?.Duration is not null).Select(x => x.Metadata.Duration).Sum() ?? 1;
-        double CurrSize = 0;
-        for (int i = 0; i < list.Count; i++)
+        try
         {
-            Song? song = list[i];
-            if (song.Stream is WrappedFileStream wfs)
+
+            double FullSize = list.Where(x => x?.Metadata?.Duration is not null).Select(x => x.Metadata.Duration).Sum() ?? 1;
+            double CurrSize = 0;
+            for (int i = 0; i < list.Count; i++)
             {
-                Append(wfs.URL);
-                scroll();
-                var path = Path.Combine(dev.MountPoint, "Music", Clean(song.Metadata.Artist, InvalidPathCharactersForFormat(dev.Format)), Clean(song.Metadata.Album,InvalidPathCharactersForFormat(dev.Format))
-                  );
-                Directory.CreateDirectory(path);
-                var loc = Path.Combine(path, Clean(song.Metadata.DiscNumber + "." + song.Metadata.TrackNumber + " " +
-                                                    song.Metadata.Title +
-                                                    ".mp3", InvalidFileCharactersForFormat(dev.Format)));
-                if (File.Exists(loc))
+                Song? song = list[i];
+                if (song.Stream is WrappedFileStream wfs)
                 {
-                    continue;
-                }
-                Append(loc);
-                scroll();
-                var proc = new Process
-                {
-                    StartInfo = new ProcessStartInfo("ffmpeg", $"-i \"{wfs.URL}\" -b:a 320k \"{loc}\"")
-                    {
-                        RedirectStandardError = true,
-                        RedirectStandardOutput = true,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                    }
+                    Append(wfs.URL);
+                    scroll();
+                    var songFormat = new Dictionary<string, string>(){
+                    {"Album", FileSystemHelper.Clean(song.Metadata.Album??"Unknown album", FileSystemHelper.InvalidPathCharactersForFormat(dev.Format)) },
+                    {"Artist", FileSystemHelper.Clean(song.Metadata.Artist??"Unknown artist", FileSystemHelper.InvalidPathCharactersForFormat(dev.Format))},
+                    {"DiscNumber",song.Metadata.DiscNumber?.ToString()??"0"},
+                    {"TrackNumber",song.Metadata.TrackNumber?.ToString()??"0"},
+                    {"Title",song.Metadata.Title?.ToString()},
+                    {"Extension",config.PreferredFileExtension},
+
                 };
-                proc.Start();
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
-                proc.OutputDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Append(e.Data);
-                    scroll();
+                    var path = Path.Combine(dev.MountPoint, Formatter.Format(config.PathToStore, songFormat));
+                    Directory.CreateDirectory(path);
+                    var loc = Path.Combine(path, FileSystemHelper.Clean(Formatter.Format(config.NameFormatting, songFormat), FileSystemHelper.InvalidFileCharactersForFormat(dev.Format)));
+                    if (File.Exists(loc))
+                    {
+                        continue;
+                    }
+                    string arguments = Formatter.Format(config.FFmpegOptions, new Dictionary<string, string>(){
+                    {"in", wfs.URL},
+                    {"out", loc}
                 });
-                proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Append(e.Data);
+                    Append($"Calling ffmpeg {arguments}");
                     scroll();
-                });
-                Append($"{i + 1}/{list.Count} {(double)(i + 1) / list.Count * 100}N% {(CurrSize / FullSize) * 100}L%\n");
-                scroll();
+                    var proc = new Process
+                    {
+                        StartInfo = new ProcessStartInfo("ffmpeg", arguments)
+                        {
+                            RedirectStandardError = true,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                        }
+                    };
+                    proc.Start();
+                    proc.BeginOutputReadLine();
+                    proc.BeginErrorReadLine();
+                    proc.OutputDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Append(e.Data);
+                        scroll();
+                    });
+                    proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Append(e.Data);
+                        scroll();
+                    });
+                    Append($"{i + 1}/{list.Count} {(double)(i + 1) / list.Count * 100}N% {(CurrSize / FullSize) * 100}L%\n");
+                    scroll();
 
-                await proc.WaitForExitAsync();
-                if (proc.ExitCode != 0)
-                {
-                    Append("FAIL\n");
-                    scroll();
+                    await proc.WaitForExitAsync();
+                    //TODO: Copy over lrc file?
+
+                    if (proc.ExitCode != 0)
+                    {
+                        Append("FAIL\n");
+                        scroll();
+                    }
+                    CurrSize += (double)song?.Metadata?.Duration;
                 }
-                CurrSize += (double)song?.Metadata?.Duration;
             }
+
+            Append("Done with queue\n");
         }
-        Append("Done with queue\n");
+        catch(Exception e)
+        {
+            Append(e.ToString());
+            throw;
+        }
         Lock = false;
-
-
     }
 
     private void Sync_OnClick(object? sender, RoutedEventArgs e)
@@ -281,14 +182,52 @@ public partial class MainWindow : Window
         Task.Run(async () => await SyncAsync(dev));
     }
 }
+public static class Formatter
+{
+    public static string Format(string input, Dictionary<string, string> arguments)
+    {
+        var stringBuilder = new StringBuilder(input);
+        foreach (var argument in arguments)
+        {
+            stringBuilder.Replace($"{{{argument.Key}}}", argument.Value);
+        }
+        return stringBuilder.ToString();
 
+    }
+}
+public class SyncConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
+{
+    [Comment("used verbatim when calling FFmpeg")]
+
+    public string PreferredFileExtension { get; set; } = ".mp3";
+    [Comment("used verbatim when calling FFmpeg")]
+    public string FFmpegOptions { get; set; } = "-i \"{in}\" -b:a 320k \"{out}\"";
+
+    [Comment("used verbatim when calling FFmpeg")]
+    public string PathToStore { get; set; } = $"Music{Path.DirectorySeparatorChar}{{Album}}";
+    [Comment("used verbatim when calling FFmpeg")]
+    public string NameFormatting { get; set; } = "{DiscNumber}.{TrackNumber}.{Title}{Extension}";
+    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
+    {
+        PropertyChanged?.Invoke(e, a);
+    }
+    [XmlIgnore] public bool AllowedToRead { get; set; } = true;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+}
 [Export(typeof(ISyncPlugin))]
 
-public class LSync : ISyncPlugin
+public class LSync : ISyncPlugin, IAmOnceAgainAskingYouForYourMemory
 {
-    public void Use(ISyncEnvironmentListener env)
+    public ObjectToRemember ConfigObject =
+        new(Guid.Parse("720fe248-4d44-4427-8d72-578ba565f33c"), new SyncConfig());
+
+    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject]; public void Use(ISyncEnvironmentListener env)
     {
-        MainWindow mw = new(env);
+        MainWindow mw = new(env)
+        {
+            config = (SyncConfig)ConfigObject.Value
+        };
         mw.Show();
     }
 

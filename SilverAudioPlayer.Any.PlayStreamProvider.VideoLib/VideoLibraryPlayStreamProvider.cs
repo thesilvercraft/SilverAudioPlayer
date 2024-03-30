@@ -5,7 +5,7 @@ using VideoLibrary;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.VideoLib;
 [Export(typeof(IPlayStreamProvider))]
-public class VideoLibraryPlayStreamProvider :IPlayStreamProviderThatSupportsUrls
+public class VideoLibraryPlayStreamProvider : IPlayStreamProviderThatSupportsUrls
 {
     private string[] Domains =
     [
@@ -15,19 +15,29 @@ public class VideoLibraryPlayStreamProvider :IPlayStreamProviderThatSupportsUrls
         "invidious.drivet.xyz","yt.funami.tech","invidious.slipfox.xyz","invidious.dhusch.de","invidious.weblibre.org",
         "invidious.esmailelbob.xyz","invidious.namazso.eu","invidious.privacydev.net"
     ];
-
+    string Input { get; set; }
     public void Use(IPlayStreamProviderListener env)
     {
         if (env is not IConfigurableListener listener) return;
-        var window = listener.TryGetWindow(new List<IConfigurableElement>
-        {
-            new SimpleLabel()
+        var window = listener.TryGetWindow(
+        [
+            new SimpleRow()
             {
-                GetContent = ()=>"To use this PlayStreamProvider you must load a URL via the player"
+                Content=[new SimpleTextBox(){
+                    SetContent=(v)=>Input=v,
+                    GetContent=()=>Input,
+                    GetPlaceholder=()=>"https://yewtu.be/watch?v="
+                },
+                new SimpleButton(){
+                    GetContent=()=>"Try loading",
+                    Clicked=()=>{
+                        env.ProcessFiles([Input]);
+                    }
+                }],
             }
-        });
+        ]);
+        window?.SetTitle($"{Name}");
         window?.Show();
-
     }
 
     public string Name => "libVideo";
@@ -70,7 +80,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
         new Tuple<Uri, URLType>(new Uri("https://github.com/omansak/libvideo"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://www.nuget.org/packages/VideoLibrary"), URLType.PackageManager)
     ];
-   
+
     public bool IsUrlSupported(Uri given, IPlayStreamProviderListener listener)
     {
         return (Domains.Any(x => given.Host.StartsWith(x)));
@@ -78,16 +88,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
 
     public async Task LoadUrlAsync(Uri given, IPlayStreamProviderListener listener)
     {
-        if(Domains.Any(x => given.Host.StartsWith(x)))
+        if (Domains.Any(x => given.Host.StartsWith(x)))
         {
             UriBuilder builder = new(given);
             builder.Host = Domains[0];
             given = builder.Uri;
         }
         var youTube = YouTube.Default;
-        var video =await youTube.GetAllVideosAsync(given.ToString());
+        var video = await youTube.GetAllVideosAsync(given.ToString());
         var uri = video.Where(x =>
-            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis).OrderByDescending(x=>x.AudioBitrate).FirstOrDefault()?.Uri;
+            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis).OrderByDescending(x => x.AudioBitrate).FirstOrDefault()?.Uri;
         if (uri != null)
         {
             listener.LoadSong(new WrappedHttpStream(uri));
