@@ -180,12 +180,10 @@ public partial class Settings : Window
         }
         else if (stream.MimeType == KnownMimes.SVGMime)
         {
-            var img = new SvgImage
+            return new SvgImage
             {
-                Source = new(new Uri("http://localhost:12312"))
+                Source = SvgSource.LoadFromStream(stream.GetStream())
             };
-            img.Source.Load(stream.GetStream());
-            return img;
         }
 
         return null;
@@ -469,13 +467,10 @@ public partial class Settings : Window
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString());
-            var img = new SvgImage()
+            _settingsDc.ProductIcon = new SvgImage()
             {
-                Source = new(new Uri("http://localhost:12312"))
+                Source =  SvgSource.LoadFromSvg(realisedTemplate)
             };
-            using var s = new MemoryStream(Encoding.UTF8.GetBytes(realisedTemplate));
-            img.Source.Load(s);
-            _settingsDc.ProductIcon = img;
             CurrentSource = realisedTemplate;
         }
     }
