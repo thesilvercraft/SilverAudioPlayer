@@ -28,7 +28,11 @@ public partial class LyricsView : Window
         }
         Dictionary<double, SelectableTextBlock> d = [];
         sv = this.FindControl<ScrollViewer>("sv");
-        var red = new SolidColorBrush(Color.FromRgb(230, 255, 0));
+        var red = WindowExtensions.envBackend.GetString("SAPLRCColor").ParseBackground(new SolidColorBrush(Color.FromRgb(230, 255, 0)));
+        if(red is SolidColorBrush scb)
+        {
+            scb.Opacity=1;
+        }
         var white = new SolidColorBrush(KnownColor.White.ToColor());
         Guid? Song = null;
         var close = false;

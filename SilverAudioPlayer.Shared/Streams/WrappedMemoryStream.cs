@@ -31,7 +31,7 @@ public class FakedMemoryStream : Stream
         {
             case <= 0:
                 return 0;
-            case <= 8:
+            case <= 8*100:
             {
                 var byteCount = n;
                 while (--byteCount >= 0)

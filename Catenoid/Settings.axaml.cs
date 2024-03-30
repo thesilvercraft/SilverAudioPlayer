@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,7 +18,6 @@ using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
-using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Ekorensis;
 using SilverCraft.Shared;
 using SilverMagicBytes;
@@ -31,7 +29,15 @@ namespace Catenoid;
 public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
     ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin,
     bool IsMusicStatusInterface);
+public static class ConstStrings
+{
+    public static readonly string Lrc = "SAPLRCColor";
+    public static readonly string BG = "SAPColor";
+    public static readonly string PB = "SAPPBColor";
+    public static readonly string DisableTransparency = "DisableSAPTransparency";
+    public static readonly string TransparencyC = "SAPTransparency";
 
+}
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
@@ -57,6 +63,8 @@ public partial class Settings : Window
     {
         ColorBox = this.FindControl<AutoCompleteBox>("ColorBox");
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
+        ColorBoxLRC = this.FindControl<AutoCompleteBox>("ColorBoxLRC");
+
         TransparencyText = this.FindControl<TextBox>("TransparencyText");
         CapBox = this.FindControl<ListBox>("CapBox");
         ProductIconButton = this.FindControl<Button>("ProductIconButton");
@@ -64,15 +72,17 @@ public partial class Settings : Window
         ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
             RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
-        TransparencyLevelHint =
-            WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString("SAPTransparency") ??
-                                                             "Mica,AcrylicBlur,None");
-
-        TransparencyText.Text =  WindowExtensions.envBackend.GetString("SAPTransparency");
+        /*   TransparencyLevelHint =
+               WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString(ConstStrings.Transparency) ??
+                                                                "Mica,AcrylicBlur,None");
+   */
+        TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
 
         TransparencyText.TextChanged += TransparencyTextChanged;
-        ColorBox.Text = WindowExtensions.envBackend.GetString("SAPColor");
-        ColorBoxPB.Text = WindowExtensions.envBackend.GetString("SAPPBColor");
+        ColorBox.Text = WindowExtensions.envBackend.GetString(ConstStrings.BG);
+        ColorBoxPB.Text = WindowExtensions.envBackend.GetString(ConstStrings.PB);
+        ColorBoxLRC.Text = WindowExtensions.envBackend.GetString(ConstStrings.Lrc);
+
         List<ICodeInformation> info =
         [
             mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).PluginCodeInformation
@@ -92,10 +102,10 @@ public partial class Settings : Window
     }
     private void TransparencyTextChanged(object? sender, TextChangedEventArgs e)
     {
-        var text=TransparencyText.Text;
-         Task.Run(() => WindowExtensions.envBackend.SetString("SAPTransparency",
-             text??
-            WindowTransparencyLevel.AcrylicBlur.ToString()));
+        var text = TransparencyText.Text;
+        Task.Run(() => WindowExtensions.envBackend.SetString(ConstStrings.TransparencyC,
+            text ??
+           WindowTransparencyLevel.AcrylicBlur.ToString()));
         if (text is not null)
         {
             WindowExtensions.OnStyleChange.Invoke(this,
@@ -343,7 +353,7 @@ public partial class Settings : Window
         ShowLaunchActionsWindow(actions);
     }
 
-   
+
 
     private void RegisterClick(object? sender, RoutedEventArgs e)
     {
@@ -376,9 +386,9 @@ public partial class Settings : Window
     {
         Dispatcher.UIThread.Post(() =>
         {
-            var SapTransparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") != true;
+            var SapTransparency = WindowExtensions.envBackend.GetBool(ConstStrings.DisableTransparency) != true;
             WindowExtensions.OnStyleChange(this, new(null, null, null));
-            WindowExtensions.envBackend.SetBool("DisableSAPTransparency", SapTransparency);
+            WindowExtensions.envBackend.SetBool(ConstStrings.DisableTransparency, SapTransparency);
         }, DispatcherPriority.Normal);
     }
 
@@ -395,7 +405,15 @@ public partial class Settings : Window
             var t = ColorBoxPB.Text;
             mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush()
             { GradientStops = defPBStops }));
-            WindowExtensions.envBackend.SetEnv("SAPPBColor", t);
+            WindowExtensions.envBackend.SetEnv(ConstStrings.PB, t);
+        }, DispatcherPriority.Normal);
+    }
+    private void ChangeColorLRC(object? sender, RoutedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            var t = ColorBoxLRC.Text;
+            WindowExtensions.envBackend.SetEnv(ConstStrings.Lrc, t);
         }, DispatcherPriority.Normal);
     }
 
@@ -404,7 +422,7 @@ public partial class Settings : Window
         Dispatcher.UIThread.Post(() =>
         {
             WindowExtensions.OnStyleChange?.Invoke(this, new(ColorBox.Text, null, null));
-            WindowExtensions.envBackend.SetString("SAPColor", ColorBox.Text);
+            WindowExtensions.envBackend.SetString(ConstStrings.BG, ColorBox.Text);
         }, DispatcherPriority.Normal);
     }
 

@@ -8,11 +8,16 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Remove="LinuxPlatformHelper.svg" />
+    </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="LinuxPlatformHelper.svg" />
+    </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
-
 
     <ItemGroup>
         <PackageReference Include="Tmds.DBus" Version="0.16.0" />

@@ -20,7 +20,8 @@ public class LinuxWakeLock : IWakeLockProvider
 
     public string Description => "Uses Dbus";
 
-    public WrappedStream Icon => null;
+    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(LinuxWakeLock).Assembly,
+        "SilverAudioPlayer.Linux.PlatformHelper.Linux.LinuxPlatformHelper.svg");
 
     public Version? Version => typeof(LinuxWakeLock).Assembly.GetName().Version;
 

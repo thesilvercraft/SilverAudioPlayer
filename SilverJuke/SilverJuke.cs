@@ -101,7 +101,7 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
 
         app.MapGet("/albumart", () =>
         {
-            Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
             var currentTrack = listener.GetCurrentTrack();
             if (currentTrack?.Metadata == null || currentTrack?.Metadata?.Pictures?.Count == 0)
             {
@@ -123,6 +123,7 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
         }
         Task.Run(() =>
         {
+            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
             app.Start();
         });
     }

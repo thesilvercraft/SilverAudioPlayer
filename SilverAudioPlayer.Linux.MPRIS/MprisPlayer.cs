@@ -1,5 +1,3 @@
-
-// Create a class that inherits from the interface
 using Tmds.DBus;
 using DBusInterop;
 using System.Diagnostics;
@@ -14,8 +12,12 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         Env = listner;
         Env.TrackChangedNotification += OnNewTrack;
         Env.PlayerStateChanged += OnStateChanged;
+        Directory.CreateDirectory(TempFolder);
     }
-
+    public void CleanDirUp()
+    {
+        Directory.Delete(TempFolder,true);
+    }
     private void OnStateChanged(object? sender, PlaybackState e)
     {
         Task.Run(async () =>
@@ -27,16 +29,37 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
             PropertyChanged.Invoke(propertyChanges);
         });
     }
+    static string TempFolder = Path.Combine(Path.GetTempPath(), $"sap-albumart-p{Environment.ProcessId}");
 
-
+    string TempFile = Path.Combine(TempFolder,"1");
+    bool HasAlbumArtWritten = false;
     private void OnNewTrack(object? sender, Song e)
     {
         Task.Run(async () =>
         {
-            var propertyChanges = new PropertyChanges(new KeyValuePair<string, object>[1]
+            var x = Env.GetBestRepresentation(e?.Metadata?.Pictures);
+
+            if (x != null)
             {
+                TempFile= Path.Combine(TempFolder,x.Hash??e.Guid.ToString());
+                using var fs = new FileStream(TempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                using var data = x.Data.GetStream();
+                await data.CopyToAsync(fs);
+                HasAlbumArtWritten = true;
+            }
+            else
+            {
+                HasAlbumArtWritten = false;
+                if (File.Exists(TempFile))
+                {
+                    File.Delete(TempFile);
+                }
+            }
+
+            var propertyChanges = new PropertyChanges(
+            [
                 new("Metadata", await GetMetadataAsync())
-            });
+            ]);
             PropertyChanged.Invoke(propertyChanges);
         });
 
@@ -103,12 +126,11 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     {
         //https://www.freedesktop.org/wiki/Specifications/mpris-spec/metadata/
         var track = Env?.GetCurrentTrack();
-        var g=track?.Guid.ToString("N");
-        return Task.FromResult<IDictionary<string, object>>(new Dictionary<string, object>()
+        var g = track?.Guid.ToString("N");
+        var res=new Dictionary<string, object>()
             {
                 {"mpris:length",( (long?)Env?.GetDuration()??10)*1000*1000},
                 {"mpris:trackid", new ObjectPath("/org/mpris/MediaPlayer2/Track/"+( string.IsNullOrWhiteSpace(g)? "NoTrack": g))},
-                {"mpris:artUrl", "http://localhost:36169/albumart"},
                 {"xesam:title", track?.Metadata?.Title ?? "nothing"},
                 {"xesam:album", track?.Metadata?.Album ?? "no"},
                 {"xesam:artist", new string[] {track?.Metadata?.Artist??"none"}},
@@ -117,7 +139,12 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
                 {"xesam:genre", track?.Metadata?.Genre??""},
                 {"xesam:asText", track?.Metadata?.Lyrics??""},
 
-            });
+            };
+            if(HasAlbumArtWritten)
+            {
+                res["mpris:artUrl"]=TempFile;
+            }
+        return Task.FromResult<IDictionary<string, object>>(res);
 
     }
 
@@ -221,8 +248,8 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         return prop switch
         {
             "cancontrol" or "cangonext" or "cangoprevious" or "canpause" or "canseek" or "canplay" => true,
-            "canraise" or "canquit"=>false,
-            "desktopentry"=>DesktopEntry,
+            "canraise" or "canquit" => false,
+            "desktopentry" => DesktopEntry,
             "minimumrate" or "maximumrate" or "rate" => 1d,
             "metadata" => await GetMetadataAsync(),
             "playbackstatus" => await GetPlaybackStatusAsync(),
@@ -292,8 +319,8 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         return [.. mimes];
     }
     string[] supportedUri = ["file", "http", "https"];
-    const string Identity="Catenoid";
-    const string  DesktopEntry="Catenoid";
+    const string Identity = "Catenoid";
+    const string DesktopEntry = "Catenoid";
     async Task<MediaPlayer2Properties> IMediaPlayer2.GetAllAsync()
     {
         return new MediaPlayer2Properties()

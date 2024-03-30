@@ -1,7 +1,3 @@
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 using System.Security.Cryptography;
 using Serilog;
 
@@ -82,10 +78,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
         lock (_reliancesLock)
         {
             if (!Reliances.TryGetValue(reliance.SharedStreamId, out var reliance1)) return;
-            if (reliance1.Contains(reliance))
-            {
-                reliance1.Remove(reliance);
-            }
+            reliance1.Remove(reliance);
             if (reliance1.Count != 0) return;
             Reliances.Remove(reliance.SharedStreamId);
             if (SharedStreams.FirstOrDefault(x => x.SharedStreamId == reliance.SharedStreamId) is not
