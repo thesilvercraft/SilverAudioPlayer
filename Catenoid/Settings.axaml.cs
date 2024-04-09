@@ -182,7 +182,7 @@ public partial class Settings : Window
         {
             return new SvgImage
             {
-                Source = SvgSource.LoadFromStream(stream.GetStream())
+                Source = SvgSource.LoadFromStream(stream.GetStream()) // BUG https://github.com/wieslawsoltes/Svg.Skia/issues/217
             };
         }
 

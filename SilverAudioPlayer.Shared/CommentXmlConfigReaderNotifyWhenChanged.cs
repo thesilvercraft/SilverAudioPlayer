@@ -17,16 +17,12 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
         foreach (var fsw in fileSystemWatchers) fsw.Dispose();
         GC.SuppressFinalize(this);
     }
-    DateTime? LastWriteTime = DateTime.Now;
     public static ConcurrentDictionary<string, object> Locks = new();
     public override void Write(T config, string path)
     {
         Debug.WriteLine($"Writing config");
         void TryWrite()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || DateTime.Now > LastWriteTime + TimeSpan.FromMilliseconds(100))
-            {
-                LastWriteTime = DateTime.Now;
                 try
                 {
                     if (Locks.TryGetValue(path, out var obj))
@@ -49,8 +45,9 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                 catch (IOException e) when (e.Message.StartsWith("The process cannot access the file ") && e.Message.EndsWith(" because it is being used by another process."))
                 {
                     //Try again later, i guess
+                    throw;
                 }
-            }
+            
         }
         if (config is ICanBeToldThatAPartOfMeIsChanged a)
         {

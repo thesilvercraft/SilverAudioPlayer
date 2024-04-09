@@ -162,7 +162,6 @@ public partial class MainWindow : Window
                 if (config.Volume != vol)
                 {
                     config.Volume = vol;
-                    reader.Write(config, App._configPath);
                 }
                 Player?.SetVolume(vol);
                 dc?.RaisePropertyChanged(nameof(dc.Volume));

@@ -63,9 +63,9 @@ continue;
                         {
                             if (x == obj.Value && obj.Value is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
                             {
-                                L.AllowedToRead = true;
-                                genericType.GetMethod("Write")?.Invoke(reader, [obj.Value, loc]);
                                 L.AllowedToRead = false;
+                                genericType.GetMethod("Write")?.Invoke(reader, [obj.Value, loc]);
+                                L.AllowedToRead = true;
                             }
                         };
                     }

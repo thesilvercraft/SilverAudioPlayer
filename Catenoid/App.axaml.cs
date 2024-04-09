@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -142,6 +143,18 @@ public class App : Application
             mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
             if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
             mwconfig = mwconfreader.Read(_configPath) ?? new Config();
+              if (mwconfig is INotifyPropertyChanged y)
+                    {
+                        y.PropertyChanged += (x, y) =>
+                        {
+                            if (x == mwconfig && mwconfig is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
+                            {
+                                L.AllowedToRead = false;
+                                mwconfreader.Write(mwconfig, _configPath);
+                                L.AllowedToRead = true;
+                            }
+                        };
+                    }
             BootupLogic.ConfigureHttpClient();
             if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
             {
