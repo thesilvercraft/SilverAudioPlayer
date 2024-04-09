@@ -31,20 +31,20 @@ public class IndexShowable
 {
     public string Name { get; set; }
     public string AlbumArtist { get; set; }
-    public Shared.Metadata.IPicture Image { get; set; }
+    public IPicture Image { get; set; }
 
-    public Bitmap? Cover =>DecodeBitmap();
+    public Bitmap? Cover => DecodeBitmap();
     Bitmap? DecodeBitmap()
     {
-        if(b!=null)
+        if (b != null)
         {
             return b;
         }
-        if(Image!=null)
+        if (Image != null)
         {
-            var a=ShowableUtils.DecodeCover(Image);
-            if(a==null) return null;
-            (b, Reliance)=a;
+            var a = ShowableUtils.DecodeCover(Image);
+            if (a == null) return null;
+            (b, Reliance) = a;
             return b;
         }
         return null;
@@ -58,14 +58,16 @@ public class IndexAlbum : IndexShowable
 }
 public class IndexSong : IndexShowable
 {
-    public IndexSong(string loc, IMetadata metadata,IPlayStreamProviderListener env)
+    public IndexSong(string loc, IMetadata metadata, IPlayStreamProviderListener env)
     {
         Loc = loc;
-        Album=metadata.Album;
+        Album = metadata.Album;
         LastChecked = DateTime.UtcNow;
-        Image=metadata.Pictures.FirstOrDefault();
+        Image = metadata.Pictures.FirstOrDefault();
+        Name=metadata.Title;
+        AlbumArtist =metadata.Artist;
     }
-    public string Album{get;set;}
+    public string Album { get; set; }
     public string Loc { get; set; }
     public DateTime LastChecked { get; set; }
     public bool HasChanged() => !Exists() || (File.GetLastWriteTimeUtc(Loc) > LastChecked);
@@ -78,7 +80,8 @@ public class LocalLibraryMediaIndexer : IMediaIndexer
     {
         Env = env;
         Config = config;
-        Parallel.ForEachAsync(config.Directories, async (x,c)=>{
+        Parallel.ForEachAsync(config.Directories, async (x, c) =>
+        {
             await AddDirectory(x);
         });
     }
@@ -90,12 +93,13 @@ public class LocalLibraryMediaIndexer : IMediaIndexer
     ConcurrentBag<IndexSong> AllSongs = new();
     ConcurrentDictionary<IndexAlbum, AvaloniaList<IndexSong>> AlbumSongs = new();
     AvaloniaList<IndexAlbum> IMediaIndexer.Albums => Albums;
+    object Olock = new();
     public async Task<IndexSong?> ProcessFileAsync(string file, CancellationToken ct = default)
     {
         try
         {
             var meta = await Env?.GetMetadataAsync(new WrappedFileStream(file));
-            return new IndexSong(file, meta,Env);
+            return new IndexSong(file, meta, Env);
         }
         catch (Exception e)
         {
@@ -107,14 +111,22 @@ public class LocalLibraryMediaIndexer : IMediaIndexer
 
     public async Task AddDirectory(string dir)
     {
+        if (!Directory.Exists(dir)) return;
         var files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories);
-
-        await Parallel.ForEachAsync(Env.FilterFiles(files), new ParallelOptions() { MaxDegreeOfParallelism = 5 }, async (file, ct) =>
+        foreach (var file in Env.FilterFiles(files))
         {
-            try
+            await ProcessFileAsyncF(file, default);
+        }
+
+    }
+    async Task ProcessFileAsyncF(string file, CancellationToken ct = default)
+    {
+        try
+        {
+            var song = await ProcessFileAsync(file, ct);
+            if (song != null)
             {
-                var song = await ProcessFileAsync(file, ct);
-                if (song != null)
+                lock (Olock)
                 {
                     AllSongs.Add(song);
                     if (Albums.FirstOrDefault(x => x.Name == song.Album) is { } album)
@@ -140,14 +152,12 @@ public class LocalLibraryMediaIndexer : IMediaIndexer
                     }
                 }
             }
-            catch (Exception e)
-            {
-                Log.Error(e, "Error in processfile in parrallel foreach");
-            }
-        });
-
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Error in processfile in parrallel foreach");
+        }
     }
-
 
     public void Clean()
     {
