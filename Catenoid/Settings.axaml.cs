@@ -424,7 +424,7 @@ public partial class Settings : Window
         AvaloniaXamlLoader.Load(this);
     }
 
-    private string? Template = null;
+    private string? IconTemplate = null;
 
     private void ProductIconClicked()
     {
@@ -441,13 +441,13 @@ public partial class Settings : Window
         }
 
 
-        if (Template == null)
+        if (IconTemplate == null)
         {
             mainWindow.Env.Icon?.Use(s =>
             {
                 using var textreader = new StreamReader(s);
-                Template = textreader.ReadToEnd();
-                Template = Template.Replace("stop-color=\"#6969ff\"", "stop-color=\"{0}\"")
+                IconTemplate = textreader.ReadToEnd();
+                IconTemplate = IconTemplate.Replace("stop-color=\"#6969ff\"", "stop-color=\"{0}\"")
                     .Replace("stop-color=\"#696969\"", "stop-color=\"{1}\"")
                     .Replace("fill=\"#F90\"", "fill=\"{2}\"")
                     .Replace("fill=\"#0F6\"", "fill=\"{3}\"")
@@ -456,9 +456,9 @@ public partial class Settings : Window
             });
         }
 
-        if (Template == null) return;
+        if (IconTemplate == null) return;
         {
-            var realisedTemplate = string.Format(Template, EnvironmentExtensions.NewHexString(),
+            var realisedTemplate = string.Format(IconTemplate, EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString());

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using DynamicData;
 using SilverCraft.AvaloniaUtils;
 
 namespace Catenoid;
@@ -12,7 +14,7 @@ namespace Catenoid;
 public partial class LyricsView : Window
 {
     private MainWindow mainWindow;
-    private bool AutoScroll = true;
+    private byte AutoScroll = 2;
     public LyricsView()
     {
         InitializeComponent();
@@ -95,19 +97,21 @@ public partial class LyricsView : Window
                 }
             }
             var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
-            SelectableTextBlock? lastr = null;
+            double? lastr = null;
             foreach (var x in d)
                 if (x.Key <= pos)
                 {
                     x.Value.Foreground = red;
-                    lastr = x.Value;
+                    lastr = x.Key;
                 }
                 else
                     x.Value.Foreground = white;
 
-            if (AutoScroll && lastr != null)
+            if (AutoScroll>0 && lastr is {} c)
             {
-                lastr.BringIntoView(new Rect(0, lastr.Bounds.Height / 2, lastr.Bounds.Width, lastr.Bounds.Height));
+                var a = AutoScroll - 1;
+                SelectableTextBlock t = d[d.Keys.ElementAt( Math.Min( d.Keys.Count-1, d.Keys.IndexOf(c)+a))];
+                t.BringIntoView(new Rect(0, t.Bounds.Height, t.Bounds.Width, t.Bounds.Height));
             }
             return !close;
         }, TimeSpan.FromMilliseconds(25), DispatcherPriority.Render);
