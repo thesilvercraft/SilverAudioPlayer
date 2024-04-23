@@ -71,6 +71,7 @@ public class PortAudioSoundOut : ISoundOut
             {
                 ThrowIfError(NativeMethods.Pa_CloseStream(stream));
                 stream = null;
+                buffer = null;
             }
             Stopped?.Invoke(this, new());
         });
@@ -118,31 +119,32 @@ public class PortAudioSoundOut : ISoundOut
         channels = SampleSource.WaveFormat.Channels;
     }
     int channels;
+    float[]? buffer = new float[2];
     private unsafe int CallBackMethod(void* input, void* output, ulong frameCount, PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, nint userData)
     {
         Thread.CurrentThread.Priority = ThreadPriority.Highest;
-        float* outputBuffer = (float*)output;
-        int bufferLength = (int)frameCount * channels;
-        float[] buffer = new float[bufferLength];
+        var outputBuffer = (float*)output;
+        var bufferLength = (int)frameCount * channels;
+        if (buffer == null || buffer.Length < bufferLength)
+        {
+            buffer = new float[bufferLength];
+        }
         var r = SampleSource?.Read(buffer, 0, bufferLength);
         r ??= 0;
 
         fixed (float* bufferStart = buffer)
         {
-            float* bufferI = bufferStart;
-            float* bufferEnd = bufferStart + r.Value;
+            var bufferI = bufferStart;
+            var bufferEnd = bufferStart + r.Value;
             while (bufferI < bufferEnd)
             {
                 *outputBuffer++ = *bufferI++ * Volume;
             }
         }
 
-        if (r < buffer.Length)
-        {
-            OnStop();
-            return (int)PaStreamCallbackResult.paComplete;
-        }
-        return 0;
+        if (!(r < buffer.Length)) return 0;
+        OnStop();
+        return (int)PaStreamCallbackResult.paComplete;
     }
 
     public unsafe void Pause()

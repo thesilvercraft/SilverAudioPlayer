@@ -26,11 +26,11 @@ namespace Catenoid
             w.DoAfterInitTasks(register, defBackground:defBrush, options:options, followOptionsOnCall:followOptionsOnCall);
         }
         public const string CopiedToClipboard="Copied to clipboard";
-        public static void Toast(string Content)
+        public static void Toast(string content)
         {
             if(File.Exists("/bin/notify-send"))
             {
-                Process.Start("notify-send", $"-a Catenoid -i sap.svg -u low \"{Content}\"");
+                Process.Start("notify-send", $"-a Catenoid -i sap.svg -u low \"{content}\"");
             }
         }
     }

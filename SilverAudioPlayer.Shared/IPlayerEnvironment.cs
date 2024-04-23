@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using SilverAudioPlayer.Shared.Metadata;
+﻿using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 

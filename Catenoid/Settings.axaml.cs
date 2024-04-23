@@ -31,11 +31,11 @@ public record InfoPRecord(string Name, string Description, Version? Version, IIm
     bool IsMusicStatusInterface);
 public static class ConstStrings
 {
-    public static readonly string Lrc = "SAPLRCColor";
-    public static readonly string BG = "SAPColor";
-    public static readonly string PB = "SAPPBColor";
-    public static readonly string DisableTransparency = "DisableSAPTransparency";
-    public static readonly string TransparencyC = "SAPTransparency";
+    public const string Lrc = "SAPLRCColor";
+    public const string BG = "SAPColor";
+    public const string PB = "SAPPBColor";
+    public const string DisableTransparency = "DisableSAPTransparency";
+    public const string TransparencyC = "SAPTransparency";
 
 }
 public partial class Settings : Window
@@ -72,10 +72,6 @@ public partial class Settings : Window
         ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
             RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
-        /*   TransparencyLevelHint =
-               WindowExtensions.GetTransparencyLevelsFromString(WindowExtensions.envBackend.GetString(ConstStrings.Transparency) ??
-                                                                "Mica,AcrylicBlur,None");
-   */
         TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
 
         TransparencyText.TextChanged += TransparencyTextChanged;
@@ -301,10 +297,9 @@ public partial class Settings : Window
         return name;
     }
 
-    public static void ShowElementActionWindow(InfoPRecord element, MainWindow mainWindow)
+    public static void ShowElementActionWindow(InfoPRecord? element, MainWindow mainWindow)
     {
-        if (element == null) return;
-        if (element.Item.Links == null)
+        if (element?.Item.Links == null)
         {
             return;
         }

@@ -297,16 +297,12 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             var informPlayerOfLoop = Task.Run(async () =>
             {
                 await Task.Delay(600);
-                if (Player != null && Player is ILoop loop)
+                if (Player is ILoop loop)
                 {
-                    if (PlayerContext.LoopType == RepeatState.One)
-                    {
+                    if (PlayerContext.LoopType == RepeatState.One) 
                         loop.EnableLoop();
-                    }
                     else
-                    {
                         loop.DisableLoop();
-                    }
                 }
             });
 

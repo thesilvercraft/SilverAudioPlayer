@@ -1,3 +1,4 @@
+#if CSCore
 using CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
@@ -343,3 +344,4 @@ public class WaveFormatHelper
         return WaveFormat.CreateCustomFormat(encoding, format.SampleRate,  format.Channels,format.BytesPerSecond, format.BlockAlign, format.BitsPerSample);
     }
 }
+#endif

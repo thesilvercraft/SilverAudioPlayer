@@ -67,10 +67,7 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
                     x.PreferAlbumReplayGain = c;
                     ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreferAlbumReplayGain"));
                 },
-                GetChecked = ()=>{
-                     if (ConfigObject.Value is not WaveConfig x) return true;
-                   return x.PreferAlbumReplayGain;
-                }
+                GetChecked = ()=> ConfigObject.Value is not WaveConfig x || x.PreferAlbumReplayGain
             },
             new SimpleCheckBox
             {
@@ -80,10 +77,7 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
                     x.EnableReplayGain = c;
                     ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("EnableReplayGain"));
                 },
-                GetChecked = ()=>{
-                     if (ConfigObject.Value is not WaveConfig x) return true;
-                   return x.EnableReplayGain;
-                }
+                GetChecked = ()=> ConfigObject.Value is not WaveConfig x || x.EnableReplayGain
             }
         ]);
         window?.SetTitle($"Configuring {Name}");
@@ -839,8 +833,8 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
     {
         if (!CanPlayFile(stream)) return null;
         player.Config = (WaveConfig)ConfigObject.Value;
-        player.LoadStream(stream);
         player.playerEnvironment = playerEnvironment;
+        player.LoadStream(stream);
 
         return player;
     }

@@ -6,10 +6,6 @@
 		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
 		<LangVersion>default</LangVersion>
 	</PropertyGroup>
-	
-	<ItemGroup>
-		<TrimmerRootDescriptor Include="Roots.xml" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Avalonia" Version="11.0.10" />

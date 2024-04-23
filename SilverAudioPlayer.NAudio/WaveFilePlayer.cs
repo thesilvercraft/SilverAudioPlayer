@@ -1,8 +1,8 @@
 ﻿using System.Composition;
 using System.Diagnostics;
-using Audioz_playerZ;
 using NAudio.Wave;
 using Serilog;
+using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Shared;
 #if CSCore
 using SilverCraft.PortAudio;
@@ -130,72 +130,67 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         else
         {
             SearchForReplayGain = false;
-            if (playerEnvironment != null)
+            if (playerEnvironment == null) return;
+            var e = playerEnvironment.GetEnteriesForCurrentTrack();
+            bool TryGetReplayGain(bool album)
             {
-                var e = playerEnvironment.GetEnteriesForCurrentTrack();
-                bool TryGetReplayGain(bool album)
+                if (!e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_GAIN", out string al) ||
+                    !float.TryParse(al.Split(' ')[0], out var r)) return false;
+                ReplayGainMultiplier = dBToRatio(r);
+                return true;
+            }
+            float? TryGetReplayGainPeak(bool album)
+            {
+                if (e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out string al) && float.TryParse(al, out var r))
                 {
-                    if (e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_GAIN", out string al) && float.TryParse(al.Split(' ')[0], out var r))
-                    {
-                        ReplayGainMultiplier = dBToRatio(r);
-                        return true;
-                    }
-                    return false;
+                    return r;
                 }
-                float? TryGetReplayGainPeak(bool album)
-                {
-                    if (e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out string al) && float.TryParse(al, out var r))
-                    {
-                        return r;
-                    }
-                    return null;
-                }
-                bool rgSuccess = false;
-                bool Album = false;
-                if (Config.PreferAlbumReplayGain)
-                {
-                    rgSuccess = TryGetReplayGain(true);
-                    Album = true;
-                    if (!rgSuccess)
-                    {
-                        rgSuccess = TryGetReplayGain(false);
-                        Album = false;
-                    }
-                }
-                else
+                return null;
+            }
+            bool rgSuccess = false;
+            bool Album = false;
+            if (Config.PreferAlbumReplayGain)
+            {
+                rgSuccess = TryGetReplayGain(true);
+                Album = true;
+                if (!rgSuccess)
                 {
                     rgSuccess = TryGetReplayGain(false);
                     Album = false;
-                    if (!rgSuccess)
-                    {
-                        rgSuccess = TryGetReplayGain(true);
-                        Album = true;
-                    }
                 }
-                if (rgSuccess)
+            }
+            else
+            {
+                rgSuccess = TryGetReplayGain(false);
+                Album = false;
+                if (!rgSuccess)
                 {
-                    if (Config.TrySafeReplayGain && TryGetReplayGainPeak(Album) is { } val)
+                    rgSuccess = TryGetReplayGain(true);
+                    Album = true;
+                }
+            }
+            if (rgSuccess)
+            {
+                if (Config.TrySafeReplayGain && TryGetReplayGainPeak(Album) is { } val)
+                {
+                    if (val != 1)
                     {
-                        if (val != 1)
-                        {
-                            ReplayGainMultiplier *= dBToRatio( Config.PreampReplayGain);
-                        }
-                        if (val * ReplayGainMultiplier > 1)
-                        {
-                            Debug.WriteLine($"RGM {ReplayGainMultiplier} PEAKS");
-                            ReplayGainMultiplier = 1f / val;
-                            Debug.WriteLine($"RGM went to max safe {ReplayGainMultiplier}");
-                        }
+                        ReplayGainMultiplier *= dBToRatio( Config.PreampReplayGain);
                     }
-                    else
-                    {
-                        ReplayGainMultiplier *= dBToRatio(Config.PreampReplayGain);
-                    }
+
+                    if (!(val * ReplayGainMultiplier > 1)) return;
+                    Debug.WriteLine($"RGM {ReplayGainMultiplier} PEAKS");
+                    ReplayGainMultiplier = 1f / val;
+                    Debug.WriteLine($"RGM went to max safe {ReplayGainMultiplier}");
                 }
                 else
                 {
-                    ReplayGainMultiplier = dBToRatio(Config.PreampNoReplayGain);
+                    ReplayGainMultiplier *= dBToRatio(Config.PreampReplayGain);
                 }
+            }
+            else
+            {
+                ReplayGainMultiplier = dBToRatio(Config.PreampNoReplayGain);
             }
         }
     }

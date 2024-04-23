@@ -1,3 +1,4 @@
+#if CSCore
 using CSCore.SoundOut;
 using NAudio.Wave;
 using PlaybackState = NAudio.Wave.PlaybackState;
@@ -83,3 +84,4 @@ public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
 
     public event EventHandler<StoppedEventArgs>? PlaybackStopped;
 }
+#endif

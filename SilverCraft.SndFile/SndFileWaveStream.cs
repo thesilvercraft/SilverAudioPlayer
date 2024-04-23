@@ -10,17 +10,19 @@ public class SndFileWaveStream : ISampleSource
     private unsafe sf_private_tag* infile;
     private SF_VIRTUAL_IO IO;
     SfVirtualStreamHelper Helper;
-    SF_INFO info = new();
+    SF_INFO info;
     public static bool ResolverIsSet = false;
     public unsafe SndFileWaveStream(Stream s)
     {
-        Helper = new(s);
+        Helper = new SfVirtualStreamHelper(s);
         IO = Helper.Virtual;
         if (!ResolverIsSet)
         {
             ResolverIsSet = true;
             NativeLibrary.SetDllImportResolver(typeof(Methods).Assembly, Methods.DllImportResolver);
         }
+
+        info = new SF_INFO();
         infile = Methods.sf_open_virtual(ref IO, Mode.Read, ref info, 0);
         WaveFormat = new WaveFormat(info.samplerate, 32, info.channels);
         Length = info.frames * info.channels;
@@ -36,27 +38,19 @@ public class SndFileWaveStream : ISampleSource
         infile = f;
         WaveFormat = new WaveFormat(info.samplerate, 16, info.channels);
     }
-    public int Read(float[] buffer, int offset, int count)
+    public unsafe int Read(float[] buffer, int offset, int count)
     {
-        unsafe
+        fixed (float* f = buffer)
         {
-            fixed (float* f = buffer)
-            {
-                return (int)Methods.sf_read_float(infile, f, count);
-            }
+            return (int)Methods.sf_read_float(infile, f, count);
         }
     }
-
-
-    public void Dispose()
+    public unsafe void Dispose()
     {
-        unsafe
-        {
-            Debug.WriteLine("Disposing SndFileWaveStream!");
-            _ = Methods.sf_close(infile);
-            Debug.WriteLine("Disposing SfVirtualStreamHelper");
-            Helper.Dispose();
-        }
+        Debug.WriteLine("Disposing SndFileWaveStream!");
+        _ = Methods.sf_close(infile);
+        Debug.WriteLine("Disposing SfVirtualStreamHelper");
+        Helper.Dispose();
     }
 
     public bool CanSeek => info.seekable != 0;
@@ -68,10 +62,7 @@ public class SndFileWaveStream : ISampleSource
         {
             if (info.seekable != 0)
             {
-                unsafe
-                {
-                    Methods.sf_seek(infile, (nint)value / info.channels, Whence.Set);
-                }
+                Methods.sf_seek(infile, (nint)value / info.channels, Whence.Set);
             }
         }
     }

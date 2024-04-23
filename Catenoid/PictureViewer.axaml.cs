@@ -66,11 +66,9 @@ public partial class PictureViewer : Window
     private async void Copy(object? sender, RoutedEventArgs e)
     {
         var wrappedStream = pictures[pos].Data;
-        if (wrappedStream != null)
-        {
-            await this.SetClipboardImage(wrappedStream, Log);
-            SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
-        }
+        if (wrappedStream == null) return;
+        await this.SetClipboardImage(wrappedStream, Log);
+        SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
     }
 }
 public class DContext : ReactiveObject

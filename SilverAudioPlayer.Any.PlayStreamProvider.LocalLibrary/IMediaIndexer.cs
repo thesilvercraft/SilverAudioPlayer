@@ -63,9 +63,9 @@ public class IndexSong : IndexShowable
         Loc = loc;
         Album = metadata.Album;
         LastChecked = DateTime.UtcNow;
-        Image = metadata.Pictures.FirstOrDefault();
-        Name=metadata.Title;
-        AlbumArtist =metadata.Artist;
+        Image = metadata.Pictures?.FirstOrDefault();
+        Name = metadata.Title;
+        AlbumArtist = metadata.Artist;
     }
     public string Album { get; set; }
     public string Loc { get; set; }
@@ -119,7 +119,8 @@ public class LocalLibraryMediaIndexer : IMediaIndexer
         }
 
     }
-    async Task ProcessFileAsyncF(string file, CancellationToken ct = default)
+
+    private async Task ProcessFileAsyncF(string file, CancellationToken ct = default)
     {
         try
         {

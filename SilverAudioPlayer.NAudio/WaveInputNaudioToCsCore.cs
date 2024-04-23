@@ -1,3 +1,4 @@
+#if CSCore
 using CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
@@ -59,3 +60,4 @@ public class WaveInputNaudioToCsCore : IWaveInput
     public long Position { get => GetPos(); set=>SetPos(value); }
     public long Length=> GetLength(); 
 }
+#endif

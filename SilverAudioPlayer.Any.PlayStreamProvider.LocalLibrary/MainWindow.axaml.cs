@@ -86,12 +86,13 @@ public partial class MainWindow : Window
         config = value;
         Indexer = indexer;
         Env = env;
-        Task.Run(() =>
+        _binding.WrappedAlbums = Indexer.Albums;
+
+        /*Task.Run(() =>
         {
             Thread.Sleep(1000);
-            _binding.WrappedAlbums = Indexer.Albums;
         });
-
+*/
     }
     IMediaIndexer Indexer;
     LocalLibraryPlayStreamProviderConfig? config;
@@ -100,14 +101,9 @@ public partial class MainWindow : Window
     {
         OpenFolderDialog ofd = new();
         var f = await ofd.ShowAsync(this);
-        if (f != null)
-        {
-            config.Directories.Add(f);
-            ((ICanBeToldThatAPartOfMeIsChanged)config).PropertyChanged(config, new("Directories"));
-
-        }
-
-
+        if (f == null) return;
+        config.Directories.Add(f);
+        ((ICanBeToldThatAPartOfMeIsChanged)config).PropertyChanged(config, new("Directories"));
     }
 
     private void RB_OnDoubleTapped(object? sender, TappedEventArgs e)
