@@ -82,7 +82,7 @@ public class AtlCoreMetadata : IMetadata
             }
         }
 #endif
-        Enteries =theTrack?.AdditionalFields;
+        Enteries = theTrack?.AdditionalFields;
         SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text)).ToList();
     }
 
