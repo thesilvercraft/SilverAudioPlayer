@@ -22,11 +22,13 @@ public class FileMetadata : IMetadata
             if (!System.IO.File.Exists(possiblelrcfile)) continue;
             try
             {
-                var s = Opportunity.LrcParser.Lyrics.Parse(System.IO.File.ReadAllText(possiblelrcfile));
-                SyncedLyrics = s.Lyrics.Lines.Select(x => new LyricPhrase((int)(x.Timestamp.Ticks / TimeSpan.TicksPerMillisecond), x.Content + "\n")).ToList();
+                SyncedLyrics = LrcParser.Parse(System.IO.File.ReadAllText(possiblelrcfile));
                 break;
             }
-            catch { }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
 
         }
         var txtfiles = Directory.EnumerateFiles(DirUrl, Path.GetFileNameWithoutExtension(FileUrl) + ".txt",

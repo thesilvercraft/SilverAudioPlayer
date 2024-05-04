@@ -100,6 +100,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         outputDevice?.Stop();
         audioFile?.Dispose();
         audioFile=null;
+        if (LoadedStream is { CanRead: true })
+        {
+            LoadedStream.Dispose();
+        }
     }
 
     public void Pause()
@@ -129,9 +133,22 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
         else
         {
+            bool rgSuccess = false;
+            bool Album = false;
             SearchForReplayGain = false;
             if (playerEnvironment == null) return;
-            var e = playerEnvironment.GetEnteriesForCurrentTrack();
+            var e = playerEnvironment.GetEntriesForCurrentTrack();
+            float? TryGetReplayGainPeak(bool album)
+            {
+                if (e!=null && e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out string al) && float.TryParse(al, out var r))
+                {
+                    return r;
+                }
+                return null;
+            }
+            if (e != null)
+            {
+                
             bool TryGetReplayGain(bool album)
             {
                 if (!e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_GAIN", out string al) ||
@@ -139,16 +156,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 ReplayGainMultiplier = dBToRatio(r);
                 return true;
             }
-            float? TryGetReplayGainPeak(bool album)
-            {
-                if (e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out string al) && float.TryParse(al, out var r))
-                {
-                    return r;
-                }
-                return null;
-            }
-            bool rgSuccess = false;
-            bool Album = false;
+         
+        
             if (Config.PreferAlbumReplayGain)
             {
                 rgSuccess = TryGetReplayGain(true);
@@ -169,6 +178,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                     Album = true;
                 }
             }
+            }
+
             if (rgSuccess)
             {
                 if (Config.TrySafeReplayGain && TryGetReplayGainPeak(Album) is { } val)
@@ -198,8 +209,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public TimeSpan GetPosition()
     {
         if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
-        //this should not happen, but it has, anddddddd eh i might fix it later
-        logger?.Error("PlayProvider.NAudio THISSHOULDNOTHAPPEN GETPOS :(");
         return TimeSpan.Zero;
     }
 
@@ -255,7 +264,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
         {
             logger?.Warning("Doing silly stuff for mkv");
-
             var a = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".webm";
             var b = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".opus";
             using var fileWrite = File.OpenWrite(a);
@@ -276,12 +284,25 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 //nevermind
             }
         }
-        var wrapper = NaudioWaveStreamWrapperTypeHolder.Get().GetWrapper(stream);
-        if (wrapper != null)
+        var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream);
+
+        var naudioWaveStreamWrappers = wrappers.ToList();
+        if (naudioWaveStreamWrappers.Count != 0)
         {
-            Decoder = wrapper.GetType().FullName + " (" + stream.MimeType + ")";
-            LoadedStream = stream.GetStream();
-            audioFile = wrapper.GetStream(LoadedStream);
+            foreach (var wrapper in naudioWaveStreamWrappers)
+            {
+                try
+                {
+                    Decoder = wrapper.GetType().FullName + " (" + stream.MimeType + ")";
+                    LoadedStream = stream.GetStream();
+                    audioFile = wrapper.GetStream(LoadedStream);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    logger?.Error(e,"Failed to use {WrapperType}", wrapper.GetType());
+                }
+            }
         }
         else if (stream is WrappedFileStream wf)
         {
@@ -298,7 +319,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         else
             outputDevice.Stop();
         ReplayGainMultiplier = 1;
-        SearchForReplayGain = Config.EnableReplayGain;
+        SearchForReplayGain = Config?.EnableReplayGain ?? false;
         SetVolume(Volume);
         outputDevice?.Init(audioFile);
         LoadedWrappedStream = stream;

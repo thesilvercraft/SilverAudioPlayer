@@ -1,8 +1,8 @@
 namespace sndfile;
 
-public enum Whence : int
+public enum Whence : uint
 {
-    Current=1,
-    Set=0,
-    End=2
+    Current= Methods.SF_SEEK_CUR,
+    Set=Methods.SF_SEEK_SET,
+    End=Methods.SF_SEEK_END
 }

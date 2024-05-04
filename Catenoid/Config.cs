@@ -7,17 +7,12 @@ using System.Xml.Serialization;
 using Avalonia.Controls;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
-
 namespace Catenoid;
-
-
 
 public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
 {
-
-
     public event PropertyChangedEventHandler? PropertyChanged;
-void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
+    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {
         PropertyChanged?.Invoke(e, a);
     }
@@ -25,9 +20,9 @@ void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedE
     public RepeatState LoopType { get; set; } = RepeatState.None;
 
     [Comment("1-100 number, linearity not guaranteed.")]
-    public byte Volume { get=> volume; set=>this.ThrottleSet(ref volume, value); }
+    public byte Volume { get=> _volume; set=>this.ThrottleSet(ref _volume, value); }
     [XmlIgnore] 
-    public byte volume=70;
+    private byte _volume =70;
     [Comment("Folder suggested to OS when the open file dialog is chosen, can be 'Music','Desktop','Downloads','Pictures','Videos' (user's special folders), any other valid folder path or nothing, if its nothing the os wont be given a suggested starting point.")]
 
     public string DialogStartLoc { get; set; } = "";
@@ -39,6 +34,8 @@ void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedE
     public bool SaveLoadLoc{get;set;}=true;
     public int[] Pos{get;set;}=[0,0];
     public double[] Size{get;set;}=[0,0];
+    [Comment("How many lyrics should be shown from the current lyric, -1 to disable autoscroll, -2 for auto")]
+    public int LyricsAdvance { get; set; } = -2;
     public WindowState State{get;set;}=WindowState.Maximized;
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];

@@ -29,7 +29,9 @@ public class MidiMetadata : Metadata
         SyncedLyrics = theTrack.GetTimedEvents().Where(x => x.Event is LyricEvent).Select(x =>
         {
             if (x.Event is LyricEvent y)
+            {
                 return new LyricPhrase(x.TimeAs<MetricTimeSpan>(theTrack.GetTempoMap()).TotalMilliseconds, y.Text);
+            }
             return null;
         }).Where(x => x is not null).ToList();
         DiscNumber = 0;

@@ -20,7 +20,7 @@ public class LibSndFile : INaudioWaveStreamWrapper
             Log.Error("LIBSNDFILE not found, not supporting libsndfile playback");
         }
     }
-    public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.AiffMime, KnownMimes.OGGMime, KnownMimes.MP3Mime];
+    public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.AiffMime, KnownMimes.OGGMime]; //, KnownMimes.MP3Mime //Libmpeg123 keeps complaining about my http stream being not nice
 
     public bool SupportedOnPlatform => DllLoc.Any(x => Path.Exists(x));
     static readonly string[] DllLoc = ["libsndfile.so","/usr/lib/x86_64-linux-gnu/libsndfile.so",

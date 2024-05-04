@@ -11,7 +11,7 @@ public interface IPlayerEnvironment : ICodeInformation
 {
     public Task<IMetadata?>? GetMetadataAsync(WrappedStream stream);
     public Task<IReadOnlyList<MimeType>> SupportedMimeTypes();
-    public IDictionary<string,string>? GetEnteriesForCurrentTrack();
+    public IDictionary<string,string>? GetEntriesForCurrentTrack();
 }
 
 public interface IFullPlayerEnvironment : IPlayStreamProviderListener,

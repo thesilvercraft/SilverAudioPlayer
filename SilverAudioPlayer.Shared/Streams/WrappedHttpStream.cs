@@ -38,8 +38,9 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     public Dictionary<long, MemoryStream> CachedStreams = new();
 
-    //Values tested 8192, 81920, 512000 
-    private const int BuffLength = 512000;
+    
+    private const int BuffLength =  524288;  // 512 KiB
+    private int MaxChunksToBufferAhead = 6; // Have the next 3MiB buffered
 
     #region Not supported methods
 
@@ -113,10 +114,53 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         throw new Exception($"HTTP Status code {r.StatusCode}");
     }
 
+    private Dictionary<long, Task> BeingDownloaded=new();
+    
+    Task ReadChunk(long chunkNum, CancellationToken token=default, bool au=false)
+    {
+        
+        if (!au && BeingDownloaded.TryGetValue(chunkNum, out var chunk)) return chunk;
+        void SeeBufferNext()
+        {
+            if (BeingDownloaded.ContainsKey(chunkNum + 1)) return;
+                if (Math.Abs(_currentPos - chunkNum * BuffLength) / BuffLength >= MaxChunksToBufferAhead) return;
+                if ((Length / BuffLength) - 1 <= chunkNum + 1) return;
+                Debug.WriteLine($"adding chunk number {chunkNum+1}");
+                BeingDownloaded[chunkNum + 1]=  Task.Run(() =>
+                {
+                    ReadChunk(chunkNum + 1, token,true);
+                });
+               
+        }
+
+        Debug.WriteLine($"Downloading chunk number {chunkNum}");
+        var byteToStartAt = chunkNum * BuffLength;
+        if (CachedStreams.ContainsKey(chunkNum))
+        {
+            SeeBufferNext();
+            return Task.CompletedTask;
+        }
+        using var currentStream = GetStream(byteToStartAt);
+        var b = new byte[BuffLength];
+        var toRead = BuffLength;
+        var offset = 0;
+        var read = 0;
+        do
+        {
+            read = currentStream.Read(b, offset, toRead);
+            offset += read;
+            toRead -= read;
+        } while (read > 0);
+
+        MemoryStream stream = new(b, 0, offset, false);
+        CachedStreams[chunkNum] = stream;
+        SeeBufferNext();
+        return Task.CompletedTask;
+
+    }
     private Tuple<long, long>? ReadStream(long containingByte)
     {
         var streamToRead = (_currentPos / BuffLength);
-        var byteToStartAt = streamToRead * BuffLength;
         if (containingByte > Length)
         {
             return null;
@@ -124,25 +168,10 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
         lock (CachedStreams)
         {
-            if (CachedStreams.ContainsKey(streamToRead))
+            if (!CachedStreams.ContainsKey(streamToRead))
             {
-                return new(streamToRead, _currentPos % BuffLength);
+                ReadChunk(streamToRead, default).GetAwaiter().GetResult();
             }
-
-            using var currentStream = GetStream(byteToStartAt);
-            var b = new byte[BuffLength];
-            var toRead = BuffLength;
-            var offset = 0;
-            var read = 0;
-            do
-            {
-                read = currentStream.Read(b, offset, toRead);
-                offset += read;
-                toRead -= read;
-            } while (read > 0);
-
-            MemoryStream stream = new(b, 0, offset, false);
-            CachedStreams[streamToRead] = stream;
             return new(streamToRead, _currentPos % BuffLength);
         }
     }
@@ -197,14 +226,13 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         switch (origin)
         {
             case SeekOrigin.Begin:
-                
                 _currentPos = offset;
                 break;
             case SeekOrigin.Current:
                 _currentPos += offset;
                 break;
             case SeekOrigin.End:
-                _currentPos = Length - offset;
+                _currentPos = Length - Math.Abs( offset);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(origin), origin, null);

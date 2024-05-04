@@ -8,7 +8,7 @@ using SilverMagicBytes;
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
 [Export(typeof(INaudioWaveStreamWrapper))]
-public class FlacNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
+public class FlacNAudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.FLACMime];
     public bool SupportedOnPlatform => true;

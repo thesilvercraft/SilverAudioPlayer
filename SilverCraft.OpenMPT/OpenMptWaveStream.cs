@@ -36,7 +36,7 @@ public unsafe class OpenMptWaveStream : ISampleSource, ISelector, ILoop
             {
                 framesRead = (int)NativeMethods.openmpt_module_read_float_stereo(infile, 48000, (nuint)count, leftPtr, rightPtr);
             }
-            for (int i = 0; i < framesRead; i++)
+            for (var i = 0; i < framesRead; i++)
             {
                 buffer[offset + i * 2] = left[i];
                 buffer[offset + i * 2 + 1] = right[i];

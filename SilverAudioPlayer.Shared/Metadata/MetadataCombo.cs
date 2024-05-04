@@ -23,10 +23,7 @@ public class MetadataCombo : IMetadataCombo
             //There is a chance that the unsynced lyrics are actually synced, lets try and read them
             try
             {
-                var s = Opportunity.LrcParser.Lyrics.Parse(Lyrics);
-                SyncedLyrics = s.Lyrics.Lines.Select(x =>
-                        new LyricPhrase((int)(x.Timestamp.Ticks / TimeSpan.TicksPerMillisecond), x.Content + "\n"))
-                    .ToList();
+                SyncedLyrics = LrcParser.Parse(Lyrics);
             }
             catch (Exception e)
             {

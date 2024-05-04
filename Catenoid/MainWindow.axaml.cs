@@ -90,7 +90,7 @@ public partial class MainWindow : Window
 
 
     public readonly MainWindowContext dc;
-    public SapAvaloniaPlayerEnviroment Env { get; }
+    public IFullPlayerEnvironment Env => Logic.PlayerEnvironment;
     private bool en;
     private bool en2;
     private MetadataView? metadataView;
@@ -103,35 +103,6 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
-        if (OperatingSystem.IsLinux())
-        {
-            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
-        }
-
-        AddHandler(DragDrop.DropEvent, Drop);
-        AddHandler(DragDrop.DragOverEvent, DragOver);
-        PlayButton.Click += PlayButton_Click;
-        PauseButton.Click += PauseButton_Click;
-        StopButton.Click += StopButton_Click;
-        PB = this.FindControl<ProgressBar>("PB");
-        LT = this.FindControl<TextBlock>("LT");
-        mainListBox = this.FindControl<ListBox>("mainListBox");
-        PB.PointerReleased += PB_PointerReleased;
-        mainListBox.DoubleTapped += TreeView_DoubleTapped;
-        Closing += MainWindow_Closing;
-        Opened += MainWindow_Opened;
-        Settings.Click += Settings_Click;
-        CommandMenu.Click += CommandMenuClick;
-
-        mainListBox.PointerMoved += TreeView_PointerMoved;
-        mainListBox.PointerReleased += TreeView_PointerReleased;
-        mainListBox.PointerPressed += TreeView_PointerPressed1;
-        Env = new SapAvaloniaPlayerEnviroment(this);
-
         dc = new MainWindowContext(this)
         {
             SetLoopType = lt =>
@@ -355,8 +326,35 @@ public partial class MainWindow : Window
                          return w.Selected;
                      });
             },
-            PlayerEnvironment = Env
+            
         };
+        Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic);
+        InitializeComponent();
+#if DEBUG
+        this.AttachDevTools();
+#endif
+        if (OperatingSystem.IsLinux())
+        {
+            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
+        }
+ 
+        AddHandler(DragDrop.DropEvent, Drop);
+        AddHandler(DragDrop.DragOverEvent, DragOver);
+        PlayButton.Click += PlayButton_Click;
+        PauseButton.Click += PauseButton_Click;
+        StopButton.Click += StopButton_Click;
+        PB = this.FindControl<ProgressBar>("PB");
+        LT = this.FindControl<TextBlock>("LT");
+        mainListBox = this.FindControl<ListBox>("mainListBox");
+        PB.PointerReleased += PB_PointerReleased;
+        mainListBox.DoubleTapped += TreeView_DoubleTapped;
+        Closing += MainWindow_Closing;
+        Opened += MainWindow_Opened;
+        Settings.Click += Settings_Click;
+        CommandMenu.Click += CommandMenuClick;
+        mainListBox.PointerMoved += TreeView_PointerMoved;
+        mainListBox.PointerReleased += TreeView_PointerReleased;
+        mainListBox.PointerPressed += TreeView_PointerPressed1;
         config.PropertyChanged += Config_PropertyChanged;
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
         ob.Subscribe(x => dc.Title = x.Value);
@@ -376,33 +374,25 @@ public partial class MainWindow : Window
     }
     void FindPrevShutdownAndLoad()
     {
-        if (config.AutoSave && dc.Queue.Count == 0)
+        if (!config.AutoSave || dc.Queue.Count != 0) return;
+        var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+        if (!Directory.Exists(dirpath)) return;
+        var filepath = Path.Combine(dirpath, "AutoSave.spl.br");
+        if (!File.Exists(filepath)) return;
+        var pl = Logic.TryReadPlaylist(new WrappedFileStream(filepath));
+        if (pl == null) return;
+        foreach (var song in pl.Tracks)
         {
-            var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
-            if (Directory.Exists(dirpath))
+            foreach (var source in song.TrackLoadInfos)
             {
-                var filepath = Path.Combine(dirpath, "AutoSave.spl.br");
-                if (File.Exists(filepath))
-                {
-                    var pl = Logic.TryReadPlaylist(new WrappedFileStream(filepath));
-                    if (pl == null) return;
-                    foreach (var song in pl.Tracks)
-                    {
-                        foreach (var source in song.TrackLoadInfos)
-                        {
-                            Logic.AddWithURLBad(source.URL, source.Source == "http", false);
-                            break;
-                        }
-                    }
-                    if (pl.IndexOfActive != null && dc.Queue.Count > pl.IndexOfActive)
-                    {
-                        Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value], true);
-                        Logic.SetPosition(pl.PositionOfActive ?? 1);
-                    }
-                }
+                Logic.AddWithURLBad(source.URL, source.Source == "http", false);
+                break;
             }
-
         }
+
+        if (pl.IndexOfActive == null || !(dc.Queue.Count > pl.IndexOfActive)) return;
+        Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value], true);
+        Logic.SetPosition(pl.PositionOfActive ?? 1);
     }
 
 

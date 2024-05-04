@@ -24,6 +24,11 @@ public class SndFileWaveStream : ISampleSource
 
         info = new SF_INFO();
         infile = Methods.sf_open_virtual(ref IO, Mode.Read, ref info, 0);
+        if (infile == null)
+        {
+            Helper.Dispose();
+            throw new Exception($"SndFile {Marshal.PtrToStringAnsi((IntPtr)Methods.sf_strerror(null))}");
+        }
         WaveFormat = new WaveFormat(info.samplerate, 32, info.channels);
         Length = info.frames * info.channels;
         Debug.WriteLine($"Length {Length}");
@@ -47,7 +52,18 @@ public class SndFileWaveStream : ISampleSource
     }
     public unsafe void Dispose()
     {
+      
         Debug.WriteLine("Disposing SndFileWaveStream!");
+#if DEBUG
+        var st = new StackTrace(true);
+        for(int i =0; i< st.FrameCount; i++ )
+        {
+            // Note that high up the call stack, there is only
+            // one stack frame.
+            var sf = st.GetFrame(i);
+            Debug.WriteLine($"{sf.GetMethod()} { sf.GetFileLineNumber()}");
+        }
+#endif
         _ = Methods.sf_close(infile);
         Debug.WriteLine("Disposing SfVirtualStreamHelper");
         Helper.Dispose();

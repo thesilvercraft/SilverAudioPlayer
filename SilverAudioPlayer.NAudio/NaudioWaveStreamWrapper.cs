@@ -866,6 +866,10 @@ public class NaudioWaveStreamWrapperTypes
     {
         return GetWrappers().First(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
     }
+    public IEnumerable<INaudioWaveStreamWrapper> GetWrappers(WrappedStream stream)
+    {
+        return GetWrappers().Where(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
+    }
 
     public bool HasWrapper(WrappedStream stream)
     {

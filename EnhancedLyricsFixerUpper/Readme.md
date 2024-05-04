@@ -1,0 +1,2 @@
+Do you ever create enhanced lyrics using an automated tool only to realise that the formatting is off and then spend minutes of your time doing the proper formatting?  
+After said formatting aren't some tags [] when they're supposed to be <> and vice versa? Well this simple tool takes your lyrics and replaces the first tag on each line with [] and every other tag with <>

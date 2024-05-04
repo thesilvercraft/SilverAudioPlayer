@@ -42,7 +42,7 @@ public class App
         Logger.GetLoggerFunc += logger.ForContext;
         Context context = new();
         Logic<Context> Logic = new(context);
-        ConsoleEnviroment env = new(Logic);
+        ConsoleEnvironment env = new(Logic);
         Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
         PlatformLogicHelper.SatisfyImports(Logic);
         if (Logic.PlayProviders == null)

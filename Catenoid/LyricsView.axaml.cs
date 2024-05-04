@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,10 +15,12 @@ namespace Catenoid;
 public partial class LyricsView : Window
 {
     private MainWindow mainWindow;
-    private byte AutoScroll = 2;
     public LyricsView()
     {
         InitializeComponent();
+#if DEBUG
+        this.AttachDevTools();
+#endif
         this.DoAfterInitTasksF();
     }
 
@@ -85,35 +88,53 @@ public partial class LyricsView : Window
                     {
                         value.Text += lyric.Content;
                     }
-                      if (lyric.Content.EndsWith('\n'))
+
+                    if (!lyric.Content.EndsWith('\n')) continue;
+                    StackPanel newLinePanel = new()
                     {
-                        StackPanel newLinePanel = new()
-                        {
-                            Orientation = Orientation.Horizontal
-                        };
-                        g.Children.Add(newLinePanel);
-                        parentPanel = newLinePanel;
-                    }
+                        Orientation = Orientation.Horizontal
+                    };
+                    g.Children.Add(newLinePanel);
+                    parentPanel = newLinePanel;
                 }
             }
             var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
             double? lastr = null;
             foreach (var x in d)
+            {
+                if (heightm == 20.12242)
+                {
+                    if(x.Value.Bounds.Size.Height>heightm)
+                        heightm=x.Value.Bounds.Size.Height+ x.Value.Padding.Top+
+                                x.Value.Padding.Bottom;
+                }
+            
+                
                 if (x.Key <= pos)
                 {
                     x.Value.Foreground = red;
                     lastr = x.Key;
                 }
                 else
+                {
                     x.Value.Foreground = white;
+                }
+            }
+                
 
-            if (AutoScroll>0 && lastr is {} c)
+            if (mainWindow.config.LyricsAdvance!=-1  && lastr is {} c)
             {
-                var a = AutoScroll - 1;
+                var a = mainWindow.config.LyricsAdvance;
+                if (a < -1)
+                {
+                    a = Math.Max(1, (int)(Height / heightm / 2));
+                }
                 SelectableTextBlock t = d[d.Keys.ElementAt( Math.Min( d.Keys.Count-1, d.Keys.IndexOf(c)+a))];
                 t.BringIntoView(new Rect(0, t.Bounds.Height, t.Bounds.Width, t.Bounds.Height));
             }
             return !close;
         }, TimeSpan.FromMilliseconds(25), DispatcherPriority.Render);
     }
+    double heightm = 20.12242;
+
 }
