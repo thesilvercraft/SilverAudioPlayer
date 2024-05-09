@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 
 namespace SilverAudioPlayer.Shared.Metadata;
 
@@ -62,10 +63,10 @@ public static class LrcParser
     private static bool TryParseTime(string time, out long timeInMS)
     {
         if (time.IndexOf(':') is { } msep and >= 0
-            && int.TryParse(time[0..msep], out var m)
+            && int.TryParse(time[0..msep],CultureInfo.InvariantCulture, out var m)
             && time.IndexOf('.') is { } ssep and >= 0
-            && int.TryParse(time[(msep + 1)..ssep], out var s)
-            && double.TryParse('0'+time[(ssep )..], out var h)) //Apparently modern day tools cannot follow the simple MM:SS:XX (where XX is centisecond, where 01 is 10ms) and some tools prefer saying .981 (instead of just rounding it up to .98) 
+            && int.TryParse(time[(msep + 1)..ssep],CultureInfo.InvariantCulture, out var s)
+            && double.TryParse('0'+time[(ssep )..], CultureInfo.InvariantCulture,  out var h)) //Apparently modern day tools cannot follow the simple MM:SS.XX (where XX is centisecond, where 01 is 10ms) and some tools prefer saying .981 (instead of just rounding it up to .98) 
         {
             timeInMS = (int)(h* 1000) + (((m * 60) + s) * 1000);
             return true;
