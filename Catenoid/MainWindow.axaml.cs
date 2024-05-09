@@ -615,11 +615,6 @@ public partial class MainWindow : Window
 
     private void DragOver(object? sender, DragEventArgs e)
     {
-        if (e == null)
-        {
-            return;
-        }
-
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
         else if (e.Data.Contains(DataFormats.Files) || e.Data.Contains("UniformResourceLocatorW"))
@@ -630,11 +625,6 @@ public partial class MainWindow : Window
 
     private void Drop(object? sender, DragEventArgs e)
     {
-        if (e == null)
-        {
-            return;
-        }
-
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
         else
@@ -651,8 +641,6 @@ public partial class MainWindow : Window
         if (!e.Data.Contains("UniformResourceLocatorW")) return;
         {
             var url = e!.Data!.GetText();
-
-
             if (!string.IsNullOrEmpty(url))
             {
                 Logic.ProcessFiles([url]);

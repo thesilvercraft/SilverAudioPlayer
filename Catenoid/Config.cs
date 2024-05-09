@@ -65,7 +65,7 @@ public enum ConfigStyle
 }
 public static class ThrottleConfigExtensions
 {
-    public static Dictionary<long, Task> keyPairs=new();
+    private static readonly Dictionary<long, Task> KeyPairs=new();
     public static TRet ThrottleSet<TObj, TRet>(this TObj config, ref TRet backing, TRet value, [CallerMemberName] string? name = null) where TObj : INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -74,16 +74,15 @@ public static class ThrottleConfigExtensions
             return value;
         }
         backing = value;
-        int c=config.GetHashCode()<<name.GetHashCode();
-        if(!keyPairs.ContainsKey(c) ||keyPairs[c].Status is TaskStatus.Canceled or TaskStatus.RanToCompletion or TaskStatus.Faulted )
+        var c=config.GetHashCode()<<name.GetHashCode();
+        if(!KeyPairs.ContainsKey(c) ||KeyPairs[c].Status is TaskStatus.Canceled or TaskStatus.RanToCompletion or TaskStatus.Faulted )
         {
-            keyPairs[c]=Task.Run(async()=>{
-await Task.Delay(100);
-((ICanBeToldThatAPartOfMeIsChanged)config).PropertyChanged(config, new PropertyChangedEventArgs(name));
-
+            KeyPairs[c] = Task.Run(async() =>
+            {
+                await Task.Delay(100);
+                config.PropertyChanged(config, new PropertyChangedEventArgs(name));
             });
         }
-        
         return value;
     }
 }

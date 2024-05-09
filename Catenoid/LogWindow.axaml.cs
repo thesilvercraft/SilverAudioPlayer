@@ -10,7 +10,7 @@ public partial class LogWindow : Window
     {
         InitializeComponent();
         TextBox.Text = App.sink.writer.ToString();
-        App.sink.New += (s) => Task.Run(() => Dispatcher.UIThread.InvokeAsync(() => TextBox.AppendText(s)));
+        App.sink.New += s => Task.Run(() => Dispatcher.UIThread.InvokeAsync(() => TextBox.AppendText(s)));
         this.DoAfterInitTasksF();
     }
 }

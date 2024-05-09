@@ -13,7 +13,7 @@ namespace SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio
         }
         [Comment("Volume default")]
         public byte VolDef { get; set; } = 40;
-        [Comment("Volume when in vechicle")]
+        [Comment("Volume when in vehicle")]
         public byte VolVeh { get; set; } = 100;
 
         [XmlIgnore] public bool AllowedToRead { get; set; } = true;

@@ -39,37 +39,38 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
         ConfigurableElements =
         [
             new SimpleTextBox
-                { GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolDef.ToString(), GetPlaceholder= ()=>"L", SetContent = c => {
-                     Debug.WriteLine("l1");
-
-                    if(ConfigObject.Value is FortniteCarRadioConfig x)
+                { 
+                    GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolDef.ToString(),
+                    GetPlaceholder= () => "L",
+                    SetContent = c => 
                     {
-                        x.VolDef= byte.Parse(c);
-                    }
-
-                },
-
+                        if(ConfigObject.Value is FortniteCarRadioConfig x)
+                        {
+                           x.VolDef = byte.Parse(c);
+                        }
+                    },
                 },
              new SimpleTextBox
-                { GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolVeh.ToString(),
-                 GetPlaceholder= ()=>"L", 
-                 SetContent = c => {
-                     Debug.WriteLine("l2");
-                    if(ConfigObject.Value is FortniteCarRadioConfig x)
+                { 
+                    GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolVeh.ToString(),
+                    GetPlaceholder= () => "L", 
+                    SetContent = c => 
                     {
-                        x.VolVeh= byte.Parse(c);
-                    }
-                },
+                        if(ConfigObject.Value is FortniteCarRadioConfig x)
+                        {
+                            x.VolVeh = byte.Parse(c);
+                        }
+                    },
                 },
                new SimpleButton
-                { GetContent= ()=>"save",
-                 Clicked= () =>
-                 { if(ConfigObject.Value is FortniteCarRadioConfig x)
+                { 
+                    GetContent= () => "save",
+                    Clicked= () =>
                     {
+                        if (ConfigObject.Value is not FortniteCarRadioConfig x) return;
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolDef"));
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolVeh"));
-                     }
-                 }
+                    }
                 }
         ];
     }
@@ -98,7 +99,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
     static string FortniteLogDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\FortniteGame\Saved\Logs";
     static string FortniteLog = Path.Combine(FortniteLogDir , "FortniteGame.log");
   
-    StreamReader StreamReader;
+    StreamReader? StreamReader;
     private void NewWrite(object sender, FileSystemEventArgs e)
     {
         if (!_IsStarted) return;
@@ -117,13 +118,14 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
             //what
             return;
         }
-        string currentLine;
+        string? currentLine;
         while ((currentLine = StreamReader.ReadLine()) != null) // go through the new lines.
         {
             if (currentLine.Contains("Adding scene: VehicleHUD_Scene"))
-                {
+            {
                 Env.SetVolume(((FortniteCarRadioConfig)ConfigObject.Value).VolVeh);
-            }else if(currentLine.Contains("Removing scene: VehicleHUD_Scene"))
+            }
+            else if(currentLine.Contains("Removing scene: VehicleHUD_Scene"))
             {
                 Env.SetVolume(((FortniteCarRadioConfig)ConfigObject.Value).VolDef);
             }
@@ -133,6 +135,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
    
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
+        if (!File.Exists(FortniteLog)) return;
         Env = listener;
         _IsStarted = true;
         Watcher = new FileSystemWatcher

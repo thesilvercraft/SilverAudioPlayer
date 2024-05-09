@@ -18,7 +18,6 @@ namespace SilverAudioPlayerBuilder
             {"NA", "NAudio, player, (with CSCore, PortAudio, libsndfile, openmpt) on Win/Linux" },
             {"LLib","Local library, musiclibrary, Proof-Of-Concept" },
             {"DISCRD","Discord, status interface, Alpha" },
-            {"CAST","Chromecast player, Proof-Of-Concept" },
             {"VLC","libVLC, player, partially broken on Win" },
             {"SMTC","System Media Transport Controls, Windows 10+, WINDOWS SDK NEEDED" },
             {"FRT","Fortnite Car, music status, radio volume changer, Windows" },

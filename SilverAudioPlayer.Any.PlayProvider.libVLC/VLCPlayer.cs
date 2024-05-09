@@ -35,9 +35,8 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
             return null;
         }
 
-        public PlaybackState? GetPlaybackState()
-        {
-            return mp.State switch
+        public PlaybackState? GetPlaybackState() =>
+            mp.State switch
             {
                 VLCState.NothingSpecial => PlaybackState.Stopped,
                 VLCState.Opening => PlaybackState.Buffering,
@@ -48,9 +47,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
                 VLCState.Ended => PlaybackState.Stopped,
                 VLCState.Error => PlaybackState.Stopped,
                 _ => throw new NotSupportedException()
-
             };
-        }
 
         public TimeSpan GetPosition()
         {
@@ -83,35 +80,17 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
             TrackPause?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Play()
-        {
-            mp.Play();
-        }
+        public void Play() => mp.Play();
 
-        public void Resume()
-        {
-            mp.Play();
-        }
+        public void Resume() => mp.Play();
 
-        public void SetPosition(TimeSpan position)
-        {
-            mp.Position = (float)position.TotalMilliseconds / mp.Length;
-        }
+        public void SetPosition(TimeSpan position) => mp.Position = (float)position.TotalMilliseconds / mp.Length;
 
-        public void SetVolume(byte volume)
-        {
-            mp.Volume = volume;
-        }
+        public void SetVolume(byte volume) => mp.Volume = volume;
 
-        public void Stop()
-        {
-            Task.Run(mp.Stop);  
-        }
+        public void Stop() => Task.Run(mp.Stop);
 
-        public void Dispose()
-        {
-            mp.Dispose();
-        }
+        public void Dispose() => mp.Dispose();
     }
 
 }

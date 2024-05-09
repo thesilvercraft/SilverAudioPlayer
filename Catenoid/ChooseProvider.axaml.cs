@@ -29,11 +29,9 @@ namespace Catenoid
 
         private void CapBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if(CapBox.SelectedItem != null)
-            {
-                Selected = ((InfoPRecord)CapBox.SelectedItem).Item;
-                Close();
-            }
+            if (CapBox.SelectedItem == null) return;
+            Selected = ((InfoPRecord)CapBox.SelectedItem).Item;
+            Close();
         }
         public bool? SetAsDefaultForFileType => dc.SetAsDefaultForFileType;
 

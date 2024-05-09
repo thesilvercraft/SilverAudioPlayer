@@ -120,9 +120,9 @@ public partial class LyricsView : Window
                     x.Value.Foreground = white;
                 }
             }
-                
 
-            if (mainWindow.config.LyricsAdvance!=-1  && lastr is {} c)
+
+            if (mainWindow == null || mainWindow.config.LyricsAdvance == -1 || lastr is not { } c) return !close;
             {
                 var a = mainWindow.config.LyricsAdvance;
                 if (a < -1)
