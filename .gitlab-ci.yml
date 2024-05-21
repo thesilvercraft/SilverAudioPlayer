@@ -29,7 +29,7 @@ build-linux:
     paths:
       - catenoid-publish
   tags:
-    - linux
+    - saas-linux-small-amd64
 
 build-windows:
   stage: build
@@ -43,4 +43,4 @@ build-windows:
     paths:
       - catenoid-publish
   tags:
-    - windows
+    - saas-windows-medium-amd64
