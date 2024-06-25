@@ -26,28 +26,25 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         {
             Metadata ??= Task.Run(async () => await logic.GetMetadataFromStream(Stream)!).GetAwaiter().GetResult();
         }
-
-        if (metadata is not null)
-        {
-            var a = metadata?.Title?.GetHashCode()??-1;
-            var b = metadata?.Artist?.GetHashCode()??-1;
-            var c = metadata?.Album?.GetHashCode()??-1;
-            var d = metadata?.Genre?.GetHashCode()??-1;
-            List<byte> by =
-            [
-                .. BitConverter.GetBytes(a),
-                .. BitConverter.GetBytes(b),
-                .. BitConverter.GetBytes(c),
-                .. BitConverter.GetBytes(d),
-            ];
-            Guid = new Guid(by.ToArray());
-        }
-        else
-        {
-            Guid = Guid.NewGuid();
-        }
+        Guid = GetIdFromMetadata(metadata);
     }
-    
+
+    public static Guid GetIdFromMetadata(IMetadata? metadata)
+    {
+        if (metadata is null) return Guid.NewGuid();
+        var a = metadata?.Title?.GetHashCode()??-1;
+        var b = metadata?.Artist?.GetHashCode()??-1;
+        var c = metadata?.Album?.GetHashCode()??-1;
+        var d = metadata?.Genre?.GetHashCode()??-1;
+        List<byte> by =
+        [
+            .. BitConverter.GetBytes(a),
+            .. BitConverter.GetBytes(b),
+            .. BitConverter.GetBytes(c),
+            .. BitConverter.GetBytes(d),
+        ];
+        return new Guid(by.ToArray());
+    }
     public WrappedStream Stream { get; set; }
     public string URI { get; set; }
     public string Name { get; set; }

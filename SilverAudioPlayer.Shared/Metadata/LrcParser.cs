@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Globalization;
 
 namespace SilverAudioPlayer.Shared.Metadata;
@@ -8,7 +7,7 @@ public static class LrcParser
     public static LrcFile Parse(string lyrics)
     {
         LrcFile file = new();
-        var lrcLines = lyrics.Split(Environment.NewLine);
+        var lrcLines = lyrics.Split("\n");
         foreach (var line in lrcLines)
         {
             if (TryParse(line, out var phrases, file))
@@ -44,16 +43,15 @@ public static class LrcParser
                     bracketL = 1;
                 }
             }
-            if (x[i] == '>')
+
+            if (x[i] != '>') continue;
+            if (bracketL == 1)
             {
-                if (bracketL == 1)
-                {
-                    bracketL = -1;
-                }
-                else
-                {
-                    return false;
-                }
+                bracketL = -1;
+            }
+            else
+            {
+                return false;
             }
         }
 

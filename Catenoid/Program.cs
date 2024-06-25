@@ -1,4 +1,9 @@
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Net.Http.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Dialogs;
 using Avalonia.Svg.Skia;
@@ -14,13 +19,71 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var app = BuildAvaloniaApp();
-        if(WindowExtensions.envBackend.GetString("SAPTransparency")==null)
+        using (Mutex mutex = new(false, @"Global\" + "Catenoid"))
         {
-            WindowExtensions.envBackend.SetString("SAPTransparency","Mica,AcrylicBlur,Blur,None");
+            bool hasMutex=false;
+            try
+            {
+                if (WindowExtensions.envBackend.GetString("SAPIgnoreMutex") == null)
+                {
+
+                    if (!mutex.WaitOne(0, false))
+                    {
+                        if (args is { Length: > 0 })
+                        {
+                            try
+                            {
+                                var r = Task.Run(async () => await SilverAudioPlayer.Shared.HttpClient.Client.PostAsync("http://localhost:36169/loadfiles", JsonContent.Create(args))).GetAwaiter().GetResult();
+                                r.EnsureSuccessStatusCode();
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex.ToString());
+                                if (File.Exists("/usr/bin/kdialog"))
+                                {
+                                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
+                                }
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                var r = Task.Run(async () => await SilverAudioPlayer.Shared.HttpClient.Client.GetAsync("http://localhost:36169/state")).GetAwaiter().GetResult();
+                                r.EnsureSuccessStatusCode();
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex.ToString());
+                                if (File.Exists("/usr/bin/kdialog"))
+                                {
+                                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
+                                }
+                            }
+                        }
+                        return;
+                    }
+                }
+                hasMutex=true;
+                var app = BuildAvaloniaApp();
+                if (WindowExtensions.envBackend.GetString("SAPTransparency") == null)
+                {
+                    WindowExtensions.envBackend.SetString("SAPTransparency", "Mica,AcrylicBlur,Blur,None");
+                }
+                if (Environment.GetEnvironmentVariable("SAPUseNativeDialog") == "yes") app = app.UseManagedSystemDialogs();
+                app.StartWithClassicDesktopLifetime(args);
+            }
+            finally
+            {
+                if(hasMutex)
+                {
+                    mutex.ReleaseMutex();
+                }
+            }
+
         }
-        if (Environment.GetEnvironmentVariable("SAPUseNativeDialog")=="yes") app = app.UseManagedSystemDialogs();
-        app.StartWithClassicDesktopLifetime(args);
+
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.

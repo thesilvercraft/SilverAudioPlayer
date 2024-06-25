@@ -17,7 +17,7 @@ public class JukeConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChang
 {
     [Comment("Should the web interface allow loading URLs")]
 
-    public bool AllowLoading { get; set; } = false;
+    public bool AllowLoading { get; set; } = true;
     public bool ReadOnly { get; set; } = false;
     public bool UseSwagger { get; set; } = false;
     public bool UseSwaggerUI { get; set; } = false;
@@ -72,8 +72,12 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
         builder.Host.UseSerilog(_logger);
         builder.WebHost.UseUrls("http://localhost:36169");
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        if (jukeConfig.UseSwagger)
+        {
+            builder.Services.AddSwaggerGen();
+        }
         app = builder.Build();
+        Links.Add(new(new("http://localhost:36169/state"), URLType.Unknown));
         if (jukeConfig.UseSwagger)
         {
             app.UseSwagger();
@@ -112,11 +116,11 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
         }).WithName("GetBestRepresentation");
         if (jukeConfig.AllowLoading && listener is IPlayStreamProviderListener streamProviderListener)
         {
-            app.MapGet("/loadfile", (string file) =>
+            app.MapPost("/loadfile", (string file) =>
             {
                 streamProviderListener.ProcessFiles(new List<string> { file });
             }).WithName("ProcessFile");
-            app.MapGet("/loadfiles", ([FromBody] string[] files) =>
+            app.MapPost("/loadfiles", ([FromBody] string[] files) =>
             {
                 streamProviderListener.ProcessFiles(files.ToList());
             }).WithName("ProcessFiles");

@@ -62,7 +62,7 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
     }
     public override T? Read(string path)
     {
-        Debug.WriteLine($"Reading config");
+        Debug.WriteLine($"Reading config {path}");
         T c;
         if (Locks.TryGetValue(path, out var obj))
         {

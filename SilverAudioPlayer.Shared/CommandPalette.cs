@@ -38,7 +38,7 @@ public class ComandPalette
 /// <summary>
 /// https://stackoverflow.com/a/6944095
 /// </summary>
-static class LevenshteinDistance
+public static class LevenshteinDistance
 {
     public static int Compute(string s, string t)
     {

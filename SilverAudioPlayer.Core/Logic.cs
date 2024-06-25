@@ -549,7 +549,6 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream, PlayerEnvironment);
     }
 
-
     public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata = null)
     {
         var listofmetadatas = MetadataProviders?.Where(x => x.CanGetMetadata(stream))
@@ -560,6 +559,8 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         }
         return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas, MetadataGatherers));
     }
+
+
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
     {

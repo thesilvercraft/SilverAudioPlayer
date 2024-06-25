@@ -21,9 +21,11 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/Catenoid.dll",
-            "args": [],
+            "args": ["/home/silver/Music/music/Pepsi Man/01 PEPSI MAN(ORIGINAL MIX).flac"],
             "env":{
-                "DISPLAY":":0"
+                "DISPLAY":":0",
+                "DOTNET_GCHeapHardLimit":"C800000",
+                "DOTNET_GCConserveMemory":"9"
             },
             "cwd": "${workspaceFolder}/Catenoid/bin/Debug/net8.0/",
             "justMyCode": false,

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CSCore;
 using CSCore.SoundOut;
@@ -21,14 +22,6 @@ public sealed class CallbackHelper
 //https://www.portaudio.com/docs/v19-doxydocs/writing_a_callback.html
 public class PortAudioSoundOut : ISoundOut
 {
-    public PortAudioSoundOut()
-    {
-
-    }
-    public PortAudioSoundOut(ushort bufferLength) : this()
-    {
-        Buffer = bufferLength;
-    }
     public float Volume { get; set; }
 
     public IWaveSource? WaveSource { get; set; }
@@ -48,8 +41,14 @@ public class PortAudioSoundOut : ISoundOut
             return false;
         }
     }
+    [Conditional("DEBUG")]
+    void DebugTrace(string message = null,  [CallerMemberName] string method = null)
+    {
+        Debug.WriteLine($"PORTAUDIO {method} {message}");
+    }
     public void Dispose()
     {
+        DebugTrace();
         if (!isPAInit)
         {
             var err = NativeMethods.Pa_Terminate();
@@ -64,12 +63,17 @@ public class PortAudioSoundOut : ISoundOut
     }
     void OnStop()
     {
+        DebugTrace();
+
         PlaybackState = PlaybackState.Stopped;
         Task.Run(() =>
         {
             unsafe
             {
-                ThrowIfError(NativeMethods.Pa_CloseStream(stream));
+                if(stream!=null)
+                {
+                    ThrowIfError(NativeMethods.Pa_CloseStream(stream));
+                }
                 stream = null;
                 buffer = null;
             }
@@ -87,9 +91,10 @@ public class PortAudioSoundOut : ISoundOut
             throw new Exception($"PortAudio failed, error code {err} ({Marshal.PtrToStringAnsi((IntPtr)NativeMethods.Pa_GetErrorText(err))}) in method {callerName} in {path}:{num}");
         }
     }
-    public ushort Buffer { get; set; } = 50;
-    public void Initialize(IWaveSource source)
+    public unsafe void Initialize(IWaveSource source)
     {
+        DebugTrace();
+
         if (!isPAInit)
         {
             ThrowIfError(NativeMethods.Pa_Initialize());
@@ -111,7 +116,7 @@ public class PortAudioSoundOut : ISoundOut
                                          SampleSource.WaveFormat.Channels,
                                         NativeMethods.paFloat32,
                                         SampleSource.WaveFormat.SampleRate,
-                                        (nuint)(Buffer / 1000d * WaveSource.WaveFormat.SampleRate),//frames per buffer      
+                                        0,
                                         c.CallBack,
                                         0));
             this.stream = stream;
@@ -146,46 +151,47 @@ public class PortAudioSoundOut : ISoundOut
         OnStop();
         return (int)PaStreamCallbackResult.paComplete;
     }
-
-    public unsafe void Pause()
+    public unsafe void MakeSureStreamIsNotNull(PaStream* stream)
     {
-        if (PlaybackState == PlaybackState.Playing)
-        {
-            ThrowIfError(NativeMethods.Pa_StopStream(stream));
-            PlaybackState = PlaybackState.Paused;
-        }
+        ArgumentNullException.ThrowIfNull(stream, nameof(stream));
     }
+    
 
     public unsafe void Play()
     {
-        if (PlaybackState != PlaybackState.Playing)
-        {
-            ThrowIfError(NativeMethods.Pa_StartStream(stream));
-            PlaybackState = PlaybackState.Playing;
-        }
+        DebugTrace();
+        if (PlaybackState == PlaybackState.Playing) return;
+        MakeSureStreamIsNotNull(stream);
+        Task.Run(() => ThrowIfError(NativeMethods.Pa_StartStream(stream)));
+        PlaybackState = PlaybackState.Playing;
     }
 
     public unsafe void Resume()
     {
-        if (PlaybackState == PlaybackState.Paused)
-        {
-            ThrowIfError(NativeMethods.Pa_StartStream(stream));
-            PlaybackState = PlaybackState.Playing;
-        }
+        if (PlaybackState != PlaybackState.Paused) return;
+        Play();
     }
+    public unsafe void Pause()
+    {
+        DebugTrace();
 
+        if (PlaybackState != PlaybackState.Playing) return;
+        MakeSureStreamIsNotNull(stream);
+        ThrowIfError(NativeMethods.Pa_StopStream(stream));
+        PlaybackState = PlaybackState.Paused;
+    }
     public unsafe void Stop()
     {
+        if (PlaybackState == PlaybackState.Stopped) return;
+        DebugTrace();
         if (PlaybackState == PlaybackState.Paused)
         {
             PlaybackState = PlaybackState.Stopped;
             OnStop();
             return;
         }
-        if (PlaybackState != PlaybackState.Stopped)
-        {
-            ThrowIfError(NativeMethods.Pa_StopStream(stream));
-            OnStop();
-        }
+        MakeSureStreamIsNotNull(stream);
+        ThrowIfError(NativeMethods.Pa_StopStream(stream));
+        OnStop();
     }
 }

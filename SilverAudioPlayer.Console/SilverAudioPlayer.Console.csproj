@@ -14,7 +14,7 @@
 		<!--DryWetMidi-->
 <!--		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
 		<!--Z440AtlCore-->
-		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
+		 <DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 		<!--NAudio-->
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
 		<DefineConstants>$(DefineConstants)CSCORE</DefineConstants>
@@ -37,7 +37,7 @@
 		<!-- sync plugin  - POC -->
     	<!-- <DefineConstants>$(DefineConstants)LSync</DefineConstants> -->
 		<!-- linux platform - POC -->
-		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
+		 <DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
 		<!-- managed midi - POC -->
 <!--	<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>-->
 		<!-- music brainz - pre POC -->

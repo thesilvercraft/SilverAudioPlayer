@@ -16,7 +16,8 @@ public class MetadataCombo : IMetadataCombo
     public MetadataCombo(IReadOnlyCollection<IMetadata> metadata, IEnumerable<IAdditionalMetadataGatherer> metadataGatherers)
     {
         OriginalMetadata = metadata.OrderBy(x=>x.GetType().Name.Contains("FileMetadata")).ToList();
-        OriginalMetadata.AddRange(metadataGatherers.Select(x=>x.GatherAdditionalMetadata(this)).Where(x=> x is not null).Cast<IMetadata>());
+        OriginalMetadata.AddRange(metadataGatherers.Select(x => x.GatherAdditionalMetadata(this))
+                .Where(x => x is not null).Cast<IMetadata>());
         SyncedLyrics = OriginalMetadata.Select(x => x.SyncedLyrics).Where(x=>x is not null).MaxBy(x => x!.Count);
         if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrEmpty(Lyrics) && (Lyrics[0] == '['))
         {

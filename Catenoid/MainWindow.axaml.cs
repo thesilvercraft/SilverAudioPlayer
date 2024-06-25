@@ -114,16 +114,14 @@ public partial class MainWindow : Window
                 }
 
                 dc?.RaisePropertyChanged(nameof(dc.LoopType));
-                if (Player != null && Player is ILoop loop)
+                if (Player is not ILoop loop) return;
+                if (dc.LoopType == RepeatState.One)
                 {
-                    if (dc.LoopType == RepeatState.One)
-                    {
-                        loop.EnableLoop();
-                    }
-                    else
-                    {
-                        loop.DisableLoop();
-                    }
+                    loop.EnableLoop();
+                }
+                else
+                {
+                    loop.DisableLoop();
                 }
             },
 
@@ -150,7 +148,7 @@ public partial class MainWindow : Window
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     PB.Maximum = scrl.TotalMilliseconds;
-                    RT.Text = scrl.ToString();
+                    RT.Text = scrl.ToString(TimestampFormat);
                 });
             },
             HandleLateStageMetadataAndScrollBar = () =>
@@ -201,56 +199,54 @@ public partial class MainWindow : Window
 
                             AlbumArtTransparencyChanged = false;
                             var imageData = CurrentSong.Metadata.Pictures[0].Data;
-                            if (imageData != null)
+                            if (imageData == null) return;
+                            try
                             {
-                                try
+                                using var imageDataStream = imageData.GetStream();
+                                var bmp = new Bitmap(imageDataStream);
+                                Image.Source = bmp;
+                                if (config.DisableAlbumArtBlur)
                                 {
-                                    using var imageDataStream = imageData.GetStream();
-                                    var bmp = new Bitmap(imageDataStream);
-                                    Image.Source = bmp;
-                                    if (config.DisableAlbumArtBlur)
-                                    {
-                                        return;
-                                    }
+                                    return;
+                                }
 
-                                    using MemoryStream blur = new();
-                                    using var stream = imageData.GetStream();
-                                    using var wrbmp = SKBitmap.Decode(stream);
-                                    var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
-                                    using (var surface = SKSurface.Create(info))
+                                using MemoryStream blur = new();
+                                using var stream = imageData.GetStream();
+                                using var wrbmp = SKBitmap.Decode(stream);
+                                var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
+                                using (var surface = SKSurface.Create(info))
+                                {
+                                    var canvas = surface.Canvas;
+                                    using (var paint = new SKPaint())
                                     {
-                                        var canvas = surface.Canvas;
-                                        using (var paint = new SKPaint())
-                                        {
-                                            paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                                            paint.ColorFilter =
-                                                SKColorFilter.CreateColorMatrix(
-                                                [
-                                                    1, 0, 0, 0, 0,
+                                        paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                                        paint.ColorFilter =
+                                            SKColorFilter.CreateColorMatrix(
+                                            [
+                                                1, 0, 0, 0, 0,
                                                 0, 1, 0, 0, 0,
                                                 0, 0, 1, 0, 0,
                                                 0, 0, 0, config.AlbumArtTransparency, 0
-                                                ]);
-                                            canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
-                                        }
-
-                                        surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
-                                            .CopyTo(blur);
-                                        blur.Position = 0;
+                                            ]);
+                                        canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
                                     }
-                                    var imgbrsh = new ImageBrush(new Bitmap(blur))
-                                    {
-                                        Stretch = Stretch.UniformToFill
-                                    };
-                                    var s = Background;
-                                    Background = imgbrsh;
-                                    var x = s as IDisposable;
-                                    x?.Dispose();
+
+                                    surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
+                                        .CopyTo(blur);
+                                    blur.Position = 0;
                                 }
-                                catch (Exception ex)
+                                var imgbrsh = new ImageBrush(new Bitmap(blur))
                                 {
-                                    Log.Error(ex, "Error loading image into main window");
-                                }
+                                    Stretch = Stretch.UniformToFill
+                                };
+                                var s = Background;
+                                Background = imgbrsh;
+                                var x = s as IDisposable;
+                                x?.Dispose();
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, "Error loading image into main window");
                             }
                         }
                         else
@@ -301,32 +297,42 @@ public partial class MainWindow : Window
         {
             ChoosePlayProvider = async (x, m) =>
             {
-                if (x.Count() < 2)
+                var playProviders = x.ToList();
+                if (playProviders.Count < 2)
                 {
-                    return x.FirstOrDefault();
+                    return playProviders.FirstOrDefault();
                 }
-                if (config.PreferredPlayers.TryGetValue(m.MimeType.Common, out var v))
-                {
-                    var y = x.FirstOrDefault(x => x.GetType().FullName == v);
-                    if (y != null)
+
+                if (!config.PreferredPlayers.TryGetValue(m.MimeType.Common, out var v))
+                    return (IPlayProvider?)await Dispatcher.UIThread.InvokeAsync(async () =>
                     {
-                        return y;
-                    }
+                        ChooseProvider w = new();
+                        w.SetProviders(playProviders);
+                        await w.ShowDialog(this);
+
+                        if (w.SetAsDefaultForFileType != true) return w.Selected;
+                        config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
+
+                        reader.Write(config, App._configPath);
+                        return w.Selected;
+                    });
+                var y = playProviders.FirstOrDefault(playProvider => playProvider.GetType().FullName == v);
+                if (y != null)
+                {
+                    return y;
                 }
                 return (IPlayProvider?)await Dispatcher.UIThread.InvokeAsync(async () =>
                      {
                          ChooseProvider w = new();
-                         w.SetProviders(x);
+                         w.SetProviders(playProviders);
                          await w.ShowDialog(this);
 
                          if (w.SetAsDefaultForFileType != true) return w.Selected;
                          config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
-
                          reader.Write(config, App._configPath);
                          return w.Selected;
                      });
             },
-            
         };
         Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic);
         InitializeComponent();
@@ -489,14 +495,12 @@ public partial class MainWindow : Window
     private void MainWindow_Opened(object? sender, EventArgs e)
     {
         Logic.MainWindow_Opened(Env);
-        if (config.SaveLoadLoc)
-        {
-            WindowStartupLocation = WindowStartupLocation.Manual;
-            Position = new(config.Pos[0], config.Pos[1]); //TODO FIX
-            Width = config.Size[0];
-            Height = config.Size[1];
-            WindowState = config.State;
-        }
+        if (!config.SaveLoadLoc) return;
+        WindowStartupLocation = WindowStartupLocation.Manual;
+        Position = new(config.Pos[0], config.Pos[1]); //TODO FIX
+        Width = config.Size[0];
+        Height = config.Size[1];
+        WindowState = config.State;
     }
 
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
@@ -562,7 +566,7 @@ public partial class MainWindow : Window
 
     private void PlayButton_Click(object? x, RoutedEventArgs y) => Logic.Play();
 
-
+    private string TimestampFormat = "hh\\:mm\\:ss\\.ff";
     private void SeekBarUpdateThread(CancellationToken e)
     {
         var exit = false;
@@ -579,7 +583,7 @@ public partial class MainWindow : Window
                         {
                             var x = Player?.GetPosition() ?? TimeSpan.FromMilliseconds(2);
                             PB.Value = x.TotalMilliseconds % PB.Maximum;
-                            LT.Text = x.ToString();
+                            LT.Text = x.ToString(TimestampFormat);
                         }
 
                         exit = PB.Value >= PB.Maximum;

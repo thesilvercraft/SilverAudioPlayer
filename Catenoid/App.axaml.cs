@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -143,18 +145,18 @@ public class App : Application
             mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
             if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
             mwconfig = mwconfreader.Read(_configPath) ?? new Config();
-              if (mwconfig is INotifyPropertyChanged y)
+            if (mwconfig is INotifyPropertyChanged y)
+            {
+                y.PropertyChanged += (x, y) =>
+                {
+                    if (x == mwconfig && mwconfig is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
                     {
-                        y.PropertyChanged += (x, y) =>
-                        {
-                            if (x == mwconfig && mwconfig is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
-                            {
-                                L.AllowedToRead = false;
-                                mwconfreader.Write(mwconfig, _configPath);
-                                L.AllowedToRead = true;
-                            }
-                        };
+                        L.AllowedToRead = false;
+                        mwconfreader.Write(mwconfig, _configPath);
+                        L.AllowedToRead = true;
                     }
+                };
+            }
             BootupLogic.ConfigureHttpClient();
             if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
             {
@@ -240,7 +242,6 @@ public class App : Application
             mw.Logic.ProcessFiles(desktop.Args);
             mw.Startup();
         }
-
         base.OnFrameworkInitializationCompleted();
     }
 }

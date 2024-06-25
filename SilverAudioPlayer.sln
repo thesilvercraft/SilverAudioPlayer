@@ -103,6 +103,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Test.Wave
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedLyricsFixerUpper", "EnhancedLyricsFixerUpper\EnhancedLyricsFixerUpper.csproj", "{F1B75971-9338-4890-A43F-A8D57ADA378D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz", "SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj", "{5A3F122B-D01A-49E4-9450-12DD3D242333}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -707,6 +709,22 @@ Global
 		{F1B75971-9338-4890-A43F-A8D57ADA378D}.Release|x64.Build.0 = Release|Any CPU
 		{F1B75971-9338-4890-A43F-A8D57ADA378D}.Release|x86.ActiveCfg = Release|Any CPU
 		{F1B75971-9338-4890-A43F-A8D57ADA378D}.Release|x86.Build.0 = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|arm64.Build.0 = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|x64.Build.0 = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Debug|x86.Build.0 = Debug|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|arm64.ActiveCfg = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|arm64.Build.0 = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x64.ActiveCfg = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x64.Build.0 = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x86.ActiveCfg = Release|Any CPU
+		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -741,6 +759,7 @@ Global
 		{4DCB106D-9371-41DF-B1EB-41C7EF961182} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
 		{37D44200-F658-4F45-B6E2-755AC94CD41B} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
 		{C350EF66-4F3B-40EE-80EA-3EE6CA55BB6E} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
+		{5A3F122B-D01A-49E4-9450-12DD3D242333} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

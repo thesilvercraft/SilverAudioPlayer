@@ -48,12 +48,12 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             if (PortAudioSoundOut.IsSupported())
             {
                 logger?.Information("initing backend CSCorePlayer PortAudioSoundOut");
-                outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new PortAudioSoundOut(50));
+                outputDevice = new CSCorePlayer(new PortAudioSoundOut());
             }
             else if (ALSoundOut.IsSupported)
             {
                 logger?.Information("initing backend CSCorePlayer ALSoundOut");
-                outputDevice = new Any.PlayProvider.NAudio.CSCorePlayer(new ALSoundOut(50));
+                outputDevice = new CSCorePlayer(new ALSoundOut(50));
             }
         }
         else

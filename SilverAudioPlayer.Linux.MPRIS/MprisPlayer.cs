@@ -243,7 +243,6 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
 
     public async Task<object> GetAsync(string prop)
     {
-        Debug.WriteLine(prop);
         prop = prop.ToLower();
         return prop switch
         {
@@ -295,13 +294,11 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     Task<IDisposable> IPlayer.WatchPropertiesAsync(Action<PropertyChanges> handler)
     {
         return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(PropertyChanged), handler));
-
     }
 
     Task<IDisposable> IMediaPlayer2.WatchPropertiesAsync(Action<PropertyChanges> handler)
     {
         return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(BoringPropertyChanged), handler));
-
     }
     public Task QuitAsync()
     {
