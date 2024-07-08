@@ -397,7 +397,7 @@ public partial class MainWindow : Window
         }
 
         if (pl.IndexOfActive == null || !(dc.Queue.Count > pl.IndexOfActive)) return;
-        Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value], true);
+        Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value]);
         Logic.SetPosition(pl.PositionOfActive ?? 1);
     }
 
@@ -531,7 +531,7 @@ public partial class MainWindow : Window
 
     private void TreeView_DoubleTapped(object? sender, RoutedEventArgs e)
     {
-        if (mainListBox.SelectedItem is Song song) Logic.HandleSongChanging(song, CurrentSong == null);
+        if (mainListBox.SelectedItem is Song song) Logic.HandleSongChanging(song);
     }
 
     private void StopButton_Click(object? sender, RoutedEventArgs e)

@@ -13,6 +13,8 @@ public class App
 
     public static void Main(string[] args)
     {
+        System.Console.OutputEncoding = System.Text.Encoding.Unicode;
+        System.Console.InputEncoding = System.Text.Encoding.Unicode;
         Config mwconfig;
         CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
         string _configPath;
@@ -68,16 +70,24 @@ public class App
                 if (playprovider != null)
                     await playprovider.OnStartup();
         });
-
-
+        foreach (var metadataGatherer in Logic.MetadataGatherers)
+        {
+            if (metadataGatherer is IMetadataPictureOptOut s)
+            {
+                s.StopLoadingPictures();
+            }
+        }
+        foreach (var metadataProvider in Logic.MetadataProviders)
+        {
+            if (metadataProvider is IMetadataPictureOptOut s)
+            {
+                s.StopLoadingPictures();
+            }
+        }
         BootupLogic.SetupMemoryLogic(Logic);
 
         Logic.PlayerEnvironment = env;
         Logic.Log = logger;
-        if (args.Length == 0)
-        {
-            //args = ["https://www.youtube.com/watch?v=qXwqaRHr3hg"];
-        }
         Logic.ProcessFiles(args);
         Logic.MainWindow_Opened(env);
         Logic.StartPlaying();
@@ -103,7 +113,7 @@ public class App
                     System.Console.Clear();
                     prevsize=System.Console.WindowHeight;
                 }
-                System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():g}/{Logic.Player?.Length():g} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
+                System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():hh\\:mm\\:ss\\.ff}/{Logic.Player?.Length():hh\\:mm\\:ss\\.ff} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
                 if (context?.CurrentSong?.Metadata?.SyncedLyrics is { } lyrics && lyrics.Count > 1)
                 {
                     int last = 0;

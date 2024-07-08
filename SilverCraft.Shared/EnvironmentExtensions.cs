@@ -14,18 +14,27 @@ public static class EnvironmentExtensions
         else
             throw new NotSupportedException("Os not supported");
     }
-    public static void OpenFolder(string folder)
+    public static void OpenFolder(string path)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            Process.Start(new ProcessStartInfo("explorer.exe", $"{folder}") { CreateNoWindow = true });
+        {
+            if(File.Exists(path))
+            {
+                Process.Start(new ProcessStartInfo("explorer.exe", $"/select, \"{path}\"") { CreateNoWindow = true });
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo("explorer.exe", $"\"{path}\"") { CreateNoWindow = true });
+            }
+        }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             string method = null;
-            if (File.Exists(folder))
+            if (File.Exists(path))
             {
                 method = "org.freedesktop.FileManager1.ShowItems";
             }
-            else if (Directory.Exists(folder))
+            else if (Directory.Exists(path))
             {
                 method = "org.freedesktop.FileManager1.ShowFolders";
             }
@@ -35,7 +44,7 @@ public static class EnvironmentExtensions
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = "dbus-send",
-                    Arguments = $"--session --print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 {method} array:string:\"{folder}\" string:\"\"",
+                    Arguments = $"--session --print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 {method} array:string:\"{path}\" string:\"\"",
                     UseShellExecute = true
                 }
             };      

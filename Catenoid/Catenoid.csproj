@@ -59,11 +59,11 @@
 		<!-- <DefineConstants>$(DefineConstants)VLC</DefineConstants> -->
 		<!--Windows only-->
 		<!--System Media Transport Controls - windows 10+-->
-<!--        <DefineConstants>$(DefineConstants)SMTC</DefineConstants>-->
+        <DefineConstants Condition=" '$(OS)' == 'Windows_NT' ">$(DefineConstants)SMTC</DefineConstants>
 		<!--Fortnite - windows (alpha)-->
-<!--		<DefineConstants>$(DefineConstants)FRT</DefineConstants>-->
+        <!--<DefineConstants Condition=" '$(OS)' == 'Windows_NT' ">$(DefineConstants)FRT</DefineConstants>-->
 		<!--CD Art Display - windows 7+-->
-<!--    <DefineConstants>$(DefineConstants)CAD</DefineConstants>-->
+        <!--<DefineConstants Condition=" '$(OS)' == 'Windows_NT' ">$(DefineConstants)CAD</DefineConstants>-->
 		<!--LINUX ONLY-->
 		<!--MPRIS DBUS STUFF - linux -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
@@ -77,6 +77,7 @@
 		<DefineConstants>$(DefineConstants)juke</DefineConstants>
 		<!-- music brainz - POC -->
 <!--	<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
+	    <DefineConstants>$(DefineConstants)listenbrainz</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(DefineConstants.Contains('BuildFor'))">
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
@@ -109,7 +110,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj" Condition="$(DefineConstants.Contains('listenbrainz'))"/>
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.Sync\SilverAudioPlayer.Any.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />

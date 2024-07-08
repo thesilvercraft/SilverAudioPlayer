@@ -1,5 +1,7 @@
 ﻿using System.Composition;
 using ATL;
+using ATL.Logging;
+using Serilog.Events;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
@@ -10,9 +12,14 @@ namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 [Export(typeof(IMetadataProvider))]
 public class AtlCoreFileMetadataProvider : IMetadataProvider,
-    IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin
-{
+    IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin, IMetadataPictureOptOut
+ {
 
+    public AtlCoreFileMetadataProvider()
+    {
+        log = new();
+    }
+    ATLSerilogDevice log;
     public ObjectToRemember ConfigObject =
         new(Guid.Parse("97db82ee-ac2c-4772-b3f6-ca45957316a8"), new ZAtlCoreConfig());
 
@@ -83,10 +90,14 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         if (!GetAllowedMidi() && stream.MimeType == KnownMimes.MidMime) return false;
         return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;
     }
-
+    private bool stopLoadingPictures = false;
+    public void StopLoadingPictures()
+    {
+        stopLoadingPictures = true;
+    }
     public Task<IMetadata?> GetMetadata(WrappedStream stream)
     {
-        return Task.FromResult((IMetadata?)new AtlCoreMetadata(stream));
+        return Task.FromResult((IMetadata?)new AtlCoreMetadata(stream, stopLoadingPictures));
     }
 
     public void ConfigureUi(IConfigurableListener env)
@@ -107,4 +118,29 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         window?.SetTitle($"Configuring {Name}");
         window?.Show();
     }
+
+}
+public class ATLSerilogDevice : ILogDevice
+{
+  Log theLog = new();
+  Serilog.ILogger? logger;
+  public ATLSerilogDevice()
+  {
+      LogDelegator.SetLog(ref theLog);
+      theLog.Register(this);
+      logger = Logger.GetLogger(typeof(AtlCoreFileMetadataProvider));
+
+  }
+
+  public void DoLog(Log.LogItem anItem)
+  {
+      logger.Write(anItem.Level switch
+      {
+          8 => LogEventLevel.Debug,
+          4 => LogEventLevel.Information,
+          2 => LogEventLevel.Warning,
+          1 => LogEventLevel.Error,
+          _ => throw new NotImplementedException(),
+      }, anItem.Location + " | " + anItem.Message);
+  }
 }

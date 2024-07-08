@@ -184,7 +184,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         var a = PlayerContext.Queue.IndexOf(PlayerContext.CurrentSong);
         if (a == -1 || a + 1 >= PlayerContext.Queue.Count) return;
         _changeAllowed = false;
-        HandleSongChanging(PlayerContext.Queue[a + 1], true);
+        HandleSongChanging(PlayerContext.Queue[a + 1]);
         _changeAllowed = true;
     }
 
@@ -194,7 +194,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         var a = PlayerContext.Queue.IndexOf(PlayerContext.CurrentSong);
         if (a == -1 || a - 1 < 0) return;
         _changeAllowed = false;
-        HandleSongChanging(PlayerContext.Queue[a - 1], true);
+        HandleSongChanging(PlayerContext.Queue[a - 1]);
         _changeAllowed = true;
     }
     public void SetPosition(double seconds) => Player?.SetPosition(TimeSpan.FromSeconds(seconds));
@@ -347,11 +347,11 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
             {
                 if (a + 1 < PlayerContext.Queue.Count)
                 {
-                    HandleSongChanging(PlayerContext.Queue[a + 1], true);
+                    HandleSongChanging(PlayerContext.Queue[a + 1]);
                 }
                 else if (PlayerContext.LoopType == RepeatState.Queue)
                 {
-                    HandleSongChanging(PlayerContext.Queue[0], true);
+                    HandleSongChanging(PlayerContext.Queue[0]);
                 }
                 else
                 {
@@ -362,7 +362,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
             else if (NextSong != null)
             {
                 PlayerContext.CurrentSong?.Dispose();
-                HandleSongChanging(NextSong, true);
+                HandleSongChanging(NextSong);
                 NextSong = null;
             }
             else
@@ -375,7 +375,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         StopAutoLoading = false;
     }
 
-    public void HandleSongChanging(Song nextSong, bool resetsal = false)
+    public void HandleSongChanging(Song nextSong)
     {
         Serilog.Log.Information("StopAutoLoading set to true in HandleSongChanging");
         StopAutoLoading = true;
@@ -386,7 +386,7 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         PlayerContext.CurrentSong = nextSong;
         Debug.Assert(PlayerContext.CurrentSong.Equals(nextSong));
         RemoveTrack();
-        StartPlaying(resetsal: resetsal);
+        StartPlaying(resetsal: true);
     }
 
     void ProcessFile(string file, bool oneFile)

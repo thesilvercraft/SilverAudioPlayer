@@ -7,6 +7,7 @@ using ATL.AudioData;
 #endif
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
+using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
@@ -50,40 +51,64 @@ public class AtlCoreMetadata : IMetadata
     private static readonly FieldInfo fileIO = typeof(Track)
         .GetField("fileIO", BindingFlags.NonPublic | BindingFlags.Instance);
 
-    private static readonly PropertyInfo tagData = typeof(MetaDataHolder)
-        .GetProperty("tagData", BindingFlags.NonPublic | BindingFlags.Instance);
 
 #endif
-    public AtlCoreMetadata(WrappedStream stream)
+    public AtlCoreMetadata(WrappedStream stream, bool stopLoadingPictures=false)
     {
         using var trackStream = stream.GetStream();
         theTrack = new Track(trackStream, stream.MimeType.RealMimeTypeToFakeMimeType());
-        _cachedPicture = theTrack?.EmbeddedPictures?.Where(x => x != null).Select(x => new ATLCOREPicture(x))
-            .ToList();
+        if(!stopLoadingPictures)
+        {
+            _cachedPicture = theTrack?.EmbeddedPictures?.Where(x => x != null).Select(x => new ATLCOREPicture(x))
+         .ToList();
+        }
+        else
+        {
+            _cachedPicture = [];
+        }
+     
 #if hackymemory
+
+        theTrack.EmbeddedPictures.Clear();
         (currentEmbeddedPictures.GetValue(theTrack) as ICollection<PictureInfo>).Clear();
         (initialEmbeddedPictures.GetValue(theTrack) as ICollection<PictureInfo>).Clear();
-        currentEmbeddedPictures.SetValue(theTrack, null);
-        initialEmbeddedPictures.SetValue(theTrack, null);
+        currentEmbeddedPictures.SetValue(theTrack, new List<PictureInfo>());
+        initialEmbeddedPictures.SetValue(theTrack, new List<PictureInfo>());
         var fio = fileIO.GetValue(theTrack);
         var fioType = fio.GetType();
-        var metaFF = fioType?.GetField("metaData", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (metaFF != null)
+        if (fio is IAudioDataIO fileio)
         {
-            var meta = metaFF.GetValue(fio) as IMetaDataIO;
-            if (meta is MetaDataHolder metaDataHolder)
+            var metaFF = fioType?.GetProperty("Metadata", BindingFlags.Instance | BindingFlags.Public);
+            var metaX = metaFF.GetValue(fio);
+            void ProcessTags(IMetaDataIO io)
             {
-                var tagddata = tagData.GetValue(metaDataHolder);
-                if (tagddata is TagData td)
+                if (io == null) return;
+                io.EmbeddedPictures.Clear();
+                if (io is MetaDataHolder metaDataHolder)
                 {
-                    td.Pictures.Clear();
-                    td.Pictures = null;
+                    metaDataHolder.EmbeddedPictures.Clear();
+                    metaDataHolder.EmbeddedPictures = [];
                 }
             }
+            if(metaX is IMetaDataIO meta)
+            {
+                ProcessTags(meta);
+            }
+            var audioDataManagerF = fioType?.GetField("audioManager", BindingFlags.Instance | BindingFlags.NonPublic);
+            AudioDataManager m = audioDataManagerF.GetValue(fio) as AudioDataManager;
+            if(m is { })
+            {
+                ProcessTags(m.ID3v1);
+                ProcessTags(m.ID3v2);
+                ProcessTags(m.APEtag);
+                ProcessTags(m.NativeTag);
+            }
+
         }
+
 #endif
         Enteries = theTrack?.AdditionalFields;
-        SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text)).ToList();
+        SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text.EndsWith('\n')?x.Text : x.Text+'\n')).ToList();
     }
 
 
