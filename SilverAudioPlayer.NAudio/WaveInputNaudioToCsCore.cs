@@ -1,5 +1,5 @@
 #if CSCore
-using CSCore;
+using SilverCraft.CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
 
@@ -27,7 +27,7 @@ public class WaveInputNaudioToCsCore : IWaveInput
 
     public bool CanSeek => _source is WaveStream;
 
-    CSCore.WaveFormat IAudioSource.WaveFormat => WaveFormatHelper.FromNAudioCore( _source.WaveFormat);
+    SilverCraft.CSCore.WaveFormat IAudioSource.WaveFormat => WaveFormatHelper.FromNAudioCore( _source.WaveFormat);
 
     long GetPos()
     {

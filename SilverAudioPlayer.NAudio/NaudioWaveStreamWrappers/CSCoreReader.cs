@@ -1,5 +1,5 @@
 #if CSCore
-using CSCore;
+using SilverCraft.CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
 

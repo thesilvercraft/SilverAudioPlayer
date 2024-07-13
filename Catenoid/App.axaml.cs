@@ -190,7 +190,7 @@ public class App : Application
                 File.WriteAllText(a, sink.writer.ToString());
                 if (File.Exists("/usr/bin/kdialog"))
                 {
-                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{y}\"");
+                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{y}\"");
                 }
             });
             Logger.GetLoggerFunc += logger.ForContext;

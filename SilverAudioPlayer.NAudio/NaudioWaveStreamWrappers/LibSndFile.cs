@@ -1,11 +1,11 @@
 #if CSCore
 using System.Composition;
-using CSCore;
+using SilverCraft.CSCore;
 using NAudio.Wave;
 using Serilog;
 using SilverAudioPlayer.NAudio;
-using SilverCraft.OpenMPT;
-using SilverCraft.SndFile;
+using SilverCraft.CSCore.OpenMPT;
+using SilverCraft.CSCore.SndFile;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;

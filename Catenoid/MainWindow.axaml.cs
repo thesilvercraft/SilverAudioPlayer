@@ -701,35 +701,7 @@ public partial class MainWindow : Window
 
     public void RemoveSelected(object sender, RoutedEventArgs e)
     {
-        Logic.Log.Information("RemoveSelected called");
-        while (dc.Selection.SelectedIndexes.Count != 0)
-        {
-            var selected = dc.Selection.SelectedItem;
-            if (selected == null)
-                return;
-            if (selected.Equals(Logic.NextSong))
-            {
-                Logic.Log.Information("Selected is nextsong");
-                var a = dc.Queue.IndexOf(selected);
-                if (dc.Queue.Count > a + 1)
-                {
-                    Logic.Log.Information("NextSong is set the next one");
-                    Logic.NextSong = dc.Queue[a + 1];
-                }
-                else
-                {
-                    Logic.Log.Information("NextSong is set to null");
-                    Logic.NextSong = null;
-                }
-            }
-
-            if (dc.CurrentSong?.Equals(selected) != true)
-            {
-                selected.Dispose();
-            }
-
-            dc.Queue.Remove(selected);
-        }
+        Logic.RemoveSongs(dc.Selection.SelectedItems);
     }
     private void ShowInFolder(object? sender, RoutedEventArgs e)
     {

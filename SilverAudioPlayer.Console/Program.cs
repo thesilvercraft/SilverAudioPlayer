@@ -26,21 +26,14 @@ public class App
         mwconfig = mwconfreader.Read(_configPath) ?? new Config();
         if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
         {
-            //todo: show user dialog to choose
+            //TODO: show user dialog to choose
         }
-        //todo: logging based on config
+        //TODO: logging based on config
         var logger = new LoggerConfiguration()
             .WriteTo.Debug(LogEventLevel.Debug)
             .CreateLogger();
         Log.Logger = logger;
-        BootupLogic.SetupCrashFallNets((Exception y) =>
-            {
-                if (File.Exists("/usr/bin/kdialog"))
-                {
-                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured and SilverAudioPlayer was forced to close\nPlease report this issue on gitlab.\" \"{y.ToString()}\"");
-                }
-            });
-
+        BootupLogic.SetupCrashFallNets(System.Console.Error.WriteLine);
         Logger.GetLoggerFunc += logger.ForContext;
         Context context = new();
         Logic<Context> Logic = new(context);
@@ -113,9 +106,10 @@ public class App
                     System.Console.Clear();
                     prevsize=System.Console.WindowHeight;
                 }
-                System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():hh\\:mm\\:ss\\.ff}/{Logic.Player?.Length():hh\\:mm\\:ss\\.ff} ({(Logic.Player?.GetPosition() / Logic.Player?.Length()) * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
+                System.Console.WriteLine($"{Logic.Player?.GetPlaybackState()} {Logic.Player?.GetPosition():hh\\:mm\\:ss\\.ff}/{Logic.Player?.Length():hh\\:mm\\:ss\\.ff} ({Logic.Player?.GetPosition() / Logic.Player?.Length() * 100:00.00}%) {context.CurrentSong?.TitleOrURLF}");
                 if (context?.CurrentSong?.Metadata?.SyncedLyrics is { } lyrics && lyrics.Count > 1)
                 {
+                    //TODO: split up lyrics by line
                     int last = 0;
                     for (int i = 0; i < lyrics.Count; i++)
                     {
@@ -139,7 +133,6 @@ public class App
                             for (int l = i; l > 0; l--)
                             {
                                 System.Console.WriteLine(lyrics[last - l].ToString().ReplaceLineEndings(""));
-
                             }
                             goto SLyric1;
 
@@ -154,7 +147,6 @@ public class App
                             for (int l = 1; l <= i; l++)
                             {
                                 System.Console.WriteLine(lyrics[last + l].ToString().ReplaceLineEndings(""));
-
                             }
                             goto SLyric2;
 

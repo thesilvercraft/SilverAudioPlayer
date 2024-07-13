@@ -22,7 +22,7 @@ public class CSCoreAiffFileReaderWrapper : INaudioWaveStreamWrapper
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = [KnownMimes.AiffMime];
     public bool SupportedOnPlatform => true;
 
-    public WaveStream GetStream(Stream stream) => new CSCoreReader(new CSCore.Codecs.AIFF.AiffReader(stream));
+    public WaveStream GetStream(Stream stream) => new CSCoreReader(new SilverCraft.CSCore.Codecs.AIFF.AiffReader(stream));
 
 }
 #endif

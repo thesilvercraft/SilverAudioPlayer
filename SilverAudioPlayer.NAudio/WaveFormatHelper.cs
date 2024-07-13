@@ -1,5 +1,5 @@
 #if CSCore
-using CSCore;
+using SilverCraft.CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
 
@@ -7,7 +7,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio;
 
 public class WaveFormatHelper
 {
-     public static CSCore.WaveFormat FromNAudioCore(WaveFormat format)
+     public static SilverCraft.CSCore.WaveFormat FromNAudioCore(WaveFormat format)
     {
         var encoding = format.Encoding switch
             {
@@ -173,9 +173,9 @@ public class WaveFormatHelper
                 _ =>  AudioEncoding.Unknown
             }
             ;
-        return new CSCore.WaveFormat(format.SampleRate, format.BitsPerSample, format.Channels, encoding);
+        return new SilverCraft.CSCore.WaveFormat(format.SampleRate, format.BitsPerSample, format.Channels, encoding);
     }
-     public static WaveFormat FromCSCore(CSCore.WaveFormat format)
+     public static WaveFormat FromCSCore(SilverCraft.CSCore.WaveFormat format)
     {
         var encoding = format.WaveFormatTag switch
             {

@@ -27,15 +27,15 @@
     <ItemGroup>
         <ProjectReference Include="..\Silver.Composition\Silver.Composition.csproj" />
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-        <ProjectReference Include="..\cscore\CSCore\CSCore.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <PackageReference Include="SilverCraft.CSCore" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="NAudio" Version="2.2.1" />
         <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
         <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-        <ProjectReference Include="..\SilverCraft.SndFile\SilverCraft.SndFile.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
-        <ProjectReference Include="..\SilverCraft.OpenMPT\SilverCraft.OpenMPT.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
-        <ProjectReference Include="..\SilverCraft.PortAudio\SilverCraft.PortAudio.csproj" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <PackageReference Include="SilverCraft.OpenMPT" Version="0.1.0"  Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
    
     </ItemGroup>
 

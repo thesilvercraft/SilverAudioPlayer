@@ -1,5 +1,5 @@
 #if CSCore
-using CSCore.SoundOut;
+using SilverCraft.CSCore.SoundOut;
 using NAudio.Wave;
 using PlaybackState = NAudio.Wave.PlaybackState;
 using StoppedEventArgs = NAudio.Wave.StoppedEventArgs;
@@ -64,9 +64,9 @@ public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
     {
         return _soundOut.PlaybackState switch
         {
-            CSCore.SoundOut.PlaybackState.Stopped => PlaybackState.Stopped,
-            CSCore.SoundOut.PlaybackState.Playing => PlaybackState.Playing,
-            CSCore.SoundOut.PlaybackState.Paused => PlaybackState.Paused,
+            SilverCraft.CSCore.SoundOut.PlaybackState.Stopped => PlaybackState.Stopped,
+            SilverCraft.CSCore.SoundOut.PlaybackState.Playing => PlaybackState.Playing,
+            SilverCraft.CSCore.SoundOut.PlaybackState.Paused => PlaybackState.Paused,
             _ => PlaybackState.Stopped,
         };
     }

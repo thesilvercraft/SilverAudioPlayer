@@ -24,7 +24,9 @@ public class PlayerContext : ReactiveObject
         get => GetVolume();
         set => VolumeChanged(value);
     }
-
+    /// <summary>
+    /// The player's queue, please don't add or remove from here but use the Logic's AddSong or RemoveSong
+    /// </summary>
     public IList<Song> Queue
     {
         get => GetQueue();

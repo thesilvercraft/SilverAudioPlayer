@@ -152,7 +152,6 @@ public class MusicBrainzMetadata : IMetadata
 public class Data
 {
     public List<Guid> DontSearch { get; set; } = [];
-   
     public SerializableDictionary<Guid, MusicBrainzMetadata> Recordings { get; set; } = [];
     public Dictionary<string, List<MusicBrainzMetadata>> AlbumCache { get; set; } = [];
     public List<Guid> AlbumDownloaded { get; set; } = [];

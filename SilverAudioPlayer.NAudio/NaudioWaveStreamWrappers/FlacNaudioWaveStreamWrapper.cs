@@ -1,6 +1,6 @@
 ﻿#if CSCore
 using System.Composition;
-using CSCore.Codecs.FLAC;
+using SilverCraft.CSCore.Codecs.FLAC;
 using NAudio.Wave;
 using SilverAudioPlayer.NAudio;
 using SilverMagicBytes;

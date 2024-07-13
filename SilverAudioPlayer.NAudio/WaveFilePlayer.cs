@@ -5,8 +5,8 @@ using Serilog;
 using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Shared;
 #if CSCore
-using SilverCraft.PortAudio;
-using CSCore.SoundOut;
+using SilverCraft.CSCore.PortAudio;
+using SilverCraft.CSCore.SoundOut;
 #endif
 using SilverMagicBytes;
 
@@ -28,7 +28,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     static WaveFilePlayer()
     {
-        CSCore.LogLocation.GetFunc = Logger.GetLogger;
+        SilverCraft.CSCore.LogLocation.GetFunc = Logger.GetLogger;
     }
     public static bool IsBackendAvaliable()
     {
@@ -350,7 +350,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             {
                 return cselector.CanLoop;
             }
-            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            else if (cSCoreReader._reader is SilverCraft.CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
             {
                 return selector.CanLoop;
             }
@@ -369,7 +369,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             {
                 return cselector.CurrentPattern;
             }
-            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            else if (cSCoreReader._reader is SilverCraft.CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
             {
                 return selector.CurrentPattern;
             }
@@ -388,7 +388,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             {
                 return cselector.NumberOfPatterns;
             }
-            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            else if (cSCoreReader._reader is SilverCraft.CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
             {
                 return selector.NumberOfPatterns;
             }
@@ -407,7 +407,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             {
                 cselector.SetPattern(pattern);
             }
-            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
+            else if (cSCoreReader._reader is SilverCraft.CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ISelector selector)
             {
                 selector.SetPattern(pattern);
             }
@@ -426,7 +426,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             {
                 cselector.EnableLoop();
             }
-            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            else if (cSCoreReader._reader is SilverCraft.CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
             {
                 selector.EnableLoop();
             }
@@ -445,7 +445,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             {
                 cselector.DisableLoop();
             }
-            else if (cSCoreReader._reader is CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
+            else if (cSCoreReader._reader is SilverCraft.CSCore.Streams.SampleConverter.SampleToWaveBase sampleToIeeeFloat32 && sampleToIeeeFloat32.Source is ILoop selector)
             {
                 selector.DisableLoop();
             }

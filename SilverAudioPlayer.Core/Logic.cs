@@ -299,7 +299,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 await Task.Delay(600);
                 if (Player is ILoop loop)
                 {
-                    if (PlayerContext.LoopType == RepeatState.One) 
+                    if (PlayerContext.LoopType == RepeatState.One)
                         loop.EnableLoop();
                     else
                         loop.DisableLoop();
@@ -504,7 +504,67 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         if (expectmore) return;
         SuggestDoingSort();
     }
+    public void RemoveSong(Song song)
+    {
+        ArgumentNullException.ThrowIfNull(song, nameof(song));
+        var index = PlayerContext.Queue.IndexOf(song);
+        if(index == -1) return;
+        if (song.Equals(NextSong))
+        {
+            Log.Information("Selected is nextsong");
+            if (index + 1 < PlayerContext.Queue.Count)
+            {
+                Log.Information("NextSong is set to the next one");
+                NextSong = PlayerContext.Queue[index + 1];
+            }
+            else
+            {
+                Log.Information("NextSong is set to null");
+                NextSong = null;
+            }
+        }
 
+        if (PlayerContext.CurrentSong?.Equals(song) != true)
+        {
+            song.Dispose();
+        }
+        PlayerContext.Queue.RemoveAt(index);
+    }
+    public void RemoveSongs(IReadOnlyList<Song?> selectedItems)
+    {
+        foreach (var song in selectedItems.ToList())
+        {
+            RemoveSong(song);
+        }
+    }
+    public void RemoveSong(int index)
+    {
+        if (index < 0 || index >= PlayerContext.Queue.Count)
+        {
+            throw new IndexOutOfRangeException("The index specified is out of the range of the queue");
+        }
+        var song = PlayerContext.Queue[index];
+        if (song.Equals(NextSong))
+        {
+            Log.Information("Selected is nextsong");
+            if (index + 1 < PlayerContext.Queue.Count)
+            {
+                Log.Information("NextSong is set to the next one");
+                NextSong = PlayerContext.Queue[index + 1];
+            }
+            else
+            {
+                Log.Information("NextSong is set to null");
+                NextSong = null;
+            }
+        }
+
+        if (PlayerContext.CurrentSong?.Equals(song) != true)
+        {
+            song.Dispose();
+        }
+        PlayerContext.Queue.RemoveAt(index);
+    }
     public void DoneAddingSongs()
     {
         SuggestDoingSort();
@@ -630,6 +690,6 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         return new(a, b);
     }
 
-
+   
 }
 
