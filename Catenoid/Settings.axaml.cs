@@ -7,10 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Svg.Skia;
 using Avalonia.Threading;
 using ReactiveUI;
@@ -75,16 +77,14 @@ public partial class Settings : Window
         TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
 
         TransparencyText.TextChanged += TransparencyTextChanged;
-        ColorBox.Text = WindowExtensions.envBackend.GetString(ConstStrings.BG);
-        ColorBoxPB.Text = WindowExtensions.envBackend.GetString(ConstStrings.PB);
-        ColorBoxLRC.Text = WindowExtensions.envBackend.GetString(ConstStrings.Lrc);
+    
 
         List<ICodeInformation> info =
         [
             mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).PluginCodeInformation
         ];
         var ir = GetInfoRecords(info);
-        _settingsDc = new SettingsDC()
+        _settingsDc = new SettingsDC(this)
         {
             Items = ir.Item1,
             ProductName = mainWindow.Env.Name,
@@ -109,16 +109,7 @@ public partial class Settings : Window
         }
     }
 
-    private void AutoSaveCheckBoxChecked(object? sender, RoutedEventArgs e)
-    {
-        if (AutoSaveCheckBox != null)
-        {
-            mainWindow.config.AutoSave = AutoSaveCheckBox.IsChecked ?? true;
-            if (!mainWindow.config.AllowedToRead) return;
-            mainWindow.reader.Write(mainWindow.config, App._configPath);
-        }
-
-    }
+  
 
     private SettingsDC _settingsDc;
 
@@ -169,7 +160,7 @@ public partial class Settings : Window
     public static IImage? DecodeImage(WrappedStream? stream, int width = 80)
     {
         if (stream == null) return null;
-        stream.Use((str) => { });
+        stream.Use((_) => { });
         if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
         {
             return Bitmap.DecodeToWidth(stream.GetStream(), width);
@@ -178,10 +169,9 @@ public partial class Settings : Window
         {
             return new SvgImage
             {
-                Source = SvgSource.LoadFromStream(stream.GetStream()) // BUG https://github.com/wieslawsoltes/Svg.Skia/issues/217
+                Source = SvgSource.LoadFromStream(stream.GetStream())
             };
         }
-
         return null;
     }
 
@@ -391,33 +381,8 @@ public partial class Settings : Window
         new(KnownColor.SilverCraftBlue.ToColor(), 1)
     ];
 
-    private void ChangeColorPB(object? sender, RoutedEventArgs e)
-    {
-        Dispatcher.UIThread.Post(() =>
-        {
-            var t = ColorBoxPB.Text;
-            mainWindow.SetProgressBarColour(ColorBoxPB.Text.ParseBackground(new LinearGradientBrush()
-            { GradientStops = defPBStops }));
-            WindowExtensions.envBackend.SetEnv(ConstStrings.PB, t);
-        }, DispatcherPriority.Normal);
-    }
-    private void ChangeColorLRC(object? sender, RoutedEventArgs e)
-    {
-        Dispatcher.UIThread.Post(() =>
-        {
-            var t = ColorBoxLRC.Text;
-            WindowExtensions.envBackend.SetEnv(ConstStrings.Lrc, t);
-        }, DispatcherPriority.Normal);
-    }
 
-    private void ChangeColor(object? sender, RoutedEventArgs e)
-    {
-        Dispatcher.UIThread.Post(() =>
-        {
-            WindowExtensions.OnStyleChange?.Invoke(this, new(ColorBox.Text, null, null));
-            WindowExtensions.envBackend.SetString(ConstStrings.BG, ColorBox.Text);
-        }, DispatcherPriority.Normal);
-    }
+
 
     private void InitializeComponent()
     {
@@ -487,7 +452,8 @@ public partial class Settings : Window
     }
 }
 
-public class SettingsDC : ReactiveObject
+
+public class SettingsDC(Settings settings) : ReactiveObject
 {
     public WindowTransparencyLevel[] TransparencyTypes { get; set; } =
     [
@@ -495,6 +461,60 @@ public class SettingsDC : ReactiveObject
         WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.Mica
     ];
 
+    public string _backgroundColour = WindowExtensions.envBackend.GetString(ConstStrings.BG) ?? "";
+    public string BackgroundColour
+    {
+        get =>_backgroundColour;
+        set
+        {
+            if (value.Contains('@'))
+            {
+                throw new ArgumentException(nameof(BackgroundColour), "Not a valid colour");
+            }
+            this.RaiseAndSetIfChanged(ref _backgroundColour, value); 
+            WindowExtensions.envBackend.SetString(ConstStrings.BG, _backgroundColour);
+            Dispatcher.UIThread.Post(() =>
+            {
+                WindowExtensions.OnStyleChange?.Invoke(this, new(_backgroundColour, null, null));
+            }, DispatcherPriority.Normal);
+        }
+    }
+    
+    public string _progressBarColour = WindowExtensions.envBackend.GetString(ConstStrings.PB) ?? "";
+    public string ProgressBarColour
+    {
+        get =>_progressBarColour;
+        set
+        {
+            if (value.Contains('@'))
+            {
+                throw new ArgumentException(nameof(ProgressBarColour), "Not a valid colour");
+            }
+            this.RaiseAndSetIfChanged(ref _progressBarColour, value); 
+            WindowExtensions.envBackend.SetEnv(ConstStrings.PB, _progressBarColour);
+            Dispatcher.UIThread.Post(() =>
+            {
+                settings.mainWindow.SetProgressBarColour(_progressBarColour.ParseBackground(new LinearGradientBrush()
+                    { GradientStops = Settings.defPBStops }));
+            }, DispatcherPriority.Normal);
+        }
+    }
+    public string _lyricsColour = WindowExtensions.envBackend.GetString(ConstStrings.Lrc) ?? "";
+    public string LyricsColour
+    {
+        get =>_lyricsColour;
+        set
+        {
+            if (value.Contains('@'))
+            {
+                throw new ArgumentException(nameof(LyricsColour), "Not a valid colour");
+            }
+            this.RaiseAndSetIfChanged(ref _lyricsColour, value); 
+            WindowExtensions.envBackend.SetEnv(ConstStrings.Lrc, _lyricsColour);
+        }
+    }
+
+   
     public KnownColor[] AutoSuggestColours { get; set; } =
     [
         KnownColor.None, KnownColor.Transparent, KnownColor.Black, KnownColor.Navy, KnownColor.DarkBlue,

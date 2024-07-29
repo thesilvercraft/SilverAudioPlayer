@@ -25,7 +25,7 @@ public class LocalLibraryPlayStreamProvider : IPlayStreamProvider, IAmOnceAgainA
     }
 
     public string Name => "Local Library";
-    public string Description => "Allows you to sort and play local files";
+    public string Description => "Sort and play local files";
     public WrappedStream Icon => new WrappedEmbeddedResourceStream(typeof(LocalLibraryPlayStreamProvider).Assembly,
         "SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.icon.svg");
     public Version? Version => typeof(LocalLibraryPlayStreamProvider).Assembly.GetName().Version;

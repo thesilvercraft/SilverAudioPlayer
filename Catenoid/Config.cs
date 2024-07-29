@@ -30,12 +30,20 @@ public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
     public bool DisableAlbumArtBlur { get; set; } = false;
     public float AlbumArtTransparency { get; set; } = 0.25f;
     [Comment("Does the audio player save the tracks in a playlist upon closing?")]
-    public bool AutoSave {get;set;}=false;
+    public bool AutoSave { get=> _autoSave; set=>this.ThrottleSet(ref _autoSave, value); }
+
+    private bool _autoSave=false;
+    [Comment("At which interval does the audio player save the current tracks and position in seconds? (0=disable)")]
+    public double AutoSaveInterval { get=> _autoSaveInterval; set=>this.ThrottleSet(ref _autoSaveInterval, value); }
+
+    private double _autoSaveInterval = 0;
     public bool SaveLoadLoc{get;set;}=true;
     public int[] Pos{get;set;}=[0,0];
     public double[] Size{get;set;}=[0,0];
     [Comment("How many lyrics should be shown from the current lyric, -1 to disable autoscroll, -2 for auto")]
     public int LyricsAdvance { get; set; } = -2;
+
+    public double LyricsFontSize { get; set; } = 40;
     public WindowState State{get;set;}=WindowState.Maximized;
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];

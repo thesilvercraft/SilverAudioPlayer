@@ -39,7 +39,7 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject];
     public string Name => "SilverJuke";
 
-    public string Description => "A SilverJuke server. Provides a simple http interface to control the audio player. You can access it yourself at http://localhost:36169";
+    public string Description => "A SilverJuke server. Provides a simple http interface to control the audio player. Access it at http://localhost:36169";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SilverJuke).Assembly,
         "SilverAudioPlayer.Any.SilverJuke.juke.svg");

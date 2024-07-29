@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -15,18 +16,15 @@ namespace Catenoid;
 public partial class LyricsView : Window
 {
     private MainWindow mainWindow;
-    public LyricsView()
+    public LyricsView(MainWindow mainWindow) 
     {
+        this.mainWindow = mainWindow;
+        DataContext = mainWindow.config;
         InitializeComponent();
 #if DEBUG
         this.AttachDevTools();
 #endif
         this.DoAfterInitTasksF();
-    }
-
-    public LyricsView(MainWindow mainWindow) : this()
-    {
-        this.mainWindow = mainWindow;
         MainGrid = this.FindControl<Grid>("MainGrid");
         if (OperatingSystem.IsLinux())
         {
@@ -135,6 +133,10 @@ public partial class LyricsView : Window
             return !close;
         }, TimeSpan.FromMilliseconds(25), DispatcherPriority.Render);
     }
+
+    
+
+
     double heightm = 20.12242;
 
 }

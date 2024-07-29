@@ -106,7 +106,7 @@ public class SplPlaylistParserConfig : INotifyPropertyChanged, ICanBeToldThatAPa
     {
         PropertyChanged?.Invoke(e, a);
     }
-    [Comment("Should it ignore current track and position (useful for when you dont want music to instantly start playing after you load an autosave playlist)")]
+    [Comment("Should it ignore current track and position (stop's automatic playback of songs after loading a playlist)")]
     public bool ShouldBlankOutIndex { get; set; } = false;
     public bool ShouldBlankOutPos { get; set; } = false;
 

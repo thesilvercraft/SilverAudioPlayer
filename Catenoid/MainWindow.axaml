@@ -63,8 +63,6 @@
 			<Setter Property="FontSize" Value="20" />
 		</Style>
 	</Window.Styles>
-
-
 	<Grid RowDefinitions="25,260,*" Margin="5" Name="MainGrid">
 		<TextBlock Text="{Binding Title}" Margin="5" />
 		<Border Grid.Row="1">
@@ -99,7 +97,6 @@
 			<ListBox ItemsSource="{Binding Queue}" Selection="{Binding Selection}"  Name="mainListBox"
                  DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"
                  Background="Transparent" Grid.IsSharedSizeScope="True" Grid.Row="2" >
-				
 				<ListBox.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="Remove Selected" Click="RemoveSelected" />
@@ -112,7 +109,7 @@
 
 				<ListBox.DataTemplates>
 					<DataTemplate DataType="{x:Type shared:Song}">
-						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" PointerPressed="TreeView_PointerPressed1" >
+						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" >
 							<TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
 								<TextBlock.Text>
 									<MultiBinding StringFormat="CD{0}/{1}">
@@ -133,9 +130,7 @@
 									   HorizontalAlignment="Center" />
 							<TextBlock Classes="c c4" Text="{Binding Metadata.Album}" Grid.Column="3"
 									   HorizontalAlignment="Center" />
-					
 						</Grid>
-
 					</DataTemplate>
 				</ListBox.DataTemplates>
 			</ListBox>

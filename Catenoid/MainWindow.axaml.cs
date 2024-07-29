@@ -14,6 +14,7 @@ using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -91,8 +92,6 @@ public partial class MainWindow : Window
 
     public readonly MainWindowContext dc;
     public IFullPlayerEnvironment Env => Logic.PlayerEnvironment;
-    private bool en;
-    private bool en2;
     private MetadataView? metadataView;
 
     private Thread? th;
@@ -343,7 +342,7 @@ public partial class MainWindow : Window
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
- 
+
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
         PlayButton.Click += PlayButton_Click;
@@ -354,13 +353,11 @@ public partial class MainWindow : Window
         mainListBox = this.FindControl<ListBox>("mainListBox");
         PB.PointerReleased += PB_PointerReleased;
         mainListBox.DoubleTapped += TreeView_DoubleTapped;
+        mainListBox.KeyUp += TreeView_KeyPressed;
         Closing += MainWindow_Closing;
         Opened += MainWindow_Opened;
         Settings.Click += Settings_Click;
         CommandMenu.Click += CommandMenuClick;
-        mainListBox.PointerMoved += TreeView_PointerMoved;
-        mainListBox.PointerReleased += TreeView_PointerReleased;
-        mainListBox.PointerPressed += TreeView_PointerPressed1;
         config.PropertyChanged += Config_PropertyChanged;
         var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
         ob.Subscribe(x => dc.Title = x.Value);
@@ -374,12 +371,16 @@ public partial class MainWindow : Window
             SetFontFamily = true,
         }, followOptionsOnCall: false);
     }
+
+   
+
     public void Startup()
     {
         FindPrevShutdownAndLoad();
     }
     void FindPrevShutdownAndLoad()
     {
+        ChangeAutoSaveInterval(config.AutoSaveInterval);
         if (!config.AutoSave || dc.Queue.Count != 0) return;
         var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
         if (!Directory.Exists(dirpath)) return;
@@ -421,9 +422,42 @@ public partial class MainWindow : Window
             case "AlbumArtTransparency":
                 AlbumArtTransparencyChanged = true;
                 break;
+            case "AutoSaveInterval":
+                ChangeAutoSaveInterval(config.AutoSaveInterval);
+                break;
         }
     }
 
+    private Timer? autoSaveTimer=null;
+    void ChangeAutoSaveInterval(double s)
+    {
+        if (s < 1)
+        {
+            autoSaveTimer?.Dispose();
+            autoSaveTimer = null;
+        }
+        else
+        {
+            if (autoSaveTimer == null)
+            {
+                autoSaveTimer = new(AutoSave, null, TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(s));
+            }
+            else
+            {
+                autoSaveTimer?.Change(TimeSpan.Zero, TimeSpan.FromSeconds(s));
+            }
+        }
+    }
+
+    private void AutoSave(object? state)
+    {
+        Log.Information("Autosaving");
+        var queue = Logic.GetQueueCopy();
+        var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+        Directory.CreateDirectory(dirpath);
+        using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
+        SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
+    }
 
     public Logic<MainWindowContext> Logic { get; set; }
 
@@ -460,32 +494,6 @@ public partial class MainWindow : Window
         };
     }
 
-    private void TreeView_PointerPressed1(object? sender, PointerPressedEventArgs e)
-    {
-        en = true;
-        en2 = true;
-    }
-
-    private void TreeView_PointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        if (!en2) return;
-        en = false;
-        en2 = false;
-    }
-
-    private void TreeView_PointerMoved(object? sender, PointerEventArgs e)
-    {
-        var pos = e.GetPosition(mainListBox);
-        var size = mainListBox.Bounds.Size;
-        if (!en || (!(pos.X < 0) && !(pos.Y < 0) && !(pos.X > size.Width) && !(pos.Y > size.Height))) return;
-        var dragData = new DataObject();
-        var q = dc.Selection.SelectedItems;
-        dragData.Set(DataFormats.Files, q.Select(x => x.URI));
-        DragDrop.DoDragDrop(e, dragData, DragDropEffects.Copy | DragDropEffects.Link);
-        en = false;
-        en2 = false;
-    }
-
     private void Settings_Click(object? sender, RoutedEventArgs e)
     {
         var s = new Settings(this);
@@ -508,11 +516,7 @@ public partial class MainWindow : Window
         Logic.StopAutoLoading = true;
         if (config.AutoSave)
         {
-            var queue = Logic.GetQueueCopy();
-            var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
-            Directory.CreateDirectory(dirpath);
-            using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
-            SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
+           AutoSave(null);
         }
         Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMsi(dangthing, Env));
         if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
@@ -529,20 +533,27 @@ public partial class MainWindow : Window
         Environment.Exit(0);
     }
 
-    private void TreeView_DoubleTapped(object? sender, RoutedEventArgs e)
+    private void TreeView_DoubleTapped(object? sender, RoutedEventArgs e) => TreeViewPressed();
+    private void TreeView_KeyPressed(object? sender, KeyEventArgs e)
     {
-        if (mainListBox.SelectedItem is Song song) Logic.HandleSongChanging(song);
+        if (e.Key == Key.Enter || e.Key == Key.Space)
+        {
+            TreeViewPressed();
+        }
     }
-
+    void TreeViewPressed()
+    {
+        if (mainListBox.SelectedItem is Song song)
+        {
+            Logic.HandleSongChanging(song);
+        }
+    }
     private void StopButton_Click(object? sender, RoutedEventArgs e)
     {
         RemoveTrack();
     }
 
-    private void LyricsButton_Click(object? sender, RoutedEventArgs e)
-    {
-        dc.LyricsView();
-    }
+    private void LyricsButton_Click(object? sender, RoutedEventArgs e) => dc.LyricsView();
 
     public void Metadata_Click(object? sender, PointerPressedEventArgs e)
     {
