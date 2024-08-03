@@ -60,7 +60,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 #endif
         {
             logger?.Information("initing backend naudio WaveOutEvent");
-            outputDevice = new WaveOutEvent();
+            outputDevice =new WavePlayerCompatibilityLayer( new WaveOutEvent());
         }
 
     }

@@ -451,6 +451,7 @@ public partial class MainWindow : Window
 
     private void AutoSave(object? state)
     {
+        if (dc?.queue == null) return;
         Log.Information("Autosaving");
         var queue = Logic.GetQueueCopy();
         var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
