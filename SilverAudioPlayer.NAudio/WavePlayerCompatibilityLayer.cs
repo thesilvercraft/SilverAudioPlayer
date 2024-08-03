@@ -16,7 +16,7 @@ public class WavePlayerCompatibilityLayer : IWavePlayer
     private void OnPlaybackStop(object? sender, StoppedEventArgs e)
     {
         Debug.WriteLine("AAAAAA");
-        if (LastManualStop != null && LastManualStop + TimeSpan.FromMilliseconds(200) > DateTime.Now)
+        if (LastManualStop != null && LastManualStop + TimeSpan.FromMilliseconds(300) >= DateTime.Now)
         {
             LastManualStop = null;
             return;
@@ -37,17 +37,13 @@ public class WavePlayerCompatibilityLayer : IWavePlayer
 
     public void Stop()
     {
+        if (PlaybackState == PlaybackState.Stopped) return;
         _implementation.Stop();
-        if (PlaybackState != PlaybackState.Stopped)
+        LastManualStop = DateTime.Now;
+        Task.Run(() =>
         {
-            LastManualStop = DateTime.Now;
-            Task.Run(() =>
-            {
-                PlaybackStopped?.Invoke(this, new());
-
-            });
-        }
-       
+            PlaybackStopped?.Invoke(this, new());
+        });
     }
 
     public void Pause()
