@@ -15,7 +15,6 @@ public class WavePlayerCompatibilityLayer : IWavePlayer
 
     private void OnPlaybackStop(object? sender, StoppedEventArgs e)
     {
-        Debug.WriteLine("AAAAAA");
         if (LastManualStop != null && LastManualStop + TimeSpan.FromMilliseconds(300) >= DateTime.Now)
         {
             LastManualStop = null;

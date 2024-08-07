@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -121,10 +122,14 @@ public partial class Settings : Window
         if (y.IsChecked == msi.IsStarted) return;
         if (y.IsChecked == true)
         {
+            mainWindow.config.BlockedPlugins.Remove(msi.GetType().FullName);
+            ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config, new PropertyChangedEventArgs("BlockedPlugins"));
             msi.StartIPC(mainWindow.Env);
         }
         else
         {
+            mainWindow.config.BlockedPlugins.Add(msi.GetType().FullName);
+            ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config, new PropertyChangedEventArgs("BlockedPlugins"));
             msi.StopIPC(mainWindow.Env);
         }
     }

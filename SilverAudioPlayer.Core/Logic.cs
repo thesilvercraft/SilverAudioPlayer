@@ -95,7 +95,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     [ImportMany] public IEnumerable<IPlaylistReader> PlaylistReaders { get; set; }
     [ImportMany] public IEnumerable<IAdditionalMetadataGatherer> MetadataGatherers { get; set; }
 
-    [Import] public IWillProvideMemory MemoryProvider { get; set; }
+    [Import] public IWillProvideMemory? MemoryProvider { get; set; }
 
 
     public Func<IEnumerable<IPlayProvider>, WrappedStream, Task<IPlayProvider?>> ChoosePlayProvider { get; set; }
@@ -114,7 +114,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
 
     IMusicStatusInterfaceListenerAdmin _musicStatusInterface;
-
     public void AddMSI(IMusicStatusInterface statusInterface, IMusicStatusInterfaceListenerAdmin logicMusicInterfaceListener)
     {
         LoadedMusicStatusInterfaces.Add(statusInterface);
@@ -205,12 +204,15 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         var playlistReader = PlaylistReaders.FirstOrDefault(x => x.SupportedMimes.Contains(playlistStream.MimeType));
         return playlistReader != null && playlistReader.TryParse(playlistStream, out var playlist) ? playlist : null;
     }
+    public Func<string, bool> CheckIfPluginAllowed = s => true;  
+
     public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin musicStatusInterface)
     {
         if (MusicStatusInterfaces?.Any() == true)
             Parallel.ForEach(MusicStatusInterfaces, dangthing =>
             {
                 var a = dangthing;
+                if (!CheckIfPluginAllowed(a.GetType().FullName)) return;
                 GC.KeepAlive(a);
                 AddMSI(a, musicStatusInterface);
             });

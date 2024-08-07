@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
@@ -13,6 +14,9 @@ public partial class EkonrensisWindow : Window, IConfigurableWindow
     public EkonrensisWindow()
     {
         InitializeComponent();
+#if DEBUG
+        this.AttachDevTools();
+#endif
         this.DoAfterInitTasks(true);
         MainGrid = this.FindControl<StackPanel>("MainGrid");
     }

@@ -72,6 +72,8 @@ public class GuiSink : ILogEventSink
             case LogEventLevel.Fatal:
                 stringBuilder.Append("[FATAL]");
                 break;
+            default:
+                break;
         }
         stringBuilder.Append(' ');
         stringBuilder.Append(logEvent.Timestamp.ToString("R", CultureInfo.InvariantCulture));
@@ -147,55 +149,69 @@ public class App : Application
             mwconfig = mwconfreader.Read(_configPath) ?? new Config();
             if (mwconfig is INotifyPropertyChanged y)
             {
-                y.PropertyChanged += (x, y) =>
+                y.PropertyChanged += (x, _) =>
                 {
-                    if (x == mwconfig && mwconfig is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
-                    {
-                        L.AllowedToRead = false;
-                        mwconfreader.Write(mwconfig, _configPath);
-                        L.AllowedToRead = true;
-                    }
+                    if (x != mwconfig || mwconfig is not ICanBeToldThatAPartOfMeIsChanged { AllowedToRead: true } L) return;
+                    L.AllowedToRead = false;
+                    mwconfreader.Write(mwconfig, _configPath);
+                    L.AllowedToRead = true;
                 };
             }
             BootupLogic.ConfigureHttpClient();
-            if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
-            {
-                //todo: show user dialog to choose
-            }
             var loggerConfig = new LoggerConfiguration();
-#if DEBUG
-            if (Debugger.IsAttached)
+            if (Debugger.IsAttached && mwconfig.UserLogPreferences!=ConfigStyle.None)
             {
                 loggerConfig.WriteTo.Debug(LogEventLevel.Debug);
             }
-#endif
-            if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
+            switch (mwconfig.UserLogPreferences)
             {
-                loggerConfig.WriteTo.Sink(sink);
-            }
-            else if (mwconfig.UserLogPreferences == ConfigStyle.System)
-            {
-                loggerConfig.WriteTo.Console();
+                case ConfigStyle.LogWindow:
+                    loggerConfig.WriteTo.Sink(sink);
+                    break;
+                case ConfigStyle.System:
+                    loggerConfig.WriteTo.Console();
+                    break;
+                case ConfigStyle.Unknown:
+                    break;
+                case ConfigStyle.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
             var logger = loggerConfig.CreateLogger();
             if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
             {
                 LogWindow lw = new();
                 lw.Show();
+                BootupLogic.SetupCrashFallNets((Exception y) =>
+                {
+                    var a = Path.GetTempFileName();
+                    File.WriteAllText(a, sink.writer.ToString());
+                    if (File.Exists("/usr/bin/kdialog"))
+                    {
+                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{y}\"");
+                    }
+                });
+            }
+            else
+            {
+                BootupLogic.SetupCrashFallNets((Exception y) =>
+                {
+                    if (File.Exists("/usr/bin/kdialog"))
+                    {
+                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"{y}\"");
+                    }
+                });
             }
             Log.Logger = logger;
-            BootupLogic.SetupCrashFallNets((Exception y) =>
-            {
-                var a = Path.GetTempFileName();
-                File.WriteAllText(a, sink.writer.ToString());
-                if (File.Exists("/usr/bin/kdialog"))
-                {
-                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{y}\"");
-                }
-            });
             Logger.GetLoggerFunc += logger.ForContext;
-            var mw = new MainWindow();
-            mw.Logic.Log = logger;
+            var mw = new MainWindow
+            {
+                Logic =
+                {
+                    Log = logger
+                }
+            };
             mainWindow = mw;
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
@@ -211,7 +227,6 @@ public class App : Application
 
             foreach (var provider in mw.Logic.PlayProviders)
             {
-                var name = provider.GetType().Name;
                 if (provider.SupportedMimes != null) mw.Logic.PlayableMimes.AddRange(provider.SupportedMimes);
             }
 
@@ -226,7 +241,6 @@ public class App : Application
                 mw.Logic.MemoryProvider?.RegisterObjectsToRemember(mainwindowMemory.ObjectsToRememberForMe);
             }
             BootupLogic.SetupMemoryLogic(mw.Logic);
-
             BootupLogic.SetupCommandPalette(mw.Logic, ComandPalette, (item, memoryAsker, l) =>
             {
                 var actions = memoryAsker.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
@@ -239,6 +253,7 @@ public class App : Application
                 LaunchActionsWindow launchActionsWindow = new(actions);
                 launchActionsWindow.Show();
             }, EkorensisUtils.LaunchConfigurableWindow);
+            playproviderloadtask.Wait();
             mw.Logic.ProcessFiles(desktop.Args);
             mw.Startup();
         }

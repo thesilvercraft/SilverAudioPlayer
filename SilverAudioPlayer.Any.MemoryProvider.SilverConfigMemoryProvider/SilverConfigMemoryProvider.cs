@@ -5,7 +5,7 @@ using System.Composition;
 
 namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
 {
-    public record class RememberedConfig(ObjectToRemember obj, object configReader, string location, Type genericType);
+    public record RememberedConfig(ObjectToRemember obj, object configReader, string location, Type genericType);
 
     [Export(typeof(IWillProvideMemory))]
     public class SilverConfigMemoryProvider : IWillProvideMemory, IWillTellYouWhereIStoreTheConfigs
@@ -33,23 +33,21 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
                     var loc = GetConfig(obj.Id);
                     var t = obj.Value?.GetType();
                     if (t == null)
-                     {
-                    logger?.Error("type is null");
+                    {
+                        logger?.Error("type is null");
                         continue;
                     }
                     var genericType = typeof(CommentXmlConfigReaderNotifyWhenChanged<>).MakeGenericType([t]);
                     if (genericType == null)
                     {
-                    logger?.Error("generic type is null");
-
+                        logger?.Error("generic type is null");
                         continue;
-
                     }
                     var reader = Activator.CreateInstance(genericType);
                     if (reader == null || reader.GetType() != genericType)
                     {
-                    logger?.Error("reader is null or reader doesnt match generic type");
-continue;
+                        logger?.Error("reader is null or reader doesnt match generic type");
+                        continue;
                     }
                     if (!File.Exists(loc))
                     {
@@ -61,12 +59,11 @@ continue;
                     {
                         y.PropertyChanged += (x, y) =>
                         {
-                            if (x == obj.Value && obj.Value is ICanBeToldThatAPartOfMeIsChanged L && L.AllowedToRead)
-                            {
-                                L.AllowedToRead = false;
-                                genericType.GetMethod("Write")?.Invoke(reader, [obj.Value, loc]);
-                                L.AllowedToRead = true;
-                            }
+                            if (x != obj.Value || obj.Value is not ICanBeToldThatAPartOfMeIsChanged L ||
+                                !L.AllowedToRead) return;
+                            L.AllowedToRead = false;
+                            genericType.GetMethod("Write")?.Invoke(reader, [obj.Value, loc]);
+                            L.AllowedToRead = true;
                         };
                     }
                     ConfigMemory.Add(new(obj, reader, loc, genericType));

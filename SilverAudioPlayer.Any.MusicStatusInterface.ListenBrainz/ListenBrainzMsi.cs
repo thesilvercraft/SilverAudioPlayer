@@ -59,6 +59,7 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
             Started = DateTime.Now;
             if (ConfigObject.Value is not ListenBrainzConfig x) return;
             m = e.Metadata;
+            if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
             _ = Task.Run(async () => l.SetNowPlayingAsync(m.Title, m.Artist, m.Album));
 
             length = x.ListenPolicy switch
@@ -84,6 +85,7 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
                _ = Task.Run(async () =>
                 {
                     await timer.DisposeAsync();
+                    if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
                     _ = l.SubmitSingleListenAsync(Started, m.Title, m.Artist, m.Album);
                 });
             }

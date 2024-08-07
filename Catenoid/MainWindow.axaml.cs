@@ -294,6 +294,7 @@ public partial class MainWindow : Window
         };
         Logic = new Logic<MainWindowContext>(dc)
         {
+            CheckIfPluginAllowed=s=>!config.BlockedPlugins.Contains(s),
             ChoosePlayProvider = async (x, m) =>
             {
                 var playProviders = x.ToList();
@@ -332,6 +333,7 @@ public partial class MainWindow : Window
                          return w.Selected;
                      });
             },
+            
         };
         Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic);
         InitializeComponent();

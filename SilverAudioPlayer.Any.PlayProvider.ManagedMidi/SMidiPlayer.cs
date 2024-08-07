@@ -11,7 +11,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
     private MidiMusic? mf;
 
     private IMidiOutput midiOut;
-    private MidiPlayer player;
+    private MidiPlayer? player;
     private PlaybackState? ps;
 
 
@@ -37,7 +37,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
 
     public PlaybackState? GetPlaybackState()
     {
-        return player.State switch
+        return player?.State switch
         {
             PlayerState.Paused => PlaybackState.Paused,
             PlayerState.Stopped => PlaybackState.Stopped,
@@ -49,7 +49,6 @@ internal class SMidiPlayer : IPlay, IPlayProvider
     public TimeSpan GetPosition()
     {
         return player.PositionInTime;
-
     }
 
     public TimeSpan? Length()
@@ -59,12 +58,14 @@ internal class SMidiPlayer : IPlay, IPlayProvider
 
     public void Pause()
     {
+        if (ps != PlaybackState.Playing) return;
         ps = PlaybackState.Paused;
         player.Pause();
     }
 
     public void Play()
     {
+        if (ps == PlaybackState.Playing) return;
         ps = PlaybackState.Playing;
         player.Play();
     }
@@ -86,8 +87,9 @@ internal class SMidiPlayer : IPlay, IPlayProvider
 
     public void Stop()
     {
+        if (ps == PlaybackState.Stopped) return;
         ps = PlaybackState.Stopped;
-        player.Stop();
+        player?.Stop();
     
     }
 
@@ -172,6 +174,7 @@ SilverAudioPlayer.Win.PlayProvider.MidiPlayer
     {
         midiOut ??= MidiAccessManager.Default.OpenOutputAsync(MidiAccessManager.Default.Outputs.First().Id).Result;
          mf = MidiMusic.Read(stream.GetStream());
+         
         player = new MidiPlayer(mf, midiOut);
         player.Finished += () =>
         {
@@ -191,8 +194,9 @@ SilverAudioPlayer.Win.PlayProvider.MidiPlayer
 
     public void Dispose()
     {
-        midiOut.Dispose();
-        player.Dispose();
-        midiOut = null;
+        player?.Dispose();
+        //midiOut.Dispose();
+        player = null;
+        // midiOut = null;
     }
 }

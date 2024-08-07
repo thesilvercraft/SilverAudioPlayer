@@ -88,8 +88,8 @@ public class MusicBrainzMetadataGatherer : IAdditionalMetadataGatherer
                           ConfigData.AlbumDownloaded.Add(albumId);
                       }
                        
-                       File.WriteAllText(configpath, JsonSerializer.Serialize(ConfigData));
-                       return ConfigData.Recordings[id];
+                      File.WriteAllText(configpath, JsonSerializer.Serialize(ConfigData));
+                      return ConfigData.Recordings[id];
                   }
                   catch (Exception e)
                   {
@@ -102,8 +102,8 @@ public class MusicBrainzMetadataGatherer : IAdditionalMetadataGatherer
 
     int GetDesiredRelease(IEnumerable<IRelease> releases, string name)
     {
-var s=releases.Select((e,i)=> new Tuple<IRelease, int>(e, i)).OrderBy(x => LevenshteinDistance.Compute(x.Item1?.Title?.ToLowerInvariant()??"", name.ToLowerInvariant())).FirstOrDefault();
-return s?.Item2 ?? 0;
+        var s=releases.Select((e,i)=> new Tuple<IRelease, int>(e, i)).OrderBy(x => LevenshteinDistance.Compute(x.Item1?.Title?.ToLowerInvariant()??"", name.ToLowerInvariant())).FirstOrDefault();
+        return s?.Item2 ?? 0;
     }
 }
 public class MusicBrainzMetadata : IMetadata

@@ -39,20 +39,16 @@ namespace SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer
 
         private void TrackChanged(object? sender, Song e)
         {
-            if (!string.IsNullOrEmpty(e?.Metadata?.Lyrics) && e.Metadata?.SyncedLyrics?.Count is null or 0)
+            if (string.IsNullOrEmpty(e?.Metadata?.Lyrics) || e.Metadata?.SyncedLyrics?.Count is not (null or 0)) return;
+            Debug.WriteLine($"{e.Name} Has lyrics but they aren't synced");
+            Dispatcher.UIThread.InvokeAsync(new Action(() =>
             {
-                //ayo might be interesting
-                Debug.WriteLine($"{e.Name} Has lyrics but they aren't synced");
-                Dispatcher.UIThread.InvokeAsync(new Action(() =>
+                LyricsView v = new(_listner)
                 {
-                    LyricsView v = new(_listner)
-                    {
-                        ShowActivated = false
-                    };
-                    v.Show();
-                }));
-              
-            }
+                    ShowActivated = false
+                };
+                v.Show();
+            }));
         }
 
         public void StopIPC(IMusicStatusInterfaceListener listener)

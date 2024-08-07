@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 using Avalonia.Controls;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
+using Swordfish.NET.Collections;
+
 namespace Catenoid;
 
 public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
@@ -47,9 +49,11 @@ public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
     public WindowState State{get;set;}=WindowState.Maximized;
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];
-    [Comment("How much and Where should the player log? (Unknown, None (no player core logs, parts of the player may ignore this and implement their own logging even if they really shouldn't), LogWindow (log in memory, show in a window, on crash save said memory's last 50k characters), System (log to stdout) )")]
-    public ConfigStyle UserLogPreferences {get;set;} = ConfigStyle.Unknown;
-    
+    [Comment("How much and Where should the player log? (None (no player core logs, parts of the player may ignore this and implement their own logging even if they really shouldn't), LogWindow (log in memory, show in a window, on crash save said memory's last 50k characters), System (log to stdout) )")]
+    public ConfigStyle UserLogPreferences {get;set;} = ConfigStyle.System;
+
+    public HashSet<string> BlockedPlugins { get; set; } = [];
+
 }
 
 public enum ConfigStyle
