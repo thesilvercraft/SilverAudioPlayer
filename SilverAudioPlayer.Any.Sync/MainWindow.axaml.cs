@@ -13,6 +13,7 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaEdit;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverConfig;
 using SilverCraft.AvaloniaUtils;
 
@@ -99,71 +100,87 @@ public partial class MainWindow : Window
 
             double FullSize = list.Where(x => x?.Metadata?.Duration is not null).Select(x => x.Metadata.Duration).Sum() ?? 1;
             double CurrSize = 0;
+            Dispatcher.UIThread.Post(() =>
+            {
+                ProgressBar.Value = CurrSize;
+                ProgressBar.Maximum = FullSize;
+            }, DispatcherPriority.Background);
             for (int i = 0; i < list.Count; i++)
             {
                 Song? song = list[i];
-                if (song.Stream is WrappedFileStream wfs)
-                {
-                    Append(wfs.URL);
-                    scroll();
-                    var songFormat = new Dictionary<string, string>(){
+                if (song.Stream is not WrappedFileStream wfs) continue;
+                Append(wfs.URL);
+                scroll();
+                var songFormat = new Dictionary<string, string>{
                     {"Album", FileSystemHelper.Clean(song.Metadata.Album??"Unknown album", FileSystemHelper.InvalidPathCharactersForFormat(dev.Format)) },
                     {"Artist", FileSystemHelper.Clean(song.Metadata.Artist??"Unknown artist", FileSystemHelper.InvalidPathCharactersForFormat(dev.Format))},
-                    {"DiscNumber",song.Metadata.DiscNumber?.ToString()??"0"},
-                    {"TrackNumber",song.Metadata.TrackNumber?.ToString()??"0"},
-                    {"Title",song.Metadata.Title?.ToString()},
+                    {"DiscNumber",song.Metadata.DiscNumber?.ToString()??"?"},
+                    {"TrackNumber",song.Metadata.TrackNumber?.ToString()??"?"},
+                    {"Title",song.Metadata.Title},
                     {"Extension",config.PreferredFileExtension},
-
+                    {"Year",song.Metadata.Year?.ToString()??"?"},
+                    {"Genre", song.Metadata.Genre},
+                    {"Bitrate", song.Metadata.Bitrate?.ToString()??"?"},
                 };
-                    var path = Path.Combine(dev.MountPoint, Formatter.Format(config.PathToStore, songFormat));
-                    Directory.CreateDirectory(path);
-                    var loc = Path.Combine(path, FileSystemHelper.Clean(Formatter.Format(config.NameFormatting, songFormat), FileSystemHelper.InvalidFileCharactersForFormat(dev.Format)));
-                    if (File.Exists(loc))
-                    {
-                        continue;
-                    }
-                    string arguments = Formatter.Format(config.FFmpegOptions, new Dictionary<string, string>(){
+                var path = Path.Combine(dev.MountPoint, Formatter.Format(config.PathToStore, songFormat));
+                Directory.CreateDirectory(path);
+                var loc = Path.Combine(path, FileSystemHelper.Clean(Formatter.Format(config.NameFormatting, songFormat), FileSystemHelper.InvalidFileCharactersForFormat(dev.Format)));
+                if (File.Exists(loc))
+                {
+                    continue;
+                }
+                var arguments = Formatter.Format(config.FFmpegOptions, new Dictionary<string, string>(){
                     {"in", wfs.URL},
                     {"out", loc}
                 });
-                    Append($"Calling ffmpeg {arguments}");
-                    scroll();
-                    var proc = new Process
+                Append($"Calling ffmpeg {arguments}");
+                scroll();
+                var proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo("ffmpeg", arguments)
                     {
-                        StartInfo = new ProcessStartInfo("ffmpeg", arguments)
-                        {
-                            RedirectStandardError = true,
-                            RedirectStandardOutput = true,
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                        }
-                    };
-                    proc.Start();
-                    proc.BeginOutputReadLine();
-                    proc.BeginErrorReadLine();
-                    proc.OutputDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        Append(e.Data);
-                        scroll();
-                    });
-                    proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        Append(e.Data);
-                        scroll();
-                    });
-                    Append($"{i + 1}/{list.Count} {(double)(i + 1) / list.Count * 100}N% {(CurrSize / FullSize) * 100}L%\n");
-                    scroll();
-
-                    await proc.WaitForExitAsync();
-                    //TODO: Copy over lrc file?
-
-                    if (proc.ExitCode != 0)
-                    {
-                        Append("FAIL\n");
-                        scroll();
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
                     }
-                    CurrSize += (double)song?.Metadata?.Duration;
+                };
+                proc.Start();
+                proc.BeginOutputReadLine();
+                proc.BeginErrorReadLine();
+                proc.OutputDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    Append(e.Data);
+                    scroll();
+                });
+                proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    Append(e.Data);
+                    scroll();
+                });
+                Append($"{i + 1}/{list.Count} {(double)(i + 1) / list.Count * 100}N% {(CurrSize / FullSize) * 100}L%\n");
+                Dispatcher.UIThread.Post(() =>
+                {
+                    ProgressBar.Value = CurrSize;
+                }, DispatcherPriority.Background);
+                scroll();
+
+                await proc.WaitForExitAsync();
+                if (song?.Metadata?.SyncedLyrics?.Count is not (0 or null))
+                {
+                    var possiblelrc = Path.ChangeExtension(wfs.URL, "lrc");
+                    if (Path.Exists(possiblelrc))
+                    {
+                        File.Copy(possiblelrc, Path.ChangeExtension(loc, "lrc") );
+                    }
                 }
+                    
+                if (proc.ExitCode != 0)
+                {
+                    Append("FAIL\n");
+                    scroll();
+                }
+                CurrSize += (double)song?.Metadata?.Duration;
             }
 
             Append("Done with queue\n");
@@ -232,7 +249,7 @@ public class LSync : ISyncPlugin, IAmOnceAgainAskingYouForYourMemory
     }
 
     public string Name => "Sync plugin";
-    public string Description => "Now with 100% more windows";
+    public string Description => "Move your queue over to a sd card, usb flash drive or store it in ram (/tmp) as mp3s using ffmpeg";
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(LSync).Assembly,
         "SilverAudioPlayer.Any.Sync.Sync.svg");
 

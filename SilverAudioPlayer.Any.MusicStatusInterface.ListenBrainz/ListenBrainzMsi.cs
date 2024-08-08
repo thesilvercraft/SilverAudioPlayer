@@ -1,4 +1,5 @@
 ﻿using System.Composition;
+using MetaBrainz.ListenBrainz.Objects;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
@@ -86,7 +87,24 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
                 {
                     await timer.DisposeAsync();
                     if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
-                    _ = l.SubmitSingleListenAsync(Started, m.Title, m.Artist, m.Album);
+                    var listen = new SubmittedListen(Started, m.Title, m.Artist, m.Album);
+                    listen.Track.AdditionalInfo ??= new();
+                    if (m.Enteries != null && m.Enteries.Count != 0)
+                    {
+                        if (m.Enteries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
+                        {
+                            listen.Track.AdditionalInfo.Add("recording_mbid", trackGuid);
+                        }
+                        if (m.Enteries.TryGetValue("MUSICBRAINZ_ALBUMID", out var albumGuid))
+                        {
+                            listen.Track.AdditionalInfo.Add("release_mbid", albumGuid);
+                        }
+                        if (m.Enteries.TryGetValue("MUSICBRAINZ_ARTISTID", out var artistGuid))
+                        {
+                            listen.Track.AdditionalInfo.Add("artist_mbids", new []{artistGuid});
+                        }  
+                    }
+                    _ = l.SubmitSingleListenAsync( listen);
                 });
             }
             else

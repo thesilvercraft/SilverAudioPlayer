@@ -90,7 +90,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
 
     public Version? Version => typeof(FortnitePlayTracker).Assembly.GetName().Version;
 
-    public string Licenses => "MIT";
+    public string Licenses => "The awful FortnitePlayTracker is licensed under the MIT license (called the expat license because MIT actually uses many licenses)";
 
     public List<Tuple<Uri, URLType>>? Links { get; set; }
     IMusicStatusInterfaceListener Env;

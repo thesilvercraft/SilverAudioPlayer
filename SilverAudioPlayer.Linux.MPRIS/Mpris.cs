@@ -77,7 +77,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
             "SilverAudioPlayer.Linux.MPRIS.Mpris.svg");
 
         public Version? Version => typeof(Mpris).Assembly.GetName().Version;
-        public string Licenses => "GPL3.0";
+        public string Licenses => "SilverAudioPlayer.Linux.MPRIS is a part of the SilverAudioPlayer project and is licensed under the GPL3.0 license";
         public List<Tuple<Uri, URLType>>? Links =>
         [
             new Tuple<Uri, URLType>(

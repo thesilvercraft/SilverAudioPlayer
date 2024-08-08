@@ -25,7 +25,7 @@ public class LinuxWakeLock : IWakeLockProvider
 
     public Version? Version => typeof(LinuxWakeLock).Assembly.GetName().Version;
 
-    public string Licenses => "GPL3.0";
+    public string Licenses => "SilverAudioPlayer.Linux.PlatformHelper.Linux.LinuxPlatformHelper is a part of the SilverAudioPlayer project and is licensed under the GPL3.0 license";
 
     public List<Tuple<Uri, URLType>>? Links =>
     [

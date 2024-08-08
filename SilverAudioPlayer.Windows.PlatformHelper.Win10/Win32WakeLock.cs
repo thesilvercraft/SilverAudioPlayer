@@ -16,7 +16,7 @@ public class Win32WakeLock : IWakeLockProvider
 
     public Version? Version => typeof(Win32WakeLock).Assembly.GetName().Version;
 
-    public string Licenses => "GPL3.0";
+    public string Licenses => "SilverAudioPlayer.Windows.PlatformHelper.Win is a part of the SilverAudioPlayer project and is licensed under the GPL3.0 license";
 
     public List<Tuple<Uri, URLType>> Links =>
     [

@@ -29,7 +29,7 @@ public class MusicBrainzMetadataGatherer : IAdditionalMetadataGatherer
 
     public Version? Version =>null;
 
-    public string Licenses => "";
+    public string Licenses => "The MusicBrainzMetadataGatherer is licensed under the GPL3.0";
 
     public List<Tuple<Uri, URLType>>? Links => null;
     public object l = new();

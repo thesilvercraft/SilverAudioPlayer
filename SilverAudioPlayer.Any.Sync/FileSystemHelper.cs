@@ -74,60 +74,53 @@ static class FileSystemHelper
 
         foreach (var mount in mtab)
         {
-            if (mount.StartsWith("/dev/sd") || mount.StartsWith("/dev/nvme") || mount.StartsWith("tmpfs /tmp"))
+            if (!mount.StartsWith("/dev/sd") && !mount.StartsWith("/dev/nvme") &&
+                !mount.StartsWith("tmpfs /tmp")) continue;
+            var dev = mount.Split(" ");
+            if (BlockList.Contains(dev[1])) continue;
+            var model = "Unknown";
+            var removable = false;
+            if (!mount.StartsWith("tmpfs /tmp"))
             {
-                var dev = mount.Split(" ");
-                if (!BlockList.Contains(dev[1]))
+                var devn = dev[0].Split("/").Last();
+                for (var x = devn.Length - 1; x > 0; x--)
                 {
-                    string model = "Unknown";
-                    bool removable = false;
-                    if (!mount.StartsWith("tmpfs /tmp"))
+                    if (char.IsDigit(devn[x])) continue;
+                    if (devn.StartsWith("nvme") && devn[x] == 'p')
                     {
-                        var devn = dev[0].Split("/").Last();
-                        for (int x = devn.Length - 1; x > 0; x--)
-                        {
-                            if (!char.IsDigit(devn[x]))
-                            {
-                                if (devn.StartsWith("nvme") && devn[x] == 'p')
-                                {
-                                    devn = devn[..x];
-                                }
-                                else
-                                {
-                                    devn = devn[..(x + 1)];
-                                }
-                                break;
-
-                            }
-                        }
-                        var a = File.ReadAllText($"/sys/block/{devn}/removable");
-
-                        removable = a == "1\n";
-                        model = File.ReadAllText($"/sys/block/{devn}/device/model");
+                        devn = devn[..x];
                     }
-
-                    Device device = new()
+                    else
                     {
-                        Model = model,
-                        MountPoint = dev[1],
-                        Type = removable ? DriveType.Removable : DriveType.Unknown,
-                        Format = dev[2]
-                    };
-
-                    var d = driveinfo.FirstOrDefault(x => x.Name == dev[1]);
-                    if (d != null)
-                    {
-                        device.Usage = d.TotalSize - d.TotalFreeSpace;
-                        device.Size = d.TotalSize;
-                        if (!removable)
-                        {
-                            device.Type = d.DriveType;
-                        }
+                        devn = devn[..(x + 1)];
                     }
-                    collection.Add(device);
+                    break;
+                }
+                var a = File.ReadAllText($"/sys/block/{devn}/removable");
 
+                removable = a == "1\n";
+                model = File.ReadAllText($"/sys/block/{devn}/device/model");
+            }
+
+            Device device = new()
+            {
+                Model = model,
+                MountPoint = dev[1],
+                Type = removable ? DriveType.Removable : DriveType.Unknown,
+                Format = dev[2]
+            };
+
+            var d = driveinfo.FirstOrDefault(x => x.Name == dev[1]);
+            if (d != null)
+            {
+                device.Usage = d.TotalSize - d.TotalFreeSpace;
+                device.Size = d.TotalSize;
+                if (!removable)
+                {
+                    device.Type = d.DriveType;
                 }
             }
+            collection.Add(device);
         }
     }
 }

@@ -16,7 +16,7 @@ public class FileMetadataProvider : IMetadataProvider
 
     public Version? Version => typeof(FileMetadataProvider).Assembly.GetName().Version;
 
-    public string Licenses => "GPL";
+    public string Licenses => "SilverAudioPlayer.Any.MetadataSource.File is a part of the SilverAudioPlayer project and is licensed under the GPL3.0 license";
 
     public List<Tuple<Uri, URLType>>? Links =>
     [
