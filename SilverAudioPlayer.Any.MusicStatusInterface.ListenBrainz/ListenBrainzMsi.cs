@@ -14,7 +14,6 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
 {
     public void Dispose()
     {
-        timer?.Dispose();
         l?.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -60,14 +59,9 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
     private DateTime Started;
     private IMetadata m;
     private double length = 0;
-    private Timer? timer=null;
-    private readonly object lockObj = new object();
 
     private void TrackChanged(object? sender, Song e)
     {
-        lock (lockObj)
-        {
-            timer?.Dispose();
 
             Started = DateTime.Now;
             if (ConfigObject.Value is not ListenBrainzConfig x) return;
@@ -82,54 +76,41 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
                 Policy.Seconds => x.ListenPolicyValue,
                 _ => throw new ArgumentOutOfRangeException()
             };
-
-            if (length != 0)
-            {
-                timer = new Timer(OnTimerOnElapsed, null, TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan);
-            }
-        }
+            _listener.AddTimedEvent(length, TimedEvent);
+           
     }
 
-    private void OnTimerOnElapsed(object? state)
+    private bool TimedEvent(Song arg1, double pos)
     {
-        lock (lockObj)
+        if (!(pos -length < 0.2)) return true;
+        if (l == null) return false;
+        if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return false;
+        var listen = new SubmittedListen(Started, m.Title, m.Artist, m.Album);
+        listen.Track.AdditionalInfo ??= new();
+        if (m.Entries != null && m.Entries.Count != 0)
         {
-            if (_listener.GetPosition() >= length)
+            if (m.Entries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
             {
-               _ = Task.Run(async () =>
-                {
-                    if (timer != null)
-                    {
-                        await timer.DisposeAsync();
-                    }
-                    if (l == null) return;
-                    if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
-                    var listen = new SubmittedListen(Started, m.Title, m.Artist, m.Album);
-                    listen.Track.AdditionalInfo ??= new();
-                    if (m.Entries != null && m.Entries.Count != 0)
-                    {
-                        if (m.Entries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
-                        {
-                            listen.Track.AdditionalInfo.Add("recording_mbid", trackGuid);
-                        }
-                        if (m.Entries.TryGetValue("MUSICBRAINZ_ALBUMID", out var albumGuid))
-                        {
-                            listen.Track.AdditionalInfo.Add("release_mbid", albumGuid);
-                        }
-                       /* if (m.Entries.TryGetValue("MUSICBRAINZ_ARTISTID", out var artistGuid))
-                        {
-                            listen.Track.AdditionalInfo.Add("artist_mbids", new []{artistGuid}); //incorrect format
-                        }  */ 
-                    } 
-                    await l.SubmitSingleListenAsync( listen);
-                });
+                listen.Track.AdditionalInfo.Add("recording_mbid", trackGuid);
             }
-            else
+            if (m.Entries.TryGetValue("MUSICBRAINZ_ALBUMID", out var albumGuid))
             {
-                timer?.Change(TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan);
+                listen.Track.AdditionalInfo.Add("release_mbid", albumGuid);
             }
-        }
+            /* if (m.Entries.TryGetValue("MUSICBRAINZ_ARTISTID", out var artistGuid))
+                 {
+                     listen.Track.AdditionalInfo.Add("artist_mbids", new []{artistGuid}); //incorrect format
+                 }  */ 
+        } 
+        _ = Task.Run(async () =>
+        {
+            await l.SubmitSingleListenAsync( listen);
+        });
+        return true;
     }
+
+  
+ 
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {

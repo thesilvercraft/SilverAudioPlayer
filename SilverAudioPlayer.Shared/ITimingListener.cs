@@ -13,7 +13,7 @@ public interface ITimingListener
 
 }
 
-public class TimedEvent : IComparer<TimedEvent>
+public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
 {
     private ITimingListener? parent=null;
     /// <summary>
@@ -68,5 +68,12 @@ public class TimedEvent : IComparer<TimedEvent>
         if (y is null) return 1;
         if (x is null) return -1;
         return x.Time.CompareTo(y.Time);
+    }
+
+    public int CompareTo(TimedEvent? other)
+    {
+        if (ReferenceEquals(this, other)) return 0;
+        if (other is null) return 1;
+        return Time.CompareTo(other.Time);
     }
 }

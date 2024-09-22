@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
@@ -141,14 +142,27 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public void FireTrackChangedNotification(Song? currentSong)
     {
-        Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
         ClearTimedEvents();
+        Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
+        LyricsInDebug(currentSong);
     }
-
+    [Conditional("DEBUG")]
+    void LyricsInDebug(Song? song)
+    {
+        if (song?.Metadata?.SyncedLyrics == null) return;
+        foreach (var lrc in song.Metadata?.SyncedLyrics)
+        {
+            ((ITimingListener)(this)).AddTimedEvent(lrc.TimeStampInMilliSeconds / 1000,
+                (x, y) =>
+                {
+                    Debug.Write(lrc.Content);
+                    return false;
+                });
+        }
+    }
     void ClearTimedEvents()
     {
         TimedEvents.Clear();
-        
     }
     public void FirePositionChanged(TimeSpan position)
     {
@@ -179,7 +193,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
 
     public Task<IReadOnlyList<MimeType>> SupportedMimeTypes() => Task.FromResult<IReadOnlyList<MimeType>>(Logic.PlayableMimes);
-    private SortedSet<TimedEvent> TimedEvents;
+    private SortedSet<TimedEvent> TimedEvents = new();
 
     void TimerLogicOnPositionChanged(double positionTotalSeconds)
     {
@@ -191,7 +205,8 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         {
             case PlaybackState.Stopped:
             case PlaybackState.Paused:
-                timer.Change(Timeout.Infinite, Timeout.Infinite);
+                timerEnabled = false;
+                timer?.Change(Timeout.Infinite, Timeout.Infinite);
 break;
 
             case PlaybackState.Playing:
@@ -211,11 +226,13 @@ break;
             var next =  TimedEvents.FirstOrDefault(x => x.Time > currentPos);
             if (next != null)
             {
-                timer.Change(TimeSpan.FromSeconds(currentPos - next.Time), Timeout.InfiniteTimeSpan);
+                timerEnabled = true;
+                timer?.Change(TimeSpan.FromSeconds(Math.Max( next.Time-currentPos- 0.02,0.00)), Timeout.InfiniteTimeSpan);
                 return;
             }
         }
-        timer.Change(Timeout.Infinite, Timeout.Infinite);
+        timerEnabled = false;
+        timer?.Change(Timeout.Infinite, Timeout.Infinite);
     }
     public void AddTimedEvent(TimedEvent timedEvent)
     {
@@ -223,10 +240,18 @@ break;
         timedEvent.AddToParent(this);
         if (timer == null)
         {
-            timer=new(TimerElapsed, null, TimeSpan.FromSeconds(TimedEvents.First().Time), Timeout.InfiniteTimeSpan);
+            var position = GetPosition();
+
+            timer = new(TimerElapsed, null, TimeSpan.FromSeconds(Math.Max( TimedEvents.First().Time - position - 0.02,0.00)),
+                Timeout.InfiniteTimeSpan);
+        }
+        else if (!timerEnabled)
+        {
+            SetTimerToNextEvent();
         }
     }
     private Timer? timer=null;
+    private bool timerEnabled = false;
     public void TimerElapsed(object? state)
     {
         var position = GetPosition();
