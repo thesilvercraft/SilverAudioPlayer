@@ -63,35 +63,35 @@ public class BootupLogic
 
     void HandleCommandPalette<T>(ComandPalette comandPalette, ICodeInformation item, Logic<T> logic, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
     {
-        if (item is IAmConfigurable configurable)
+        switch (item)
         {
-            comandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
-            {
-                showEkorensisWindow.Invoke(configurable);
-            }));
+            case IAmConfigurable configurable:
+                comandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
+                {
+                    showEkorensisWindow.Invoke(configurable);
+                }));
+                break;
+            case IConfigurableUiPlugin configurableUiPlugin:
+                comandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
+                {
+                    configurableUiPlugin.ConfigureUi((IConfigurableListener)x);
+                }));
+                break;
+            case IPlayStreamProvider streamProvider:
+                comandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
+                {
+                    streamProvider.Use((IPlayStreamProviderListener)x);
+                }));
+                break;
+            case ISyncPlugin syncPlugin:
+                comandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
+                {
+                    syncPlugin.Use((ISyncEnvironmentListener)x);
+                }));
+                break;
         }
-        else if (item is IConfigurableUiPlugin configurableUiPlugin && logic.PlayerEnvironment is IConfigurableListener)
-        {
-            comandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
-            {
-                configurableUiPlugin.ConfigureUi((IConfigurableListener)x);
-            }));
-        }
-        if (item is IPlayStreamProvider streamProvider && logic.PlayerEnvironment is IPlayStreamProviderListener)
-        {
-            comandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
-            {
-                streamProvider.Use((IPlayStreamProviderListener)x);
-            }));
-        }
-        else if (item is ISyncPlugin syncPlugin && logic.PlayerEnvironment is ISyncEnvironmentListener)
-        {
-            comandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
-            {
-                syncPlugin.Use((ISyncEnvironmentListener)x);
-            }));
-        }
-        if (item is IMusicStatusInterface musicStatusInterface && logic.PlayerEnvironment is IMusicStatusInterfaceListener)
+
+        if (item is IMusicStatusInterface musicStatusInterface)
         {
             comandPalette.AddItem(new CommandPaletteItem("Toggle " + item.Name, "toggle " + item.GetType().Name, (x) =>
             {
@@ -123,25 +123,21 @@ public class BootupLogic
 
         commandPalette.AddItem(new CommandPaletteItem("Increase pattern", "increase pattern", (x) =>
         {
-            if (logic.Player is ISelector s)
+            if (logic.Player is not ISelector s) return;
+            var c = s.CurrentPattern;
+            if (c + 1 < s.NumberOfPatterns)
             {
-                var c = s.CurrentPattern;
-                if (c + 1 < s.NumberOfPatterns)
-                {
-                    s.SetPattern(c + 1);
-                }
+                s.SetPattern(c + 1);
             }
         }));
 
         commandPalette.AddItem(new CommandPaletteItem("Decrease pattern", "decrease pattern", (x) =>
         {
-            if (logic.Player is ISelector s)
+            if (logic.Player is not ISelector s) return;
+            var c = s.CurrentPattern;
+            if (c - 1 > 0)
             {
-                var c = s.CurrentPattern;
-                if (c - 1 > 0)
-                {
-                    s.SetPattern(c - 1);
-                }
+                s.SetPattern(c - 1);
             }
         }));
 
@@ -158,10 +154,9 @@ public class BootupLogic
     }
     public void SetupMemoryLogic<T>(Logic<T> logic) where T : PlayerContext
     {
-        if (logic.MemoryProvider is { })
+        if (logic.MemoryProvider is not null)
         {
             HandleMemoryLogic(((ILogicImportable)logic).PluginCodeInformation, logic.MemoryProvider);
-
         }
     }
 }

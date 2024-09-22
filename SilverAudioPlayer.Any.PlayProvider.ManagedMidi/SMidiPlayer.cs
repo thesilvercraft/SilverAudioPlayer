@@ -29,6 +29,7 @@ internal class SMidiPlayer : IPlay, IPlayProvider
     public event EventHandler<object> TrackEnd;
 
     public event EventHandler<object> TrackPause;
+    public event EventHandler<TimeSpan>? PositionChanged;
 
     public uint? ChannelCount()
     {
@@ -79,8 +80,38 @@ internal class SMidiPlayer : IPlay, IPlayProvider
 
     public void SetPosition(TimeSpan position)
     {
+        player.Seek(GetTicksFromTime(position));
+        PositionChanged?.Invoke(this, position);
     }
 
+    int GetTicksFromTime(TimeSpan time)
+    {
+        double milliseconds = time.TotalMilliseconds;
+        int num1 = 500000;
+        int num2 = 0;
+        double ticksAtMilliseconds = 0.0;
+        double accumulatedMilliseconds = 0.0;
+        foreach (var message in mf.Tracks[0].Messages)
+        {
+            double deltaTimeInMilliseconds = (double)num1 / 1000.0 * (double)message.DeltaTime / (double)mf.DeltaTimeSpec;
+            if (accumulatedMilliseconds + deltaTimeInMilliseconds < milliseconds)
+            {
+                accumulatedMilliseconds += deltaTimeInMilliseconds;
+                ticksAtMilliseconds += message.DeltaTime;
+                num2 += message.DeltaTime;
+
+                if (message.Event.EventType == byte.MaxValue && message.Event.Msb == (byte)81)
+                    num1 = MidiMetaType.GetTempo(message.Event.ExtraData, message.Event.ExtraDataOffset);
+            }
+            else
+            {
+                double remainingMilliseconds = milliseconds - accumulatedMilliseconds;
+                ticksAtMilliseconds += remainingMilliseconds * mf.DeltaTimeSpec * 1000.0 / num1;
+                break;
+            }
+        }
+        return (int)ticksAtMilliseconds;
+    }
     public void SetVolume(byte volume)
     {
     }
@@ -90,7 +121,6 @@ internal class SMidiPlayer : IPlay, IPlayProvider
         if (ps == PlaybackState.Stopped) return;
         ps = PlaybackState.Stopped;
         player?.Stop();
-    
     }
 
     public long? GetSampleRate()

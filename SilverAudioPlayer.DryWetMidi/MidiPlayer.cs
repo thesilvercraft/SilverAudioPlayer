@@ -30,6 +30,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
     public event EventHandler<object> TrackEnd;
 
     public event EventHandler<object> TrackPause;
+    public event EventHandler<TimeSpan>? PositionChanged;
 
     public uint? ChannelCount()
     {
@@ -38,8 +39,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
     public bool IsTrackLoaded => ps!=PlaybackState.Stopped;
     public PlaybackState? GetPlaybackState()
     {
-        if (player?.IsRunning == true) return PlaybackState.Playing;
-        return ps;
+        return player?.IsRunning == true ? PlaybackState.Playing : ps;
     }
 
     public TimeSpan GetPosition()
@@ -67,17 +67,16 @@ internal class MidiPlayer : IPlay, IPlayProvider
 
     public void Resume()
     {
-        if (ps == PlaybackState.Paused)
-        {
-            ps = PlaybackState.Playing;
-            player.Start();
-        }
+        if (ps != PlaybackState.Paused) return;
+        ps = PlaybackState.Playing;
+        player.Start();
     }
 
     public void SetPosition(TimeSpan position)
     {
         midiOut.TurnAllNotesOff();
         player.MoveToTime(new MetricTimeSpan(position));
+        PositionChanged?.Invoke(this, position);
     }
 
     public void SetVolume(byte volume)

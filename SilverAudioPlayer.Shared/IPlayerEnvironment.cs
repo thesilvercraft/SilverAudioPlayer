@@ -15,7 +15,7 @@ public interface IPlayerEnvironment : ICodeInformation
 }
 
 public interface IFullPlayerEnvironment : IPlayStreamProviderListener,
-    ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin, IConfigurableListener
+    ISyncEnvironmentListener, IMusicStatusInterfaceListenerAdmin, IConfigurableListener, ITimingListener
 {
     
 }

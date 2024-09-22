@@ -49,7 +49,7 @@ public interface IMetadata : IDisposable
     /// <summary>
     /// Comments that are key value pairs
     /// </summary>
-    public IDictionary<string, string>? Enteries {get;}
+    public IDictionary<string, string>? Entries {get;}
     /// <summary>
     ///  Duration in milliseconds according to the metadata
     /// </summary>

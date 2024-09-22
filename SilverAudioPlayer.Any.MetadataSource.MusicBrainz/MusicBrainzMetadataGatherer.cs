@@ -125,7 +125,7 @@ public class MusicBrainzMetadata : IMetadata
             WriteIndented = false,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
-        Enteries["OriginalMBData"] = JsonSerializer.Serialize(recording, jsonOptions);
+        Entries["OriginalMBData"] = JsonSerializer.Serialize(recording, jsonOptions);
     }
 
     public void Dispose()
@@ -143,7 +143,7 @@ public class MusicBrainzMetadata : IMetadata
     public int? TrackNumber { get; }
     public int? DiscNumber { get; }
     public string[]? Comments { get; }
-    public IDictionary<string, string>? Enteries { get; } = new Dictionary<string, string>();
+    public IDictionary<string, string>? Entries { get; } = new Dictionary<string, string>();
     public double? Duration { get; }
     public string? Lyrics { get; }
     public IList<LyricPhrase>? SyncedLyrics { get; } = null;

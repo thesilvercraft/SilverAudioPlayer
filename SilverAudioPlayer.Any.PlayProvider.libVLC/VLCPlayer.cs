@@ -7,6 +7,7 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
     {
         public MediaPlayer mp;
 
+        public event EventHandler<TimeSpan>? PositionChanged;
         public bool IsTrackLoaded => mp.State is VLCState.Playing or  VLCState.Opening or  VLCState.Buffering or  VLCState.Paused or VLCState.NothingSpecial;
 
         public VLCPlayer(MediaPlayer mp)
@@ -84,7 +85,11 @@ namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 
         public void Resume() => mp.Play();
 
-        public void SetPosition(TimeSpan position) => mp.Position = (float)position.TotalMilliseconds / mp.Length;
+        public void SetPosition(TimeSpan position)
+        {
+            mp.Position = (float)position.TotalMilliseconds / mp.Length;
+            PositionChanged?.Invoke(this, position);
+        } 
 
         public void SetVolume(byte volume) => mp.Volume = volume;
 

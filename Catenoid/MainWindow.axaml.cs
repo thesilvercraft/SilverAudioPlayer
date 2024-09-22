@@ -464,11 +464,7 @@ public partial class MainWindow : Window
 
     public Logic<MainWindowContext> Logic { get; set; }
 
-    public IPlay? Player
-    {
-        get => Logic.Player;
-        set => Logic.Player = value;
-    }
+    public IPlay? Player => Logic.Player;
 
     public Song? CurrentSong
     {
@@ -525,7 +521,6 @@ public partial class MainWindow : Window
         if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
         Logic.StopAutoLoading = true;
         Player?.Stop();
-        Player = null;
         if (config.SaveLoadLoc)
         {
             config.Pos = [Position.X, Position.Y];

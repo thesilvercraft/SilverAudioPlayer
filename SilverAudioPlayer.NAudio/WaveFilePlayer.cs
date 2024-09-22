@@ -16,6 +16,7 @@ namespace SilverAudioPlayer.NAudio;
 [Export(typeof(IPlay))]
 public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
 {
+    public event EventHandler<TimeSpan>? PositionChanged;
     public bool IsTrackLoaded => audioFile!=null;
     public WaveStream? audioFile;
     private IWavePlayer? outputDevice;
@@ -214,7 +215,9 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public void SetPosition(TimeSpan position)
     {
-        if (outputDevice != null && audioFile is WaveStream ws) ws.SetPosition(position);
+        if (outputDevice == null || audioFile is not WaveStream ws) return;
+        ws.SetPosition(position);
+        PositionChanged?.Invoke(this, position);
     }
 
     public PlaybackState? GetPlaybackState()

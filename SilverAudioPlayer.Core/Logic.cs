@@ -63,16 +63,14 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         PlayerContext.SetLoopType ??= lt =>
         {
             PlayerContext.RaiseAndSetIfChanged(ref PlayerContext._LoopType, lt);
-            if (Player != null && Player is ILoop loop)
+            if (Player is not ILoop loop) return;
+            if (PlayerContext._LoopType == RepeatState.One)
             {
-                if (PlayerContext._LoopType == RepeatState.One)
-                {
-                    loop.EnableLoop();
-                }
-                else
-                {
-                    loop.DisableLoop();
-                }
+                loop.EnableLoop();
+            }
+            else
+            {
+                loop.DisableLoop();
             }
         };
         ConcurrentObservableCollection<Song> queue = [];
@@ -109,7 +107,10 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         get => PlayerContext.Volume;
         set => PlayerContext.Volume = value;
     }
-
+    /// <summary>
+    /// This Logic's current player
+    /// Avoid direct interactions unless necessary 
+    /// </summary>
     public IPlay? Player { get; set; }
 
 
@@ -196,8 +197,12 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         HandleSongChanging(PlayerContext.Queue[a - 1]);
         _changeAllowed = true;
     }
-    public void SetPosition(double seconds) => Player?.SetPosition(TimeSpan.FromSeconds(seconds));
-    public void SetPosition(TimeSpan pos) => Player?.SetPosition(pos);
+    public void SetPosition(double seconds) =>SetPosition(TimeSpan.FromSeconds(seconds));
+
+    public void SetPosition(TimeSpan pos)
+    {
+        Player?.SetPosition(pos);
+    }
 
     public IPlaylist? TryReadPlaylist(WrappedStream playlistStream)
     {
@@ -238,6 +243,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         SendIfStateIsNotNull();
     }
 
+ 
     public async void StartPlaying(bool play = true, bool resetsal = false)
     {
         if (PlayerContext.CurrentSong == null)
@@ -267,16 +273,22 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         }
         else
         {
-            Log.Debug("disposing old player and requesting new one");
-
+            Log.Debug("Requesting new player ");
+            if (Player != null)
+            {
+                Player.PositionChanged -= OnPositionChanged;
+            }
             Player?.Dispose();
             try
             {
                 Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
+                if (Player != null)
+                {
+                    Player.PositionChanged += OnPositionChanged;
+                }
             }
             catch (Exception e)
             {
-                //uhhhhhh
                 Log.Error(e, "EXCEPTION during startplaying");
                 Player?.Dispose();
                 Player = null;
@@ -291,7 +303,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             return;
         }
         Serilog.Log.Information("Got player of type {PlayerType} New: {newPlayer}", Player.GetType(), newPlayer);
-        _ = Task.Run(() => TrackChangedNotification(PlayerContext.CurrentSong));
+        TrackChangedNotification(PlayerContext.CurrentSong);
         if (play)
         {
             Player.SetVolume(Volume);
@@ -323,6 +335,11 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         StopAutoLoading = false;
     }
 
+    private void OnPositionChanged(object? sender, TimeSpan e)
+    {
+        _musicStatusInterface?.FirePositionChanged(e);
+    }
+
     public void RemoveTrack()
     {
         Player?.Stop();
@@ -333,10 +350,12 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public void OutputDevice_PlaybackStopped(object? sender, object o)
     {
-        Serilog.Log.Information(@"Output device playback stopped
-StopAutoLoading: {StopAutoLoading}
-Current song: {CurrentSong}
-Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContext.LoopType);
+        Serilog.Log.Information("""
+                                Output device playback stopped
+                                StopAutoLoading: {StopAutoLoading}
+                                Current song: {CurrentSong}
+                                Loop mode: {LoopType}
+                                """, StopAutoLoading, PlayerContext.CurrentSong, PlayerContext.LoopType);
         if (PlayerContext.LoopType == RepeatState.One && !StopAutoLoading)
         {
             //Loop
@@ -422,7 +441,6 @@ Loop mode: {LoopType}", StopAutoLoading, PlayerContext.CurrentSong, PlayerContex
         {
             Task.Run(async () =>
                 await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), PlayerEnvironment));
-            return;
         }
         else
         {

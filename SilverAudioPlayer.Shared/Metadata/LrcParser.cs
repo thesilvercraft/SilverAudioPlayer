@@ -28,23 +28,20 @@ public static class LrcParser
 
     public static bool IsBalancedAndContainsAdditional(string x)
     {
-        int
+        var
             bracketL = 0;
-        for (int i = 0; i < x.Length; i++)
+        foreach (var t in x)
         {
-            if (x[i] == '<')
+            if (t == '<')
             {
                 if (bracketL == 1)
                 {
                     return false;
                 }
-                else
-                {
-                    bracketL = 1;
-                }
+                bracketL = 1;
             }
 
-            if (x[i] != '>') continue;
+            if (t != '>') continue;
             if (bracketL == 1)
             {
                 bracketL = -1;

@@ -12,6 +12,7 @@ public interface IMusicStatusInterfaceListenerAdmin : IMusicStatusInterfaceListe
 {
     public void FireTrackChangedNotification(Song? currentSong);
     public void FirePlayerStateChanged(PlaybackState state);
+    public void FirePositionChanged(TimeSpan position);
 }
 public interface IMusicStatusInterfaceListener : IPlayerEnvironment
 {
@@ -49,6 +50,8 @@ public interface IMusicStatusInterfaceListener : IPlayerEnvironment
     double GetPosition();
     event EventHandler<Song> TrackChangedNotification;
     event EventHandler<PlaybackState> PlayerStateChanged;
+    event EventHandler<TimeSpan> PositionChanged;
+
     PlaybackState GetState();
     RepeatState GetRepeat();
     void SetRepeat(RepeatState state);

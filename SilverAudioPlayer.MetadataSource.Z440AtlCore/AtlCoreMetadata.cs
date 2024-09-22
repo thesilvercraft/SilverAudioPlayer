@@ -39,7 +39,7 @@ public class AtlCoreMetadata : IMetadata
         _cachedPicture;
 
     private Track theTrack { get; set; }
-    public IDictionary<string, string>? Enteries {get;init;}
+    public IDictionary<string, string>? Entries {get;init;}
 
 #if hackymemory
     private static readonly PropertyInfo currentEmbeddedPictures = typeof(Track)
@@ -107,7 +107,7 @@ public class AtlCoreMetadata : IMetadata
         }
 
 #endif
-        Enteries = theTrack?.AdditionalFields;
+        Entries = theTrack?.AdditionalFields;
         SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text.EndsWith('\n')?x.Text : x.Text+'\n')).ToList();
     }
 

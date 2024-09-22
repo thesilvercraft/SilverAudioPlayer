@@ -129,7 +129,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         var g = track?.Guid.ToString("N");
         var res=new Dictionary<string, object>()
             {
-                {"mpris:length",( (long?)Env?.GetDuration()??10)*1000*1000},
+                {"mpris:length",((long?)Env?.GetDuration()??10)*1000*1000},
                 {"mpris:trackid", new ObjectPath("/org/mpris/MediaPlayer2/Track/"+( string.IsNullOrWhiteSpace(g)? "NoTrack": g))},
                 {"xesam:title", track?.Metadata?.Title ?? "nothing"},
                 {"xesam:album", track?.Metadata?.Album ?? "no"},
@@ -138,7 +138,6 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
                 {"xesam:trackNumber", track?.Metadata?.TrackNumber??0},
                 {"xesam:genre", track?.Metadata?.Genre??""},
                 {"xesam:asText", track?.Metadata?.Lyrics??""},
-
             };
             if(HasAlbumArtWritten)
             {

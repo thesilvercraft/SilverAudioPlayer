@@ -33,7 +33,7 @@ public abstract class Metadata : IMetadata
     /// <inheritdoc />
     public IReadOnlyList<IPicture>? Pictures { get; init; }
     /// <inheritdoc />
-    public IDictionary<string, string>? Enteries { get; init; }
+    public IDictionary<string, string>? Entries { get; init; }
     /// <inheritdoc />
     public abstract void Dispose();
 }

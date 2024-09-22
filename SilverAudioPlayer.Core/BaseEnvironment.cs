@@ -9,13 +9,13 @@ namespace SilverAudioPlayer.Core;
 public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, IFullPlayerEnvironment where T : PlayerContext
 {
 
-    public event EventHandler<Song> TrackChangedNotification;
+    public event EventHandler<Song>? TrackChangedNotification;
     public event EventHandler<PlaybackState> PlayerStateChanged;
+    public event EventHandler<TimeSpan>? PositionChanged;
 
     public BaseEnvironment(Logic<T> Logic)
     {
         this.Logic = Logic;
-     
     }
    
     Logic<T> Logic;
@@ -39,11 +39,11 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         return Logic.FilterFiles(files);
     }
 
-    public  virtual string Name { get; }
+    public virtual string Name { get; }
 
-    public  virtual string Description  { get; }
+    public virtual string Description  { get; }
 
-    public  virtual WrappedStream? Icon { get; }
+    public virtual WrappedStream? Icon { get; }
 
     public virtual Version? Version { get; }
     public virtual List<Tuple<Uri, URLType>>? Links { get; }
@@ -61,7 +61,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
     {
-        if(pictures ==null || pictures.Count==0)
+        if(pictures is null || pictures.Count==0)
         {
             return null;
         }
@@ -91,7 +91,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
     public IDictionary<string, string>? GetEntriesForCurrentTrack()
     {
-        return Logic.PlayerContext?.CurrentSong?.Metadata?.Enteries;
+        return Logic.PlayerContext?.CurrentSong?.Metadata?.Entries;
     }
 
     public double GetDuration() => Logic.Player?.Length()?.TotalSeconds ??
@@ -142,11 +142,24 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public void FireTrackChangedNotification(Song? currentSong)
     {
         Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
+        ClearTimedEvents();
+    }
+
+    void ClearTimedEvents()
+    {
+        TimedEvents.Clear();
+        
+    }
+    public void FirePositionChanged(TimeSpan position)
+    {
+        Task.Run(() => { PositionChanged?.Invoke(this, position); });
+        TimerLogicOnPositionChanged(position.TotalSeconds);
     }
 
     public void FirePlayerStateChanged(PlaybackState state)
     {
         Task.Run(() => { PlayerStateChanged?.Invoke(this, state); });
+        TimerLogicOnStateChanged(state);
     }
 
 
@@ -166,4 +179,72 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
 
     public Task<IReadOnlyList<MimeType>> SupportedMimeTypes() => Task.FromResult<IReadOnlyList<MimeType>>(Logic.PlayableMimes);
+    private SortedSet<TimedEvent> TimedEvents;
+
+    void TimerLogicOnPositionChanged(double positionTotalSeconds)
+    {
+        TimerLogicOnStateChanged(GetState());
+    }
+    void TimerLogicOnStateChanged(PlaybackState state)
+    {
+        switch (state)
+        {
+            case PlaybackState.Stopped:
+            case PlaybackState.Paused:
+                timer.Change(Timeout.Infinite, Timeout.Infinite);
+break;
+
+            case PlaybackState.Playing:
+            case PlaybackState.Buffering:
+                SetTimerToNextEvent();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(state), state, null);
+        }
+    }
+
+    void SetTimerToNextEvent()
+    {
+        if (TimedEvents.Count > 0)
+        {
+            var currentPos = GetPosition();
+            var next =  TimedEvents.FirstOrDefault(x => x.Time > currentPos);
+            if (next != null)
+            {
+                timer.Change(TimeSpan.FromSeconds(currentPos - next.Time), Timeout.InfiniteTimeSpan);
+                return;
+            }
+        }
+        timer.Change(Timeout.Infinite, Timeout.Infinite);
+    }
+    public void AddTimedEvent(TimedEvent timedEvent)
+    {
+        TimedEvents.Add(timedEvent);
+        timedEvent.AddToParent(this);
+        if (timer == null)
+        {
+            timer=new(TimerElapsed, null, TimeSpan.FromSeconds(TimedEvents.First().Time), Timeout.InfiniteTimeSpan);
+        }
+    }
+    private Timer? timer=null;
+    public void TimerElapsed(object? state)
+    {
+        var position = GetPosition();
+        var events= TimedEvents.Where(x => Math.Abs(position - x.Time) < 0.04).ToList();
+        var track = GetCurrentTrack();
+        foreach (var e in events)
+        {
+            e.Invoke(track, position);
+        }
+
+        SetTimerToNextEvent();
+
+    }
+    
+
+    public void RemoveTimedEvent(TimedEvent timedEvent)
+    { 
+        timedEvent.RemoveFromParent();
+        TimedEvents.Remove(timedEvent);
+    }
 }

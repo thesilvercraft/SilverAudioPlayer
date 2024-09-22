@@ -7,76 +7,70 @@ using SilverAudioPlayer.Shared;
 
 public class FileMetadata : IMetadata
 {
-    private string FileUrl;
-    private string DirUrl;
     public FileMetadata(WrappedFileStream fs)
     {
-        FileUrl = fs.URL;
-        DirUrl = Path.GetDirectoryName(FileUrl);
-        var files = Directory.EnumerateFiles(DirUrl, Path.GetFileNameWithoutExtension(FileUrl) + ".lrc",
+        var fileUrl = fs.URL;
+        var dirUrl = Path.GetDirectoryName(fileUrl);
+        var files = Directory.EnumerateFiles(dirUrl, Path.GetFileNameWithoutExtension(fileUrl) + ".lrc",
             new EnumerationOptions()
             { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true, IgnoreInaccessible = true, MaxRecursionDepth = 2 });
 
-        foreach (var possiblelrcfile in files)
+        foreach (var possibleLrcPath in files)
         {
-            if (!System.IO.File.Exists(possiblelrcfile)) continue;
+            if (!System.IO.File.Exists(possibleLrcPath)) continue;
             try
             {
-                SyncedLyrics = LrcParser.Parse(System.IO.File.ReadAllText(possiblelrcfile));
+                SyncedLyrics = LrcParser.Parse(System.IO.File.ReadAllText(possibleLrcPath));
                 break;
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
-
         }
-        var txtfiles = Directory.EnumerateFiles(DirUrl, Path.GetFileNameWithoutExtension(FileUrl) + ".txt",
+        var txtFiles = Directory.EnumerateFiles(dirUrl, Path.GetFileNameWithoutExtension(fileUrl) + ".txt",
             new EnumerationOptions()
             { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true, IgnoreInaccessible = true, MaxRecursionDepth = 2 });
 
-        foreach (var possibletxtfile in txtfiles)
+        foreach (var possibleTxtFile in txtFiles)
         {
-            if (!System.IO.File.Exists(possibletxtfile)) continue;
+            if (!System.IO.File.Exists(possibleTxtFile)) continue;
             try
             {
-
-                Lyrics = System.IO.File.ReadAllText(possibletxtfile);
+                Lyrics = System.IO.File.ReadAllText(possibleTxtFile);
                 break;
             }
-            catch { }
-
+            catch
+            {
+                // ignored
+            }
         }
-        var cover = Directory.EnumerateFiles(DirUrl, "cover*",
+        var cover = Directory.EnumerateFiles(dirUrl, "cover*",
            new EnumerationOptions()
            { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true, MaxRecursionDepth = 2 }).ToList();
-        cover.AddRange(Directory.EnumerateFiles(DirUrl, "front*",
+        cover.AddRange(Directory.EnumerateFiles(dirUrl, "front*",
            new EnumerationOptions()
            { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true, MaxRecursionDepth = 2 }));
-        cover.AddRange(Directory.EnumerateFiles(DirUrl, "album*",
+        cover.AddRange(Directory.EnumerateFiles(dirUrl, "album*",
            new EnumerationOptions()
            { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = false, IgnoreInaccessible = true, MaxRecursionDepth = 2 }));
         foreach (var covr in cover)
         {
             Debug.WriteLine(covr);
             WrappedFileStream wfs = new(covr);
-            if (wfs.MimeType is SilverMagicBytes.ImageMime)
-            {
-                using var imagetohash = wfs.GetStream();
-                imagetohash.Position = 0;
-                _internalPictures?.Add(new Picture(wfs));
-            }
+            if (wfs.MimeType is not SilverMagicBytes.ImageMime) continue;
+            using var imageToHash = wfs.GetStream();
+            imageToHash.Position = 0;
+            _internalPictures?.Add(new Picture(wfs));
         }
     }
 
     public void Dispose()
     {
-        if (_internalPictures != null)
+        if (_internalPictures == null) return;
+        foreach (var picture in _internalPictures)
         {
-            foreach (var picture in _internalPictures)
-            {
-                picture.Dispose();
-            }
+            picture.Dispose();
         }
     }
 
@@ -97,6 +91,6 @@ public class FileMetadata : IMetadata
     private List<IPicture>? _internalPictures = [];
     public IReadOnlyList<IPicture>? Pictures => _internalPictures;
 
-    public IDictionary<string, string>? Enteries {get;}
+    public IDictionary<string, string>? Entries {get;}
 }
 

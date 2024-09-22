@@ -1,5 +1,6 @@
 ﻿using System.Composition;
 using MetaBrainz.ListenBrainz.Objects;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
@@ -30,14 +31,25 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
     public string Licenses { get; }
     public List<Tuple<Uri, URLType>>? Links { get; }
     MetaBrainz.ListenBrainz.ListenBrainz? l=null;
+    ILogger _logger;
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
+        var logger = Logger.GetLogger(typeof(ListenBrainzMsi));
         if (ConfigObject.Value is not ListenBrainzConfig x ||             !Guid.TryParse( x.UserToken, out _) )
         {
             return;
         }
         l = new(HttpClient.Client, false);
-        if(l.ValidateToken(x.UserToken).Valid!=true) return;
+        try
+        {
+            if(l.ValidateToken(x.UserToken).Valid!=true) return;
+        }
+        catch (Exception e)
+        {
+            logger?.Error($"ListenBrainzMsi start error {e}",e);
+            return;
+        }
+        _logger = logger;
         l.UserToken = x.UserToken;
         IsStarted = true;
         listener.TrackChangedNotification += TrackChanged;
@@ -59,9 +71,10 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
 
             Started = DateTime.Now;
             if (ConfigObject.Value is not ListenBrainzConfig x) return;
+            if (e.Metadata == null) return;
             m = e.Metadata;
             if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
-            _ = Task.Run(async () => l.SetNowPlayingAsync(m.Title, m.Artist, m.Album));
+            _ = Task.Run(async () => await l.SetNowPlayingAsync(m.Title, m.Artist, m.Album));
 
             length = x.ListenPolicy switch
             {
@@ -85,31 +98,35 @@ public class ListenBrainzMsi :IMusicStatusInterface, IAmConfigurable, IAmOnceAga
             {
                _ = Task.Run(async () =>
                 {
-                    await timer.DisposeAsync();
+                    if (timer != null)
+                    {
+                        await timer.DisposeAsync();
+                    }
+                    if (l == null) return;
                     if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
                     var listen = new SubmittedListen(Started, m.Title, m.Artist, m.Album);
                     listen.Track.AdditionalInfo ??= new();
-                    if (m.Enteries != null && m.Enteries.Count != 0)
+                    if (m.Entries != null && m.Entries.Count != 0)
                     {
-                        if (m.Enteries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
+                        if (m.Entries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
                         {
                             listen.Track.AdditionalInfo.Add("recording_mbid", trackGuid);
                         }
-                        if (m.Enteries.TryGetValue("MUSICBRAINZ_ALBUMID", out var albumGuid))
+                        if (m.Entries.TryGetValue("MUSICBRAINZ_ALBUMID", out var albumGuid))
                         {
                             listen.Track.AdditionalInfo.Add("release_mbid", albumGuid);
                         }
-                        if (m.Enteries.TryGetValue("MUSICBRAINZ_ARTISTID", out var artistGuid))
+                       /* if (m.Entries.TryGetValue("MUSICBRAINZ_ARTISTID", out var artistGuid))
                         {
-                            listen.Track.AdditionalInfo.Add("artist_mbids", new []{artistGuid});
-                        }  
-                    }
-                    _ = l.SubmitSingleListenAsync( listen);
+                            listen.Track.AdditionalInfo.Add("artist_mbids", new []{artistGuid}); //incorrect format
+                        }  */ 
+                    } 
+                    await l.SubmitSingleListenAsync( listen);
                 });
             }
             else
             {
-                timer.Change(TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan);
+                timer?.Change(TimeSpan.FromSeconds(1), Timeout.InfiniteTimeSpan);
             }
         }
     }

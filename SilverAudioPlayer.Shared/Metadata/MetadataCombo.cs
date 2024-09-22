@@ -51,7 +51,7 @@ public class MetadataCombo : IMetadataCombo
     public IList<LyricPhrase>? SyncedLyrics { get; }
     public IReadOnlyList<IPicture>? Pictures => OriginalMetadata.Select(x => x.Pictures).MaxBy(x => x?.Count);
 
-    public IDictionary<string, string>? Enteries => OriginalMetadata.Select(x=>x.Enteries).MaxBy(x=>x?.Count);
+    public IDictionary<string, string>? Entries => OriginalMetadata.Select(x=>x.Entries).MaxBy(x=>x?.Count);
 
     public void Dispose()
     {

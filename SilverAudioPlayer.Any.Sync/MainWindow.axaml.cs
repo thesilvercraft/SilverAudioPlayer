@@ -68,15 +68,11 @@ public partial class MainWindow : Window
         RefreshDevices();
     }
 
-    public async Task SyncAsync(Device dev)
+    public async Task SyncAsync(Device? dev)
     {
         Lock = true;
-
-        if (dev == null)
-        {
-            return;
-        }
-        List<Song> list = (await env.GetQueue())!;
+        if (dev == null)            return;
+        var list = (await env.GetQueue())!;
         void scroll()
         {
             Dispatcher.UIThread.Post(() =>
