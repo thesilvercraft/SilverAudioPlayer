@@ -170,7 +170,8 @@ public partial class Settings : Window
         {
             return Bitmap.DecodeToWidth(stream.GetStream(), width);
         }
-        else if (stream.MimeType == KnownMimes.SVGMime)
+
+        if (stream.MimeType == KnownMimes.SVGMime)
         {
             return new SvgImage
             {

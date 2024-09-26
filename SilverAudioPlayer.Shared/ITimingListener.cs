@@ -1,13 +1,27 @@
-using System.Collections;
 
 namespace SilverAudioPlayer.Shared;
 
 public interface ITimingListener
 {
+    /// <summary>
+    /// Add a new timed event to this listener
+    /// <remarks>
+    /// Call this method after you are sure the track has changed because timed events are cleared on track change
+    /// </remarks>
+    /// </summary>
+    /// <param name="time">The time in seconds</param>
+    /// <param name="action">The action to invoke</param>
     public void AddTimedEvent(double time, Func<Song,double, bool> action)
     {
         AddTimedEvent(new(time, action));
     }
+    /// <summary>
+    /// Add a new timed event to this listener
+    /// <remarks>
+    /// Call this method after you are sure the track has changed because timed events are cleared on track change
+    /// </remarks>
+    /// </summary>
+    /// <param name="timedEvent">the timed event</param>
     public void AddTimedEvent(TimedEvent timedEvent);
     void RemoveTimedEvent(TimedEvent timedEvent);
 
@@ -23,7 +37,7 @@ public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
     private Func<Song,double, bool> Action { get; set; }
 
     /// <summary>
-    /// 
+    /// Creates a new timed event
     /// </summary>
     /// <param name="time">Time in seconds</param>
     /// <param name="action">Action to execute </param>
