@@ -104,6 +104,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.XSPF\SilverAudioPlayer.Any.PlayListReader.XSPF.csproj" Condition="$(DefineConstants.Contains('XSPF'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />

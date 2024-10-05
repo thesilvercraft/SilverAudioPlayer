@@ -99,6 +99,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedLyricsFixerUpper", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz", "SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj", "{5A3F122B-D01A-49E4-9450-12DD3D242333}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.PlayListReader.XSPF", "SilverAudioPlayer.Any.PlayListReader.XSPF\SilverAudioPlayer.Any.PlayListReader.XSPF.csproj", "{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -671,6 +673,22 @@ Global
 		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x64.Build.0 = Release|Any CPU
 		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x86.ActiveCfg = Release|Any CPU
 		{5A3F122B-D01A-49E4-9450-12DD3D242333}.Release|x86.Build.0 = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|arm64.Build.0 = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|x64.Build.0 = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Debug|x86.Build.0 = Debug|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|arm64.ActiveCfg = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|arm64.Build.0 = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|x64.ActiveCfg = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|x64.Build.0 = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|x86.ActiveCfg = Release|Any CPU
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -703,6 +721,7 @@ Global
 		{4A220526-CD15-4DD6-9C57-D40646DEFF62} = {01C2EEE3-40C0-47CB-8CCC-65FB9CBE277F}
 		{C350EF66-4F3B-40EE-80EA-3EE6CA55BB6E} = {8ACF8CAB-3134-4901-819A-CE883DD5D6D3}
 		{5A3F122B-D01A-49E4-9450-12DD3D242333} = {F9B1187C-056E-4433-86E6-229F15A58D7D}
+		{40CBC58D-A6C3-4D64-A5F4-BDF6F7E4C27D} = {0FF8ED90-0361-4443-B6E7-385ACFD7DCFC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA032551-DA23-47C8-B64B-3E67E162A4F9}

@@ -412,7 +412,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     void ProcessFile(string file, bool oneFile)
     {
-        if (file.EndsWith(".m3u") || file.EndsWith(".m3u8") || file.EndsWith(".spl.br"))
+        if (file.EndsWith(".m3u") || file.EndsWith(".m3u8") || file.EndsWith(".spl.br") || file.EndsWith(".xspf")) //TODO REFRACTOR TO USE INSTALLED PLUGINS
         {
             var playlist = TryReadPlaylist(file.StartsWith("http") ? new WrappedHttpStream(file) : new WrappedFileStream(file));
             if (playlist == null) return;
