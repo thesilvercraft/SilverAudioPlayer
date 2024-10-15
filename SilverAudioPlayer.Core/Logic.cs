@@ -412,7 +412,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     void ProcessFile(string file, bool oneFile)
     {
-        if (file.EndsWith(".m3u") || file.EndsWith(".m3u8") || file.EndsWith(".spl.br") || file.EndsWith(".xspf")) //TODO REFRACTOR TO USE INSTALLED PLUGINS
+        if (SupportedPlaylistMimes().Item2.Any(file.EndsWith))
         {
             var playlist = TryReadPlaylist(file.StartsWith("http") ? new WrappedHttpStream(file) : new WrappedFileStream(file));
             if (playlist == null) return;
@@ -693,13 +693,13 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     }
     public Tuple<List<string>, List<string>> SupportedTrackMimes()
     {
-        return Logic<T>.SupportedTrackMimesG(PlayableMimes);
+        return SupportedTrackMimesG(PlayableMimes);
     }
 
     public Tuple<List<string>, List<string>> SupportedPlaylistMimes()
     {
         var playlistMimes = PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
-        return Logic<T>.SupportedTrackMimesG(playlistMimes);
+        return SupportedTrackMimesG(playlistMimes);
     }
     public Tuple<List<string>, List<string>> SupportedTrackAndPlaylistMimes()
     {

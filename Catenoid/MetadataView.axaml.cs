@@ -45,7 +45,14 @@ public partial class MetadataView : Window
     {
         if (s != null && s?.Metadata?.Pictures?.Count > 0 && s?.Metadata?.Pictures[0]?.Data is WrappedStream b)
         {
-            dataContext.Bitmaps[0] = new Bitmap(b.GetStream());
+            try
+            {
+                dataContext.Bitmaps[0] = new Bitmap(b.GetStream());
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception,"Error in loading metadata picture");
+            }
         }
     }
 

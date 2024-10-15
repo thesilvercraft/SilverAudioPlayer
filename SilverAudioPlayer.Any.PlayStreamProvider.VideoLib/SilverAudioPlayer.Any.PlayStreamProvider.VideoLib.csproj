@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="VideoLibrary" Version="3.2.5" />
+      <PackageReference Include="VideoLibrary" Version="3.2.6" />
     </ItemGroup>
 
     <ItemGroup>

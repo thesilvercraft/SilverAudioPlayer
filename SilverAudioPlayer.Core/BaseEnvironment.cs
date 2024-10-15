@@ -187,8 +187,6 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public virtual IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)
     {
-        // EkonrensisWindow window = new();
-        //window.HandleConfiguration(elements);
         return null;
     }
 
@@ -223,12 +221,16 @@ break;
         if (TimedEvents.Count > 0)
         {
             var currentPos = GetPosition();
-            var next =  TimedEvents.FirstOrDefault(x => x.Time > currentPos);
-            if (next != null)
+            lock (TimedEvents)
             {
-                timerEnabled = true;
-                timer?.Change(TimeSpan.FromSeconds(Math.Max( next.Time-currentPos- 0.02,0.00)), Timeout.InfiniteTimeSpan);
-                return;
+                var next = TimedEvents.FirstOrDefault(x => x.Time > currentPos);
+                if (next != null)
+                {
+                    timerEnabled = true;
+                    timer?.Change(TimeSpan.FromSeconds(Math.Max(next.Time - currentPos - 0.02, 0.00)),
+                        Timeout.InfiniteTimeSpan);
+                    return;
+                }
             }
         }
         timerEnabled = false;
@@ -236,7 +238,10 @@ break;
     }
     public void AddTimedEvent(TimedEvent timedEvent)
     {
-        TimedEvents.Add(timedEvent);
+        lock (TimedEvents)
+        {
+            TimedEvents.Add(timedEvent);
+        }
         timedEvent.AddToParent(this);
         if (timer == null)
         {
@@ -255,11 +260,14 @@ break;
     public void TimerElapsed(object? state)
     {
         var position = GetPosition();
-        var events= TimedEvents.Where(x => Math.Abs(position - x.Time) < 0.04).ToList();
-        var track = GetCurrentTrack();
-        foreach (var e in events)
+        lock (TimedEvents)
         {
-            e.Invoke(track, position);
+            var events = TimedEvents.Where(x => Math.Abs(position - x.Time) < 0.04).ToList();
+            var track = GetCurrentTrack();
+            foreach (var e in events)
+            {
+                e.Invoke(track, position);
+            }
         }
 
         SetTimerToNextEvent();
