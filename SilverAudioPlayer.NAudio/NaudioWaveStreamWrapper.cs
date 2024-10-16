@@ -873,10 +873,7 @@ public class NaudioWaveStreamWrapperTypes
 
     public bool HasWrapper(WrappedStream stream)
     {
-        if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
-        {
-            return true;
-        }
+      
         var res = GetWrappers().Any(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
         return res;
     }

@@ -264,29 +264,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void LoadStream(WrappedStream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        if (stream.MimeType == KnownMimes.MKVMime && File.Exists("/usr/bin/mkvextract"))
-        {
-            logger?.Warning("Doing silly stuff for mkv");
-            var a = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".webm";
-            var b = Path.GetTempPath() + "Sap" + Random.Shared.Next() + ".opus";
-            using var fileWrite = File.OpenWrite(a);
-            stream.Use(x => x.CopyTo(fileWrite));
-            fileWrite.Close();
-            FilesToCleanUp.Add(a);
-            FilesToCleanUp.Add(b);
-            var c = Process.Start("/usr/bin/mkvextract", $"{a} tracks 0:{b}");
-            c.WaitForExit();
-            File.Delete(a);
-            FilesToCleanUp.Remove(a);
-            if (c.ExitCode == 0)
-            {
-                stream = new WrappedFileStream(b);
-            }
-            else
-            {
-                //nevermind
-            }
-        }
         var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream);
 
         var naudioWaveStreamWrappers = wrappers.ToList();

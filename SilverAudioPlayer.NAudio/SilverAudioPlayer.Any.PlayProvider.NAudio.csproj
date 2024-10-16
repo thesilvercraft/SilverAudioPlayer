@@ -36,7 +36,8 @@
         <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="SilverCraft.OpenMPT" Version="0.1.0"  Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
-   
+            <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
+            <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="7.0.0" />
     </ItemGroup>
 
 
