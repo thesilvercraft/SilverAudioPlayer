@@ -1,3 +1,5 @@
+#if CSCore
+#if FFmpeg
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -5,11 +7,8 @@ using FFmpeg.AutoGen;
 using NAudio.Wave;
 using Serilog;
 using SilverAudioPlayer.NAudio;
-using SilverCraft.CSCore;
-using SilverCraft.CSCore.OpenMPT;
 using SilverMagicBytes;
 using DynamicallyLoadedBindings = FFmpeg.AutoGen.Bindings.DynamicallyLoaded.DynamicallyLoadedBindings;
-using WaveFormat = SilverCraft.CSCore.WaveFormat;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
@@ -26,146 +25,77 @@ public class FFmpeg : INaudioWaveStreamWrapper
         {
             unsafe
             {
-                Console.WriteLine("Current directory: " + Environment.CurrentDirectory);
                 Console.WriteLine("Running in {0}-bit mode.", Environment.Is64BitProcess ? "64" : "32");
-                DynamicallyLoadedBindings.LibrariesPath = "/usr/lib/";
-                ffmpeg.RootPath = "/usr/lib/";
+                
+                if (OperatingSystem.IsLinux())
+                {
+                    DynamicallyLoadedBindings.LibrariesPath = "/usr/lib/";
+                    ffmpeg.RootPath = "/usr/lib/";
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var current = AppContext.BaseDirectory;
+                    string[] placesToCheck = [Path.Combine(current, "FFmpeg", "bin", Environment.Is64BitProcess ? "x64" : "x86"),
+                        current
+                    ];
+                    foreach (var binaries in placesToCheck)
+                    {
+                        if (!Directory.Exists(binaries)) continue;
+                        ffmpeg.RootPath = binaries;
+                        return;
+                    }
+                }
                 DynamicallyLoadedBindings.Initialize();
-                Console.WriteLine($"FFmpeg version info: {ffmpeg.av_version_info()}");
-                ffmpeg.av_log_set_level(ffmpeg.AV_LOG_VERBOSE);
+                Log.Information($"FFmpeg version info: {ffmpeg.av_version_info()}");
+                ffmpeg.av_log_set_level(Debugger.IsAttached ? ffmpeg.AV_LOG_DEBUG : ffmpeg.AV_LOG_INFO);
 
                 av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
                 {
-                    unsafe
-                    {
-                        if (level > ffmpeg.av_log_get_level()) return;
+                    if (level > ffmpeg.av_log_get_level()) return;
 
-                        var lineSize = 1024;
-                        var lineBuffer = stackalloc byte[lineSize];
-                        var printPrefix = 1;
-                        ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-                        var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-                        Debug.WriteLine(line);
-                        Log.Information(line);
+                    var lineSize = 1024;
+                    var lineBuffer = stackalloc byte[lineSize];
+                    var printPrefix = 1;
+                    ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
+                    var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
+                    Debug.WriteLine(line);
+                    switch (level)
+                    {
+                        case ffmpeg.AV_LOG_DEBUG:
+                            Log.Debug(line);
+                            break;
+                        case ffmpeg.AV_LOG_ERROR:
+                            Log.Error(line);
+                            break;
+                       
+                        case ffmpeg.AV_LOG_PANIC:
+                        case ffmpeg.AV_LOG_FATAL:
+                            Log.Fatal(line);
+                            break;
+                        case ffmpeg.AV_LOG_VERBOSE:
+                        case ffmpeg.AV_LOG_TRACE:
+                            Log.Verbose(line);
+                            break;
+                        case ffmpeg.AV_LOG_WARNING:
+                            Log.Warning(line);
+                            break;
+                        case ffmpeg.AV_LOG_INFO:
+                        default:
+                            Log.Information(line);
+                            break;
+                            
                     }
                 };
                 ffmpeg.av_log_set_callback(logCallback);
             }
         }
     }
-    //https://wiki.openmpt.org/Manual:_Module_formats
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.MKVMime];
-    public bool SupportedOnPlatform => DllLoc.Any(x => Path.Exists(x));
-    static readonly string[] DllLoc = ["/usr/lib/libavcodec.so",
-    ];
+    public bool SupportedOnPlatform => DllLoc.Any(x => Path.Exists(Path.GetFullPath(x,AppContext.BaseDirectory)));
+    static readonly string[] DllLoc = ["/usr/lib/libavcodec.so","libavcodec-58.dll","avcodec-59.dll"];
 
     public WaveStream GetStream(Stream stream) => new CSCoreReader(new FFMpegWaveStream(stream));
 
 }
-public class FFMpegWaveStream : IWaveSource
-{
-    private AudioStreamDecoder helper;
-    public  FFMpegWaveStream(Stream s)
-    {
-        helper = new(s);
-        Console.WriteLine(helper.SampleFormat);
-        WaveFormat = new WaveFormat(helper.SampleRate, 32, helper.NumberOfChannels, AudioEncoding.IeeeFloat);
-    }
-
-    private byte[] overflow=new byte[ 0];
-    private int valuesleftinoverflow= 0;
-    private int overflowstart = 0;
-
-    public  int Read(byte[] buffer, int offset, int count)
-    {
-        var ogcount = count;
-        while(count > 0 )
-        {
-            if (valuesleftinoverflow > 0)
-            {
-                var min=Math.Min(valuesleftinoverflow, count);
-                Array.Copy(overflow, overflowstart, buffer, offset, min);
-                overflowstart += min;
-                if (min == count)
-                {
-                    valuesleftinoverflow -=count;
-                    return ogcount;
-                }
-                count -= valuesleftinoverflow;
-                offset += valuesleftinoverflow;
-                valuesleftinoverflow =0;
-            }
-            if(valuesleftinoverflow ==0 )
-            {
-                if (helper.TryDecodeNextFrame(out var frame))
-                {
-                    var min = frame.nb_samples * helper.NumberOfChannels * helper.BytesPerSample;
-                    if (overflow.Length < min)
-                    {
-                        overflow = new byte[min];
-                    }
-                    for (int i = 0; i < frame.nb_samples; i++)
-                    {
-                        for (uint channel = 0; channel < helper.NumberOfChannels; channel++)
-                        {
-                            unsafe
-                            {
-                                var data = frame.data[channel] + (helper.BytesPerSample * i);
-                                overflow[valuesleftinoverflow] = *data;
-                                overflow[valuesleftinoverflow + 1] = *(data + 1);
-                                overflow[valuesleftinoverflow + 2] = *(data + 2);
-                                overflow[valuesleftinoverflow + 3] = *(data + 3);
-                                valuesleftinoverflow += helper.BytesPerSample;
-                            }
-                        }
-                    }
-                    overflowstart = 0;
-                }
-                else
-                {
-                    return ogcount - count;
-                }
-            }
-        }
-        return ogcount;
-    }
-    private bool isDisposed;
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual unsafe void Dispose(bool disposing)
-    {
-        if (isDisposed) return;
-        if (disposing)
-        {
-            helper.Dispose();
-
-        }
-
-        isDisposed = true;
-    }
-
-
-    ~FFMpegWaveStream()
-    {
-        Dispose(false);
-    }
-
-
-    public bool CanSeek => true;
-    public WaveFormat WaveFormat { get;  }
-    public unsafe long Position
-    {
-        get => helper.GetPosition();
-        set
-        {
-             helper.Seek((long)((double)value/WaveFormat.BytesPerSecond*1000000));
-        }
-    }
-
-    public long Length { get=>(long)(helper.GetDuration()*WaveFormat.BytesPerSecond); }
-}
+#endif
+#endif

@@ -1,3 +1,5 @@
+#if CSCore
+#if FFmpeg
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 
@@ -28,7 +30,7 @@ public  unsafe class AudioStreamDecoder : IDisposable
     private readonly AVFrame* _receivedFrame;
     private readonly int _streamIndex;
     private void* buffer;
-    private MPTVirtualStreamHelper stuff;
+    private FFmpegAVIOHelper stuff;
     private AVIOContext* iocontext;
     public AudioStreamDecoder(Stream stream)
     {
@@ -158,3 +160,5 @@ public  unsafe class AudioStreamDecoder : IDisposable
         return result;
     }
 }
+#endif
+#endif

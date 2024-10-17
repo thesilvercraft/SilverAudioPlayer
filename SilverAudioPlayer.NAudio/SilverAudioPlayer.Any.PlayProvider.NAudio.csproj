@@ -7,10 +7,12 @@
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-              <DefineConstants>CSCore</DefineConstants>
-              <AssemblyName>SilverAudioPlayer.Any.PlayProvider.NAudio</AssemblyName>
-              <RootNamespace>SilverAudioPlayer.Any.PlayProvider.NAudio</RootNamespace>
-        
+        <!-- Disable CSCore integration, makes linux not have any output, disables ffmpeg, openmpt, sndfile   -->
+        <DefineConstants>$(DefineConstants);CSCore</DefineConstants> 
+        <!-- ffmpeg, requires cscore -->
+        <DefineConstants>$(DefineConstants);FFmpeg</DefineConstants>
+        <AssemblyName>SilverAudioPlayer.Any.PlayProvider.NAudio</AssemblyName>
+        <RootNamespace>SilverAudioPlayer.Any.PlayProvider.NAudio</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -36,8 +38,8 @@
         <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="SilverCraft.OpenMPT" Version="0.1.0"  Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.0" Condition=" $(DefineConstants.Contains('CSCore'))" />
-            <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
-            <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="7.0.0" />
+        <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" Condition="$(DefineConstants.Contains('FFmpeg'))" />
+        <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="7.0.0" Condition="$(DefineConstants.Contains('FFmpeg'))" />
     </ItemGroup>
 
 
