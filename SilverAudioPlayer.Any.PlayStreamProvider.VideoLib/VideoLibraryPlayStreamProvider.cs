@@ -1,5 +1,6 @@
 ﻿using System.Composition;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
 using VideoLibrary;
 
@@ -96,11 +97,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
         }
         var youTube = YouTube.Default;
         var video = await youTube.GetAllVideosAsync(given.ToString());
-        var uri = video.Where(x =>
-            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis).OrderByDescending(x => x.AudioBitrate).FirstOrDefault()?.Uri;
+        var vid = video.Where(x =>
+            x.AdaptiveKind == AdaptiveKind.Audio && x.AudioFormat is AudioFormat.Opus or AudioFormat.Vorbis).OrderByDescending(x => x.AudioBitrate).FirstOrDefault();
+        var uri = vid?.Uri;
         if (uri != null)
         {
-            listener.LoadSong(new WrappedHttpStream(uri));
+            listener.LoadSong(new WrappedHttpStream(uri), new YoutubeMetadata(vid.Info));
         }
     }
+}
+
+public class YoutubeMetadata (VideoInfo vidInfo): IMetadata
+{
+
+    public void Dispose()
+    {
+    }
+
+    public string? Title { get; }=vidInfo.Title;
+    public string? Artist { get; } = vidInfo.Author;
+    public string? Album { get; }
+    public string? Genre { get; }
+    public int? Year { get; }
+    public ulong? Bitrate { get; }
+    public ulong? SampleRate { get; }
+    public uint? Channels { get; }
+    public int? TrackNumber { get; }
+    public int? DiscNumber { get; }
+    public string[]? Comments { get; }
+    public IDictionary<string, string>? Entries { get; }
+    public double? Duration { get; } = vidInfo.LengthSeconds * 1000;
+    public string? Lyrics { get; }
+    public IList<LyricPhrase>? SyncedLyrics { get; }
+    public IReadOnlyList<IPicture>? Pictures { get; }
 }

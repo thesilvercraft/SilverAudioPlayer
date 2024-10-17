@@ -118,28 +118,45 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     
     Task ReadChunk(long chunkNum, CancellationToken token=default, bool au=false)
     {
-        
-        if (!au && BeingDownloaded.TryGetValue(chunkNum, out var chunk)) return chunk;
+
+        if (!au && BeingDownloaded.TryGetValue(chunkNum, out var chunk))
+        {
+            if (chunk.Status == TaskStatus.RanToCompletion)
+            {
+                BeingDownloaded.Remove(chunkNum);
+            }
+            return chunk;
+        }
         void SeeBufferNext()
         {
-            if (BeingDownloaded.ContainsKey(chunkNum + 1)) return;
-                if (Math.Abs(_currentPos - chunkNum * BuffLength) / BuffLength >= MaxChunksToBufferAhead) return;
-                if ((Length / BuffLength) - 1 <= chunkNum + 1) return;
-                Debug.WriteLine($"adding chunk number {chunkNum+1}");
-                BeingDownloaded[chunkNum + 1]=  Task.Run(() =>
+          
+            
+            if(chunkNum * BuffLength > Length) return;
+           // Debug.WriteLine($"We are currently at {(_currentPos) / 1000}K aka {_currentPos / BuffLength}");
+            for (int i = 1; i <= MaxChunksToBufferAhead; i++)
+            {
+                if (BeingDownloaded.ContainsKey(chunkNum + i) || CachedStreams.ContainsKey(chunkNum+i)) continue;
+                //Debug.WriteLine($"{((chunkNum+ 1)*BuffLength)/1000}K aka {chunkNum+i} is {Math.Abs((chunkNum+ i) * BuffLength-_currentPos) / BuffLength} chunks ahead");
+                if (Math.Abs((chunkNum+ i) * BuffLength-_currentPos) / BuffLength >= MaxChunksToBufferAhead) return;
+                //number of chunks <= next 
+                if ((Length / BuffLength) - 1 < chunkNum + i) return;
+                Debug.WriteLine($"adding chunk number {chunkNum+i}");
+                BeingDownloaded[chunkNum + i]=  Task.Run(() =>
                 {
-                    ReadChunk(chunkNum + 1, token,true);
+                    ReadChunk(chunkNum + i, token,true);
                 });
+                break;
+            }
+       
                
         }
-
-        Debug.WriteLine($"Downloading chunk number {chunkNum}");
-        var byteToStartAt = chunkNum * BuffLength;
         if (CachedStreams.ContainsKey(chunkNum))
         {
             SeeBufferNext();
             return Task.CompletedTask;
         }
+        Debug.WriteLine($"Downloading chunk number {chunkNum}");
+        var byteToStartAt = chunkNum * BuffLength;
         using var currentStream = GetStream(byteToStartAt);
         var b = new byte[BuffLength];
         var toRead = BuffLength;
@@ -168,10 +185,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
         lock (CachedStreams)
         {
-            if (!CachedStreams.ContainsKey(streamToRead))
-            {
-                ReadChunk(streamToRead, default).GetAwaiter().GetResult();
-            }
+            ReadChunk(streamToRead, default).GetAwaiter().GetResult();
             return new(streamToRead, _currentPos % BuffLength);
         }
     }

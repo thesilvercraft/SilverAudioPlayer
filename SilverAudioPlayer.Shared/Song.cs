@@ -10,21 +10,18 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
     private IMetadata? _Metadata;
     public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic=null)
     {
-        URI = "";
-        if(data is WrappedFileStream w)
+        URI = data switch
         {
-            URI=w.URL;
-        }
-        else if(data is WrappedHttpStream h)
-        {
-            URI=h.Url;
-        }
+            WrappedFileStream w => w.URL,
+            WrappedHttpStream h => h.Url,
+            _ => ""
+        };
         Stream = data;
         Name = name;
         Metadata = metadata;
         if (logic is not null)
         {
-            Metadata ??= Task.Run(async () => await logic.GetMetadataFromStream(Stream)!).GetAwaiter().GetResult();
+            Metadata ??= Task.Run(async () => await logic.GetMetadataFromStream(Stream,[metadata])!).GetAwaiter().GetResult();
         }
         Guid = GetIdFromMetadata(metadata);
     }

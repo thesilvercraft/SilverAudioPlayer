@@ -70,7 +70,7 @@ public  unsafe class AudioStreamDecoder : IDisposable
     public AVSampleFormat SampleFormat { get; }
     public int NumberOfChannels { get; }
     public int SampleRate { get; }
-
+    public long EstPos { get; private set; } = 0;
     public int BytesPerSample { get; }
 
     public void Dispose()
@@ -100,7 +100,7 @@ public  unsafe class AudioStreamDecoder : IDisposable
 
     public long GetPosition()
     {
-        return ffmpeg.avio_tell(iocontext); //TODO: NO CLUE WHERE WE AT
+        return EstPos/1000; 
     }
 
     public bool TryDecodeNextFrame(out AVFrame frame)
@@ -121,9 +121,11 @@ public  unsafe class AudioStreamDecoder : IDisposable
                     if (error == ffmpeg.AVERROR_EOF)
                     {
                         frame = *_pFrame;
+                        EstPos = frame.best_effort_timestamp;
+
                         return false;
                     }
-
+                    
                     error.ThrowExceptionIfError();
                 } while (_pPacket->stream_index != _streamIndex);
 
@@ -141,7 +143,7 @@ public  unsafe class AudioStreamDecoder : IDisposable
 
        
             frame = *_pFrame;
-
+            EstPos = frame.best_effort_timestamp;
         return true;
     }
 

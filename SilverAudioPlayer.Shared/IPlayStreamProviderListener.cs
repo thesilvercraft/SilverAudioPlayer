@@ -1,3 +1,5 @@
+using SilverAudioPlayer.Shared.Metadata;
+
 namespace SilverAudioPlayer.Shared;
 
 public interface IPlayStreamProviderListener : IPlayerEnvironment
@@ -7,6 +9,14 @@ public interface IPlayStreamProviderListener : IPlayerEnvironment
     /// </summary>
     /// <param name="s">wrappedstream to load</param>
     void LoadSong(WrappedStream s);
+    /// <summary>
+    /// Loads a wrappedstream into the queue and provide additional metadata
+    /// </summary>
+    /// <param name="s">wrappedstream to load</param>
+   /// <param name="additionalMetadata">additional metadata</param>
+
+    void LoadSong(WrappedStream s, IMetadata additionalMetadata);
+
     /// <summary>
     /// Loads URLS into the queue
     /// </summary>

@@ -68,7 +68,7 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
     {
         Started = DateTime.Now;
         if (ConfigObject.Value is not ListenBrainzConfig x) return;
-        if (e.Metadata == null) return;
+        if (e.Metadata?.Duration == null) return;
         m = e.Metadata;
         if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist)) return;
         _ = Task.Run(async () => await l.SetNowPlayingAsync(m.Title, m.Artist, m.Album));

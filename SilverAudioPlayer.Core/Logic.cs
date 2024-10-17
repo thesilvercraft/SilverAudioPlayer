@@ -501,7 +501,14 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public void ProcessStream(WrappedStream stream)
     {
-        AddSong(new Song(stream, "unknown", logic: this));
+        ProcessStream(stream,null);
+    }
+
+    public void ProcessStream(WrappedStream stream, IMetadata? additionalMetadata)
+    {
+        AddSong(additionalMetadata != null
+            ? new Song(stream, "unknown", logic: this, metadata: additionalMetadata)
+            : new Song(stream, "unknown", logic: this));
     }
 
     public void ClearAll()
@@ -629,13 +636,13 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream, PlayerEnvironment);
     }
 
-    public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata = null)
+    public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata?>? additionalMetadata = null)
     {
         var listofmetadatas = MetadataProviders?.Where(x => x.CanGetMetadata(stream))
             .Select(async x => await x.GetMetadata(stream)).Select(t => t.Result).Where(i => i != null).ToList();
         if (additionalMetadata != null)
         {
-            listofmetadatas.AddRange(additionalMetadata);
+            listofmetadatas.AddRange(additionalMetadata.Where(x=>x is not null));
         }
         return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas, MetadataGatherers));
     }

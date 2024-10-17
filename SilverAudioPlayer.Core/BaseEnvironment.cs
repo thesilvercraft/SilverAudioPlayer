@@ -25,6 +25,11 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         Task.Run(() => Logic.ProcessStream(s));
     }
 
+    public void LoadSong(WrappedStream s, IMetadata additionalMetadata)
+    {
+        Task.Run(() => Logic.ProcessStream(s,additionalMetadata));
+    }
+
     public void ProcessFiles(IEnumerable<string> files)
     {
         Logic.ProcessFiles(files);
