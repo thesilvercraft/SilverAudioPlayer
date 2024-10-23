@@ -98,9 +98,9 @@ public  unsafe class AudioStreamDecoder : IDisposable
         ffmpeg.av_seek_frame(_pFormatContext, -1, o, ffmpeg.AVSEEK_FLAG_ANY);
     }
 
-    public long GetPosition()
+    public double GetPosition()
     {
-        return EstPos/1000; 
+        return EstPos/1000d; 
     }
 
     public bool TryDecodeNextFrame(out AVFrame frame)
@@ -108,7 +108,6 @@ public  unsafe class AudioStreamDecoder : IDisposable
         ffmpeg.av_frame_unref(_pFrame);
         ffmpeg.av_frame_unref(_receivedFrame);
         int error;
-
         do
         {
             try
@@ -122,7 +121,6 @@ public  unsafe class AudioStreamDecoder : IDisposable
                     {
                         frame = *_pFrame;
                         EstPos = frame.best_effort_timestamp;
-
                         return false;
                     }
                     
@@ -140,10 +138,8 @@ public  unsafe class AudioStreamDecoder : IDisposable
         } while (error == ffmpeg.AVERROR(ffmpeg.EAGAIN));
 
         error.ThrowExceptionIfError();
-
-       
-            frame = *_pFrame;
-            EstPos = frame.best_effort_timestamp;
+        frame = *_pFrame;
+        EstPos = frame.best_effort_timestamp;
         return true;
     }
 

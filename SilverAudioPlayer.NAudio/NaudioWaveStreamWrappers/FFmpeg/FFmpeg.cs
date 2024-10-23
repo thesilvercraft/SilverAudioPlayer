@@ -8,7 +8,6 @@ using NAudio.Wave;
 using Serilog;
 using SilverAudioPlayer.NAudio;
 using SilverMagicBytes;
-using DynamicallyLoadedBindings = FFmpeg.AutoGen.Bindings.DynamicallyLoaded.DynamicallyLoadedBindings;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
@@ -25,11 +24,8 @@ public class FFmpeg : INaudioWaveStreamWrapper
         {
             unsafe
             {
-                Console.WriteLine("Running in {0}-bit mode.", Environment.Is64BitProcess ? "64" : "32");
-                
                 if (OperatingSystem.IsLinux())
                 {
-                    DynamicallyLoadedBindings.LibrariesPath = "/usr/lib/";
                     ffmpeg.RootPath = "/usr/lib/";
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -45,7 +41,6 @@ public class FFmpeg : INaudioWaveStreamWrapper
                         return;
                     }
                 }
-                DynamicallyLoadedBindings.Initialize();
                 Log.Information($"FFmpeg version info: {ffmpeg.av_version_info()}");
                 ffmpeg.av_log_set_level(Debugger.IsAttached ? ffmpeg.AV_LOG_DEBUG : ffmpeg.AV_LOG_INFO);
 

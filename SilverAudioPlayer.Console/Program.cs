@@ -13,8 +13,8 @@ public class App
 
     public static void Main(string[] args)
     {
-        System.Console.OutputEncoding = System.Text.Encoding.Unicode;
-        System.Console.InputEncoding = System.Text.Encoding.Unicode;
+       // System.Console.OutputEncoding = System.Text.Encoding.Unicode;
+     //   System.Console.InputEncoding = System.Text.Encoding.Unicode;
         Config mwconfig;
         CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
         string _configPath;
@@ -170,6 +170,13 @@ public class App
                         case ConsoleKey.RightArrow:
                             env.SetPosition(env.GetPosition() + 5);
                             break;
+                        case ConsoleKey.C:
+                            if (key.Modifiers.HasFlag(ConsoleModifiers.Shift))
+                            {
+                                Logic.ClearAll();
+                            }
+                            break;
+                        
                         case ConsoleKey.LeftArrow:
                             env.SetPosition(env.GetPosition() - 5);
                             break;

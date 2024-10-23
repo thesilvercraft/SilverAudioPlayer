@@ -122,7 +122,7 @@ public class FFMpegWaveStream : IWaveSource
     public WaveFormat WaveFormat { get;  }
     public long Position
     {
-        get => helper.GetPosition()*WaveFormat.BytesPerSecond;
+        get => (long)(helper.GetPosition()*WaveFormat.BytesPerSecond);
         set
         {
             helper.Seek((long)((double)value/WaveFormat.BytesPerSecond*1000000));

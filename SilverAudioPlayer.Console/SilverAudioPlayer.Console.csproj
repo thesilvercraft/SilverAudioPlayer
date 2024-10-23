@@ -57,30 +57,31 @@
 		<PackageReference Include="Avalonia.Diagnostics" Version="11.1.1" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
+		<ProjectReference Include="..\Silver.Composition\Silver.Composition.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.Sync\SilverAudioPlayer.Any.Sync.csproj" Condition="$(DefineConstants.Contains('LSync'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Win.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
+		<ProjectReference Include="..\SilverCraft.Shared\SilverCraft.Shared.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
+		
 		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
+     	<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />-->
+	<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />-->
+<!--		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Win.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />-->
 		<ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
+<!--		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />-->
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj" Condition="$(DefineConstants.Contains('FRT'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.PlatformHelper.Win10\SilverAudioPlayer.Windows.PlatformHelper.Win.csproj" Condition="$(TargetFramework.Contains('windows'))" />
 		<!-- <ProjectReference Include="..\SilverCraft.Ekonrensis.Avalonia\SilverCraft.Ekonrensis.Avalonia.csproj" /> -->
-		<ProjectReference Include="..\SilverCraft.Shared\SilverCraft.Shared.csproj" />
 		<!-- <ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" /> -->
 	</ItemGroup>
 	<ItemGroup>
