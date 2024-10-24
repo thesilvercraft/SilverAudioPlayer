@@ -84,7 +84,8 @@ public  unsafe class AudioStreamDecoder : IDisposable
         ffmpeg.avcodec_free_context(&pCodecContext);
         var pFormatContext = _pFormatContext;
         ffmpeg.avformat_close_input(&pFormatContext);
-        ffmpeg.av_free(buffer);
+        ffmpeg.av_freep(iocontext->buffer);
+        ffmpeg.av_freep(iocontext);
         stuff.Dispose();
     }
  

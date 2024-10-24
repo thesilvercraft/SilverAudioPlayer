@@ -85,7 +85,13 @@ public class FFmpeg : INaudioWaveStreamWrapper
             }
         }
     }
+    // opus in mkv (webm) works with current position
+    // flac crashes with null exception because framedata only has one channel that's not null???
+    // mp3 freaks out with current position but plays
+    // aiff seems fine
+    // wav same story as flac (S16)
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.MKVMime];
+    //, KnownMimes.AiffMime,KnownMimes.FLACMime,KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.OGGMime, KnownMimes.MP3Mime,KnownMimes.WAVMime
     public bool SupportedOnPlatform => DllLoc.Any(x => Path.Exists(Path.GetFullPath(x,AppContext.BaseDirectory)));
     static readonly string[] DllLoc = ["/usr/lib/libavcodec.so","libavcodec-58.dll","avcodec-59.dll"];
 

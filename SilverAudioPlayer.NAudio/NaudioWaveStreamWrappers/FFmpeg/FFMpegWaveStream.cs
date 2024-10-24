@@ -34,7 +34,7 @@ public class FFMpegWaveStream : IWaveSource
         });
     }
 
-    private byte[] overflow=new byte[ 0];
+    private byte[] overflow=[];
     private int valuesleftinoverflow= 0;
     private int overflowstart = 0;
 
@@ -57,12 +57,13 @@ public class FFMpegWaveStream : IWaveSource
                 offset += valuesleftinoverflow;
                 valuesleftinoverflow =0;
             }
-            if(valuesleftinoverflow ==0 )
+
+            if (valuesleftinoverflow != 0) continue;
             {
                 if (helper.TryDecodeNextFrame(out var frame))
                 {
                     var min = frame.nb_samples * helper.NumberOfChannels * helper.BytesPerSample;
-                    if (overflow.Length < min)
+                    if (overflow.Length < min+valuesleftinoverflow)
                     {
                         overflow = new byte[min];
                     }
@@ -105,7 +106,6 @@ public class FFMpegWaveStream : IWaveSource
         if (disposing)
         {
             helper.Dispose();
-
         }
 
         isDisposed = true;
