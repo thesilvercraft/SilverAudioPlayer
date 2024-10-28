@@ -14,7 +14,7 @@ public static class LrcParser
             {
                 file.AddRange(phrases);
             }
-            else if(line.StartsWith("[offset:") && line.EndsWith(']') && int.TryParse(line[8..^1].Trim(), out var  offset))
+            else if(line.StartsWith("[offset:") && line.EndsWith(']') && int.TryParse(line[8..^1].Trim(), CultureInfo.InvariantCulture, out var  offset))
             {
                 file.OffsetInMs = -offset;
             }
@@ -28,8 +28,7 @@ public static class LrcParser
 
     public static bool IsBalancedAndContainsAdditional(string x)
     {
-        var
-            bracketL = 0;
+        var bracketL = 0;
         foreach (var t in x)
         {
             if (t == '<')
