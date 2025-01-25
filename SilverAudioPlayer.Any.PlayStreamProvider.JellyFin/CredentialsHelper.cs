@@ -1,46 +1,33 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using Jellyfin.Sdk;
+using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using SilverAudioPlayer.Shared;
 using HttpClient = SilverAudioPlayer.Shared.HttpClient;
-using SystemException = Jellyfin.Sdk.SystemException;
-
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
 public class JellyFinHelper
 {
-    private readonly IUniversalAudioClient audioClient;
     private AuthInfoWindow authwindow;
-    private readonly IImageClient imageClient;
-    private readonly IItemsClient itemsClient;
     private ServerUrlWindow serverwindow;
-    private readonly SdkClientSettings settings;
-    private readonly ISystemClient systemClient;
-    private readonly IUserClient userClient;
+    private readonly JellyfinSdkSettings settings;
+    JellyfinApiClient apiClient;
 
     private UserDto userDto;
-    private IUserLibraryClient userLibraryClient;
-    private readonly IUserViewsClient userViewsClient;
     private bool validServer;
     private bool validUser;
     private IPublicClientApplication app;
     public JellyFinHelper()
     {
-        settings = new SdkClientSettings();
-        settings.ClientVersion = typeof(JellyFinHelper).Assembly.GetName().Version.ToString();
-        settings.ClientName = "SilverAudioPlayer.PlayStreamProvider.JellyFin";
-        settings.DeviceName = Environment.MachineName;
-        settings.DeviceId = "1";
-        //Leave deviceid as is for privacy?
-        systemClient = new SystemClient(settings, HttpClient.Client);
-        userViewsClient = new UserViewsClient(settings, HttpClient.Client);
-        userLibraryClient = new UserLibraryClient(settings, HttpClient.Client);
-        userClient = new UserClient(settings, HttpClient.Client);
-        itemsClient = new ItemsClient(settings, HttpClient.Client);
-        audioClient = new UniversalAudioClient(settings, HttpClient.Client);
-        imageClient = new ImageClient(settings, HttpClient.Client);
+        settings = new JellyfinSdkSettings();
+        settings.Initialize(
+            "Catenoid",
+             typeof(JellyFinHelper).Assembly.GetName().Version.ToString(),
+             Environment.MachineName,
+            $"1");
+        apiClient=new(new JellyfinRequestAdapter(new JellyfinAuthenticationProvider(settings), settings,HttpClient.Client));
         app = PublicClientApplicationBuilder.Create(SilverAudioPlayerJellyfinGuid).Build();
         Task.Run(async ()=> await MoreLibSecretStuff()).GetAwaiter().GetResult();
     }
@@ -72,9 +59,9 @@ public class JellyFinHelper
                 var logininfo = System.Text.Json.JsonSerializer.Deserialize<LoginInfo>(str);
                 if (await TryGetSystemInfoAsync(logininfo.url))
                 {
-                    settings.BaseUrl = logininfo.url;
-                    settings.AccessToken = logininfo.accessToken;
-                    userDto = await userClient.GetUserByIdAsync(Guid.Parse(logininfo.userId));
+                    settings.SetServerUrl(logininfo.url);
+                    settings.SetAccessToken(logininfo.accessToken);
+                    userDto = await apiClient.Users.Me.GetAsync();
                     validUser = true;
                 }
                
@@ -83,12 +70,6 @@ public class JellyFinHelper
             {
                 Debug.WriteLine(e);
             }
-          
-
-
-               
-
-            
     }
        private static StorageCreationProperties ConfigureSecureStorage(bool usePlaintextFileOnLinux)
         {
@@ -166,7 +147,7 @@ public class JellyFinHelper
    
     public async Task<IReadOnlyList<BaseItemDto>> GetItemsFromItem(BaseItemDto dto)
     {
-        var a = await itemsClient.GetItemsByUserIdAsync(userDto.Id, parentId: dto.Id);
+        var a = await apiClient.Items.GetAsync(configuration => configuration.QueryParameters.ParentId= dto.Id ); // itemsClient.GetItemsByUserIdAsync(userDto.Id, parentId: dto.Id)
         return a.Items;
     }
 
@@ -174,13 +155,11 @@ public class JellyFinHelper
     {
         while (!validServer) await GetServerUrl(gui);
         while (!validUser) await LogIn(gui);
-
-        //password dialog here
     }
 
-    public async Task<IReadOnlyList<BaseItemDto>> GetDefaultItems()
+    public async Task<IReadOnlyList<BaseItemDto>> GetDefaultViews()
     {
-        var views = await userViewsClient.GetUserViewsAsync(userDto.Id);
+        var views = await apiClient.UserViews.GetAsync();
         return views.Items;
     }
 
@@ -188,14 +167,15 @@ public class JellyFinHelper
     {
         try
         {
-            var authenticationResult = await userClient.AuthenticateUserByNameAsync(new AuthenticateUserByName
-            {
-                Username = username,
-                Pw = password
-            }).ConfigureAwait(false);
-            settings.AccessToken = authenticationResult.AccessToken;
+            var authenticationResult = await apiClient.Users.AuthenticateByName.PostAsync(new AuthenticateUserByName
+                {
+                    Username = username,
+                    Pw = password
+                })
+                .ConfigureAwait(false);
+            settings.SetAccessToken(authenticationResult.AccessToken);
             userDto = authenticationResult.User;
-            var logininfo = System.Text.Json.JsonSerializer.Serialize(new LoginInfo(settings.BaseUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
+            var logininfo = System.Text.Json.JsonSerializer.Serialize(new LoginInfo(settings.ServerUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
             var storageProperties = new StorageCreationPropertiesBuilder(
                     CacheFileName + ".other_secrets",
                     CacheDir)
@@ -213,7 +193,7 @@ public class JellyFinHelper
             validUser = true;
             return validUser;
         }
-        catch (UserException ex)
+        catch (Exception ex)
         {
             await Console.Error.WriteLineAsync("Error authenticating.").ConfigureAwait(false);
             await Console.Error.WriteLineAsync(ex.Message).ConfigureAwait(false);
@@ -224,10 +204,10 @@ public class JellyFinHelper
     public async Task<bool> TryGetSystemInfoAsync(string host)
     {
         validServer = false;
-        settings.BaseUrl = host;
+        settings.SetServerUrl(host);
         try
         {
-            var systemInfo = await systemClient.GetPublicSystemInfoAsync()
+            var systemInfo = await apiClient.System.Info.Public.GetAsync()
                 .ConfigureAwait(false);
             validServer = true;
             Debug.WriteLine($"Connected to {host}");
@@ -240,7 +220,7 @@ public class JellyFinHelper
             await Console.Error.WriteLineAsync("Invalid url").ConfigureAwait(false);
             await Console.Error.WriteLineAsync(ex.Message).ConfigureAwait(false);
         }
-        catch (SystemException ex)
+        catch (Exception ex)
         {
             await Console.Error.WriteLineAsync($"Error connecting to {host}").ConfigureAwait(false);
             await Console.Error.WriteLineAsync(ex.Message).ConfigureAwait(false);
@@ -254,7 +234,7 @@ public class JellyFinHelper
        // return new WrappedJellyFinStream(audioClient, userDto, dto);
       // var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
       // Debug.WriteLine(goofyah);
-        var baseUri = new Uri(settings.BaseUrl);
+        var baseUri = new Uri(settings.ServerUrl);
         var audioUri = new Uri(baseUri, $"/Audio/{dto.Id}/universal?UserId={userDto.Id}&DeviceId=1&MaxStreamingBitrate=140000000&Container=opus%2Cwebm%7Copus%2Cmp3%2Caac%2Cm4a%7Caac%2Cm4b%7Caac%2Cflac%2Cwebma%2Cwebm%7Cwebma%2Cwav%2Cogg&TranscodingContainer=ts&TranscodingProtocol=hls&AudioCodec=aac&api_key={settings.AccessToken}&PlaySessionId=1&StartTimeTicks=0&EnableRedirection=true&EnableRemoteMedia=false");
         Debug.WriteLine(audioUri);
         return new WrappedHttpStream(audioUri.ToString());
@@ -264,17 +244,18 @@ public class JellyFinHelper
     {
         try
         {
-            var fr =  imageClient.GetItemImageUrl(dto.Id, ImageType.Primary);
+            var ri =  apiClient.Items[dto.Id.Value].Images[ImageType.Primary.ToString()].ToGetRequestInformation();
+            var uri = apiClient.BuildUri(ri);
             var request = new HttpRequestMessage() {
-                RequestUri = new Uri(fr),
+                RequestUri = uri,
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("X-Emby-Token",settings.AccessToken);
            var resp= await HttpClient.Client.SendAsync(request);
            if (resp.IsSuccessStatusCode)
            {
-               Debug.WriteLine(fr);
-               var r = new HttpRequestMessage(HttpMethod.Get,new Uri(fr));
+               //Debug.WriteLine(fr);
+               var r = new HttpRequestMessage(HttpMethod.Get,uri);
                r.Headers.Add("X-Emby-Token",settings.AccessToken);
                return new WrappedHttpStream(r);
            }

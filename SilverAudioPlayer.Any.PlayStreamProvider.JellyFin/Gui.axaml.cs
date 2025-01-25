@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using Jellyfin.Sdk;
+using Jellyfin.Sdk.Generated.Models;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverCraft.AvaloniaUtils;
@@ -39,7 +40,7 @@ public partial class Gui : Window
 
     private async void Button_Click(object? sender, RoutedEventArgs e)
     {
-        g.SearchResults = new ObservableCollection<WrappedDto>(new List<BaseItemDto>(await helper.GetDefaultItems())
+        g.SearchResults = new ObservableCollection<WrappedDto>(new List<BaseItemDto>(await helper.GetDefaultViews())
             .OrderBy(x => x.IndexNumber).Select(x => new WrappedDto(x)));
         LB.ItemsSource = g.SearchResults;
         LB.InvalidateVisual();
@@ -97,7 +98,7 @@ public partial class Gui : Window
         await helper.MakeSureUserLogsIn(this);
         g.SearchResults =
             new ObservableCollection<WrappedDto>(
-                new List<BaseItemDto>(await helper.GetDefaultItems()).Select(x => new WrappedDto(x)));
+                new List<BaseItemDto>(await helper.GetDefaultViews()).Select(x => new WrappedDto(x)));
         LB.ItemsSource = g.SearchResults;
         LB.InvalidateVisual();
         LB.DoubleTapped += LB_DoubleTapped;

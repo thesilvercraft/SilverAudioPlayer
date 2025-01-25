@@ -1,5 +1,6 @@
 using Avalonia.Media.Imaging;
 using Jellyfin.Sdk;
+using Jellyfin.Sdk.Generated.Models;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
