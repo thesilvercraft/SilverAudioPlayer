@@ -25,7 +25,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public WaveStream? audioFile;
     public WaveConfig Config;
     private ILogger? logger;
-    private IWavePlayer? outputDevice;
+    public IWavePlayer? outputDevice;
     public IPlayerEnvironment? playerEnvironment;
     private float ReplayGainMultiplier = 1;
     private bool SearchForReplayGain = true;
@@ -141,16 +141,13 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             SearchForReplayGain = false;
             if (playerEnvironment == null) return;
             var e = playerEnvironment.GetEntriesForCurrentTrack();
-
+            if(e==null) return;
             float? TryGetReplayGainPeak(bool album)
             {
                 if (e != null && e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out var al) &&
                     float.TryParse(al, CultureInfo.InvariantCulture, out var r)) return r;
                 return null;
             }
-
-            if (e != null)
-            {
                 bool TryGetReplayGain(bool album)
                 {
                     if (!e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_GAIN", out var al) ||
@@ -180,7 +177,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                         album = true;
                     }
                 }
-            }
 
             if (rgSuccess)
             {
@@ -283,6 +279,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             audioFile = new AudioFileReader(wf.URL);
         }
 
+        if (audioFile == null)
+        {
+            throw new NotSupportedException();
+        }
         logger?.Information("Using {Decoder}", Decoder);
 
         if (outputDevice == null)
@@ -311,16 +311,19 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public void SetPattern(int pattern)
     {
-        if (audioFile is ISelector mselector)
+        switch (audioFile)
         {
-            mselector.SetPattern(pattern);
-        }
-        else if (audioFile is CSCoreReader cSCoreReader)
-        {
-            if (cSCoreReader._reader is ISelector cselector)
-                cselector.SetPattern(pattern);
-            else if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                     sampleToIeeeFloat32.Source is ISelector selector) selector.SetPattern(pattern);
+            case ISelector mselector:
+                mselector.SetPattern(pattern);
+                break;
+            case CSCoreReader cSCoreReader:
+            {
+                if (cSCoreReader._reader is ISelector cselector)
+                    cselector.SetPattern(pattern);
+                else if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
+                         sampleToIeeeFloat32.Source is ISelector selector) selector.SetPattern(pattern);
+                break;
+            }
         }
     }
 

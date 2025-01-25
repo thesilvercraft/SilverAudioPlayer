@@ -21,12 +21,11 @@ internal static class Program
     {
         using (Mutex mutex = new(false, @"Global\" + "Catenoid"))
         {
-            bool hasMutex=false;
+            bool hasMutex = false;
             try
             {
                 if (WindowExtensions.envBackend.GetString("SAPIgnoreMutex") == null)
                 {
-
                     if (!mutex.WaitOne(0, false))
                     {
                         if (args is { Length: > 0 })
@@ -65,7 +64,7 @@ internal static class Program
                         return;
                     }
                 }
-                hasMutex=true;
+                hasMutex = true;
                 var app = BuildAvaloniaApp();
                 if (WindowExtensions.envBackend.GetString("SAPTransparency") == null)
                 {
@@ -76,7 +75,7 @@ internal static class Program
             }
             finally
             {
-                if(hasMutex)
+                if (hasMutex)
                 {
                     mutex.ReleaseMutex();
                 }

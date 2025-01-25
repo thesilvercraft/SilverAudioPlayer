@@ -1,6 +1,7 @@
 #if CSCore
 using SilverCraft.CSCore.SoundOut;
 using NAudio.Wave;
+using ArgumentNullException = System.ArgumentNullException;
 using PlaybackState = NAudio.Wave.PlaybackState;
 using StoppedEventArgs = NAudio.Wave.StoppedEventArgs;
 using WaveFormat = NAudio.Wave.WaveFormat;
@@ -46,7 +47,7 @@ public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
     {
         if (waveProvider == null)
         {
-            throw new NullReferenceException();
+            throw new ArgumentNullException(nameof(waveProvider));
         }
         csCoreStream = new WaveInputNaudioToCsCore(waveProvider);
         _soundOut.Initialize(new WaveInputNaudioToCsCore(waveProvider));

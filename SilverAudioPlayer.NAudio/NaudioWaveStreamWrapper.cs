@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Xml.Serialization;
 using NAudio.Wave;
 using Silver.Composition;
+using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
 using SilverCraft.Ekorensis;
@@ -831,12 +832,20 @@ SilverAudioPlayer.Any.PlayProvider.NAudio
     WaveFilePlayer player = new();
     public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment)
     {
-        if (!CanPlayFile(stream)) return null;
-        player.Config = (WaveConfig)ConfigObject.Value;
-        player.playerEnvironment = playerEnvironment;
-        player.LoadStream(stream);
+        if (stream is WrappedHttpStream wrappedHttpStream && !wrappedHttpStream.Seekable)
+        {
+            return new Mp3StreamPlayer(ref player, stream.GetStream());
+        }
+        else
+        {
+            if (!CanPlayFile(stream)) return null;
+            player.Config = (WaveConfig)ConfigObject.Value;
+            player.playerEnvironment = playerEnvironment;
+            player.LoadStream(stream);
 
-        return player;
+            return player;
+        }
+       
     }
 
     public Task OnStartup()

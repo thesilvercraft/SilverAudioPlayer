@@ -315,17 +315,22 @@ public class WrappedHttpStream : WrappedStream, IDisposable
     public WrappedHttpStream(string url) : this(new HttpRequestMessage(HttpMethod.Get,url))
     {
     }
+    public bool Seekable { get; }=false;
     public WrappedHttpStream(HttpRequestMessage requestMessage)
     {
-        if (HttpSeekableStream.GetLengthAndRangeSupport(requestMessage) is {Item2:true})
+        var stype = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage);
+        if (stype is {Item2:true})
         {
             inside = new HttpSeekableStream(requestMessage){Inside=true};
-            
+            Seekable = true;
+        }
+        else if(stype== null)
+        {
+            inside = new NoEndHttpStream(requestMessage);
         }
         else
         {
-            inside = new WrappedSusHttpStream(requestMessage);
-
+            inside= new WrappedSusHttpStream(requestMessage);
         }
 
         using var s = inside.GetStream();
@@ -384,6 +389,39 @@ public class WrappedHttpStream : WrappedStream, IDisposable
         GC.SuppressFinalize(this);
     }
 }
+
+public class NoEndHttpStream : IRefreshableStream, IDisposable
+{
+    private bool _disposedValue;
+
+
+    public NoEndHttpStream(HttpRequestMessage requestMessage)
+    {
+        RequestMessage = requestMessage;
+    }
+
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public HttpRequestMessage RequestMessage { get; }
+
+    public Stream GetStream()
+    {
+        return (HttpClient.Client.Send(new HttpRequestMessage(RequestMessage.Method, RequestMessage.RequestUri), HttpCompletionOption.ResponseHeadersRead).Content.ReadAsStream());
+    }
+
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (_disposedValue) return;
+        _disposedValue = true;
+    }
+}
+
 
 
 public class WrappedSusHttpStream : IRefreshableStream, IDisposable
