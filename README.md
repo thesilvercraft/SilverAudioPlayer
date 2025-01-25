@@ -10,6 +10,7 @@ SilverAudioPlayer is tested and developed on KDE on an Arch based distribution (
 
 ## What do you mean modular?
 Modular means different things for different people but in this case modular would be defined as having code divided up into multiple optional components all housing important code but as previously mentioned are fully optional.
+You don't want the awful Jellyfin integration code (I'm criticising my code, jellyfin for the most part is awesome)? Remove its module  
 You don't want to be able to play midis? Remove the midi module  
 You don't want to be able to play flacs? Remove the flac decoder  
 You don't want to indirectly support google's duopoly by having the chromecast module? Remove it   
@@ -33,7 +34,7 @@ Follow the [plugin guide](https://gitlab.com/silvercraft/SilverAudioPlayer/-/wik
 - `IMetadataProvider` for implementing new metadata providers (the things that read metadata from files/streams)
 - `IMusicStatusInterface` for implementing things that track/control playback (eg. discord rich presence/SMTC/Cd Art Display)
 - `IWakeLockProvider` for implementing ways to let the OS know NOT to go to sleep
-- `IPlayStreamProvider` for implementing ways of letting the user add new tracks from an external source (eg. internet radio streams, media servers (jellyfin(used to be a plugin, i don't wish to refractor it to work with the 2024 sdk), dlna, etc.))  
+- `IPlayStreamProvider` for implementing ways of letting the user add new tracks from an external source (eg. internet radio streams, media servers (jellyfin, dlna, etc.))  
 - `IPlayListReader` for reading playlists (m3u, m3u8, ...)
 Consider looking through the already implemented modules as a reference  
 **Don't forget to export your module by adding `[Export(typeof([YOURMODULEINTERFACETYPE]))]`**

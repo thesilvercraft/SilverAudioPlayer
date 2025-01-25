@@ -11,6 +11,8 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="!$(DefineConstants.Contains('IGNORECSPROJ'))">
 		<!--Customize SilverAudioPlayer here-->
+		<!--JellyFin - alpha-->
+		<!-- <DefineConstants>$(DefineConstants)JF</DefineConstants> -->
 		<!--DryWetMidi-->
 <!--		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
 		<!--Z440AtlCore-->

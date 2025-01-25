@@ -13,6 +13,7 @@ namespace SilverAudioPlayerBuilder
     {
         public Dictionary<string, string> Modules = new()
         {
+            {"JF","JellyFin support, musiclibrary" },
             {"DWMID","DryWetMidi, player and metadata, playback on Windows" },
             {"ZATL","Z440AtlCore, metadata provider" },
             {"NA", "NAudio, player, (with CSCore, PortAudio, libsndfile, openmpt) on Win/Linux" },
