@@ -141,16 +141,16 @@ public class WrappedMemoryStream : WrappedStream, IDisposable
     public override void Dispose()
     {
         // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Debug.WriteLine("WrappedMemoryStream DISPOSE CALLED");
         Dispose(true);
         GC.SuppressFinalize(this);
-        _data.Bytes = null;
     }
 
     protected virtual void Dispose(bool disposing)
     {
         foreach (var stream in Streams.Where(x => x.CanRead))
             stream.Dispose();
+        _data.Bytes = null;
+        _data = null;
     }
 
     ~WrappedMemoryStream()

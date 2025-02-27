@@ -28,7 +28,7 @@ public class LibMPT : INaudioWaveStreamWrapper
         "/usr/lib/aarch64-linux-gnu/libopenmpt.so.0","/usr/lib/libopenmpt.so","/usr/lib/libopenmpt.so.0","usr/lib/libopenmpt.so.0.4.4",
     ];
 
-    public WaveStream GetStream(Stream stream) => new CSCoreReader(new OpenMptWaveStream(stream).ToWaveSource());
+    public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new OpenMptWaveStream(stream).ToWaveSource());
 
 }
 #endif

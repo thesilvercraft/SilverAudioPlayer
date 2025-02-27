@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using SilverMagicBytes;
 
@@ -40,7 +41,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     
     private const int BuffLength =  524288;  // 512 KiB
-    private int MaxChunksToBufferAhead = 6; // Have the next 3MiB buffered
+    private const int MaxChunksToBufferAhead = 6; // Have the next 3MiB buffered
 
     #region Not supported methods
 
@@ -114,7 +115,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         throw new Exception($"HTTP Status code {r.StatusCode}");
     }
 
-    private Dictionary<long, Task> BeingDownloaded=new();
+    private ConcurrentDictionary<long, Task> BeingDownloaded=new();
     
     Task ReadChunk(long chunkNum, CancellationToken token=default, bool au=false)
     {
@@ -123,13 +124,13 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         {
             if (chunk.Status == TaskStatus.RanToCompletion)
             {
-                BeingDownloaded.Remove(chunkNum);
+                BeingDownloaded.Remove(chunkNum, out _);
             }
             return chunk;
         }
         void SeeBufferNext()
         {
-          
+            if (au) return;
             
             if(chunkNum * BuffLength > Length) return;
            // Debug.WriteLine($"We are currently at {(_currentPos) / 1000}K aka {_currentPos / BuffLength}");
@@ -266,14 +267,15 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     /// <see langword="true" /> to release both managed and unmanaged resources; <see langword="false" /> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
     {
-        Internal?.Dispose();
         Internal = null;
         if (Inside)
         {
-            foreach (var s in CachedStreams)
+            Internal?.Dispose();
+            foreach (var s in CachedStreams.ToList())
             {
                 s.Value.Dispose();
             }
+            CachedStreams.Clear();
         }
         // Note: Never change this to call other virtual methods on Stream
         // like Write, since the state on subclasses has already been
@@ -335,29 +337,9 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 
         using var s = inside.GetStream();
         _MimeType = MagicByteCombos.Match(s, 0)?.MimeType;
-#if DEBUG
-        T = new(Callback, this, 1000, 1000);
-#endif
-    }
-#if DEBUG
-    private Timer T;
-    void CheckForReturned()
-    {
-        foreach (var sTuple in NotDisposedStreams.ToArray())
-        {
-            if (sTuple.Item1.CanRead) continue;
-            NotDisposedStreams.Remove(sTuple);
-            Debug.WriteLine($"{sTuple.Item2} seems to have returned a stream, {NotDisposedStreams.Count} now");
-        }
-    }
-    private void Callback(object? state)
-    {
-        CheckForReturned();
+
     }
 
-    public List<Tuple<Stream, string>> NotDisposedStreams = new();
-  
-#endif
    
     private IRefreshableStream inside;
     public override MimeType MimeType => _MimeType;
@@ -366,13 +348,6 @@ public class WrappedHttpStream : WrappedStream, IDisposable
     public override Stream GetStream()
     {
         var stream = inside.GetStream();
-#if DEBUG
-        var mth = new StackTrace().GetFrame(1).GetMethod();
-        var cls = mth.ReflectedType.Name;
-        CheckForReturned();
-        NotDisposedStreams.Add(new(stream, cls));
-        Debug.WriteLine($"{cls} borrowed a stream, {NotDisposedStreams.Count} now");
-#endif
         return stream;
     }
 
@@ -381,10 +356,6 @@ public class WrappedHttpStream : WrappedStream, IDisposable
     public override void Dispose()
     {
         Debug.WriteLine($"WRPHTTPSTRM {inside.RequestMessage} dispose");
-       
-#if DEBUG
-        T.Dispose();
-#endif
         inside.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -434,16 +405,16 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
     {
         RequestMessage = requestMessage;
         var content = HttpClient.Client.Send(requestMessage);
-        var Stream = content.Content.ReadAsStream();
+        using var stream = content.Content.ReadAsStream();
         byte[] array;
-        if (Stream is MemoryStream m)
+        if (stream is MemoryStream m)
         {
             array = m.ToArray();
         }
         else
         {
             using var memstream = new MemoryStream();
-            Stream.CopyTo(memstream);
+            stream.CopyTo(memstream);
             array = memstream.ToArray();
         }
         data.Bytes = array;
@@ -469,7 +440,10 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
     {
         if (_disposedValue) return;
         if (disposing)
+        {
+            data.Bytes = null;
             data = null;
+        }
         _disposedValue = true;
     }
 }

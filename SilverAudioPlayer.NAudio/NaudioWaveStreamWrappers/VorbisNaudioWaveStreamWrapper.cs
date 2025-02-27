@@ -11,5 +11,5 @@ public class VorbisNaudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = [KnownMimes.OGGMime];
     public bool SupportedOnPlatform => true;
-    public WaveStream GetStream(Stream stream) => new VorbisWaveReader(stream);
+    public IWaveProvider GetStream(Stream stream) => new VorbisWaveReader(stream);
 }

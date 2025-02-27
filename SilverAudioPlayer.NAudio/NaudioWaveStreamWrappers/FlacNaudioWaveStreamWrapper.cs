@@ -12,6 +12,6 @@ public class FlacNAudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.FLACMime];
     public bool SupportedOnPlatform => true;
-    public WaveStream GetStream(Stream stream) => new CSCoreReader(new FlacFile(stream));
+    public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new FlacFile(stream));
 }
 #endif

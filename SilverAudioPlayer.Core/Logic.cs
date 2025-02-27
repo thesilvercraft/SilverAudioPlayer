@@ -46,7 +46,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     private bool _changeAllowed = true;
     private bool _isSortRequested;
     public Song? NextSong;
-    public Stack<Song> SongHistory = new(26);
     public bool StopAutoLoading;
     private readonly CancellationTokenSource? _token = new();
 
@@ -132,7 +131,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     /// <summary>
     ///     Lets music status interfaces know about a track change
     /// </summary>
-    /// <param name="playerContext.CurrentSong">The new track</param>
+    /// <param name="currentSong">The new track</param>
     public void TrackChangedNotification(Song? currentSong)
     {
         _musicStatusInterface?.FireTrackChangedNotification(currentSong!);
@@ -400,10 +399,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     {
         Serilog.Log.Information("StopAutoLoading set to true in HandleSongChanging");
         StopAutoLoading = true;
-        if (PlayerContext.CurrentSong is not null)
-        {
-            SongHistory.Push(PlayerContext.CurrentSong);
-        }
         PlayerContext.CurrentSong = nextSong;
         Debug.Assert(PlayerContext.CurrentSong.Equals(nextSong));
         RemoveTrack();

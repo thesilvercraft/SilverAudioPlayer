@@ -27,7 +27,7 @@ public class LibSndFile : INaudioWaveStreamWrapper
     "/usr/lib/i386-linux-gnu/libsndfile.so.1","/usr/lib/i386-linux-gnu/libsndfile.so.1.0.37",
     "/usr/lib/aarch64-linux-gnu/libsndfile.so.1","/usr/lib/aarch64-linux-gnu/libsndfile.so.1.0.28", "/usr/lib/libsndfile.so", "/usr/lib/libsndfile.so.1","/usr/lib/libsndfile.so.1.0.37"];
 
-    public WaveStream GetStream(Stream stream) => new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
+    public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
 
 }
 #endif

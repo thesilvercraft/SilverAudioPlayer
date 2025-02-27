@@ -8,7 +8,7 @@ using WaveFormat = NAudio.Wave.WaveFormat;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio;
 
-public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
+public class CSCorePlayer : IWavePlayer, IWavePosition
 {
     public CSCorePlayer(ISoundOut soundOut)
     {
@@ -50,7 +50,7 @@ public class CSCorePlayer : IWavePlayer, IDisposable, IWavePosition
             throw new ArgumentNullException(nameof(waveProvider));
         }
         csCoreStream = new WaveInputNaudioToCsCore(waveProvider);
-        _soundOut.Initialize(new WaveInputNaudioToCsCore(waveProvider));
+        _soundOut.Initialize(csCoreStream);
     }
 
     public float Volume

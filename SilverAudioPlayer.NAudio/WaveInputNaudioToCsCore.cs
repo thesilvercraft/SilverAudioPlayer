@@ -23,6 +23,7 @@ public class WaveInputNaudioToCsCore : IWaveInput
    
     public void Dispose()
     {
+        if(_source is IDisposable disposable) disposable.Dispose();
     }
 
     public bool CanSeek => _source is WaveStream;

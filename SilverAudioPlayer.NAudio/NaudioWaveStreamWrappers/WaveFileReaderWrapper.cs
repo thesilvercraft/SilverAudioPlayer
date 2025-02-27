@@ -10,5 +10,5 @@ public class WaveFileReaderWrapper : INaudioWaveStreamWrapper
 {
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; set; } = [KnownMimes.WAVMime];
     public bool SupportedOnPlatform => true;
-    public WaveStream GetStream(Stream stream) => new WaveFileReader(stream);
+    public IWaveProvider GetStream(Stream stream) => new WaveFileReader(stream);
 }

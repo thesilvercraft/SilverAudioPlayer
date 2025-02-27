@@ -93,8 +93,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Console",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer", "SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.csproj", "{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Test.WaveConsistencyChecker", "SilverAudioPlayer.Test.WaveConsistencyChecker\SilverAudioPlayer.Test.WaveConsistencyChecker.csproj", "{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnhancedLyricsFixerUpper", "EnhancedLyricsFixerUpper\EnhancedLyricsFixerUpper.csproj", "{F1B75971-9338-4890-A43F-A8D57ADA378D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz", "SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj", "{5A3F122B-D01A-49E4-9450-12DD3D242333}"
@@ -625,22 +623,6 @@ Global
 		{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}.Release|x64.Build.0 = Release|Any CPU
 		{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}.Release|x86.ActiveCfg = Release|Any CPU
 		{6818F1BF-2DEF-4665-B566-BC93BDDB2E14}.Release|x86.Build.0 = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|arm64.Build.0 = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|x64.Build.0 = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Debug|x86.Build.0 = Debug|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|arm64.ActiveCfg = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|arm64.Build.0 = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|x64.ActiveCfg = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|x64.Build.0 = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|x86.ActiveCfg = Release|Any CPU
-		{E3FB20CA-98F9-41F6-9E5B-F5E3C2155192}.Release|x86.Build.0 = Release|Any CPU
 		{F1B75971-9338-4890-A43F-A8D57ADA378D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F1B75971-9338-4890-A43F-A8D57ADA378D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1B75971-9338-4890-A43F-A8D57ADA378D}.Debug|arm64.ActiveCfg = Debug|Any CPU

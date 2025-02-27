@@ -99,7 +99,7 @@ public partial class MainWindow : Window
     private bool AlbumArtTransparencyChanged = false;
     public Config config => App.mwconfig;
     public CommentXmlConfigReaderNotifyWhenChanged<Config> reader => App.mwconfreader;
-
+    private string? CurrentAlbumArtHash = null;
     public MainWindow()
     {
         dc = new MainWindowContext(this)
@@ -185,19 +185,16 @@ public partial class MainWindow : Window
                         }
                         if (CurrentSong?.Metadata?.Pictures?.Any() == true)
                         {
-                            if (Image.Source != null && Logic.SongHistory.TryPeek(out var lastsong) &&
+                            if (Image.Source != null && CurrentSong.Metadata.Pictures[0].Hash ==
+                                CurrentAlbumArtHash &&
                                 !AlbumArtTransparencyChanged)
                             {
-                                if (lastsong != null && CurrentSong.Metadata.Pictures.Count != 0 &&
-                                    lastsong?.Metadata?.Pictures?.Count != 0 && CurrentSong.Metadata.Pictures[0].Hash ==
-                                    lastsong?.Metadata?.Pictures[0]?.Hash)
-                                {
                                     return;
-                                }
                             }
 
                             AlbumArtTransparencyChanged = false;
                             var imageData = CurrentSong.Metadata.Pictures[0].Data;
+                            CurrentAlbumArtHash = CurrentSong.Metadata.Pictures[0].Hash;
                             if (imageData == null) return;
                             try
                             {
@@ -251,6 +248,7 @@ public partial class MainWindow : Window
                         else
                         {
                             Image.Source = null;
+                            CurrentAlbumArtHash = null;
                             if (!config.DisableAlbumArtBlur)
                             {
                                 Background = WindowExtensions.envBackend.GetString("SAPColor")

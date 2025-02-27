@@ -16,7 +16,7 @@ public interface INaudioWaveStreamWrapper
 {
     bool SupportedOnPlatform { get; }
     IReadOnlyList<MimeType> SupportedMimeTypes { get; }
-    WaveStream GetStream(Stream stream);
+    IWaveProvider GetStream(Stream stream);
 }
 
 public static class NaudioWaveStreamWrapperTypeHolder

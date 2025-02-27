@@ -14,7 +14,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         public Mpris()
         {
         }
-        Connection connection;
+        Connection? connection;
         MprisPlayer player;
         void start()
         {
@@ -30,7 +30,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
                     connection = new Connection(Address.Session);
                     connection.StateChanged+=ConnectionOnStateChanged;
                     await connection.ConnectAsync();
-                    player =new MprisPlayer(Env);
+                    player = new MprisPlayer(Env);
                     await connection.RegisterObjectAsync(player);
                     await connection.RegisterServiceAsync("org.mpris.MediaPlayer2.catenoid.i_" + Environment.ProcessId);
                 }
@@ -53,6 +53,8 @@ namespace SilverAudioPlayer.Linux.MPRIS
 
         public void Dispose()
         {
+            connection?.Dispose();
+
         }
         public ObjectPath ObjectPath { get; } = new ObjectPath("/org/mpris/MediaPlayer2");
         private IMusicStatusInterfaceListener Env;
@@ -66,9 +68,17 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
             _IsStarted = false;
             Debug.WriteLine("Mpris stopipc");
-            connection.UnregisterObject(player);
+            try
+            {
+                connection?.UnregisterObject(player);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
             player.CleanDirUp();
-            connection.Dispose();
+            connection?.Dispose();
         }
 
         public string Name => "MPRIS Linux MSI";
@@ -93,10 +103,5 @@ namespace SilverAudioPlayer.Linux.MPRIS
                 new Uri("https://github.com/tmds/Tmds.DBus"),
                 URLType.LibraryCode)
         ];
-
-
-
-
-
     }
 }

@@ -22,7 +22,7 @@ namespace SilverAudioPlayer.NAudio;
 public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
 {
     private readonly List<string> FilesToCleanUp = [];
-    public WaveStream? audioFile;
+    public IWaveProvider? audioFile;
     public WaveConfig Config;
     private ILogger? logger;
     public IWavePlayer? outputDevice;
@@ -62,7 +62,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             outputDevice = null;
         }
 
-        audioFile?.Dispose();
+        if (audioFile is IDisposable disposableaudioFile)
+        {
+            disposableaudioFile.Dispose();
+        }
         logger = null;
         if (LoadedStream is { CanRead: true }) LoadedStream.Dispose();
     }
@@ -110,7 +113,11 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void Stop()
     {
         outputDevice?.Stop();
-        audioFile?.Dispose();
+        
+        if (audioFile is IDisposable disposableaudioFile)
+        {
+            disposableaudioFile.Dispose();
+        }
         audioFile = null;
         if (LoadedStream is { CanRead: true }) LoadedStream.Dispose();
     }
@@ -202,14 +209,32 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public TimeSpan GetPosition()
     {
-        if (outputDevice != null && audioFile is { } ws) return ws.CurrentTime;
+        if (outputDevice != null)
+        {
+            return audioFile switch
+            {
+                WaveStream ws => ws.CurrentTime,
+                IWaveStream iws => iws.CurrentTime,
+                _ => TimeSpan.Zero
+            };
+        }
         return TimeSpan.Zero;
     }
 
     public void SetPosition(TimeSpan position)
     {
-        if (outputDevice == null || audioFile is not WaveStream ws) return;
-        ws.SetPosition(position);
+        if (outputDevice == null) return;
+        switch (audioFile)
+        {
+            case WaveStream ws:
+                ws.SetPosition(position);
+                break;
+            case IWaveStream iws:
+                iws.SetPosition(position);
+                break;
+            default:
+                return;
+        }
         PositionChanged?.Invoke(this, position);
     }
 
@@ -226,7 +251,16 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public TimeSpan? Length()
     {
-        return audioFile?.TotalTime;
+        if (audioFile != null)
+        {
+            return audioFile switch
+            {
+                WaveStream ws => ws.TotalTime,
+                IWaveStream iws => iws.TotalTime,
+                _ => TimeSpan.Zero
+            };
+        }
+        return TimeSpan.Zero;
     }
 
     public uint? ChannelCount()
@@ -256,7 +290,11 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         ArgumentNullException.ThrowIfNull(stream);
         var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream);
-
+        if (audioFile is IDisposable disposable)
+        {
+            outputDevice?.Stop();
+            disposable.Dispose();
+        }
         var naudioWaveStreamWrappers = wrappers.ToList();
         if (naudioWaveStreamWrappers.Count != 0)
         {

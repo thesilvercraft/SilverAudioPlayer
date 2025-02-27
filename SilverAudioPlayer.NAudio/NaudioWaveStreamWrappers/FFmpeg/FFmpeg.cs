@@ -95,7 +95,7 @@ public class FFmpeg : INaudioWaveStreamWrapper
     public bool SupportedOnPlatform => DllLoc.Any(x => Path.Exists(Path.GetFullPath(x,AppContext.BaseDirectory)));
     static readonly string[] DllLoc = ["/usr/lib/libavcodec.so","libavcodec-58.dll","avcodec-59.dll"];
 
-    public WaveStream GetStream(Stream stream) => new CSCoreReader(new FFMpegWaveStream(stream));
+    public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new FFMpegWaveStream(stream));
 
 }
 #endif

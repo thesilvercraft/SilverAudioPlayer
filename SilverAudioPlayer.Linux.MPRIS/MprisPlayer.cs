@@ -12,11 +12,24 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         Env = listner;
         Env.TrackChangedNotification += OnNewTrack;
         Env.PlayerStateChanged += OnStateChanged;
+        Env.PositionChanged+= EnvOnPositionChanged;
         Directory.CreateDirectory(TempFolder);
     }
+
+    private void EnvOnPositionChanged(object? sender, TimeSpan e)
+    {
+        Task.Run(() =>
+        {
+        Seeked.Invoke((long)(e.TotalSeconds*1000*1000));
+        });
+    }
+
     public void CleanDirUp()
     {
         Directory.Delete(TempFolder,true);
+        Env.TrackChangedNotification -= OnNewTrack;
+        Env.PlayerStateChanged -= OnStateChanged;
+        Env.PositionChanged-= EnvOnPositionChanged;
     }
     private void OnStateChanged(object? sender, PlaybackState e)
     {
@@ -159,7 +172,6 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
 
     public Task<string> GetLoopStatusAsync()
     {
-
         return Task.FromResult(Env.GetRepeat() switch
         {
             RepeatState.None => "None",

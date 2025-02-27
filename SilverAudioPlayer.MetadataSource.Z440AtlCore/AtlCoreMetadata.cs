@@ -95,7 +95,7 @@ public class AtlCoreMetadata : IMetadata
                 ProcessTags(meta);
             }
             var audioDataManagerF = fioType?.GetField("audioManager", BindingFlags.Instance | BindingFlags.NonPublic);
-            AudioDataManager m = audioDataManagerF.GetValue(fio) as AudioDataManager;
+            var m = audioDataManagerF.GetValue(fio) as AudioDataManager;
             if(m is { })
             {
                 ProcessTags(m.ID3v1);
