@@ -13,21 +13,27 @@ public class JellyFinHelper
     private AuthInfoWindow authwindow;
     private ServerUrlWindow serverwindow;
     private readonly JellyfinSdkSettings settings;
-    JellyfinApiClient apiClient;
+   public JellyfinApiClient apiClient;
 
     private UserDto userDto;
     private bool validServer;
     private bool validUser;
     private IPublicClientApplication app;
+    private JellyfinAuthenticationProvider jellyfinAuthentication;
+    private JellyfinRequestAdapter  jellyfinRequestAdapter;
+    public bool GetValidUser() => validUser;
     public JellyFinHelper()
     {
         settings = new JellyfinSdkSettings();
-        settings.Initialize(
+       settings.Initialize(
             "Catenoid",
              typeof(JellyFinHelper).Assembly.GetName().Version.ToString(),
              Environment.MachineName,
             $"1");
-        apiClient=new(new JellyfinRequestAdapter(new JellyfinAuthenticationProvider(settings), settings,HttpClient.Client));
+    
+        jellyfinAuthentication = new JellyfinAuthenticationProvider(settings);
+        jellyfinRequestAdapter = new JellyfinRequestAdapter(jellyfinAuthentication, settings, HttpClient.Client);
+        apiClient=new(jellyfinRequestAdapter);
         app = PublicClientApplicationBuilder.Create(SilverAudioPlayerJellyfinGuid).Build();
         Task.Run(async ()=> await MoreLibSecretStuff()).GetAwaiter().GetResult();
     }
@@ -62,13 +68,21 @@ public class JellyFinHelper
                     settings.SetServerUrl(logininfo.url);
                     settings.SetAccessToken(logininfo.accessToken);
                     userDto = await apiClient.Users.Me.GetAsync();
-                    validUser = true;
+                    if (userDto != null)
+                    {
+                        validUser = true;
+                    }
+                    else
+                    {
+                        settings.SetAccessToken(null);
+                    }
                 }
                
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
+                settings.SetAccessToken(null);
             }
     }
        private static StorageCreationProperties ConfigureSecureStorage(bool usePlaintextFileOnLinux)
@@ -170,7 +184,7 @@ public class JellyFinHelper
             var authenticationResult = await apiClient.Users.AuthenticateByName.PostAsync(new AuthenticateUserByName
                 {
                     Username = username,
-                    Pw = password
+                    Pw = password,
                 })
                 .ConfigureAwait(false);
             settings.SetAccessToken(authenticationResult.AccessToken);
@@ -272,7 +286,7 @@ public class JellyFinHelper
     {
        authwindow = new AuthInfoWindow(this);
         await authwindow.ShowDialog(gui);
-        return serverwindow.Success;
+        return authwindow.Success;
     }
 
     public async Task<bool> GetServerUrl(Gui gui)

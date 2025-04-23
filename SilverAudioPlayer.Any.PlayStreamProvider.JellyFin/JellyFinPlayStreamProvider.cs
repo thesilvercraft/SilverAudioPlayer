@@ -7,7 +7,12 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 public class JellyFinPlayStreamProvider : IPlayStreamProvider
 {
     private Gui gui;
+    private static readonly JellyFinHelper helper= new JellyFinHelper();
 
+    public static JellyFinHelper? GetJellyFinHelper()
+    {
+        return helper;
+    }
     public void Use(IPlayStreamProviderListener env)
     {
         gui = new Gui(env);

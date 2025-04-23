@@ -104,6 +104,7 @@
 						<MenuItem Header="Show selected in explorer" Click="ShowInFolder" />
 						<MenuItem Header="Browse From Dialog" Click="AddFile" />
 						<MenuItem Header="Save current queue" Click="SaveQueue" />
+						<MenuItem Header="Open playlist manager" Click="QueueManagement" />
 					</ContextMenu>
 				</ListBox.ContextMenu>
 

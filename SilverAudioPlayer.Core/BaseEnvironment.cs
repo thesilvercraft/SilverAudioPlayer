@@ -20,25 +20,14 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
    
     Logic<T> Logic;
-    public void LoadSong(WrappedStream s)
-    {
-        Task.Run(() => Logic.ProcessStream(s));
-    }
+    public void LoadSong(WrappedStream s) => Task.Run(() => Logic.LoadSong(s));
 
-    public void LoadSong(WrappedStream s, IMetadata additionalMetadata)
-    {
-        Task.Run(() => Logic.ProcessStream(s,additionalMetadata));
-    }
+    public void LoadSong(WrappedStream s, IMetadata additionalMetadata) => Task.Run(() => Logic.LoadSong(s,additionalMetadata));
 
-    public void ProcessFiles(IEnumerable<string> files)
-    {
-        Logic.ProcessFiles(files);
-    }
+    public void ProcessFiles(IEnumerable<string> files) => Logic.ProcessFiles(files);
 
-    public void LoadSongs(IEnumerable<WrappedStream> streams)
-    {
-        Logic.ProcessStreams(streams);
-    }
+    public void LoadSongs(IEnumerable<WrappedStream> streams) => Logic.LoadSongs(streams);
+    public void LoadSongs(IEnumerable<Tuple<WrappedStream, IMetadata?>> streams) => Logic.LoadSongs(streams);
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
     {

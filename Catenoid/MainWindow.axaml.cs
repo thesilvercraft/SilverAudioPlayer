@@ -14,7 +14,6 @@ using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -359,7 +358,7 @@ public partial class MainWindow : Window
         Settings.Click += Settings_Click;
         CommandMenu.Click += CommandMenuClick;
         config.PropertyChanged += Config_PropertyChanged;
-        var ob = this.ObservableForProperty(x => x.Title, skipInitial: false);
+        var ob = this.ObservableForProperty(x => x.Title, false);
         ob.Subscribe(x => dc.Title = x.Value);
         DataContext = dc;
         RepeatButton = this.FindControl<Button>("RepeatButton");
@@ -740,4 +739,9 @@ public partial class MainWindow : Window
         SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), await a.OpenWriteAsync());
     }
 
+    private void QueueManagement(object? sender, RoutedEventArgs e)
+    {
+        PlaylistWindow playlistWindow = new(this);
+        playlistWindow.Show();
+    }
 }

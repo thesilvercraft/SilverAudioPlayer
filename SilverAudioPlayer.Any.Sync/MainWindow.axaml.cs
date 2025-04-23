@@ -1,20 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaEdit;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
-using SilverConfig;
 using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Any.Sync;
@@ -31,6 +26,10 @@ public partial class MainWindow : Window
         if (WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks") == true)
         {
             return;
+        }
+        if (OperatingSystem.IsLinux())
+        {
+            MainGrid.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Pixel);
         }
         this.DoAfterInitTasks(true);
     }
@@ -68,11 +67,10 @@ public partial class MainWindow : Window
         RefreshDevices();
     }
 
-    public async Task SyncAsync(Device? dev)
+    public async Task SyncAsync(string baseLoc, string format)
     {
-        Lock = true;
-        if (dev == null)            return;
-        var list = (await env.GetQueue())!;
+        if (Lock) return;
+        if ( string.IsNullOrWhiteSpace(baseLoc))            return;
         void scroll()
         {
             Dispatcher.UIThread.Post(() =>
@@ -91,6 +89,22 @@ public partial class MainWindow : Window
                 TextBox.AppendText(Text + "\n");
             }, DispatcherPriority.Background);
         }
+        if (!Path.Exists(baseLoc))
+        {
+            if (Directory.GetParent(baseLoc) is { Exists: true })
+            {
+                Directory.CreateDirectory(baseLoc);
+            }
+            else
+            {
+                Append($"Path not found {baseLoc}");
+                scroll();
+                return;
+            }
+        }
+        Lock = true;
+        var list = (await env.GetQueue())!;
+      
         try
         {
 
@@ -104,12 +118,28 @@ public partial class MainWindow : Window
             for (int i = 0; i < list.Count; i++)
             {
                 Song? song = list[i];
-                if (song.Stream is not WrappedFileStream wfs) continue;
-                Append(wfs.URL);
+                string songLocation;
+                bool TempLoc = false;
+                if (song.Stream is WrappedFileStream wfs)
+                {
+                    songLocation = wfs.URL;
+                }
+                else
+                {
+                    TempLoc = true;
+                    var fnamm = Path.Combine( Path.GetTempPath(), song.Guid.ToString() + song.Stream.MimeType.FileExtensions[0]);
+                    using (FileStream fs = new FileStream(fnamm, FileMode.Create))
+                    {
+                        using var reader = song.Stream.GetStream();
+                        await reader.CopyToAsync(fs);
+                    }
+                     songLocation = fnamm;
+                }
+                Append(songLocation);
                 scroll();
                 var songFormat = new Dictionary<string, string>{
-                    {"Album", FileSystemHelper.Clean(song.Metadata.Album??"Unknown album", FileSystemHelper.InvalidPathCharactersForFormat(dev.Format)) },
-                    {"Artist", FileSystemHelper.Clean(song.Metadata.Artist??"Unknown artist", FileSystemHelper.InvalidPathCharactersForFormat(dev.Format))},
+                    {"Album", FileSystemHelper.Clean(song.Metadata.Album??"Unknown album", FileSystemHelper.InvalidPathCharactersForFormat(format)) },
+                    {"Artist", FileSystemHelper.Clean(song.Metadata.Artist??"Unknown artist", FileSystemHelper.InvalidPathCharactersForFormat(format))},
                     {"DiscNumber",song.Metadata.DiscNumber?.ToString()??"?"},
                     {"TrackNumber",song.Metadata.TrackNumber?.ToString()??"?"},
                     {"Title",song.Metadata.Title},
@@ -118,15 +148,15 @@ public partial class MainWindow : Window
                     {"Genre", song.Metadata.Genre},
                     {"Bitrate", song.Metadata.Bitrate?.ToString()??"?"},
                 };
-                var path = Path.Combine(dev.MountPoint, Formatter.Format(config.PathToStore, songFormat));
+                var path = Path.Combine(baseLoc, Formatter.Format(config.PathToStore, songFormat));
                 Directory.CreateDirectory(path);
-                var loc = Path.Combine(path, FileSystemHelper.Clean(Formatter.Format(config.NameFormatting, songFormat), FileSystemHelper.InvalidFileCharactersForFormat(dev.Format)));
+                var loc = Path.Combine(path, FileSystemHelper.Clean(Formatter.Format(config.NameFormatting, songFormat), FileSystemHelper.InvalidFileCharactersForFormat(format)));
                 if (File.Exists(loc))
                 {
                     continue;
                 }
                 var arguments = Formatter.Format(config.FFmpegOptions, new Dictionary<string, string>(){
-                    {"in", wfs.URL},
+                    {"in", songLocation},
                     {"out", loc}
                 });
                 Append($"Calling ffmpeg {arguments}");
@@ -162,9 +192,9 @@ public partial class MainWindow : Window
                 scroll();
 
                 await proc.WaitForExitAsync();
-                if (song?.Metadata?.SyncedLyrics?.Count is not (0 or null))
+                if (song?.Metadata?.SyncedLyrics?.Count is not (0 or null) && !TempLoc)
                 {
-                    var possiblelrc = Path.ChangeExtension(wfs.URL, "lrc");
+                    var possiblelrc = Path.ChangeExtension(songLocation, "lrc");
                     if (Path.Exists(possiblelrc))
                     {
                         File.Copy(possiblelrc, Path.ChangeExtension(loc, "lrc") );
@@ -175,6 +205,11 @@ public partial class MainWindow : Window
                 {
                     Append("FAIL\n");
                     scroll();
+                }
+
+                if (TempLoc)
+                {
+                    File.Delete(loc);
                 }
                 CurrSize += (double)song?.Metadata?.Duration;
             }
@@ -191,65 +226,32 @@ public partial class MainWindow : Window
 
     private void Sync_OnClick(object? sender, RoutedEventArgs e)
     {
-        var dev = (Device?)DeviceBox.SelectedItem;
-        Task.Run(async () => await SyncAsync(dev));
+        var dev = ((Device?)DeviceBox.SelectedItem)?.Format??"";
+        var loc = LocationBox.Text;
+        Task.Run(async () => await SyncAsync(loc, dev));
     }
-}
-public static class Formatter
-{
-    public static string Format(string input, Dictionary<string, string> arguments)
+
+    private void LocationBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        var stringBuilder = new StringBuilder(input);
-        foreach (var argument in arguments)
+        if (DeviceBox.SelectedItem is Device dev)
         {
-            stringBuilder.Replace($"{{{argument.Key}}}", argument.Value);
+            var t = LocationBox.Text;
+            if (t == null  || !t.StartsWith(dev.MountPoint))
+            {
+                DeviceBox.SelectedItem = null;
+            }
         }
-        return stringBuilder.ToString();
-
     }
-}
-public class SyncConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
-{
-    [Comment("used verbatim when calling FFmpeg")]
 
-    public string PreferredFileExtension { get; set; } = ".mp3";
-    [Comment("used verbatim when calling FFmpeg")]
-    public string FFmpegOptions { get; set; } = "-i \"{in}\" -b:a 320k \"{out}\"";
-
-    [Comment("used verbatim when calling FFmpeg")]
-    public string PathToStore { get; set; } = $"Music{Path.DirectorySeparatorChar}{{Album}}";
-    [Comment("used verbatim when calling FFmpeg")]
-    public string NameFormatting { get; set; } = "{DiscNumber}.{TrackNumber}.{Title}{Extension}";
-    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
+    private void DeviceBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        PropertyChanged?.Invoke(e, a);
-    }
-    [XmlIgnore] public bool AllowedToRead { get; set; } = true;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-}
-[Export(typeof(ISyncPlugin))]
-
-public class LSync : ISyncPlugin, IAmOnceAgainAskingYouForYourMemory
-{
-    public ObjectToRemember ConfigObject =
-        new(Guid.Parse("720fe248-4d44-4427-8d72-578ba565f33c"), new SyncConfig());
-
-    public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject]; public void Use(ISyncEnvironmentListener env)
-    {
-        MainWindow mw = new(env)
+        if (DeviceBox.SelectedItem is Device dev)
         {
-            config = (SyncConfig)ConfigObject.Value
-        };
-        mw.Show();
+            var t = LocationBox.Text;
+            if (t == null || !t.StartsWith(dev.MountPoint))
+            {
+                LocationBox.Text= Path.Combine(dev.MountPoint,"Music");
+            }
+        }
     }
-
-    public string Name => "Sync plugin";
-    public string Description => "Move your queue over to a sd card, usb flash drive or store it in ram (/tmp) as mp3s using ffmpeg";
-    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(LSync).Assembly,
-        "SilverAudioPlayer.Any.Sync.Sync.svg");
-
-    public Version? Version => typeof(LSync).Assembly.GetName().Version;
-    public string Licenses => "SilverAudioPlayer.Linux.Sync\nGPL3";
-    public List<Tuple<Uri, URLType>>? Links => null;
 }

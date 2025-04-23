@@ -326,7 +326,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         if (outputDevice == null)
         {
             InitBackEnd();
-            outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
+            if(outputDevice!=null)
+            {
+                outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
+            }
         }
         else
         {
@@ -356,10 +359,15 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 break;
             case CSCoreReader cSCoreReader:
             {
-                if (cSCoreReader._reader is ISelector cselector)
-                    cselector.SetPattern(pattern);
-                else if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                         sampleToIeeeFloat32.Source is ISelector selector) selector.SetPattern(pattern);
+                switch (cSCoreReader._reader)
+                {
+                    case ISelector cselector:
+                        cselector.SetPattern(pattern);
+                        break;
+                    case SampleToWaveBase { Source: ISelector selector }:
+                        selector.SetPattern(pattern);
+                        break;
+                }
                 break;
             }
         }
@@ -374,12 +382,25 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 #endif
     }
 
+    bool? BlacklistPortAudio =null;
+    bool? CheckForBlocklist()
+    {
+        if(BlacklistPortAudio!= null)
+        {
+            return BlacklistPortAudio;
+        } 
+        if(Environment.GetEnvironmentVariable("SAPBLOCKPORTAUDIO")!=null)
+        {
+             return BlacklistPortAudio=true;
+        }
+        return BlacklistPortAudio=false;
+    }
     public void InitBackEnd()
     {
 #if CSCore
         if (!OperatingSystem.IsWindows())
         {
-            if (PortAudioSoundOut.IsSupported())
+            if (PortAudioSoundOut.IsSupported() && CheckForBlocklist()!=true)
             {
                 logger?.Information("initing backend CSCorePlayer PortAudioSoundOut");
                 outputDevice = new CSCorePlayer(new PortAudioSoundOut());
@@ -410,46 +431,35 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     private bool GetCanLoop()
     {
-        if (audioFile is ILoop mselector) return mselector.CanLoop;
-
-        if (audioFile is CSCoreReader cSCoreReader)
+        return audioFile switch
         {
-            if (cSCoreReader._reader is ILoop cselector)
-                return cselector.CanLoop;
-            if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                sampleToIeeeFloat32.Source is ILoop selector) return selector.CanLoop;
-        }
-
-        return false;
+            ILoop mselector => mselector.CanLoop,
+            CSCoreReader { _reader: ILoop cselector } => cselector.CanLoop,
+            CSCoreReader { _reader: SampleToWaveBase { Source: ILoop selector } } => selector.CanLoop,
+            _ => false
+        };
     }
 
     private int GetCurrentPattern()
     {
-        if (audioFile is ISelector mselector) return mselector.CurrentPattern;
-
-        if (audioFile is CSCoreReader cSCoreReader)
+        return audioFile switch
         {
-            if (cSCoreReader._reader is ISelector cselector)
-                return cselector.CurrentPattern;
-            if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                sampleToIeeeFloat32.Source is ISelector selector) return selector.CurrentPattern;
-        }
-
-        return 0;
+            ISelector mselector => mselector.CurrentPattern,
+            CSCoreReader { _reader: ISelector cselector } => cselector.CurrentPattern,
+            CSCoreReader { _reader: SampleToWaveBase { Source: ISelector selector } } => selector.CurrentPattern,
+            _ => 0
+        };
     }
 
     private int GetNumPattern()
     {
-        if (audioFile is ISelector mselector) return mselector.NumberOfPatterns;
-
-        if (audioFile is CSCoreReader cSCoreReader)
+        return audioFile switch
         {
-            if (cSCoreReader._reader is ISelector cselector)
-                return cselector.NumberOfPatterns;
-            if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                sampleToIeeeFloat32.Source is ISelector selector) return selector.NumberOfPatterns;
-        }
-
-        return 0;
+            ISelector mselector => mselector.NumberOfPatterns,
+            CSCoreReader { _reader: ISelector cselector } => cselector.NumberOfPatterns,
+            CSCoreReader { _reader: SampleToWaveBase { Source: ISelector selector } } =>
+                selector.NumberOfPatterns,
+            _ => 0
+        };
     }
 }

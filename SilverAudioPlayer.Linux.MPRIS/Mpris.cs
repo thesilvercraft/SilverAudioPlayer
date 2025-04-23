@@ -15,7 +15,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         {
         }
         Connection? connection;
-        MprisPlayer player;
+        MprisPlayer? player;
         void start()
         {
             if (_IsStarted)
@@ -77,7 +77,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
             {
                 Console.WriteLine(e);
             }
-            player.CleanDirUp();
+            player?.CleanDirUp();
             connection?.Dispose();
         }
 

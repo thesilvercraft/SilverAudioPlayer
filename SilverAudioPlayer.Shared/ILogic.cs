@@ -5,7 +5,7 @@ namespace SilverAudioPlayer.Core;
 /// <summary>
 /// Provides some of the main methods used by a Logic object, the backbone for an implementation of SAP
 /// </summary>
-public interface ILogic
+public interface ILogic : IPlayStreamProviderListenerBare
 {
     /// <summary>
     /// Subscribes a <see cref="IMusicStatusInterface"/> to the current logic
@@ -51,21 +51,8 @@ public interface ILogic
     /// Unloads the current track (i.e. stops playing, removes it)
     /// </summary>
     void RemoveTrack();
-    /// <summary>
-    /// Loads a list of URLs or file paths
-    /// </summary>
-    /// <param name="files">a list of URLs or file paths</param>
-    void ProcessFiles(IEnumerable<string> files);
-    /// <summary>
-    /// Loads a list of streams
-    /// </summary>
-    /// <param name="streams">a list of streams</param>
-    void ProcessStreams(IEnumerable<WrappedStream> streams);
-    /// <summary>
-    /// Loads a stream
-    /// </summary>
-    /// <param name="stream">the stream to load</param>
-    void ProcessStream(WrappedStream stream);
+
+
     /// <summary>
     /// Clears the queue
     /// </summary>
@@ -89,12 +76,7 @@ public interface ILogic
     /// <param name="additionalMetadata">additional already known metadata to include in metadatacombo</param>
     /// <returns>A <see cref="MetadataCombo"/> containing all the known metadata</returns>
     Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata=null);
-    /// <summary>
-    /// Filters the file names to remove unsupported file extensions
-    /// </summary>
-    /// <param name="files">file paths to filter out</param>
-    /// <returns>filtered out files</returns>
-    IEnumerable<string> FilterFiles(IEnumerable<string> files);
+  
     /// <summary>
     /// Copy the queue to a list of songs
     /// </summary>

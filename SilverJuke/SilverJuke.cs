@@ -98,7 +98,7 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
         }
         app.MapGet("/state", listener.GetState).WithName("GetState");
         app.MapGet("/track", listener.GetCurrentTrack).WithName("GetCurrentTrack");
-        app.MapGet("/duration", () => listener.GetPosition).WithName("GetDuration");
+        app.MapGet("/duration", listener.GetDuration).WithName("GetDuration");
         app.MapGet("/position", listener.GetPosition).WithName("GetPosition");
         app.MapGet("/lyrics", listener.GetLyrics).WithName("GetLyrics");
 

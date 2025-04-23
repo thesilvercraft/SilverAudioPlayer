@@ -21,7 +21,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         Metadata = metadata;
         if (logic is not null)
         {
-            Metadata ??= Task.Run(async () => await logic.GetMetadataFromStream(Stream,[metadata])!).GetAwaiter().GetResult();
+            Metadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream,[metadata])!).GetAwaiter().GetResult(); //TODO:TEST SLOWDOWN
         }
         Guid = GetIdFromMetadata(metadata);
     }

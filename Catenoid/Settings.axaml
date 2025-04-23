@@ -10,7 +10,7 @@
 	<Grid RowDefinitions="25,*" Name="MainGrid">
 		<TextBlock Grid.Row="0" Text="Settings"/>
 	<ScrollViewer Grid.Row="1">
-		<Grid RowDefinitions="200,30,30,*,*,36,*" ColumnDefinitions="*,*">
+		<Grid RowDefinitions="200,30,30,*,*,*,36,*" ColumnDefinitions="*,*">
 			<Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
 				<SelectableTextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" Grid.RowSpan="2" Text="{Binding ProductName}" FontSize="75" Margin="5" />
 				<SelectableTextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="35" Margin="15,5,5,5" />
@@ -42,16 +42,28 @@
 				<Expander.Header>
 					<Label>Autosave</Label>
 				</Expander.Header>
-				<Grid RowDefinitions="*,*,*" ColumnDefinitions="150,*">
+				<Grid RowDefinitions="*,*,*" ColumnDefinitions="260,*">
 					<TextBlock Grid.Row="0" Grid.Column="0" Text="Autosave on exit and load on startup" VerticalAlignment="Center"/>
 					<CheckBox Grid.Row="0" Grid.Column="1"  Name="AutoSaveCheckBox" IsChecked="{Binding Config.AutoSave}"/>
 					<TextBlock Grid.Row="1" Grid.Column="0" Text="Autosave interval (seconds)" VerticalAlignment="Center"/>
 					<NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Config.AutoSaveInterval}" Minimum="0" Maximum="99999"/>
 				</Grid>
 			</Expander>
-		
-			<TextBlock Grid.Row="5" Grid.Column="0" Text="Plugins:" FontSize="25" Margin="5" />
-			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="6"
+			<Expander Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" >
+				<Expander.Header>
+					<Label>Lyrics window</Label>
+				</Expander.Header>
+				<Grid RowDefinitions="*,*,*" ColumnDefinitions="150,*">
+					 <TextBlock Grid.Row="0" Grid.Column="0" Text="Lyrics font size" VerticalAlignment="Center"/> 
+					 <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Config.LyricsFontSize}" Minimum="1" Maximum="99999"/> 
+					 <TextBlock Grid.Row="1" Grid.Column="0" Text="Auto lyrics advance" VerticalAlignment="Center"/> 
+					 <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding Config.LyricsAdvance}" Minimum="-2" Maximum="99999"/> 
+					 <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Text="-2 for auto, -1 to disable auto advance" VerticalAlignment="Center"/> 
+				</Grid>
+			</Expander>
+			
+			<TextBlock Grid.Row="6" Grid.Column="0" Text="Plugins:" FontSize="25" Margin="5" />
+			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="7"
 			         DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2" Grid.Column="0">
 				<ListBox.ItemTemplate>
 					<DataTemplate>

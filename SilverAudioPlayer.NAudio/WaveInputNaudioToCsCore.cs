@@ -2,62 +2,60 @@
 using SilverCraft.CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
+using SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio;
 
-public class WaveInputNaudioToCsCore : IWaveInput
+public class WaveInputNaudioToCsCore(IWaveProvider source) : IWaveInput
 {
-    private IWaveProvider _source;
-    public WaveInputNaudioToCsCore(IWaveProvider source)
-    {
-        _source = source;
-    }
-
     public int Read(byte[] buffer, int offset, int count)
     {
-        return _source.Read(buffer, offset, count);
+        return source.Read(buffer, offset, count);
     }
 
-    public WaveFormat WaveFormat => _source.WaveFormat;
+    public WaveFormat WaveFormat => source.WaveFormat;
 
    
     public void Dispose()
     {
-        if(_source is IDisposable disposable) disposable.Dispose();
+        if(source is IDisposable disposable) disposable.Dispose();
     }
 
-    public bool CanSeek => _source is WaveStream;
+    public bool CanSeek => source is WaveStream or IWaveStream;
 
-    SilverCraft.CSCore.WaveFormat IAudioSource.WaveFormat => WaveFormatHelper.FromNAudioCore( _source.WaveFormat);
+    SilverCraft.CSCore.WaveFormat IAudioSource.WaveFormat => WaveFormatHelper.FromNAudioCore( source.WaveFormat);
 
     long GetPos()
     {
-        if (_source is WaveStream s)
+        return source switch
         {
-            return s.Position;
-        }
-
-        return 0;
+            WaveStream s => s.Position,
+            IWaveStream ws => ws.Position,
+            _ => 0
+        };
     }
 
     void SetPos(long position)
     {
-        if (_source is WaveStream s)
+        switch (source)
         {
-            s.Position = position;
+            case WaveStream s:
+                s.Position = position;
+                break;
+            case IWaveStream ws:
+                ws.Position = position;
+                break;
         }
-
     }
     long GetLength()
     {
-        if (_source is WaveStream s)
+        return source switch
         {
-            return s.Length;
-        }
-
-        return 0;
+            WaveStream s => s.Length,
+            IWaveStream ws => ws.Length,
+            _ => 0
+        };
     }
-
     public long Position { get => GetPos(); set=>SetPos(value); }
     public long Length=> GetLength(); 
 }

@@ -8,6 +8,7 @@ using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using Serilog;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
@@ -15,14 +16,14 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 public partial class Gui : Window
 {
     private readonly GuiBinding g;
-    private readonly JellyFinHelper helper;
-
+    private JellyFinHelper helper;
     public Gui()
     {
         InitializeComponent();
 #if DEBUG
         this.AttachDevTools();
 #endif
+        helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
         Opened += Gui_Opened;
         g = new GuiBinding();
         DataContext = g;
@@ -35,7 +36,6 @@ public partial class Gui : Window
     public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
     {
         ProviderListner = jellyFinPlayStreamProvider;
-        helper = new JellyFinHelper();
     }
 
     private async void Button_Click(object? sender, RoutedEventArgs e)
@@ -57,14 +57,14 @@ public partial class Gui : Window
     private async void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
         Cursor = new Cursor(StandardCursorType.Wait);
-        List<WrappedStream> streams = [];
+        List<Tuple<WrappedStream, IMetadata>> streams = [];
 
         async Task Add(IEnumerable<WrappedDto> dtos)
         {
             foreach (var song in dtos.OrderBy(x => x.IndexNumber))
             {
                 var ws = await helper.GetStream(song.dto);
-                streams.Add(ws);
+                streams.Add(new(ws, new JellyfinMeta(song.dto)));
             }
         }
 
@@ -149,7 +149,7 @@ public partial class Gui : Window
         }
         else
         {
-            ProviderListner.LoadSong(await helper.GetStream(si.dto));
+            ProviderListner.LoadSong(await helper.GetStream(si.dto), new JellyfinMeta(si.dto));
         }
     }
 }

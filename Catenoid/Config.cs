@@ -31,6 +31,9 @@ public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
 
     public bool DisableAlbumArtBlur { get; set; } = false;
     public float AlbumArtTransparency { get; set; } = 0.25f;
+
+    #region AutoSave
+
     [Comment("Does the audio player save the tracks in a playlist upon closing?")]
     public bool AutoSave { get=> _autoSave; set=>this.ThrottleSet(ref _autoSave, value); }
 
@@ -39,14 +42,25 @@ public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
     public double AutoSaveInterval { get=> _autoSaveInterval; set=>this.ThrottleSet(ref _autoSaveInterval, value); }
 
     private double _autoSaveInterval = 0;
+
+
+    #endregion
+
+
+    #region WindowLoc
+
     public bool SaveLoadLoc{get;set;}=true;
     public int[] Pos{get;set;}=[0,0];
     public double[] Size{get;set;}=[0,0];
+    public WindowState State{get;set;}=WindowState.Maximized;
+    #endregion
+    
+    #region LyricWindow
     [Comment("How many lyrics should be shown from the current lyric, -1 to disable autoscroll, -2 for auto")]
     public int LyricsAdvance { get; set; } = -2;
-
     public double LyricsFontSize { get; set; } = 40;
-    public WindowState State{get;set;}=WindowState.Maximized;
+    #endregion
+
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;
     public SerializableDictionary<string, string> PreferredPlayers { get; set; } = [];
     [Comment("How much and Where should the player log? (None (no player core logs, parts of the player may ignore this and implement their own logging even if they really shouldn't), LogWindow (log in memory, show in a window, on crash save said memory's last 50k characters), System (log to stdout) )")]

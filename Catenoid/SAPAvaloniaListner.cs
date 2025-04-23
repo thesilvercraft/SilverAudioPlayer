@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Threading;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekonrensis.Avalonia;
 using SilverCraft.Ekorensis;
-using SilverMagicBytes;
 
 namespace Catenoid;
 
@@ -18,7 +13,7 @@ public class SapAvaloniaPlayerEnviroment(Logic<MainWindowContext> Logic) : BaseE
 {
     public override string Name => "Catenoid";
 
-    public override string Description => "A modular hackable audio player.";
+    public override string Description => "A hackable modular audio player.";
 
     public override WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(SapAvaloniaPlayerEnviroment).Assembly,
         "Catenoid.icon.svg");

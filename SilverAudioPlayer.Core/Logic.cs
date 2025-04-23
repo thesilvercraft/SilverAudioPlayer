@@ -483,7 +483,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         SuggestDoingSort();
     }
 
-    public void ProcessStreams(IEnumerable<WrappedStream> streams)
+    public void LoadSongs(IEnumerable<WrappedStream> streams)
     {
         ArgumentNullException.ThrowIfNull(streams);
         var wrappedStreams = streams.ToList();
@@ -494,16 +494,31 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         SuggestDoingSort();
     }
 
-    public void ProcessStream(WrappedStream stream)
+    public void LoadSong(WrappedStream stream)
     {
-        ProcessStream(stream,null);
+        LoadSong(stream,null);
     }
 
-    public void ProcessStream(WrappedStream stream, IMetadata? additionalMetadata)
+    public void LoadSong(WrappedStream stream, IMetadata? additionalMetadata)
     {
         AddSong(additionalMetadata != null
             ? new Song(stream, "unknown", logic: this, metadata: additionalMetadata)
             : new Song(stream, "unknown", logic: this));
+    }
+    public void LoadSongs(IEnumerable<Tuple<WrappedStream,IMetadata?>> streams)
+    {
+        ArgumentNullException.ThrowIfNull(streams);
+        var wrappedStreams = streams.ToList();
+        if (wrappedStreams.Count == 0) return;
+        var oneFile = wrappedStreams.Count == 1;
+        foreach (var (file,meta) in wrappedStreams)
+        {
+            AddSong(meta != null
+                ? new Song(file, "unknown", logic: this, metadata: meta)
+                : new Song(file, "unknown", logic: this), true);
+        }
+        if (oneFile) return;
+        SuggestDoingSort();
     }
 
     public void ClearAll()

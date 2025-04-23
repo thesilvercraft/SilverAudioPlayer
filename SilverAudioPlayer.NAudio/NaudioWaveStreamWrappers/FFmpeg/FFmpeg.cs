@@ -26,7 +26,15 @@ public class FFmpeg : INaudioWaveStreamWrapper
             {
                 if (OperatingSystem.IsLinux())
                 {
-                    ffmpeg.RootPath = "/usr/lib/";
+                    var possiblePaths = RuntimeInformation.OSArchitecture switch
+                    {
+                        Architecture.X64 => new[] { "/usr/lib/x86_64-linux-gnu/", "/usr/lib64/" },
+                        Architecture.X86 => new[] { "/usr/lib/i386-linux-gnu/", "/usr/lib/" },
+                        Architecture.Arm64 => new[] { "/usr/lib/aarch64-linux-gnu/", "/usr/lib64/" },
+                        _ => new[] { "/usr/lib/" }
+                    };
+                    ffmpeg.RootPath = possiblePaths.FirstOrDefault(path =>
+                        File.Exists(Path.Combine(path, "libavcodec.so"))) ?? possiblePaths.Last();
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
@@ -41,7 +49,7 @@ public class FFmpeg : INaudioWaveStreamWrapper
                         return;
                     }
                 }
-                Log.Information($"FFmpeg version info: {ffmpeg.av_version_info()}");
+                Log.Information("FFmpeg version info: {AvVersionInfo}", ffmpeg.av_version_info());
                 ffmpeg.av_log_set_level(Debugger.IsAttached ? ffmpeg.AV_LOG_DEBUG : ffmpeg.AV_LOG_INFO);
 
                 av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
@@ -93,7 +101,9 @@ public class FFmpeg : INaudioWaveStreamWrapper
     public IReadOnlyList<MimeType> SupportedMimeTypes { get; } = [KnownMimes.MKVMime];
     //, KnownMimes.AiffMime,KnownMimes.FLACMime,KnownMimes.WAVMime, KnownMimes.FLACMime, KnownMimes.OGGMime, KnownMimes.MP3Mime,KnownMimes.WAVMime
     public bool SupportedOnPlatform => DllLoc.Any(x => Path.Exists(Path.GetFullPath(x,AppContext.BaseDirectory)));
-    static readonly string[] DllLoc = ["/usr/lib/libavcodec.so","libavcodec-58.dll","avcodec-59.dll"];
+    static readonly string[] DllLoc = ["/usr/lib/libavcodec.so",
+    "/usr/lib64/libavcodec.so",
+    "libavcodec-58.dll","avcodec-59.dll"];
 
     public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new FFMpegWaveStream(stream));
 
