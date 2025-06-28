@@ -55,8 +55,8 @@
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
 		<!--Local library POC-->
         <DefineConstants>$(DefineConstants)LLib</DefineConstants>
-		<!--Discord (alpha)-->
-		<!-- <DefineConstants>$(DefineConstants)DISCRD</DefineConstants> -->
+		<!--Discord -->
+		 <DefineConstants>$(DefineConstants)DISCRD</DefineConstants> 
 		<!--VLC (Alpha)-->
 		<!-- <DefineConstants>$(DefineConstants)VLC</DefineConstants> -->
 		<!--Windows only-->

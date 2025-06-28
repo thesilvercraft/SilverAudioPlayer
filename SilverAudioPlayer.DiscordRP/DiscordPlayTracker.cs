@@ -267,7 +267,7 @@ SilverAudioPlayer.DiscordRP
         return tracks.GetValueOrDefault(artistandalbum, null);
     }
 
-    public void SPause(Song? a)
+    private void SPause(Song? a)
     {
         if (!_IsStarted) return;
         if (a != null)
@@ -287,7 +287,7 @@ SilverAudioPlayer.DiscordRP
         }
     }
 
-    public void SPlay(Song? a)
+    private void SPlay(Song? a)
     {
         if (!_IsStarted) return;
 
@@ -313,7 +313,7 @@ SilverAudioPlayer.DiscordRP
 
     }
 
-    public void SStop()
+    private void SStop()
     {
         if (!_IsStarted) return;
 
@@ -329,6 +329,7 @@ SilverAudioPlayer.DiscordRP
         {
             client.SetPresence(new RichPresence
             {
+                Type = ActivityType.Listening,
                 Details = details,
                 State = state,
                 Assets = new Assets

@@ -55,8 +55,12 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
             if (x != null)
             {
                 TempFile= Path.Combine(TempFolder,x.Hash??e.Guid.ToString());
-                using var fs = new FileStream(TempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-                using var data = x.Data.GetStream();
+                if (x.Data.MimeType.FileExtensions is { Length: > 0 })
+                {
+                    TempFile+= x.Data.MimeType.FileExtensions[0];
+                }
+                await using var fs = new FileStream(TempFile, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                await using var data = x.Data.GetStream();
                 await data.CopyToAsync(fs);
                 HasAlbumArtWritten = true;
             }
@@ -154,7 +158,8 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
             };
             if(HasAlbumArtWritten)
             {
-                res["mpris:artUrl"]=TempFile;
+                var uri = new Uri("file://" + TempFile); // KDE seems to care about the file:// scheme in the status bar but not the lockscreen
+                res["mpris:artUrl"]= uri.ToString();
             }
         return Task.FromResult<IDictionary<string, object>>(res);
 

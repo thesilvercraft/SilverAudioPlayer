@@ -1,5 +1,6 @@
 using System.Composition;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Compression;
 using System.Xml.Serialization;
 using SilverMagicBytes;
@@ -92,13 +93,13 @@ public class SilverPlayList
 public static class SilverPlaylistHelper
 {
     public static readonly byte[] MagicBytes = "Spl"u8.ToArray();
+    static XmlSerializer serializer = new(typeof(SilverPlayList));
 
     public static void SerialiseBrotli(SilverPlayList playList, Stream streamToWriteTo)
     {
         streamToWriteTo.Write(MagicBytes);
         using BrotliStream stream = new(streamToWriteTo, CompressionLevel.SmallestSize);
         using StreamWriter stringWriter = new(stream);
-        XmlSerializer serializer = new(typeof(SilverPlayList));
         serializer.Serialize(stringWriter, playList);
     }
 
@@ -112,7 +113,6 @@ public static class SilverPlaylistHelper
         }
 
         using BrotliStream stream = new(streamToReadFrom, CompressionMode.Decompress);
-        XmlSerializer serializer = new(typeof(SilverPlayList));
         return serializer.Deserialize(stream) as SilverPlayList ??
                throw new InvalidCastException(
                    "The XML decoder returned an object that could not be cast to a SilverPlaylist");
@@ -126,11 +126,12 @@ public static class SilverPlaylistHelper
         {
             Version = CurrentPlaylistVersion,
             Song = [],
-            SharedMetadata = new(),
+            SharedMetadata = new SharedMetadata(),
         };
-        foreach (var song in songs)
+        var songscopy = songs.ToList();
+        foreach (var song in songscopy)
         {
-            var source = new Source() { Type = "url", Text = song.URI };
+            var source = new Source { Type = "url", Text = song.URI };
             switch (song.Stream)
             {
                 case WrappedFileStream wrappedFileStream:
@@ -151,17 +152,18 @@ public static class SilverPlaylistHelper
                 AlbumPos =
                     $"{song.Metadata?.DiscNumber ?? 0}/{song.Metadata?.TrackNumber ?? 0}",
                 Artist = song.Metadata?.Artist,
-                Sources = new() { Source = new() { source } }
+                Sources = new Sources { Source = [source] }
             };
             playList.Song.Add(s);
         }
         if (msiInterface != null && msiInterface.GetState()!= PlaybackState.Stopped)
         {
             var currentSong = msiInterface.GetCurrentTrack();
-            if (currentSong != null && songs.Select((v, i) => new {s = v, i = i}).FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is {} i)
+            if (currentSong != null && songscopy.Select((v, i) => new {s = v, i = i})
+                    .FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is {} i)
             {
                 playList.CurrentIndex=i.ToString();
-                playList.CurrentIndexPosition=msiInterface.GetPosition().ToString();
+                playList.CurrentIndexPosition=msiInterface.GetPosition().ToString(CultureInfo.InvariantCulture);
             }
         }
 

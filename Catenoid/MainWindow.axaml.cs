@@ -88,7 +88,6 @@ public class MainWindowContext : PlayerContext
 public partial class MainWindow : Window
 {
 
-
     public readonly MainWindowContext dc;
     public IFullPlayerEnvironment Env => Logic.PlayerEnvironment;
     private MetadataView? metadataView;
@@ -162,9 +161,9 @@ public partial class MainWindow : Window
                         }
                         if (CurrentSong?.Metadata?.SyncedLyrics?.Count is not null and not 0)
                         {
-                            if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2))
+                            if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
                             {
-                                LyricsButton.Foreground = (IBrush)result2;
+                                LyricsButton.Foreground = brush;
                             }
                             else
                             {
@@ -173,9 +172,9 @@ public partial class MainWindow : Window
                         }
                         else
                         {
-                            if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2))
+                            if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
                             {
-                                LyricsButton.Foreground = (IBrush)result2;
+                                LyricsButton.Foreground = brush;
                             }
                             else
                             {
@@ -381,9 +380,9 @@ public partial class MainWindow : Window
     {
         ChangeAutoSaveInterval(config.AutoSaveInterval);
         if (!config.AutoSave || dc.Queue.Count != 0) return;
-        var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+        var dirpath = ConfigPath.GetPath(AutoSavePlaylistPath);
         if (!Directory.Exists(dirpath)) return;
-        var filepath = Path.Combine(dirpath, "AutoSave.spl.br");
+        var filepath = Path.Combine(dirpath, AutoSavePlaylistName);
         if (!File.Exists(filepath)) return;
         var pl = Logic.TryReadPlaylist(new WrappedFileStream(filepath));
         if (pl == null) return;
@@ -447,15 +446,16 @@ public partial class MainWindow : Window
             }
         }
     }
-
+    private const string AutoSavePlaylistPath = "Playlists/Autosave/";
+    private const string AutoSavePlaylistName = "AutoSave.spl.br";
     private void AutoSave(object? state)
     {
         if (dc?.queue == null) return;
         Log.Information("Autosaving");
         var queue = Logic.GetQueueCopy();
-        var dirpath = ConfigPath.GetPath("Playlists/Autosave/");
+        var dirpath = ConfigPath.GetPath(AutoSavePlaylistPath);
         Directory.CreateDirectory(dirpath);
-        using var s = new FileStream(Path.Combine(dirpath, "AutoSave.spl.br"), FileMode.Create);
+        using var s = new FileStream(Path.Combine(dirpath, AutoSavePlaylistName), FileMode.Create);
         SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
     }
 
@@ -531,7 +531,7 @@ public partial class MainWindow : Window
     private void TreeView_DoubleTapped(object? sender, RoutedEventArgs e) => TreeViewPressed();
     private void TreeView_KeyPressed(object? sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter || e.Key == Key.Space)
+        if (e.Key is Key.Enter or Key.Space)
         {
             TreeViewPressed();
         }
@@ -572,7 +572,7 @@ public partial class MainWindow : Window
 
     private void PlayButton_Click(object? x, RoutedEventArgs y) => Logic.Play();
 
-    private string TimestampFormat = "hh\\:mm\\:ss\\.ff";
+    private const string TimestampFormat = "hh\\:mm\\:ss\\.ff";
     private void SeekBarUpdateThread(CancellationToken e)
     {
         var exit = false;

@@ -114,7 +114,7 @@ public class App
                     for (int i = 0; i < lyrics.Count; i++)
                     {
                         LyricPhrase? l = lyrics[i];
-                        if (l.TimeStampInMilliSeconds <= Logic.Player.GetPosition().TotalMilliseconds)
+                        if (l.TimeStampInMilliSeconds <= Logic.Player?.GetPosition().TotalMilliseconds)
                         {
                             last = i;
                         }
