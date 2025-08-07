@@ -7,7 +7,7 @@
         Title="PlaylistWindow">
         <Grid Name="MainGrid" RowDefinitions="25,*, 50" Margin="5" DoubleTapped="MainGrid_OnDoubleTapped">
                 <TextBlock Text="Playlist managment" Margin="5" />
-                <ListBox Grid.Row="1" ItemsSource="{Binding Playlists}" SelectionMode="Multiple" Selection="{Binding Selection}"  >
+                <ListBox Grid.Row="1" Background="#936F6F6F" CornerRadius="2" ItemsSource="{Binding Playlists}" SelectionMode="Multiple" Selection="{Binding Selection}"  >
                         <ListBox.ContextMenu>
                                 <ContextMenu>
                                         <MenuItem Header="Delete Selected" Click="DeleteSelected" />

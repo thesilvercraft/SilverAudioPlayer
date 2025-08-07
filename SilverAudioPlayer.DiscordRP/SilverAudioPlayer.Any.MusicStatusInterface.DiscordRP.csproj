@@ -6,12 +6,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
-        <LangVersion>11</LangVersion>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="CatBox.NET" Version="0.3.0" />
-        <PackageReference Include="DiscordRichPresence" Version="1.3.0.28" />
+        <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
         <PackageReference Include="Imgur.API" Version="5.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="System.Composition" Version="8.0.0" />

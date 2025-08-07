@@ -1,3 +1,4 @@
+using System.Globalization;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.SilverPlaylist;
 
@@ -13,7 +14,7 @@ class SilverPlayListI : IPlaylist
         }
         if (s.CurrentIndexPosition != null)
         {
-            PositionOfActive = double.Parse(s.CurrentIndexPosition);
+            PositionOfActive = double.Parse(s.CurrentIndexPosition, CultureInfo.InvariantCulture);
         }
         Tracks = s.Song.Select(x => new SilverPlayListTrackI(x)).ToList();
     }

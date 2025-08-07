@@ -33,18 +33,17 @@ public partial class PlaylistWindow : Window
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
-        if (FolderWatcher)
+
+        if (!FolderWatcher) return;
+        watcher = new FileSystemWatcher
         {
-            watcher = new FileSystemWatcher
-            {
-                Path = PlaylistPath,
-                EnableRaisingEvents = true,
-                Filter = "*.spl.br"
-            };
-            watcher.Created+= WatcherOnCreated;
-            watcher.Renamed += WatcherOnRenamed;
-            watcher.Deleted+= WatcherOnDeleted;
-        }       
+            Path = PlaylistPath,
+            EnableRaisingEvents = true,
+            Filter = "*.spl.br"
+        };
+        watcher.Created += WatcherOnCreated;
+        watcher.Renamed += WatcherOnRenamed;
+        watcher.Deleted += WatcherOnDeleted;
     }
 
     private FileSystemWatcher watcher;
@@ -88,6 +87,7 @@ public partial class PlaylistWindow : Window
 
     private void DeleteSelected(object? sender, RoutedEventArgs e)
     {
+        
         foreach (var selectionSelectedItem in dataContext.Selection.SelectedItems)
         {
             File.Delete(selectionSelectedItem);
