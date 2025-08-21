@@ -183,7 +183,7 @@ public class App : Application
             {
                 LogWindow lw = new();
                 lw.Show();
-                BootupLogic.SetupCrashFallNets((Exception y) =>
+                BootupLogic.SetupCrashFallNets(y =>
                 {
                     var a = Path.GetTempFileName();
                     File.WriteAllText(a, sink.writer.ToString());
@@ -195,7 +195,7 @@ public class App : Application
             }
             else
             {
-                BootupLogic.SetupCrashFallNets((Exception y) =>
+                BootupLogic.SetupCrashFallNets(y =>
                 {
                     if (File.Exists("/usr/bin/kdialog"))
                     {

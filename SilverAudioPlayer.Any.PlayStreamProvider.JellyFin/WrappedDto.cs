@@ -12,6 +12,7 @@ public class WrappedDto
     public WrappedDto(BaseItemDto dto, WrappedStream? ws = null)
     {
         this.dto = dto;
+        //SharedMemoryStreamPoolInstance.Instance.
         if (ws != null) Cover = Bitmap.DecodeToHeight(ws.GetStream(), 200);
     }
 

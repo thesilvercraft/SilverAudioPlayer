@@ -14,11 +14,19 @@
   <ItemGroup>
     <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
   </ItemGroup>
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="juke.svg" />
-	  <EmbeddedResource Include="juke.svg" />
-	</ItemGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="juke.svg" />
+    <EmbeddedResource Include="juke.svg" />
+    <EmbeddedResource Include="inline-remote-inkscape.svg" />
+    <EmbeddedResource Include="SilverJukeWebUi.html" />
+    <EmbeddedResource Include="SilverJukeWebUi.js" />
+    <EmbeddedResource Include="SilverJukeWebInline.html" />
+    <EmbeddedResource Include="DSEG14Classic-Regular.woff2" />
+    <None Update="DSEG-LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

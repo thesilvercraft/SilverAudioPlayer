@@ -80,10 +80,15 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
         else if (audioFile is CSCoreReader cSCoreReader)
         {
-            if (cSCoreReader._reader is ILoop cselector)
-                cselector.EnableLoop();
-            else if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                     sampleToIeeeFloat32.Source is ILoop selector) selector.EnableLoop();
+            switch (cSCoreReader._reader)
+            {
+                case ILoop cselector:
+                    cselector.EnableLoop();
+                    break;
+                case SampleToWaveBase { Source: ILoop selector }:
+                    selector.EnableLoop();
+                    break;
+            }
         }
     }
 
@@ -95,10 +100,15 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
         else if (audioFile is CSCoreReader cSCoreReader)
         {
-            if (cSCoreReader._reader is ILoop cselector)
-                cselector.DisableLoop();
-            else if (cSCoreReader._reader is SampleToWaveBase sampleToIeeeFloat32 &&
-                     sampleToIeeeFloat32.Source is ILoop selector) selector.DisableLoop();
+            switch (cSCoreReader._reader)
+            {
+                case ILoop cselector:
+                    cselector.DisableLoop();
+                    break;
+                case SampleToWaveBase { Source: ILoop selector }:
+                    selector.DisableLoop();
+                    break;
+            }
         }
     }
 

@@ -4,14 +4,10 @@ using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
-public class JellyfinMeta : IMetadata
+public class JellyfinMeta(BaseItemDto dto, IList<LyricPhrase>? slyrics) : IMetadata
 {
-    public BaseItemDto _dto;
+    public BaseItemDto _dto = dto;
 
-    public JellyfinMeta(BaseItemDto dto)
-    {
-        _dto = dto;
-    }
     public Guid? Dto => _dto.Id;
     public void Dispose()
     {
@@ -32,6 +28,6 @@ public class JellyfinMeta : IMetadata
     public IDictionary<string, string>? Entries  => null;
     public double? Duration  => null;
     public string? Lyrics  => null;
-    public IList<LyricPhrase>? SyncedLyrics  => null;
+    public IList<LyricPhrase>? SyncedLyrics { get; private set; } = slyrics;
     public IReadOnlyList<IPicture>? Pictures  => null;
 }

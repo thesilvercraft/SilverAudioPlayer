@@ -95,7 +95,6 @@
 		<PlatformTarget Condition="$(TargetFramework.Contains('windows'))">x64</PlatformTarget>
 		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win-x64</RuntimeIdentifiers>
 	</PropertyGroup>
-
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
 		<PackageReference Include="Avalonia.Diagnostics" Version="11.2.5" />
 		<PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.25" />
