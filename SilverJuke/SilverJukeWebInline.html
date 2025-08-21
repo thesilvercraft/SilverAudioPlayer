@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Inline Remote LCD</title>
+  <style>
+    @font-face {
+      font-family: 'DSEG14Classic';
+      src: url('/DSEG14Classic-Regular.woff2') format('woff2'),
+      font-weight: normal;
+      font-style: normal;
+    }
+    body { background: #222; color: #eee; font-family: sans-serif; text-align: center; }
+    .lcd-container { margin: 2em auto; width: 800px; max-width: 100vw; }
+    svg { width: 100%; height: auto; max-width: 800px; display: block; margin: 0 auto; }
+    .lcd-row { font-family: 'DSEG14Classic', monospace; font-size: 2.2em; fill: #000; }
+    .lcd-row-bg { fill: #000; opacity: 0.05; }
+    .lcd-row-fg { fill: #000; }
+    .lcd-row-outline { stroke: #fff; stroke-width: 0.5; }
+    .lcd-row-real { fill: #00ff00; }
+    .lcd-row-real-bg { fill: #000; opacity: 0.05; }
+    .lcd-row-real-fg { fill: #00ff00; }
+    .lcd-row-real-outline { stroke: #fff; stroke-width: 0.5; }
+    .lcd-label { color: #aaa; font-size: 1em; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <div class="lcd-container">
+    <div id="svg-holder"></div>
+  </div>
+  <script>
+    // Fetch SVG from server and insert into DOM, then wire up buttons
+    fetch('/inline-remote-inkscape.svg')
+      .then(r => r.text())
+      .then(svg => {
+        document.getElementById('svg-holder').innerHTML = svg;
+        // Add click handlers for SVG buttons after SVG is loaded
+        const svgDoc = document.getElementById('svg-holder').querySelector('svg');
+        if (svgDoc) {
+          // Play/skip button
+          let playBtn = svgDoc.getElementById('play-skip-button');
+          if (playBtn) playBtn.style.cursor = 'pointer';
+          if (playBtn) {
+            let lastClick = 0;
+            playBtn.addEventListener('click', (e) => {
+              const now = Date.now();
+              if (now - lastClick < 140) {
+                // Double click: skip
+                callEndpoint('next');
+                lastClick = 0;
+              } else {
+                // Single click: play/pause after short delay if no double click
+                lastClick = now;
+                setTimeout(() => {
+                  if (Date.now() - lastClick >= 140 && lastClick !== 0) {
+                    callEndpoint('playpause');
+                    lastClick = 0;
+                  }
+                }, 150);
+              }
+            });
+          }
+          // Stop button
+          let stopBtn = svgDoc.getElementById('stop-button');
+          if (stopBtn) stopBtn.style.cursor = 'pointer';
+          if (stopBtn) stopBtn.addEventListener('click', () => callEndpoint('stop'));
+          // Previous button
+          let prevBtn = svgDoc.getElementById('back-button');
+          if (prevBtn) prevBtn.style.cursor = 'pointer';
+          if (prevBtn) prevBtn.addEventListener('click', () => callEndpoint('previous'));
+        }
+      });
+
+    // LCD text element IDs from SVG
+    const rowIds = ['first-text', 'second-text', 'third-text'];
+    let trackTitle = '';
+    let trackAlbum = '';
+    let trackArtist = '';
+    let cdNum = '';
+    let trackNum = '';
+    let currentTime = 0;
+    let duration = 0;
+    // Compose the 13-char display string for each row
+    function getScrollRow(str, offset) {
+      if (!str) str = '';
+      if (str.length < 13) {
+        return str.replace(/ /g, '!').padEnd(13, '!');
+      } else {
+        let scroll = (str + '   ' + str).substr(offset, 13);
+        return scroll.replace(/ /g, '!');
+      }
+    }
+    let scrollOffsets = [0, 0, 0];
+    function updateLcd() {
+      const rows = [
+        getScrollRow(trackTitle, scrollOffsets[0]),
+        getScrollRow(trackAlbum, scrollOffsets[1]),
+        getScrollRow(trackArtist, scrollOffsets[2])
+      ];
+      for (let i = 0; i < 3; ++i) {
+        let el = document.getElementById(rowIds[i]);
+        if (el) el.textContent = rows[i];
+        scrollOffsets[i] = (scrollOffsets[i] + 1) % (Math.max(1, (i === 0 ? trackTitle.length : (i === 1 ? trackAlbum.length : trackArtist.length)) + 3));
+      }
+      // Update time row
+      let timeEl = document.getElementById('time-text');
+      if (timeEl) {
+        let cdStr = cdNum ? cdNum.toString().padStart(2, '0') : '00';
+        let trStr = trackNum ? trackNum.toString().padStart(2, '0') : '00';
+        let t = Math.floor(currentTime);
+        let h = Math.floor(t/3600);
+        let m = Math.floor((t%3600) / 60);
+        let s = t % 60;
+        let d = Math.floor(duration);
+        let dm = Math.floor(d / 60);
+        let ds = d % 60;
+        // Format: CD/TR.!MM:SS:TT
+        let timeStr = `${cdStr}/${trStr}.!${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        timeEl.textContent = timeStr;
+      }
+    }
+    // Fetch real track info from server
+    async function pollTrack() {
+      try {
+        const [trackRes, posRes, durRes] = await Promise.all([
+          fetch('/track'),
+          fetch('/position'),
+          fetch('/duration')
+        ]);
+        let data = trackRes.ok ? await trackRes.json() : {};
+        let meta = data.metadata || {};
+        trackTitle = meta.title || data.title || data.name || '';
+        trackAlbum = meta.album || data.album || '';
+        trackArtist = meta.artist || data.artist || '';
+        cdNum = meta.discNumber || meta.cdnum || '';
+        trackNum = meta.trackNumber || meta.tracknum || '';
+        currentTime = posRes.ok ? parseFloat(await posRes.text()) : 0;
+        duration = durRes.ok ? parseFloat(await durRes.text()) : 0;
+      } catch {}
+    }
+    // Call endpoint (play, stop, previous)
+    async function callEndpoint(endpoint) {
+      try { await fetch('/' + endpoint); } catch {}
+    }
+    setInterval(updateLcd, 250);
+    setInterval(pollTrack, 1000);
+    pollTrack();
+    updateLcd();
+  </script>
+</body>
+</html>

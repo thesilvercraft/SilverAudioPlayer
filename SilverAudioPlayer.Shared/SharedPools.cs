@@ -70,11 +70,9 @@ namespace SilverAudioPlayer.Shared
             {
                 return s;
             }
-            else
-            {
-                Shared<T> shared = new(ws,hash);
-                Shared.Add(shared); return shared;
-            }
+
+            Shared<T> shared = new(ws,hash);
+            Shared.Add(shared); return shared;
         }
         public Shared<T>? GetWithHash(string hash)
         {

@@ -24,16 +24,14 @@ public static class ShowableUtils
                 var b = SharedMemoryTPoolInstance<Bitmap>.Instance.GetWithHash(cover.Hash);
                 return new(b.Object, new RelianceOnShared<Bitmap>(b));
             }
-            else
+
+            var imageData = cover.Data;
+            if (imageData != null)
             {
-                var imageData = cover.Data;
-                if (imageData != null)
-                {
-                    using var imageDataStream = imageData.GetStream();
-                    var bmp = new Bitmap(imageDataStream);
-                    var b = SharedMemoryTPoolInstance<Bitmap>.Instance.AddT(bmp, cover.Hash);
-                    return new(bmp, new RelianceOnShared<Bitmap>(b));
-                }
+                using var imageDataStream = imageData.GetStream();
+                var bmp = new Bitmap(imageDataStream);
+                var b = SharedMemoryTPoolInstance<Bitmap>.Instance.AddT(bmp, cover.Hash);
+                return new(bmp, new RelianceOnShared<Bitmap>(b));
             }
         }
         catch (Exception e)

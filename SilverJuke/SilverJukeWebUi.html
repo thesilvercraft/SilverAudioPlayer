@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SilverAudioPlayer.SilverJuke</title>
+    <style>
+        html {
+            color-scheme: light dark;
+        }
+
+        body {
+            width: 69em;
+            margin: 0 auto;
+            font-family: sans-serif;
+        }
+
+        h1 {
+            margin-top: 1em;
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1em;
+            margin-top: 2em;
+        }
+
+        .endpoint-btn {
+            padding: 0.7em 1.5em;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 0.4em;
+            background: #4a90e2;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .endpoint-btn:hover {
+            background: #357ab8;
+        }
+
+        #albumart {
+            display: block;
+            margin: 2em auto 1em auto;
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 0.5em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        pre {
+            background: #222;
+            color: #eee;
+            padding: 1em;
+            border-radius: 0.4em;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div
+        style="background:#fff3cd;color:#856404;border:1px solid #ffeeba;padding:0.7em 1.2em;margin:1.5em auto 1.5em auto;border-radius:0.5em;max-width:800px;font-size:1.05em;box-shadow:0 1px 4px rgba(0,0,0,0.07);text-align:center;font-weight:500;">
+        This web interface was generated with the help of an AI language model (LLM).<br>
+        Disable it through the config option UseSlopUI.
+    </div>
+    <h1>SilverJuke Embedded Webserver</h1>
+    <p>This is an embedded webserver into the SilverJuke plugin of SilverAudioPlayer.</p>
+    <div id="nowplaying" style="margin:1.5em 0; padding:1em; background:#f3f3f3; border-radius:0.5em; color:#222;">
+        <div style="display:flex;align-items:center;gap:1em;">
+            <img id="albumart" src="/albumart" alt="Album Art"
+                style="max-width:90px;max-height:90px;min-width:60px;min-height:60px;object-fit:cover;border-radius:0.5em;box-shadow:0 2px 8px rgba(0,0,0,0.15);background:#ddd;margin:0 0.5em 0 0;"
+                onerror="this.style.display='none'" />
+            <div style="flex:1;min-width:0;">
+                <div><strong id="nowplaying-title">Loading...</strong></div>
+                <div id="nowplaying-artist" style="color:#555;"></div>
+                <div id="nowplaying-album" style="color:#888;font-size:0.95em;"></div>
+                <div style="margin-top:1em;">
+                    <input type="range" id="progressbar" min="0" max="100" value="0" step="1"
+                        style="width:220px;vertical-align:middle;" />
+                    <span id="nowplaying-pos">0:00</span> / <span id="nowplaying-dur">0:00</span>
+                </div>
+            </div>
+        </div>
+        <div id="buttons">
+        <button class="endpoint-btn" onclick="callEndpoint('playpause')">Play/Pause</button>
+        <button class="endpoint-btn" onclick="callEndpoint('stop')">Stop</button>
+        <button class="endpoint-btn" onclick="callEndpoint('previous')">Previous</button>
+        <button class="endpoint-btn" onclick="callEndpoint('next')">Next</button>
+
+        </div>
+    </div>
+    <div id="lyrics-container"
+        style="margin:1.2em auto 0 auto; min-height:3.5em; font-size:1.18em; color:#2a2a2a; font-family:inherit; text-align:center; max-width:600px; background:#f8f8f8; border-radius:0.5em; box-shadow:0 1px 4px rgba(0,0,0,0.07); padding:0.7em 0.5em;">
+    <div id="synced-lyrics-block"></div>
+    <button id="expand-lyrics-btn" class="endpoint-btn" style="margin-top:0.7em; font-size:1em; padding:0.4em 1.2em;">Show All Lyrics</button>
+    <button id="autoscroll-lyrics-btn" class="endpoint-btn" style="margin-top:0.7em; font-size:1em; padding:0.4em 1.2em; display:none;">Autoscroll: On</button>
+    <div id="full-lyrics-block" style="display:none; text-align:left; margin-top:1em; white-space:pre-wrap; max-height:350px; overflow-y:auto;"></div>
+    </div>
+    <div class="button-grid">
+        <button class="endpoint-btn" onclick="callEndpoint('state')">Get State</button>
+        <button class="endpoint-btn" onclick="callEndpoint('track')">Get Current Track</button>
+        <button class="endpoint-btn" onclick="refreshAlbumArt()">Refresh Album Art</button>
+    </div>
+    <h2>Endpoint Response</h2>
+    <pre id="response"></pre>
+    <script src="SilverJukeWebUi.js?mew"></script>
+</body>
+
+</html>

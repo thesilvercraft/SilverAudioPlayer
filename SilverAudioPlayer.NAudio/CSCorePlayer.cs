@@ -45,10 +45,7 @@ public class CSCorePlayer : IWavePlayer, IWavePosition
     private WaveInputNaudioToCsCore csCoreStream;
     public void Init(IWaveProvider waveProvider)
     {
-        if (waveProvider == null)
-        {
-            throw new ArgumentNullException(nameof(waveProvider));
-        }
+        ArgumentNullException.ThrowIfNull(waveProvider);
         csCoreStream = new WaveInputNaudioToCsCore(waveProvider);
         _soundOut.Initialize(csCoreStream);
     }

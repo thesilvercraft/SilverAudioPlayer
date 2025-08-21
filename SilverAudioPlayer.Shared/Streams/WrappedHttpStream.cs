@@ -145,7 +145,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
                 BeingDownloaded[chunkNum + i]=  Task.Run(() =>
                 {
                     ReadChunk(chunkNum + i, token,true);
-                });
+                }, token);
                 break;
             }
        

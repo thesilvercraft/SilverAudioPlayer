@@ -37,7 +37,16 @@ public class JellyFinHelper
         app = PublicClientApplicationBuilder.Create(SilverAudioPlayerJellyfinGuid).Build();
         Task.Run(async ()=> await MoreLibSecretStuff()).GetAwaiter().GetResult();
     }
-
+    public async Task<IReadOnlyList<BaseItemDto>> SearchItems(string query)
+    {
+        var result = await apiClient.Items.GetAsync(configuration => {
+            configuration.QueryParameters.SearchTerm = query;
+            configuration.QueryParameters.IncludeItemTypes = [BaseItemKind.Audio, BaseItemKind.MusicAlbum];
+            configuration.QueryParameters.Recursive = true;
+            configuration.QueryParameters.UserId = userDto?.Id;
+        });
+        return result.Items;
+    }
     record class LoginInfo(string url, string accessToken, string userId);
     public async Task MoreLibSecretStuff()
     {
@@ -159,7 +168,7 @@ public class JellyFinHelper
         public static readonly KeyValuePair<string, string> LinuxKeyRingAttr1 = new KeyValuePair<string, string>("Version", "1");
         public static readonly KeyValuePair<string, string> LinuxKeyRingAttr2 = new KeyValuePair<string, string>("ProductGroup", "MyApps");
    
-    public async Task<IReadOnlyList<BaseItemDto>> GetItemsFromItem(BaseItemDto dto)
+    public async Task<IReadOnlyList<Jellyfin.Sdk.Generated.Models.BaseItemDto>> GetItemsFromItem(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
     {
         var a = await apiClient.Items.GetAsync(configuration => configuration.QueryParameters.ParentId= dto.Id ); // itemsClient.GetItemsByUserIdAsync(userDto.Id, parentId: dto.Id)
         return a.Items;
@@ -171,7 +180,7 @@ public class JellyFinHelper
         while (!validUser) await LogIn(gui);
     }
 
-    public async Task<IReadOnlyList<BaseItemDto>> GetDefaultViews()
+    public async Task<IReadOnlyList<Jellyfin.Sdk.Generated.Models.BaseItemDto>> GetDefaultViews()
     {
         var views = await apiClient.UserViews.GetAsync();
         return views.Items;
@@ -243,7 +252,7 @@ public class JellyFinHelper
         return false;
     }
 
-    public async Task<WrappedStream> GetStream(BaseItemDto dto)
+    public async Task<WrappedStream> GetStream(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
     {
        // return new WrappedJellyFinStream(audioClient, userDto, dto);
       // var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
@@ -254,25 +263,21 @@ public class JellyFinHelper
         return new WrappedHttpStream(audioUri.ToString());
     }
 
-    public async Task<WrappedStream?> GetImageStream(BaseItemDto dto)
+    public async Task<Tuple<WrappedStream,string>?> GetImageStreamAndId(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
     {
+
+        if (dto.ImageTags == null &&  dto.AlbumPrimaryImageTag == null)
+            return null;
+
+        var trackArt = dto.ImageTags.AdditionalData.TryGetValue("Primary", out var value) ;
+        var desiredId = trackArt && value is string id ? id : dto.AlbumPrimaryImageTag;
         try
         {
             var ri =  apiClient.Items[dto.Id.Value].Images[ImageType.Primary.ToString()].ToGetRequestInformation();
             var uri = apiClient.BuildUri(ri);
-            var request = new HttpRequestMessage() {
-                RequestUri = uri,
-                Method = HttpMethod.Get,
-            };
-            request.Headers.Add("X-Emby-Token",settings.AccessToken);
-           var resp= await HttpClient.Client.SendAsync(request);
-           if (resp.IsSuccessStatusCode)
-           {
-               //Debug.WriteLine(fr);
-               var r = new HttpRequestMessage(HttpMethod.Get,uri);
-               r.Headers.Add("X-Emby-Token",settings.AccessToken);
-               return new WrappedHttpStream(r);
-           }
+            var r = new HttpRequestMessage(HttpMethod.Get,uri);
+            r.Headers.Add("X-Emby-Token",settings.AccessToken);
+            return new (new WrappedHttpStream(r), desiredId);
         }
         catch
         {
@@ -294,6 +299,20 @@ public class JellyFinHelper
        serverwindow = new ServerUrlWindow(this);
         await serverwindow.ShowDialog(gui);
         return serverwindow.Success;
+    }
+
+    public async Task<IList<LyricPhrase>?> GetLyrics(BaseItemDto songDto)
+    {
+        try
+        {
+            var ri =  await apiClient.Audio[songDto.Id.Value].Lyrics.GetAsync();
+            var lyrics =  ri.Lyrics.Select(x => new LyricPhrase(((double)x.Start / 10000)!, x.Text+"\n")).ToList();
+            return lyrics;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 }
 

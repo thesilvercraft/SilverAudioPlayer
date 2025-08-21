@@ -126,11 +126,11 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
             {
                 Content =
                 [
-                    new SimpleLabel()
+                    new SimpleLabel
                     {
                         GetContent = () => "ListenBrainz token:"
                     },
-                    new SimpleTextBox()
+                    new SimpleTextBox
                     {
                         GetPlaceholder = () => "489f696d-86d0-4a9d-80e6-bb00e573231a",
                         GetContent = () =>
@@ -150,17 +150,17 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
                     }
                 ]
             },
-            new SimpleRow()
+            new SimpleRow
             {
                 Content =
                 [
-                    new SimpleLabel()
+                    new SimpleLabel
                     {
                         GetContent = () => "Policy"
                     },
-                    new SimpleDropDown()
+                    new SimpleDropDown
                     {
-                        GetOptions = () => Enum.GetNames<Policy>(),
+                        GetOptions = Enum.GetNames<Policy>,
                         GetPlaceholder = () => "Percentage",
                         GetSelection = () =>
                         {
@@ -168,7 +168,7 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
                             {
                                 return x.ListenPolicy.ToString();
                             }
-                            return Policy.Percentage.ToString();
+                            return nameof(Policy.Percentage);
                         },
                         SetSelection = (s) =>
                         {
@@ -177,7 +177,7 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
                             ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("ListenPolicy"));
                         }
                     },
-                    new SimpleTextBox()
+                    new SimpleTextBox
                     {
                         GetPlaceholder = () => "30",
                         GetContent = () =>
@@ -188,7 +188,7 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
                             }
                             return "0";
                         },
-                        SetContent = (s) =>
+                        SetContent = s =>
                         {
                             if (ConfigObject.Value is not ListenBrainzConfig x) return;
                             if (!uint.TryParse(s, out var z)) return;

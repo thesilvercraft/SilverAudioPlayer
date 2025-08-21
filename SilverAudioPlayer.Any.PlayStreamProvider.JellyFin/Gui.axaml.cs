@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -17,20 +18,72 @@ public partial class Gui : Window
 {
     private readonly GuiBinding g;
     private JellyFinHelper helper;
+    private TextBox? _searchBox;
     public Gui()
     {
-        InitializeComponent();
+    InitializeComponent();
 #if DEBUG
-        this.AttachDevTools();
+    this.AttachDevTools();
 #endif
-        helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
-        Opened += Gui_Opened;
-        g = new GuiBinding();
-        DataContext = g;
-        this.DoAfterInitTasks(true);
-        LB = this.FindControl<ListBox>("LB");
+    helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
+    Opened += Gui_Opened;
+    g = new GuiBinding();
+    DataContext = g;
+    this.DoAfterInitTasks(true);
+    LB = this.FindControl<ListBox>("LB");
+    _searchBox = this.FindControl<TextBox>("SearchBox");
+    }
+    private async void SearchButton_Click(object? sender, RoutedEventArgs e)
+    {
+        await DoSearch();
     }
 
+    private async void SearchBox_KeyUp(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            await DoSearch();
+        }
+    }
+
+    private async Task DoSearch()
+    {
+        if (_searchBox == null || string.IsNullOrWhiteSpace(_searchBox.Text))
+            return;
+        Cursor = new Cursor(StandardCursorType.Wait);
+        var results = await helper.SearchItems(_searchBox.Text.Trim());
+        var o = new ObservableCollection<WrappedDto>(results.Select(x => new WrappedDto(x)));
+        g.SetResults(o);
+        LB.ItemsSource = g.SearchResults;
+        await DownloadPictures(o);
+        
+        LB.InvalidateVisual();
+        Cursor = Cursor.Default;
+    }
+
+    async Task DownloadPictures(IEnumerable<WrappedDto> d)
+    {
+        foreach (var u in d)
+        {
+            if (await helper.GetImageStreamAndId(u.dto) is not { Item1: { } wrappedStream, Item2: { } id }) continue;
+            var stream = wrappedStream?.GetStream();
+            if (stream == null) continue;
+            Debug.WriteLine("Not a null stream?");
+            try
+            {
+                u.Cover = Bitmap.DecodeToHeight(stream, 400);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Error occured while reading bitmap");
+            }
+            finally
+            {
+               // await stream.DisposeAsync();
+              //  wrappedStream.Dispose();
+            }
+        }
+    }
     private IPlayStreamProviderListener ProviderListner;
 
     public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
@@ -40,8 +93,8 @@ public partial class Gui : Window
 
     private async void Button_Click(object? sender, RoutedEventArgs e)
     {
-        g.SearchResults = new ObservableCollection<WrappedDto>(new List<BaseItemDto>(await helper.GetDefaultViews())
-            .OrderBy(x => x.IndexNumber).Select(x => new WrappedDto(x)));
+        g.SetResults( new ObservableCollection<WrappedDto>((await helper.GetDefaultViews())
+            .OrderBy(x => x.IndexNumber).Select(x => new WrappedDto(x))));
         LB.ItemsSource = g.SearchResults;
         LB.InvalidateVisual();
     }
@@ -64,7 +117,8 @@ public partial class Gui : Window
             foreach (var song in dtos.OrderBy(x => x.IndexNumber))
             {
                 var ws = await helper.GetStream(song.dto);
-                streams.Add(new(ws, new JellyfinMeta(song.dto)));
+                var lyrics = await helper.GetLyrics(song.dto);
+                streams.Add(new(ws, new JellyfinMeta(song.dto,lyrics)));
             }
         }
 
@@ -96,9 +150,8 @@ public partial class Gui : Window
         if (helper == null) return;
         await Task.Delay(100);
         await helper.MakeSureUserLogsIn(this);
-        g.SearchResults =
-            new ObservableCollection<WrappedDto>(
-                new List<BaseItemDto>(await helper.GetDefaultViews()).Select(x => new WrappedDto(x)));
+        g.SetResults(new ObservableCollection<WrappedDto>((await helper.GetDefaultViews()).Select(x => new WrappedDto(x))));
+        
         LB.ItemsSource = g.SearchResults;
         LB.InvalidateVisual();
         LB.DoubleTapped += LB_DoubleTapped;
@@ -108,29 +161,12 @@ public partial class Gui : Window
     {
         Cursor = new Cursor(StandardCursorType.Wait);
 
-        var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
-        g.SearchResults = new ObservableCollection<WrappedDto>(o);
-        foreach (var u in g.SearchResults)
-        {
-            var wrappedStream = await helper.GetImageStream(u.dto);
-            var stream = wrappedStream?.GetStream();
-            if (stream == null) continue;
-            try
-            {
-                u.Cover = Bitmap.DecodeToHeight(stream, 200);
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception, "Error occured while reading bitmap");
-                
-            }
-            finally
-            {
-                await stream.DisposeAsync();
-            }
-        }
+    var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
 
+        g.SetResults(new ObservableCollection<WrappedDto>(o));
         LB.ItemsSource = g.SearchResults;
+        await DownloadPictures(o);
+        
         LB.InvalidateVisual();
         back = current;
         current = si;
@@ -149,7 +185,7 @@ public partial class Gui : Window
         }
         else
         {
-            ProviderListner.LoadSong(await helper.GetStream(si.dto), new JellyfinMeta(si.dto));
+            ProviderListner.LoadSong(await helper.GetStream(si.dto), new JellyfinMeta(si.dto, await helper.GetLyrics(si.dto)));
         }
     }
 }
