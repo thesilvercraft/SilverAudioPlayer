@@ -20,6 +20,7 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <LangVersion>12.0</LangVersion>
         <PackageIcon>icon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="ReactiveUI" Version="20.1.1" />
@@ -33,6 +34,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj" />
+        <None Include="README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 

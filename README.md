@@ -1,4 +1,4 @@
-![SilverAudioPlayer logo](https://gitlab.com/silvercraft/SilverAudioPlayer/-/raw/master/Catenoid/textandlogo.svg?ref_type=heads)
+![SilverAudioPlayer logo](https://gitlab.com/silvercraft/SilverAudioPlayer/-/raw/master/Catenoid/textandlogo-blur.svg?ref_type=heads)
 ![mockup of silveraudioplayer](silveraudioplayermockup.svg)
 
 ## Supported environments
