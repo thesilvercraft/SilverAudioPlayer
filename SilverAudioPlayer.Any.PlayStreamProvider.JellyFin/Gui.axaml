@@ -5,7 +5,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.Gui"
 		xmlns:local="using:SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"
-		
         Title="SilverAudioPlayer Provider for JellyFin ALPHA" ExtendClientAreaToDecorationsHint="True">
     <Grid Margin="25,5,5,5" RowDefinitions="40,40,*" >
         <Grid ColumnDefinitions="*,*,*,*" >

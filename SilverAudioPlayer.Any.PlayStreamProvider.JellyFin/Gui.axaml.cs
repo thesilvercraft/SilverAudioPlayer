@@ -55,34 +55,44 @@ public partial class Gui : Window
         var o = new ObservableCollection<WrappedDto>(results.Select(x => new WrappedDto(x)));
         g.SetResults(o);
         LB.ItemsSource = g.SearchResults;
-        await DownloadPictures(o);
+        await DownloadPictures();
         
         LB.InvalidateVisual();
         Cursor = Cursor.Default;
     }
 
-    async Task DownloadPictures(IEnumerable<WrappedDto> d)
+    async Task DownloadPictures()
     {
-        foreach (var u in d)
+        await Parallel.ForEachAsync(LB.ItemsSource as IEnumerable<WrappedDto> ?? [], async (u, y) =>
         {
-            if (await helper.GetImageStreamAndId(u.dto) is not { Item1: { } wrappedStream, Item2: { } id }) continue;
+            var result = await helper.GetImageStreamAndId(u.dto);
+            if (result == null)
+            {
+                Debug.WriteLine($"No image stream/id found for: {u.Name} (ID: {u.dto.Id})");
+                return;
+            }
+            var (wrappedStream, id) = result;
             var stream = wrappedStream?.GetStream();
-            if (stream == null) continue;
-            Debug.WriteLine("Not a null stream?");
+            if (stream == null)
+            {
+                Debug.WriteLine($"Image stream is null for: {u.Name} (ID: {u.dto.Id})");
+                return;
+            }
             try
             {
-                u.Cover = Bitmap.DecodeToHeight(stream, 400);
+                var bmp = Bitmap.DecodeToHeight(stream, 400);
+                u.Cover = bmp;
             }
             catch (Exception exception)
             {
-                Log.Error(exception, "Error occured while reading bitmap");
+                Log.Error(exception, $"Error occured while reading bitmap for: {u.Name} (ID: {u.dto.Id})");
             }
             finally
-            {
-               // await stream.DisposeAsync();
-              //  wrappedStream.Dispose();
+            { 
+                await stream.DisposeAsync(); 
+                wrappedStream?.Dispose();
             }
-        }
+        });
     }
     private IPlayStreamProviderListener ProviderListner;
 
@@ -101,10 +111,9 @@ public partial class Gui : Window
 
     private async void BackButton_Click(object? sender, RoutedEventArgs e)
     {
-        if (back != null)
-        {
-            await SetDtoFolderView(back);
-        }
+        if (backStack.Count <= 0) return;
+        var previous = backStack.Pop();
+        await SetDtoFolderView(previous, true);
     }
 
     private async void AddEntireScreen(object? sender, RoutedEventArgs e)
@@ -159,21 +168,26 @@ public partial class Gui : Window
 
     async Task SetDtoFolderView(WrappedDto si)
     {
+        await SetDtoFolderView(si, false);
+    }
+
+    async Task SetDtoFolderView(WrappedDto si, bool isBackNavigation)
+    {
         Cursor = new Cursor(StandardCursorType.Wait);
-
-    var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
-
+        var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
         g.SetResults(new ObservableCollection<WrappedDto>(o));
         LB.ItemsSource = g.SearchResults;
-        await DownloadPictures(o);
-        
+        await DownloadPictures();
         LB.InvalidateVisual();
-        back = current;
+        if (!isBackNavigation && current != null)
+        {
+            backStack.Push(current);
+        }
         current = si;
         Cursor = Cursor.Default;
     }
 
-    private WrappedDto? back;
+    private Stack<WrappedDto> backStack = new();
     private WrappedDto? current;
 
     private async void LB_DoubleTapped(object? sender, RoutedEventArgs e)

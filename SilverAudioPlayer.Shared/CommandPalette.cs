@@ -2,9 +2,15 @@ namespace SilverAudioPlayer.Shared;
 
 public interface ICommandPaletteItem
 {
-    public string HumanName{get;}
-    public string Id {get;}
+    public string HumanName { get; }
+    public string Id { get; }
     public void Execute(IPlayerEnvironment environment);
+}
+public record ExportedCommand(string Name, string Id);
+public interface IExportCommands
+{
+    public IEnumerable<ExportedCommand> GetCommands();
+    void RaiseCommand(ExportedCommand command);
 }
 public class CommandPaletteItem(string name, string id, Action<IPlayerEnvironment> exec) : ICommandPaletteItem
 {

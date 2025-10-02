@@ -429,12 +429,7 @@ public partial class MainWindow : Window
     private Timer? autoSaveTimer=null;
     void ChangeAutoSaveInterval(double s)
     {
-        if (s < 1)
-        {
-            autoSaveTimer?.Dispose();
-            autoSaveTimer = null;
-        }
-        else
+        if (s > 1)
         {
             if (autoSaveTimer == null)
             {
@@ -444,7 +439,10 @@ public partial class MainWindow : Window
             {
                 autoSaveTimer?.Change(TimeSpan.Zero, TimeSpan.FromSeconds(s));
             }
+            return;
         }
+        autoSaveTimer?.Dispose();
+        autoSaveTimer = null;
     }
     private const string AutoSavePlaylistPath = "Playlists/Autosave/";
     private const string AutoSavePlaylistName = "AutoSave.spl.br";
@@ -553,6 +551,14 @@ public partial class MainWindow : Window
     public void Metadata_Click(object? sender, PointerPressedEventArgs e)
     {
         if (CurrentSong == null) return;
+        var point = e.GetCurrentPoint(sender as Control);
+        if (point.Properties.IsRightButtonPressed)
+        {
+            //spawn new window with metadata encoded as json
+            RawMetadataView rawMetadataView = new(CurrentSong);
+            rawMetadataView.Show();
+            return;
+        }
         metadataView = new MetadataView();
         metadataView.LoadSong(CurrentSong);
         metadataView.Show();

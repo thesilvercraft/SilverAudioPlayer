@@ -1,13 +1,30 @@
 ﻿using Jellyfin.Sdk;
 using SilverAudioPlayer.Shared;
 using System.Composition;
+using SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
-namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 [Export(typeof(IPlayStreamProvider))]
-public class JellyFinPlayStreamProvider : IPlayStreamProvider
+public class JellyFinPlayStreamProvider : IPlayStreamProvider, IExportCommands
 {
-    private Gui gui;
-    private static readonly JellyFinHelper helper= new JellyFinHelper();
+
+    public IEnumerable<ExportedCommand> GetCommands()
+    {
+        yield return new ExportedCommand(
+            "Remove Jellyfin Login",
+            "jellyfin.remove_login"
+        );
+    }
+
+    public async void RaiseCommand(ExportedCommand command)
+    {
+        if (command.Id == "jellyfin.remove_login")
+        {
+            await helper.RemoveTokenAsync();
+        }
+    }
+
+    private Gui? gui;
+    private static readonly JellyFinHelper helper = new();
 
     public static JellyFinHelper? GetJellyFinHelper()
     {

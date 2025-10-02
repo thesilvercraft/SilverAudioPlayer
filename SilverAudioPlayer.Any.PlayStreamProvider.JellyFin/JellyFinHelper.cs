@@ -50,27 +50,14 @@ public class JellyFinHelper
     record class LoginInfo(string url, string accessToken, string userId);
     public async Task MoreLibSecretStuff()
     {
-            var cacheHelper = await CreateCacheHelperAsync().ConfigureAwait(false);
-
-            // 3. Let the cache helper handle MSAL's cache
-            cacheHelper.RegisterCache(app.UserTokenCache);
-          var storageProperties = new StorageCreationPropertiesBuilder(
-               CacheFileName + ".other_secrets",
-               CacheDir)
-                .WithLinuxKeyring(
-                                   LinuxKeyRingSchema,
-                                   LinuxKeyRingCollection,
-                                   LinuxKeyRingLabel,                                   
-                                   LinuxKeyRingAttr1,
-                                   new KeyValuePair<string, string>("other_secrets", "secret_description"));
-
-            Storage storage = Storage.Create(storageProperties.Build());
+        var cacheHelper = await CreateCacheHelperAsync().ConfigureAwait(false);
+        cacheHelper.RegisterCache(app.UserTokenCache);
+            Storage storage = Storage.Create(GetStorageCreationProperties());
             try
             {
-                Debug.WriteLine("Reading...");
+                Debug.WriteLine("Reading jellyfin login");
                 var data = storage.ReadData();
                 var str = Encoding.UTF8.GetString(data);
-                Debug.WriteLine(str);
                 var logininfo = System.Text.Json.JsonSerializer.Deserialize<LoginInfo>(str);
                 if (await TryGetSystemInfoAsync(logininfo.url))
                 {
@@ -185,33 +172,36 @@ public class JellyFinHelper
         var views = await apiClient.UserViews.GetAsync();
         return views.Items;
     }
-
+    StorageCreationProperties GetStorageCreationProperties()
+    {
+        var storageProperties = new StorageCreationPropertiesBuilder(
+               CacheFileName + ".other_secrets",
+               CacheDir)
+                .WithLinuxKeyring(
+                                   LinuxKeyRingSchema,
+                                   LinuxKeyRingCollection,
+                                   LinuxKeyRingLabel,
+                                   LinuxKeyRingAttr1,
+                                   new KeyValuePair<string, string>("other_secrets", "secret_description"));
+        return storageProperties.Build();
+    }
+     
     public async Task<bool> TryLogInAsync(string username, string password)
     {
         try
         {
             var authenticationResult = await apiClient.Users.AuthenticateByName.PostAsync(new AuthenticateUserByName
-                {
-                    Username = username,
-                    Pw = password,
-                })
+            {
+                Username = username,
+                Pw = password,
+            })
                 .ConfigureAwait(false);
             settings.SetAccessToken(authenticationResult.AccessToken);
             userDto = authenticationResult.User;
             var logininfo = System.Text.Json.JsonSerializer.Serialize(new LoginInfo(settings.ServerUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
-            var storageProperties = new StorageCreationPropertiesBuilder(
-                    CacheFileName + ".other_secrets",
-                    CacheDir)
-                .WithLinuxKeyring(
-                    LinuxKeyRingSchema,
-                    LinuxKeyRingCollection,
-                    LinuxKeyRingLabel,                                   
-                    LinuxKeyRingAttr1,
-                    new KeyValuePair<string, string>("other_secrets", "secret_description"));
-
-            Storage storage = Storage.Create(storageProperties.Build());
+            Storage storage = Storage.Create(GetStorageCreationProperties());
             byte[] secretBytes = Encoding.UTF8.GetBytes(logininfo);
-            Debug.WriteLine("Writing...");
+            Debug.WriteLine("Writing jellyfin token");
             storage.WriteData(secretBytes);
             validUser = true;
             return validUser;
@@ -223,14 +213,28 @@ public class JellyFinHelper
             return false;
         }
     }
-
+    public async Task RemoveTokenAsync()
+    {
+        Storage storage = Storage.Create(GetStorageCreationProperties());
+        try
+        {
+            storage.Clear();
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+        }
+            
+    }
     public async Task<bool> TryGetSystemInfoAsync(string host)
     {
         validServer = false;
         settings.SetServerUrl(host);
+        CancellationTokenSource s_cts = new CancellationTokenSource();
         try
         {
-            var systemInfo = await apiClient.System.Info.Public.GetAsync()
+            s_cts.CancelAfter(250); // if your jellyfin server is slower than that, you have other problems
+            var systemInfo = await apiClient.System.Info.Public.GetAsync(cancellationToken: s_cts.Token)
                 .ConfigureAwait(false);
             validServer = true;
             Debug.WriteLine($"Connected to {host}");
@@ -263,28 +267,42 @@ public class JellyFinHelper
         return new WrappedHttpStream(audioUri.ToString());
     }
 
-    public async Task<Tuple<WrappedStream,string>?> GetImageStreamAndId(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
+    public async Task<Tuple<WrappedStream, string>?> GetImageStreamAndId(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
     {
-
-        if (dto.ImageTags == null &&  dto.AlbumPrimaryImageTag == null)
+        // If both are null, no image is available
+        if (dto.ImageTags == null && dto.AlbumPrimaryImageTag == null)
             return null;
 
-        var trackArt = dto.ImageTags.AdditionalData.TryGetValue("Primary", out var value) ;
-        var desiredId = trackArt && value is string id ? id : dto.AlbumPrimaryImageTag;
+        string? desiredId = null;
+        if (dto.ImageTags != null && dto.ImageTags.AdditionalData != null)
+        {
+            if (dto.ImageTags.AdditionalData.TryGetValue("Primary", out var value) && value is string idStr)
+            {
+                desiredId = idStr;
+            }
+        }
+        if (string.IsNullOrEmpty(desiredId))
+        {
+            desiredId = dto.AlbumPrimaryImageTag;
+        }
+
+        if (string.IsNullOrEmpty(desiredId))
+            return null;
+
         try
         {
-            var ri =  apiClient.Items[dto.Id.Value].Images[ImageType.Primary.ToString()].ToGetRequestInformation();
+            var ri = apiClient.Items[dto.Id.Value].Images[ImageType.Primary.ToString()].ToGetRequestInformation();
             var uri = apiClient.BuildUri(ri);
-            var r = new HttpRequestMessage(HttpMethod.Get,uri);
-            r.Headers.Add("X-Emby-Token",settings.AccessToken);
-            return new (new WrappedHttpStream(r), desiredId);
+            Debug.WriteLine(uri);
+            var r = new HttpRequestMessage(HttpMethod.Get, uri);
+            r.Headers.Add("X-Emby-Token", settings.AccessToken);
+            return new(new WrappedHttpStream(r), desiredId);
         }
-        catch
+        catch (Exception ex)
         {
+            Debug.WriteLine($"Error in GetImageStreamAndId: {ex}");
             return null;
         }
-        return null;
-
     }
 
     public async Task<bool> LogIn(Gui gui)

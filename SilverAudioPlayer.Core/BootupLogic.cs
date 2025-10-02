@@ -90,6 +90,16 @@ public class BootupLogic
                 }));
                 break;
         }
+        if(item is IExportCommands exporter)
+        {
+            foreach(var cmd in exporter.GetCommands())
+            {
+                comandPalette.AddItem(new CommandPaletteItem(cmd.Name, cmd.Id, (x) =>
+                {
+                    exporter.RaiseCommand(cmd);
+                }));
+            }
+        }
 
         if (item is IMusicStatusInterface musicStatusInterface)
         {

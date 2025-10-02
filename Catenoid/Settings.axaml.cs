@@ -339,6 +339,17 @@ public partial class Settings : Window
                 });
                 break;
         }
+        if (element.Item is IExportCommands commands)
+        {
+            foreach (var command in commands.GetCommands())
+            {
+                actions.Add(new SAction
+                {
+                    ActionName = command.Name,
+                    ActionToInvoke = () => { commands.RaiseCommand(command); }
+                });
+            }
+        }
         ShowLaunchActionsWindow(actions);
     }
 
