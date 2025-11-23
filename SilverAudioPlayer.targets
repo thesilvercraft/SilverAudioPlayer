@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <VersionPrefix>8.1.0</VersionPrefix>
+        <VersionPrefix>8.2.0</VersionPrefix>
         <Optimize>True</Optimize>
         <DebugType>Portable</DebugType>
         <PreserveCompilationContext>false</PreserveCompilationContext>
@@ -10,7 +10,7 @@
         <Optimize>False</Optimize>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.4" PrivateAssets="All"/>
+        <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.39" PrivateAssets="All"/>
     </ItemGroup>
 <!--    <PropertyGroup Condition="'$(VersionSuffix)' != '' And '$(BuildNumber)' != ''">-->
 <!--        <Version>$(VersionPrefix)-$(VersionSuffix)-$(BuildNumber)</Version>-->

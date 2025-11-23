@@ -125,7 +125,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     private void SendIfStateIsNotNull()
     {
         var state = Player?.GetPlaybackState();
-        PlaybackStateChangedNotification(state != null ? state.Value : PlaybackState.Stopped);
+        PlaybackStateChangedNotification(state ?? PlaybackState.Stopped);
     }
 
     /// <summary>
@@ -169,11 +169,14 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public void PlayPause(bool allowStart)
     {
-        if (Player?.GetPlaybackState() == PlaybackState.Playing)
+        if (Player?.GetPlaybackState() != PlaybackState.Playing)
+        {
+            if (Player?.GetPlaybackState() == PlaybackState.Paused || allowStart) Play();
+        }
+        else
+        {
             Pause();
-        else if (Player?.GetPlaybackState() == PlaybackState.Paused)
-            Play();
-        else if (allowStart) Play();
+        }
     }
 
 
@@ -196,7 +199,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         HandleSongChanging(PlayerContext.Queue[a - 1]);
         _changeAllowed = true;
     }
-    public void SetPosition(double seconds) =>SetPosition(TimeSpan.FromSeconds(seconds));
+    public void SetPosition(double seconds) => SetPosition(TimeSpan.FromSeconds(seconds));
 
     public void SetPosition(TimeSpan pos)
     {
@@ -215,10 +218,12 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         if (MusicStatusInterfaces?.Any() == true)
             Parallel.ForEach(MusicStatusInterfaces, dangthing =>
             {
+                Debug.WriteLine("mainwindowload loading "+dangthing.GetType().FullName);
                 var a = dangthing;
                 if (!CheckIfPluginAllowed(a.GetType().FullName)) return;
                 GC.KeepAlive(a);
                 AddMSI(a, musicStatusInterface);
+                Debug.WriteLine("mainwindowload loaded "+dangthing.GetType().FullName);
             });
     }
 
@@ -704,9 +709,10 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     }
     private static Tuple<List<string>, List<string>> SupportedTrackMimesG(IEnumerable<MimeType> supportedMimes)
     {
-        var mimeTypes = supportedMimes.Select(x => x.Common).ToList();
-        mimeTypes.AddRange(supportedMimes.SelectMany(y => y.AlternativeTypes));
-        var fileExt = supportedMimes.SelectMany(x => x.FileExtensions).ToList();
+        var enumerable = supportedMimes.ToList();
+        var mimeTypes = enumerable.Select(x => x.Common).ToList();
+        mimeTypes.AddRange(enumerable.SelectMany(y => y.AlternativeTypes));
+        var fileExt = enumerable.SelectMany(x => x.FileExtensions).ToList();
         return new(mimeTypes, fileExt);
     }
     public Tuple<List<string>, List<string>> SupportedTrackMimes()
@@ -721,7 +727,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     }
     public Tuple<List<string>, List<string>> SupportedTrackAndPlaylistMimes()
     {
-        var (a, b) = Logic<T>.SupportedTrackMimesG(PlayableMimes);
+        var (a, b) = SupportedTrackMimesG(PlayableMimes);
         var (c, d) = SupportedPlaylistMimes();
         a.AddRange(c);
         b.AddRange(d);

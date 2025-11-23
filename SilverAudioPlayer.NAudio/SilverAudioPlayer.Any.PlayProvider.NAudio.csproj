@@ -38,8 +38,7 @@
         <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.1" Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="SilverCraft.OpenMPT" Version="0.1.1" Condition=" $(DefineConstants.Contains('CSCore'))" />
         <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.1" Condition=" $(DefineConstants.Contains('CSCore'))" />
-        <PackageReference Include="FFmpeg.AutoGen" Version="7.1.1" Condition="$(DefineConstants.Contains('FFmpeg'))" />
-        <PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.25" />
+        <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" Condition="$(DefineConstants.Contains('FFmpeg'))" />
     </ItemGroup>
 
 

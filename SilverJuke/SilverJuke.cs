@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -74,6 +75,7 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddSingleton<IHostLifetime, NotAHostLifeTime>();
         builder.Host.UseSerilog(_logger);
+    
         builder.WebHost.UseUrls("http://localhost:36169");
         builder.Services.AddEndpointsApiExplorer();
         if (jukeConfig.UseSwagger)
@@ -142,7 +144,6 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
 
         app.MapGet("/albumart", () =>
         {
-            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
             var currentTrack = listener.GetCurrentTrack();
             if (currentTrack?.Metadata == null || currentTrack?.Metadata?.Pictures?.Count == 0)
             {
@@ -187,11 +188,7 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
                 return Results.Ok();
             }).WithName("ProcessFiles");
         }
-        Task.Run(() =>
-        {
-            Thread.CurrentThread.Priority = ThreadPriority.Lowest;
-            app.Start();
-        });
+        app.Start();
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)

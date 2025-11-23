@@ -13,9 +13,8 @@
 
     <ItemGroup>
         <PackageReference Include="Jellyfin.Sdk" Version="2025.4.17-unstable.202504170050" />
-        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.67.2" />
+        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.77.1" />
         <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
-        <PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.25" />
     </ItemGroup>
     <ItemGroup>
         <!--This helps with theme dll-s trimming.
@@ -26,7 +25,7 @@
     </ItemGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.1.1" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.7" />
 	</ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />

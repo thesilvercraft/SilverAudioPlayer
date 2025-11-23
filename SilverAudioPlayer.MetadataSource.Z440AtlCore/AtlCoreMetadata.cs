@@ -31,7 +31,7 @@ public class AtlCoreMetadata : IMetadata
     /// </summary>
     public double? Duration => theTrack.DurationMs;
 
-    public string? Lyrics => theTrack.Lyrics.UnsynchronizedLyrics;
+    public string? Lyrics => theTrack.Lyrics.FirstOrDefault(x=>x.Format== LyricsInfo.LyricsFormat.UNSYNCHRONIZED)?.UnsynchronizedLyrics; 
     public IList<LyricPhrase>? SyncedLyrics { get; set; }
     private List<ATLCOREPicture>? _cachedPicture;
 
@@ -108,7 +108,13 @@ public class AtlCoreMetadata : IMetadata
 
 #endif
         Entries = theTrack?.AdditionalFields;
-        SyncedLyrics = theTrack.Lyrics.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampMs, x.Text.EndsWith('\n')?x.Text : x.Text+'\n')).ToList();
+        foreach (var lyricsInfo in  theTrack.Lyrics)
+        {
+            if (lyricsInfo.Format.HasFlag(LyricsInfo.LyricsFormat.SYNCHRONIZED))
+            {
+                SyncedLyrics = lyricsInfo.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampStart, x.Text.EndsWith('\n')?x.Text : x.Text+'\n')).ToList();
+            }
+        }
     }
 
 

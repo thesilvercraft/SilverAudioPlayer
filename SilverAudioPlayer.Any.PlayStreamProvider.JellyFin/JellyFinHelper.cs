@@ -4,6 +4,7 @@ using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
@@ -21,16 +22,18 @@ public class JellyFinHelper
     private IPublicClientApplication app;
     private JellyfinAuthenticationProvider jellyfinAuthentication;
     private JellyfinRequestAdapter  jellyfinRequestAdapter;
+    ILogger logger;
     public bool GetValidUser() => validUser;
     public JellyFinHelper()
-    {
+    { 
+        logger = Logger.GetLogger(typeof(JellyFinHelper)) ?? Log.Logger;
+        
         settings = new JellyfinSdkSettings();
-       settings.Initialize(
+        settings.Initialize(
             "Catenoid",
              typeof(JellyFinHelper).Assembly.GetName().Version.ToString(),
              Environment.MachineName,
             $"1");
-    
         jellyfinAuthentication = new JellyfinAuthenticationProvider(settings);
         jellyfinRequestAdapter = new JellyfinRequestAdapter(jellyfinAuthentication, settings, HttpClient.Client);
         apiClient=new(jellyfinRequestAdapter);
@@ -50,13 +53,16 @@ public class JellyFinHelper
     record class LoginInfo(string url, string accessToken, string userId);
     public async Task MoreLibSecretStuff()
     {
-        var cacheHelper = await CreateCacheHelperAsync().ConfigureAwait(false);
-        cacheHelper.RegisterCache(app.UserTokenCache);
             Storage storage = Storage.Create(GetStorageCreationProperties());
             try
             {
-                Debug.WriteLine("Reading jellyfin login");
+                logger.Debug("Reading jellyfin login");
                 var data = storage.ReadData();
+                if (data.Length == 0)
+                {
+                    logger.Verbose("No jellyfin login found");
+                    return;
+                }
                 var str = Encoding.UTF8.GetString(data);
                 var logininfo = System.Text.Json.JsonSerializer.Deserialize<LoginInfo>(str);
                 if (await TryGetSystemInfoAsync(logininfo.url))
@@ -67,45 +73,58 @@ public class JellyFinHelper
                     if (userDto != null)
                     {
                         validUser = true;
+                        logger.Verbose("Successfully got jellyfin user");
                     }
                     else
                     {
                         settings.SetAccessToken(null);
+                        storage.VerifyPersistence();
+                        storage.Clear(true);
+                        logger.Error("Could not get jellyfin user, clearing stored token");
                     }
                 }
                
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e);
+                logger.Error(e, "Could not get jellyfin user, clearing stored token");
+                        storage.VerifyPersistence();
+                storage.Clear(true);
                 settings.SetAccessToken(null);
             }
     }
-       private static StorageCreationProperties ConfigureSecureStorage(bool usePlaintextFileOnLinux)
-        {
-            if (!usePlaintextFileOnLinux)
-            {
-                return new StorageCreationPropertiesBuilder(
-                                   CacheFileName,
-                                   CacheDir)
-                               .WithLinuxKeyring(
-                                   LinuxKeyRingSchema,
-                                   LinuxKeyRingCollection,
-                                   LinuxKeyRingLabel,
-                                   LinuxKeyRingAttr1,
-                                   LinuxKeyRingAttr2)
-                               .Build();
-            }
+    public const string CacheFileName = "myapp_msal_cache.txt";
+    public readonly static string CacheDir = MsalCacheHelper.UserRootDirectory;
+    const string SilverAudioPlayerJellyfinGuid="0b31c6c7-a28e-432a-8dfb-e34f56186225";
+    public const string LinuxKeyRingSchema = "silvercraft.AudioPlayer.JellyFin";
+    public const string LinuxKeyRingCollection = MsalCacheHelper.LinuxKeyRingDefaultCollection;
+    public const string LinuxKeyRingLabel = "SilverAudioPlayer jellyfin extension";
+    public static readonly KeyValuePair<string, string> LinuxKeyRingAttr1 = new KeyValuePair<string, string>("Version", "1");
+    public static readonly KeyValuePair<string, string> LinuxKeyRingAttr2 = new KeyValuePair<string, string>("ProductGroup", "MyApps");
+    private const string TraceSourceName = "SilverCraft.SilverAudioPlayer.JellyFin.CredentialsHelper";
 
+    private static StorageCreationProperties ConfigureSecureStorage(bool usePlaintextFileOnLinux)
+    {
+        if (!usePlaintextFileOnLinux)
+        {
             return new StorageCreationPropertiesBuilder(
-                                     CacheFileName + "plaintext", // do not use the same file name so as not to overwrite the encypted version
+                    CacheFileName,
+                    CacheDir)
+                .WithLinuxKeyring(
+                    LinuxKeyRingSchema,
+                    LinuxKeyRingCollection,
+                    LinuxKeyRingLabel,
+                    LinuxKeyRingAttr1,
+                    LinuxKeyRingAttr2)
+                .Build();
+        }
+        return new StorageCreationPropertiesBuilder(
+                                     CacheFileName + "plaintext", // do not use the same file name so as not to overwrite the encrypted version
                                      CacheDir)
                                  .WithLinuxUnprotectedFile()
                                  .Build();
-
-        }
-           private const string TraceSourceName = "SilverCraft.SilverAudioPlayer.JellyFin.CredentialsHelper";
-        private static async Task<MsalCacheHelper> CreateCacheHelperAsync()
+    }
+        private async Task<MsalCacheHelper> CreateCacheHelperAsync()
         {
             StorageCreationProperties storageProperties;
             MsalCacheHelper cacheHelper;
@@ -125,37 +144,19 @@ public class JellyFinHelper
             }
             catch (MsalCachePersistenceException ex)
             {
-                Console.WriteLine("Cannot persist data securely. ");
-                Console.WriteLine("Details: " + ex);
-
-
-                if (SharedUtilities.IsLinuxPlatform())
-                {
-                    storageProperties = ConfigureSecureStorage(usePlaintextFileOnLinux: true);
-
-                    Console.WriteLine($"Falling back on using a plaintext " +
-                        $"file located at {storageProperties.CacheFilePath} Users are responsible for securing this file!");
-
-                    cacheHelper = await MsalCacheHelper.CreateAsync(
-                           storageProperties,
-                           new TraceSource(TraceSourceName))
-                        .ConfigureAwait(false);
-
-                    return cacheHelper;
-                }
-                throw;
+                logger.Error(ex,"Cannot persist data securely.");
+                if (!SharedUtilities.IsLinuxPlatform()) throw;
+                storageProperties = ConfigureSecureStorage(usePlaintextFileOnLinux: true);
+                logger.Error("Falling back on using a plaintext file located at {StoragePropertiesCacheFilePath} Users are responsible for securing this file!", storageProperties.CacheFilePath);
+                cacheHelper = await MsalCacheHelper.CreateAsync(
+                        storageProperties,
+                        new TraceSource(TraceSourceName))
+                    .ConfigureAwait(false);
+                return cacheHelper;
             }
         }
-    public const string CacheFileName = "myapp_msal_cache.txt";
-     public readonly static string CacheDir = MsalCacheHelper.UserRootDirectory;
-   const string SilverAudioPlayerJellyfinGuid="0b31c6c7-a28e-432a-8dfb-e34f56186225";
-           public const string LinuxKeyRingSchema = "silvercraft.AudioPlayer.JellyFin";
-        public const string LinuxKeyRingCollection = MsalCacheHelper.LinuxKeyRingDefaultCollection;
-        public const string LinuxKeyRingLabel = "SilverAudioPlayer jellyfin extension";
-        public static readonly KeyValuePair<string, string> LinuxKeyRingAttr1 = new KeyValuePair<string, string>("Version", "1");
-        public static readonly KeyValuePair<string, string> LinuxKeyRingAttr2 = new KeyValuePair<string, string>("ProductGroup", "MyApps");
    
-    public async Task<IReadOnlyList<Jellyfin.Sdk.Generated.Models.BaseItemDto>> GetItemsFromItem(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
+    public async Task<IReadOnlyList<BaseItemDto>> GetItemsFromItem(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
     {
         var a = await apiClient.Items.GetAsync(configuration => configuration.QueryParameters.ParentId= dto.Id ); // itemsClient.GetItemsByUserIdAsync(userDto.Id, parentId: dto.Id)
         return a.Items;
@@ -167,7 +168,7 @@ public class JellyFinHelper
         while (!validUser) await LogIn(gui);
     }
 
-    public async Task<IReadOnlyList<Jellyfin.Sdk.Generated.Models.BaseItemDto>> GetDefaultViews()
+    public async Task<IReadOnlyList<BaseItemDto>> GetDefaultViews()
     {
         var views = await apiClient.UserViews.GetAsync();
         return views.Items;
@@ -182,7 +183,7 @@ public class JellyFinHelper
                                    LinuxKeyRingCollection,
                                    LinuxKeyRingLabel,
                                    LinuxKeyRingAttr1,
-                                   new KeyValuePair<string, string>("other_secrets", "secret_description"));
+                                   LinuxKeyRingAttr2);
         return storageProperties.Build();
     }
      
@@ -193,38 +194,36 @@ public class JellyFinHelper
             var authenticationResult = await apiClient.Users.AuthenticateByName.PostAsync(new AuthenticateUserByName
             {
                 Username = username,
-                Pw = password,
+                Pw = password
             })
                 .ConfigureAwait(false);
             settings.SetAccessToken(authenticationResult.AccessToken);
             userDto = authenticationResult.User;
             var logininfo = System.Text.Json.JsonSerializer.Serialize(new LoginInfo(settings.ServerUrl, authenticationResult.AccessToken, userDto.Id.ToString()));
-            Storage storage = Storage.Create(GetStorageCreationProperties());
-            byte[] secretBytes = Encoding.UTF8.GetBytes(logininfo);
-            Debug.WriteLine("Writing jellyfin token");
+            var storage = Storage.Create(GetStorageCreationProperties());
+            var secretBytes = Encoding.UTF8.GetBytes(logininfo);
+            logger.Verbose("Writing jellyfin token");
             storage.WriteData(secretBytes);
             validUser = true;
             return validUser;
         }
         catch (Exception ex)
         {
-            await Console.Error.WriteLineAsync("Error authenticating.").ConfigureAwait(false);
-            await Console.Error.WriteLineAsync(ex.Message).ConfigureAwait(false);
+            logger.Error(ex,"Error authenticating");
             return false;
         }
     }
     public async Task RemoveTokenAsync()
     {
-        Storage storage = Storage.Create(GetStorageCreationProperties());
+        var storage = Storage.Create(GetStorageCreationProperties());
         try
         {
             storage.Clear();
         }
         catch (Exception e)
         {
-            Debug.WriteLine(e);
+            logger.Error(e,"Error clearing token");
         }
-            
     }
     public async Task<bool> TryGetSystemInfoAsync(string host)
     {
@@ -237,26 +236,21 @@ public class JellyFinHelper
             var systemInfo = await apiClient.System.Info.Public.GetAsync(cancellationToken: s_cts.Token)
                 .ConfigureAwait(false);
             validServer = true;
-            Debug.WriteLine($"Connected to {host}");
-            Debug.WriteLine($"Server Name: {systemInfo.ServerName}");
-            Debug.WriteLine($"Server Version: {systemInfo.Version}");
+            logger.Information("Connected to {Host}, name {SystemInfoServerName}, version {SystemInfoVersion} ", host, systemInfo.ServerName, systemInfo.Version);
             return true;
         }
         catch (InvalidOperationException ex)
         {
-            await Console.Error.WriteLineAsync("Invalid url").ConfigureAwait(false);
-            await Console.Error.WriteLineAsync(ex.Message).ConfigureAwait(false);
+            logger.Error(ex,"Invalid url");
         }
         catch (Exception ex)
         {
-            await Console.Error.WriteLineAsync($"Error connecting to {host}").ConfigureAwait(false);
-            await Console.Error.WriteLineAsync(ex.Message).ConfigureAwait(false);
+            logger.Error(ex,"Error connecting to {Host}", host);
         }
-
         return false;
     }
 
-    public async Task<WrappedStream> GetStream(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
+    public async Task<WrappedStream> GetStream(BaseItemDto dto)
     {
        // return new WrappedJellyFinStream(audioClient, userDto, dto);
       // var goofyah = audioClient.GetUniversalAudioStreamUrl(dto.Id, deviceId: "1", userId: userDto.Id);
@@ -267,14 +261,14 @@ public class JellyFinHelper
         return new WrappedHttpStream(audioUri.ToString());
     }
 
-    public async Task<Tuple<WrappedStream, string>?> GetImageStreamAndId(Jellyfin.Sdk.Generated.Models.BaseItemDto dto)
+    public async Task<Tuple<WrappedStream, string>?> GetImageStreamAndId(BaseItemDto dto)
     {
         // If both are null, no image is available
         if (dto.ImageTags == null && dto.AlbumPrimaryImageTag == null)
             return null;
 
         string? desiredId = null;
-        if (dto.ImageTags != null && dto.ImageTags.AdditionalData != null)
+        if (dto.ImageTags is { AdditionalData: not null })
         {
             if (dto.ImageTags.AdditionalData.TryGetValue("Primary", out var value) && value is string idStr)
             {
@@ -308,15 +302,15 @@ public class JellyFinHelper
     public async Task<bool> LogIn(Gui gui)
     {
        authwindow = new AuthInfoWindow(this);
-        await authwindow.ShowDialog(gui);
-        return authwindow.Success;
+       await authwindow.ShowDialog(gui);
+       return authwindow.Success;
     }
 
     public async Task<bool> GetServerUrl(Gui gui)
     {
        serverwindow = new ServerUrlWindow(this);
-        await serverwindow.ShowDialog(gui);
-        return serverwindow.Success;
+       await serverwindow.ShowDialog(gui);
+       return serverwindow.Success;
     }
 
     public async Task<IList<LyricPhrase>?> GetLyrics(BaseItemDto songDto)

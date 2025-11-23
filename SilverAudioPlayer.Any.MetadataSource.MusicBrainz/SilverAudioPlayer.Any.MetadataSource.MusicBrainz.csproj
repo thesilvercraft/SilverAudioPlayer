@@ -12,7 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="MetaBrainz.MusicBrainz" Version="6.1.0" />
-      <PackageReference Include="MetaBrainz.MusicBrainz.CoverArt" Version="6.0.0" />
+      <PackageReference Include="MetaBrainz.MusicBrainz.CoverArt" Version="7.0.0" />
     </ItemGroup>
 
 </Project>

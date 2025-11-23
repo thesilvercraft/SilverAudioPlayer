@@ -99,11 +99,6 @@ public partial class JellyFinPlaybackTracker:IMusicStatusInterface
             default:
                 throw new ArgumentOutOfRangeException(nameof(e), e, null);
         }
-
-        {
-            
-        }
-       
     }
 
     private void Seeked(object? sender, TimeSpan e)
