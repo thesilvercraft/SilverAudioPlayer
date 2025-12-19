@@ -14,7 +14,7 @@
         <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
         <PackageReference Include="Imgur.API" Version="5.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-        <PackageReference Include="System.Composition" Version="9.0.9" />
+        <PackageReference Include="System.Composition" Version="10.0.0" />
     </ItemGroup>
 
     <ItemGroup>

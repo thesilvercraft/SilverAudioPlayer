@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using System.Composition;
 using System.Xml.Serialization;
+using Serilog;
 using SilverAudioPlayer.Shared;
+using SLibIndex;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
 
@@ -13,14 +15,34 @@ public class LocalLibraryPlayStreamProvider : IPlayStreamProvider, IAmOnceAgainA
         new(Guid.Parse("a829f767-72e9-4337-b44b-01f0d2bc7869"), new LocalLibraryPlayStreamProviderConfig());
 
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject];
-    LocalLibraryMediaIndexer indexer;
+    private static bool RunningIndex = false;
+    
+  
     public void Use(IPlayStreamProviderListener env)
     {
-        if (indexer == null)
+        var dirs= ((LocalLibraryPlayStreamProviderConfig)ConfigObject.Value).Directories;
+        Task.Run(() =>
         {
-            indexer = new(env, (LocalLibraryPlayStreamProviderConfig)ConfigObject.Value);
-        }
-        MainWindow mw = new(indexer, (LocalLibraryPlayStreamProviderConfig)ConfigObject.Value, env);
+            RunningIndex = true;
+            try
+            {
+                Indexer i = new();
+                i.Index(dirs);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e,"error indexing");
+                try
+                {
+                    if (File.Exists(IndexedTrack.ExpectedFileLocation)) File.Delete(IndexedTrack.ExpectedFileLocation);
+                }
+                catch { }
+
+            }
+       
+            RunningIndex = false;
+        });
+        MainWindow mw = new((LocalLibraryPlayStreamProviderConfig)ConfigObject.Value, env);
         mw.Show();
     }
 

@@ -96,7 +96,7 @@
 		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.7" />
+		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.9" />
 		<PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.39" />
 	</ItemGroup>
 	<ItemGroup>
@@ -132,19 +132,19 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.7" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
-		<PackageReference Include="ReactiveUI" Version="22.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+		<PackageReference Include="ReactiveUI" Version="22.2.1" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 		<PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.6.2" />
 		<PackageReference Include="Svg.Skia" Version="3.2.1" />
-		<PackageReference Include="System.Composition" Version="9.0.9" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.7" />
+		<PackageReference Include="System.Composition" Version="10.0.0" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
 		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
 	</ItemGroup>
 

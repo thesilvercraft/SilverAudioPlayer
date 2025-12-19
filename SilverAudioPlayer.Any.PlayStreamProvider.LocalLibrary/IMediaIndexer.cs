@@ -6,32 +6,15 @@ using Avalonia.Media.Imaging;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
+using SLibIndex;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
-public interface IMediaIndexer
-{
-    /// <summary>
-    /// Get rid of all known indexes
-    /// </summary>
-    public void Clean();
-    /// <summary>
-    /// Add a directory to this indexer
-    /// </summary>
-    /// <param name="Dir">full path to directory</param>
-    public Task AddDirectory(string Dir);
-    /// <summary>
-    /// Refreshes the indexes
-    /// </summary>
-    /// <param name="force">process already indexed files, or just removed and new</param>
-    public Task RefreshIndex(bool force = false);
-    public AvaloniaList<IndexAlbum> Albums { get; }
-    public AvaloniaList<IndexSong> GetFromAlbum(IndexAlbum showable);
-}
+
 public class IndexShowable
 {
     public string Name { get; set; }
     public string AlbumArtist { get; set; }
-    public IPicture Image { get; set; }
+    public string? ImageLoc { get; set; } = null;
 
     public Bitmap? Cover => DecodeBitmap();
     Bitmap? DecodeBitmap()
@@ -40,12 +23,14 @@ public class IndexShowable
         {
             return b;
         }
-        if (Image != null)
+        if (ImageLoc !=null && (ImageLoc.StartsWith("http://") || ImageLoc.StartsWith("https://")))
         {
-            var a = ShowableUtils.DecodeCover(Image);
-            if (a == null) return null;
-            (b, Reliance) = a;
-            return b;
+            //todo
+
+        }
+        else if (ImageLoc !=null && !string.IsNullOrWhiteSpace(ImageLoc))
+        {
+            return new Bitmap(ImageLoc);
         }
         return null;
     }
@@ -63,7 +48,7 @@ public class IndexSong : IndexShowable
         Loc = loc;
         Album = metadata.Album;
         LastChecked = DateTime.UtcNow;
-        Image = metadata.Pictures?.FirstOrDefault();
+        ImageLoc = ((IndexedTrack)metadata).Art;
         Name = metadata.Title;
         AlbumArtist = metadata.Artist;
     }
@@ -73,103 +58,4 @@ public class IndexSong : IndexShowable
     public bool HasChanged() => !Exists() || (File.GetLastWriteTimeUtc(Loc) > LastChecked);
     public bool Exists() => File.Exists(Loc);
 
-}
-public class LocalLibraryMediaIndexer : IMediaIndexer
-{
-    public LocalLibraryMediaIndexer(IPlayStreamProviderListener env, LocalLibraryPlayStreamProviderConfig config)
-    {
-        Env = env;
-        Config = config;
-        Parallel.ForEachAsync(config.Directories, async (x, c) =>
-        {
-            await AddDirectory(x);
-        });
-    }
-
-    IPlayStreamProviderListener Env;
-    LocalLibraryPlayStreamProviderConfig? Config;
-
-    public AvaloniaList<IndexAlbum> Albums = new();
-    ConcurrentBag<IndexSong> AllSongs = new();
-    ConcurrentDictionary<IndexAlbum, AvaloniaList<IndexSong>> AlbumSongs = new();
-    AvaloniaList<IndexAlbum> IMediaIndexer.Albums => Albums;
-    object Olock = new();
-    public async Task<IndexSong?> ProcessFileAsync(string file, CancellationToken ct = default)
-    {
-        try
-        {
-            var meta = await Env?.GetMetadataAsync(new WrappedFileStream(file));
-            return new IndexSong(file, meta, Env);
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(file);
-            Log.Error(e, "Error ProcessFileasync in LocalLib");
-        }
-        return null;
-    }
-
-    public async Task AddDirectory(string dir)
-    {
-        if (!Directory.Exists(dir)) return;
-        var files = Directory.GetFiles(dir, "*", SearchOption.AllDirectories);
-        foreach (var file in Env.FilterFiles(files))
-        {
-            await ProcessFileAsyncF(file, default);
-        }
-
-    }
-
-    private async Task ProcessFileAsyncF(string file, CancellationToken ct = default)
-    {
-        try
-        {
-            var song = await ProcessFileAsync(file, ct);
-            if (song != null)
-            {
-                lock (Olock)
-                {
-                    AllSongs.Add(song);
-                    if (Albums.FirstOrDefault(x => x.Name == song.Album) is { } album)
-                    {
-                        if (AlbumSongs.TryGetValue(album, out AvaloniaList<IndexSong>? value))
-                        {
-                            value.Add(song);
-                        }
-                        else
-                        {
-                            AlbumSongs[album] = [song];
-                        }
-                    }
-                    else
-                    {
-                        album = new IndexAlbum()
-                        {
-                            Name = song.Album,
-                            AlbumArtist = song.AlbumArtist
-                        };
-                        Albums.Add(album);
-                        AlbumSongs[album] = [song];
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, "Error in processfile in parrallel foreach");
-        }
-    }
-
-    public void Clean()
-    {
-    }
-
-    public AvaloniaList<IndexSong> GetFromAlbum(IndexAlbum showable)
-    {
-        return AlbumSongs[showable];
-    }
-
-    public async Task RefreshIndex(bool force = false)
-    {
-    }
 }

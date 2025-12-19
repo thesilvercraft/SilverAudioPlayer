@@ -9,6 +9,7 @@ using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.AvaloniaUtils;
+using SLibIndex;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary;
 
@@ -60,6 +61,8 @@ public partial class MainWindow : Window
     private GuiBinding _binding = new();
     public MainWindow()
     {
+       // Logger.GetLogger();
+        
         InitializeComponent();
         DataContext = _binding;
         LB = this.FindControl<ListBox>("LB");
@@ -75,33 +78,61 @@ public partial class MainWindow : Window
         }
         this.DoAfterInitTasks(true);
     }
+
+    
     private void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
         Env.LoadSongs(_binding.WrappedSongs.Select(song => new WrappedFileStream(song.Loc)).ToList()); //TODO GET SORTED PROPERLY
     }
-    public MainWindow(IMediaIndexer indexer, LocalLibraryPlayStreamProviderConfig value, IPlayStreamProviderListener env) : this()
+    public MainWindow(LocalLibraryPlayStreamProviderConfig value, IPlayStreamProviderListener env) : this()
     {
         config = value;
-        Indexer = indexer;
         Env = env;
-        _binding.WrappedAlbums = Indexer.Albums;
-
-        /*Task.Run(() =>
+        if (File.Exists(IndexedTrack.ExpectedFileLocation))
         {
-            Thread.Sleep(1000);
-        });
-*/
+            try
+            {
+             songs = IndexedTrack.LoadFromExpectedLocation();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e,"exception in loading ");
+            }
+        }
+        _binding.WrappedAlbums = new();
+        var albums = new AvaloniaList<IndexAlbum>();
+        foreach (var group in songs.GroupBy(x => x.Album))
+        {
+            albums.Add(new()
+            {
+                Name=group.Key,
+                AlbumArtist = group.FirstOrDefault()?.Artist??"",
+                ImageLoc =  group.FirstOrDefault()?.Art??"",
+                
+            });
+        }
+        _binding.WrappedAlbums = albums;
     }
-    IMediaIndexer Indexer;
+    private List<IndexedTrack> songs=new();
     LocalLibraryPlayStreamProviderConfig? config;
 
     private async void LoadNewFolder(object? sender, RoutedEventArgs e)
     {
-        OpenFolderDialog ofd = new();
-        var f = await ofd.ShowAsync(this);
-        if (f == null) return;
-        config.Directories.Add(f);
-        ((ICanBeToldThatAPartOfMeIsChanged)config).PropertyChanged(config, new("Directories"));
+        try
+        {
+            var topLevel = GetTopLevel(this);
+            var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new ()
+            {
+                Title = "Add new folders to the config",
+                AllowMultiple = true
+            });
+            if (folders is not { Count: > 0 }) return;
+            config?.Directories.AddRange(folders.Select(x=>x.Path.ToString()).Where(Directory.Exists));
+            ((ICanBeToldThatAPartOfMeIsChanged?)config)?.PropertyChanged(config, new("Directories"));
+        }
+        catch (Exception ex)
+        {
+        }
     }
 
     private void RB_OnDoubleTapped(object? sender, TappedEventArgs e)
@@ -116,8 +147,7 @@ public partial class MainWindow : Window
     {
         if (LB.SelectedItem is IndexAlbum wa)
         {
-            _binding.WrappedSongs = Indexer.GetFromAlbum(wa);
+            _binding.WrappedSongs = new (songs.Where(x=>x.Album== wa.Name).Select(x=> new IndexSong(x.Location, x, Env)));
         }
-
     }
 }

@@ -5,11 +5,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.7" />
+        <PackageReference Include="Avalonia" Version="11.3.9" />
         <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
     </ItemGroup>
     <ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.7" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.9" />
     </ItemGroup>
     <ItemGroup>
       <Compile Update="ConfigureWindow.axaml.cs">
