@@ -36,7 +36,7 @@ public enum ConfigStyle
     /// </summary>
     Unknown,
     /// <summary>
-    /// absolutely no logs
+    /// absolutely no logs, unless debugger is attached on debug build
     /// </summary>
     None,
     /// <summary>
@@ -44,7 +44,7 @@ public enum ConfigStyle
     /// </summary>
     LogWindow,
     /// <summary>
-    /// log to file
+    /// log to system
     /// </summary>
-    File
+    System
 }
