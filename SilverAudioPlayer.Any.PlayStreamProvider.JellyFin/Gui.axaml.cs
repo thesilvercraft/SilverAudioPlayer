@@ -1,11 +1,10 @@
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
-using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using Serilog;
 using SilverAudioPlayer.Shared;
@@ -17,22 +16,45 @@ namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 public partial class Gui : Window
 {
     private readonly GuiBinding g;
-    private JellyFinHelper helper;
-    private TextBox? _searchBox;
+
+    private CancellationTokenSource? _imageCts;
+    private readonly TextBox? _searchBox;
+
+    private readonly Stack<WrappedDto> backStack = new();
+    private WrappedDto? current;
+    private readonly JellyFinHelper helper;
+
+    private readonly IPlayStreamProviderListener ProviderListner;
+
     public Gui()
     {
-    InitializeComponent();
-#if DEBUG
-    this.AttachDevTools();
-#endif
-    helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
-    Opened += Gui_Opened;
-    g = new GuiBinding();
-    DataContext = g;
-    this.DoAfterInitTasks(true);
-    LB = this.FindControl<ListBox>("LB");
-    _searchBox = this.FindControl<TextBox>("SearchBox");
+        InitializeComponent();
+        helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
+        Opened += Gui_Opened;
+        g = new GuiBinding();
+        DataContext = g;
+        this.DoAfterInitTasks(true);
+        LB = this.FindControl<ListBox>("LB");
+        _searchBox = this.FindControl<TextBox>("SearchBox");
+        LB.DoubleTapped += LB_DoubleTapped;
+        Closed += OnClosed;
     }
+
+    public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
+    {
+        ProviderListner = jellyFinPlayStreamProvider;
+    }
+
+    protected void OnClosed(object? o, EventArgs e)
+    {
+        g.SetResults([]);
+        while (backStack.Count > 0) backStack.Pop().Dispose();
+        _imageCts?.Cancel();
+        _imageCts?.Dispose();
+        current?.Dispose();
+        GC.Collect();
+    }
+
     private async void SearchButton_Click(object? sender, RoutedEventArgs e)
     {
         await DoSearch();
@@ -40,10 +62,7 @@ public partial class Gui : Window
 
     private async void SearchBox_KeyUp(object? sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter)
-        {
-            await DoSearch();
-        }
+        if (e.Key == Key.Enter) await DoSearch();
     }
 
     private async Task DoSearch()
@@ -54,23 +73,27 @@ public partial class Gui : Window
         var results = await helper.SearchItems(_searchBox.Text.Trim());
         var o = new ObservableCollection<WrappedDto>(results.Select(x => new WrappedDto(x)));
         g.SetResults(o);
-        LB.ItemsSource = g.SearchResults;
-        await DownloadPictures();
-        
+        _imageCts?.Cancel();
+        _imageCts?.Dispose();
+        _imageCts = new CancellationTokenSource();
+        await DownloadPictures(_imageCts.Token);
+
         LB.InvalidateVisual();
         Cursor = Cursor.Default;
     }
 
-    async Task DownloadPictures()
+    private async Task DownloadPictures(CancellationToken token)
     {
-        await Parallel.ForEachAsync(LB.ItemsSource as IEnumerable<WrappedDto> ?? [], async (u, y) =>
+        var options = new ParallelOptions
         {
+            MaxDegreeOfParallelism = 3
+        };
+        await Parallel.ForEachAsync(g.SearchResults, options, async (u, y) =>
+        {
+            if( token.IsCancellationRequested) return;
             var result = await helper.GetImageStreamAndId(u.dto);
-            if (result == null)
-            {
-                Debug.WriteLine($"No image stream/id found for: {u.Name} (ID: {u.dto.Id})");
-                return;
-            }
+            if (result == null || token.IsCancellationRequested) return;
+
             var (wrappedStream, id) = result;
             var stream = wrappedStream?.GetStream();
             if (stream == null)
@@ -78,9 +101,16 @@ public partial class Gui : Window
                 Debug.WriteLine($"Image stream is null for: {u.Name} (ID: {u.dto.Id})");
                 return;
             }
+
             try
             {
-                var bmp = Bitmap.DecodeToHeight(stream, 400);
+                var bmp = Bitmap.DecodeToHeight(stream, 200);
+                if (token.IsCancellationRequested)
+                {
+                    bmp.Dispose();
+                    return;
+                }
+
                 u.Cover = bmp;
             }
             catch (Exception exception)
@@ -88,25 +118,17 @@ public partial class Gui : Window
                 Log.Error(exception, $"Error occured while reading bitmap for: {u.Name} (ID: {u.dto.Id})");
             }
             finally
-            { 
-                await stream.DisposeAsync(); 
+            {
+                stream.Dispose();
                 wrappedStream?.Dispose();
             }
         });
     }
-    private IPlayStreamProviderListener ProviderListner;
-
-    public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
-    {
-        ProviderListner = jellyFinPlayStreamProvider;
-    }
 
     private async void Button_Click(object? sender, RoutedEventArgs e)
     {
-        g.SetResults( new ObservableCollection<WrappedDto>((await helper.GetDefaultViews())
+        g.SetResults(new ObservableCollection<WrappedDto>((await helper.GetDefaultViews())
             .OrderBy(x => x.IndexNumber).Select(x => new WrappedDto(x))));
-        LB.ItemsSource = g.SearchResults;
-        LB.InvalidateVisual();
     }
 
     private async void BackButton_Click(object? sender, RoutedEventArgs e)
@@ -116,38 +138,43 @@ public partial class Gui : Window
         await SetDtoFolderView(previous, true);
     }
 
+    private async Task GetSongStreamUrls(IEnumerable<WrappedDto> dtos,
+        ConcurrentBag<Tuple<WrappedStream, IMetadata>> streams)
+    {
+        foreach (var song in dtos.OrderBy(x => x.IndexNumber))
+        {
+            var ws = await helper.GetStream(song.dto);
+            var lyrics = await helper.GetLyrics(song.dto);
+            streams.Add(new Tuple<WrappedStream, IMetadata>(ws, new JellyfinMeta(song.dto, lyrics)));
+        }
+    }
+
+    private async Task GetSongStreamUrls(IEnumerable<BaseItemDto> dtos,
+        ConcurrentBag<Tuple<WrappedStream, IMetadata>> streams)
+    {
+        foreach (var dto in dtos.OrderBy(x => x.IndexNumber))
+        {
+            var ws = await helper.GetStream(dto);
+            var lyrics = await helper.GetLyrics(dto);
+            streams.Add(new Tuple<WrappedStream, IMetadata>(ws, new JellyfinMeta(dto, lyrics)));
+        }
+    }
+
     private async void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
         Cursor = new Cursor(StandardCursorType.Wait);
-        List<Tuple<WrappedStream, IMetadata>> streams = [];
-
-        async Task Add(IEnumerable<WrappedDto> dtos)
-        {
-            foreach (var song in dtos.OrderBy(x => x.IndexNumber))
-            {
-                var ws = await helper.GetStream(song.dto);
-                var lyrics = await helper.GetLyrics(song.dto);
-                streams.Add(new(ws, new JellyfinMeta(song.dto,lyrics)));
-            }
-        }
-
+        ConcurrentBag<Tuple<WrappedStream, IMetadata>> streams = [];
         List<Task> tasks = [];
         var groups = g.SearchResults.GroupBy(x => x.IsFolder);
         foreach (var group in groups)
-        {
             if (group.Key == true)
-            {
                 foreach (var folder in group)
                 {
                     var o = (await helper.GetItemsFromItem(folder.dto)).Select(x => new WrappedDto(x));
-                    tasks.Add(Add(o));
+                    tasks.Add(GetSongStreamUrls(o, streams));
                 }
-            }
             else
-            {
-                tasks.Add(Add(group));
-            }
-        }
+                tasks.Add(GetSongStreamUrls(group, streams));
 
         await Task.WhenAll(tasks);
         ProviderListner.LoadSongs(streams);
@@ -156,50 +183,55 @@ public partial class Gui : Window
 
     private async void Gui_Opened(object? sender, EventArgs e)
     {
+        Opened -= Gui_Opened;
         if (helper == null) return;
         await Task.Delay(100);
         await helper.MakeSureUserLogsIn(this);
-        g.SetResults(new ObservableCollection<WrappedDto>((await helper.GetDefaultViews()).Select(x => new WrappedDto(x))));
-        
-        LB.ItemsSource = g.SearchResults;
-        LB.InvalidateVisual();
-        LB.DoubleTapped += LB_DoubleTapped;
+        g.SetResults(
+            new ObservableCollection<WrappedDto>((await helper.GetDefaultViews()).Select(x => new WrappedDto(x))));
     }
 
-    async Task SetDtoFolderView(WrappedDto si)
+    private async Task SetDtoFolderView(WrappedDto si)
     {
         await SetDtoFolderView(si, false);
     }
 
-    async Task SetDtoFolderView(WrappedDto si, bool isBackNavigation)
+    private async Task SetDtoFolderView(WrappedDto si, bool isBackNavigation)
     {
         Cursor = new Cursor(StandardCursorType.Wait);
         var o = (await helper.GetItemsFromItem(si.dto)).Select(x => new WrappedDto(x));
         g.SetResults(new ObservableCollection<WrappedDto>(o));
-        LB.ItemsSource = g.SearchResults;
-        await DownloadPictures();
-        LB.InvalidateVisual();
-        if (!isBackNavigation && current != null)
-        {
-            backStack.Push(current);
-        }
+        _imageCts?.Cancel();
+        _imageCts?.Dispose();
+        _imageCts = new CancellationTokenSource();
+        await DownloadPictures(_imageCts.Token);
+        if (!isBackNavigation && current != null) backStack.Push(current);
+
         current = si;
         Cursor = Cursor.Default;
     }
-
-    private Stack<WrappedDto> backStack = new();
-    private WrappedDto? current;
 
     private async void LB_DoubleTapped(object? sender, RoutedEventArgs e)
     {
         if (LB.SelectedItem is not WrappedDto si) return;
         if (si.IsFolder == true)
-        {
             await SetDtoFolderView(si);
-        }
         else
-        {
-            ProviderListner.LoadSong(await helper.GetStream(si.dto), new JellyfinMeta(si.dto, await helper.GetLyrics(si.dto)));
-        }
+            ProviderListner.LoadSong(await helper.GetStream(si.dto),
+                new JellyfinMeta(si.dto, await helper.GetLyrics(si.dto)));
+    }
+
+    private async void InstantMix_Click(object? sender, RoutedEventArgs e)
+    {
+        if (LB.SelectedItem is not WrappedDto si) return;
+
+        Cursor = new Cursor(StandardCursorType.Wait);
+
+        ConcurrentBag<Tuple<WrappedStream, IMetadata>> streams = [];
+        var instantMix = await helper.InstantMix(si.dto);
+        await GetSongStreamUrls(instantMix, streams);
+        ProviderListner.LoadSongs(streams);
+
+        Cursor = Cursor.Default;
     }
 }

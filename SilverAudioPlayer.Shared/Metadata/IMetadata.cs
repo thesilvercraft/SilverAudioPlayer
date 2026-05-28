@@ -1,5 +1,11 @@
 namespace SilverAudioPlayer.Shared.Metadata;
 
+/// <summary>
+/// Represents metadata associated with an audio track or media item.
+/// </summary>
+/// <remarks>
+/// Implementations of this interface provide various details such as title, artist, album, and technical specifications.
+/// </remarks>
 public interface IMetadata : IDisposable
 {
     /// <summary>

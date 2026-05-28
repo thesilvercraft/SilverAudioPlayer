@@ -21,9 +21,6 @@ public partial class LyricsView : Window
         this.mainWindow = mainWindow;
         DataContext = mainWindow.config;
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
         this.DoAfterInitTasksF();
         MainGrid = this.FindControl<Grid>("MainGrid");
         if (OperatingSystem.IsLinux())

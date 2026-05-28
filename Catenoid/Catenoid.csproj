@@ -2,6 +2,7 @@
 	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
+		<AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
 		<OutputType>WinExe</OutputType>
 		<Nullable>enable</Nullable>
 		<TrimMode>link</TrimMode>
@@ -48,15 +49,15 @@
 		<!--JellyFin - alpha-->
 		<DefineConstants>$(DefineConstants)JF</DefineConstants>
 		<!--DryWetMidi-->
-		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)DWMID</DefineConstants>-->
 		<!--Z440AtlCore-->
 		<DefineConstants>$(DefineConstants)ZATL</DefineConstants>
 		<!--NAudio-->
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
 		<!--Local library POC-->
-        <DefineConstants>$(DefineConstants)LLib</DefineConstants>
+<!--        <DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
 		<!--Discord -->
-		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants> 
+<!--		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants> -->
 		<!--VLC (Alpha)-->
 		<!-- <DefineConstants>$(DefineConstants)VLC</DefineConstants> -->
 		<!--Windows only-->
@@ -70,16 +71,16 @@
 		<!--MPRIS DBUS STUFF - linux -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
 		<!-- sync plugin  - alpha -->
-    	<DefineConstants>$(DefineConstants)LSync</DefineConstants>
+<!--    	<DefineConstants>$(DefineConstants)LSync</DefineConstants>-->
 		<!-- linux platform - alpha -->
 		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
 		<!-- managed midi - alpha -->
-		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>-->
 		<!-- silverjuke web interface-->
-		<DefineConstants>$(DefineConstants)juke</DefineConstants>
+<!--		<DefineConstants>$(DefineConstants)juke</DefineConstants>-->
 		<!-- music brainz - POC -->
 <!--	<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
-	    <DefineConstants>$(DefineConstants)listenbrainz</DefineConstants>
+<!--	    <DefineConstants>$(DefineConstants)listenbrainz</DefineConstants>-->
 	</PropertyGroup>
 	<PropertyGroup Condition="$(DefineConstants.Contains('BuildFor'))">
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
@@ -95,10 +96,7 @@
 		<PlatformTarget Condition="$(TargetFramework.Contains('windows'))">x64</PlatformTarget>
 		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win-x64</RuntimeIdentifiers>
 	</PropertyGroup>
-	<ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.9" />
-		<PackageReference Update="DotNet.ReproducibleBuilds" Version="1.2.39" />
-	</ItemGroup>
+
 	<ItemGroup>
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
@@ -121,7 +119,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Any.PlayProviderAndMetadataProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.MetadataSource.Z440AtlCore\SilverAudioPlayer.Any.MetadataSource.Z440AtlCore.csproj" Condition="$(DefineConstants.Contains('ZATL'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.NAudio\SilverAudioPlayer.Any.PlayProvider.NAudio.csproj" Condition="$(DefineConstants.Contains('NA'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.SMTC\SilverAudioPlayer.Windows10.MusicStatusInterface.SMTC.csproj" Condition="$(DefineConstants.Contains('SMTC')) AND $(TargetFramework.Contains('windows10'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.CAD\SilverAudioPlayer.Windows.MusicStatusInterface.CAD.csproj" Condition="$(DefineConstants.Contains('CAD')) AND $(TargetFramework.Contains('windows'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.DiscordRP\SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP.csproj" Condition="$(DefineConstants.Contains('DISCRD'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio\SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.csproj" Condition="$(DefineConstants.Contains('FRT'))" />
@@ -130,22 +128,18 @@
 		<ProjectReference Include="..\SilverCraft.Shared\SilverCraft.Shared.csproj" />
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" Condition="$(DefineConstants.Contains('juke'))" />
 	</ItemGroup>
+	<Import Project="../SilverAudioPlayer.Avalonia.targets" />
 	<ItemGroup>
-		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.9" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
-		<PackageReference Include="ReactiveUI" Version="22.2.1" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-		<PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.6.2" />
-		<PackageReference Include="Svg.Skia" Version="3.2.1" />
-		<PackageReference Include="System.Composition" Version="10.0.0" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.9" />
-		<PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
+		<PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.6" />
+		<PackageReference Include="Svg.Skia" Version="4.6.0" />
+		<PackageReference Include="System.Composition" Version="10.0.7" />
 	</ItemGroup>
+	
 
 </Project>

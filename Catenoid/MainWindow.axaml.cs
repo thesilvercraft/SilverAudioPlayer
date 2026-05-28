@@ -84,8 +84,7 @@ public class MainWindowContext : PlayerContext
         i.Show();
     }
 }
-
-public partial class MainWindow : Window
+public partial class MainWindow : Window, IWindowSuggestVisualChange
 {
 
     public readonly MainWindowContext dc;
@@ -250,7 +249,7 @@ public partial class MainWindow : Window
                             if (!config.DisableAlbumArtBlur)
                             {
                                 Background = WindowExtensions.envBackend.GetString("SAPColor")
-                                    .ParseBackground(def: SAPAWindowExtensions.defBrush);
+                                    .ParseBackground();
                             }
                         }
                     });
@@ -333,9 +332,6 @@ public partial class MainWindow : Window
         };
         Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic);
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
         if (OperatingSystem.IsLinux())
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
@@ -370,6 +366,19 @@ public partial class MainWindow : Window
         }, followOptionsOnCall: false);
     }
 
+    private bool FirstThemeColrChange = true;
+    public void SuggestVisualChange(StylingChangeData data, bool isColorSet)
+    {
+        if (!isColorSet && FirstThemeColrChange)
+        {
+            if (data.Accent != null)
+            {
+                var transparency=   WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true ? 1 : WindowExtensions.envBackend.GetDouble("BackgroundTransparency") ?? 0.75;
+                Background =new SolidColorBrush((Color)data.Accent, transparency);
+                FirstThemeColrChange = false;
+            }
+        }
+    }
    
 
     public void Startup()
@@ -633,7 +642,7 @@ public partial class MainWindow : Window
     {
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
-        else if (e.Data.Contains(DataFormats.Files) || e.Data.Contains("UniformResourceLocatorW"))
+        else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text) || e.DataTransfer.Formats.Any(x=>x.Identifier == "UniformResourceLocatorW"))
             e.DragEffects = DragDropEffects.Copy;
         else
             e.DragEffects = DragDropEffects.None;
@@ -645,18 +654,18 @@ public partial class MainWindow : Window
             e.DragEffects &= DragDropEffects.Move;
         else
             e.DragEffects &= DragDropEffects.Copy;
-        if (e.Data.Contains(DataFormats.Files))
+        if (e.DataTransfer.Formats.Any(x=>x == DataFormat.File)) 
         {
-            var files = e!.Data.GetFiles();
+            var files = e!.DataTransfer.TryGetFiles();
             if (files != null)
             {
                 Logic.ProcessFiles(files.Select(x => x.TryGetLocalPath()).Where(x => x != null).Cast<string>());
             }
         }
 
-        if (!e.Data.Contains("UniformResourceLocatorW")) return;
+        if (e.DataTransfer.Formats.All(x => x.Identifier != "UniformResourceLocatorW"))return;
         {
-            var url = e!.Data!.GetText();
+            var url = e!.DataTransfer!.TryGetText();
             if (!string.IsNullOrEmpty(url))
             {
                 Logic.ProcessFiles([url]);

@@ -2,24 +2,15 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
+        <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.9" />
-        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
-    </ItemGroup>
-    <ItemGroup Condition="$(DefineConstants.Contains('DEBUG'))">
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.9" />
-    </ItemGroup>
+    <Import Project="../SilverAudioPlayer.Avalonia.targets" />
     <ItemGroup>
       <Compile Update="ConfigureWindow.axaml.cs">
         <DependentUpon>ConfigureWindow.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
-
-  
-  
     <ItemGroup>
       <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj" />
     </ItemGroup>

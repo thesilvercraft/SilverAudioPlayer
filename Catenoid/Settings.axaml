@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Catenoid"
+        xmlns:core="clr-namespace:SilverAudioPlayer.Shared;assembly=SilverAudioPlayer.Shared"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
         x:Class="Catenoid.Settings"
         Title="Settings"
@@ -66,7 +68,7 @@
 			<ListBox Name="CapBox" ItemsSource="{Binding Items}" Background="Transparent" Grid.Row="7"
 			         DoubleTapped="ElementDoubleTapped" Grid.ColumnSpan="2" Grid.Column="0">
 				<ListBox.ItemTemplate>
-					<DataTemplate>
+					<DataTemplate DataType="{x:Type local:InfoPRecord}">
 						<Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
 							<StackPanel Grid.Column="1">
 								<SelectableTextBlock Text="{Binding Name}" FontSize="25" Margin="5" />
@@ -79,7 +81,16 @@
 								<Button IsVisible="{Binding IsAskingMemoryProvider}" Click="OpenConfigFileClick">🔧Open Config file</Button>
 								<Button IsVisible="{Binding IsPlayStreamProvider}" Click="PlayProviderClick">Use</Button>
 								<Button IsVisible="{Binding IsSyncPlugin}" Click="PlayProviderClick">Sync</Button>
-								<CheckBox IsVisible="{Binding IsMusicStatusInterface}" IsCheckedChanged="EnableMSI" IsChecked="{Binding Item.IsStarted,Mode=OneWay}"/>
+								<ContentControl Content="{Binding Item}">
+									<ContentControl.DataTemplates>
+										<DataTemplate DataType="{x:Type core:IMusicStatusInterface}">
+											<CheckBox IsCheckedChanged="EnableMSI" 
+											          IsChecked="{Binding IsStarted, Mode=OneWay}"/>
+										</DataTemplate>
+										<DataTemplate DataType="{x:Type x:Object}">
+										</DataTemplate>
+									</ContentControl.DataTemplates>
+								</ContentControl>
 							</StackPanel>
 						</Grid>
 					</DataTemplate>

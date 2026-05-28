@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.Avalonia.targets" />
 
 	<PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+        
     </PropertyGroup>
     <ItemGroup>
         <None Remove=".gitignore" />
@@ -12,11 +15,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-        
-        <PackageReference Include="Avalonia" Version="11.3.9" />
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.9" />
-        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="12.11.9" />
         <PackageReference Include="SLibIndex" Version="1.1.1" />
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.16" />
     </ItemGroup>

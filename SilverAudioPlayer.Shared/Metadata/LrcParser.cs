@@ -2,6 +2,13 @@ using System.Globalization;
 
 namespace SilverAudioPlayer.Shared.Metadata;
 
+/// <summary>
+/// Provides static methods for parsing lyrics formatted in LRC format.
+/// </summary>
+/// <remarks>
+/// Implements the Core format and part of the Enhanced format
+/// https://en.wikipedia.org/wiki/LRC_(file_format)
+/// </remarks>
 public static class LrcParser
 {
     public static LrcFile Parse(string lyrics)
@@ -26,6 +33,11 @@ public static class LrcParser
         return file;
     }
 
+    /// <summary>
+    /// Checks if a string contains correctly balanced and structured bracket markers, typically used to validate the content following an LRC time stamp.
+    /// </summary>
+    /// <param name="x">The substring of the line containing the lyric text that needs structural validation.</param>
+    /// <returns>Returns true if the brackets in the input string are considered balanced and structurally valid according to LRC format rules; otherwise, returns false.</returns>
     public static bool IsBalancedAndContainsAdditional(string x)
     {
         var bracketL = 0;
@@ -69,6 +81,14 @@ public static class LrcParser
         timeInMS = 0;
         return false;
     }
+
+    /// <summary>
+    /// Attempts to parse a single line of text from an LRC file that contains time-stamped lyrics.
+    /// </summary>
+    /// <param name="line">The string line read from the source LRC content.</param>
+    /// <param name="lp">When this method returns, this parameter contains a list of parsed lyric phrases if successful; otherwise, it is null.</param>
+    /// <param name="file">The overall LRC file object used to access global offset information for time calculation.</param>
+    /// <returns>Returns true if the line was successfully identified and parsed as a structured lyric phrase marker; otherwise, returns false.</returns>
     public static bool TryParse(string line, out List<LyricPhrase>? lp, LrcFile file)
     {
         line = line.Trim();

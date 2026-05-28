@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" fill="none">
+    <defs>
+        <linearGradient id="sap" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#6969ff" />
+            <stop offset="100%" stop-color="#696969" />
+        </linearGradient>
+        <mask id="left-hexagon">
+            <polygon points="575 40 40 350 40 850 575 1160" fill="#FFFFFF"/>
+        </mask>
+        <mask id="right-hexagon">
+            <polygon points="625 40 1160 350 1160 850 625 1160" fill="#FFFFFF"/>
+        </mask>
+    </defs>
+    <rect width="1200" height="1200" fill="#111115" />
+
+    <g mask="url(#left-hexagon)">
+        <polygon points="575 40 40 350 40 850 575 1160" fill="url(#sap)"/>
+        <circle cx="600" cy="600" r="350" fill="#F90"/>
+        <circle cx="600" cy="600" r="270" fill="#0F6"/>
+        <circle cx="600" cy="600" r="190" fill="#00F0FF"/>
+        <circle cx="600" cy="600" r="110" fill="#000"/>
+    </g>
+    <g mask="url(#right-hexagon)">
+        <polygon points="625 40 1160 350 1160 850 625 1160" fill="#eb743b"/>
+        <circle cx="600" cy="600" r="350" fill="#F90"/>
+        <circle cx="600" cy="600" r="270" fill="#0F6"/>
+        <circle cx="600" cy="600" r="190" fill="#00F0FF"/>
+        <circle cx="600" cy="600" r="110" fill="#000"/>
+    </g>
+</svg>

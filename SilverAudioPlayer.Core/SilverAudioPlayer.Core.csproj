@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.Avalonia.targets" />
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -9,7 +10,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.9" />
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.16" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
     </ItemGroup>

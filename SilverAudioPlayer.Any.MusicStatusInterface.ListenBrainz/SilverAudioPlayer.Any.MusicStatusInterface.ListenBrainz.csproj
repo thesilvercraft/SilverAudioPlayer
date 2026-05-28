@@ -16,4 +16,10 @@
       <PackageReference Include="MetaBrainz.ListenBrainz" Version="4.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="icon.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

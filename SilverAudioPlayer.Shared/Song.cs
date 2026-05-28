@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverMagicBytes;
@@ -21,7 +22,15 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         Metadata = metadata;
         if (logic is not null)
         {
-            Metadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream,[metadata])!).GetAwaiter().GetResult(); //TODO:TEST SLOWDOWN
+            try
+            {
+                Metadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream,[metadata])!).GetAwaiter().GetResult(); //TODO:TEST SLOWDOWN
+            }
+            catch (Exception e)
+            {
+                Log.Error(e,"Error loading metadata from stream in Song"); 
+                Metadata = null;
+            }
         }
         Guid = GetIdFromMetadata(metadata);
     }

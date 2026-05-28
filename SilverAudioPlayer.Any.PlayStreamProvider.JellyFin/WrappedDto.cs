@@ -1,5 +1,4 @@
 using Avalonia.Media.Imaging;
-using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using SilverAudioPlayer.Shared;
 using System.ComponentModel;
@@ -7,14 +6,18 @@ using System.Runtime.CompilerServices;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
-public class WrappedDto : INotifyPropertyChanged
+public class WrappedDto : INotifyPropertyChanged, IDisposable
 {
     public BaseItemDto dto;
 
     public WrappedDto(BaseItemDto dto, WrappedStream? ws = null)
     {
         this.dto = dto;
-        if (ws != null) Cover = Bitmap.DecodeToHeight(ws.GetStream(), 200);
+        using var s = ws?.GetStream();
+        if (s != null)
+        {
+            Cover = Bitmap.DecodeToHeight(s, 200);
+        }
     }
 
     public string Name => dto.Name;
@@ -30,6 +33,8 @@ public class WrappedDto : INotifyPropertyChanged
         {
             if (!Equals(_cover, value))
             {
+                _cover?.Dispose(); 
+                
                 _cover = value;
                 OnPropertyChanged();
             }
@@ -40,5 +45,25 @@ public class WrappedDto : INotifyPropertyChanged
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _cover?.Dispose();
+            _cover = null;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    ~WrappedDto()
+    {
+        Dispose(false);
     }
 }

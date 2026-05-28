@@ -17,10 +17,6 @@ public partial class ServerUrlWindow : Window
         InitializeComponent();
         Fail = this.FindControl<TextBlock>("Fail");
         Url = this.FindControl<TextBox>("Url");
-#if DEBUG
-        
-        this.AttachDevTools();
-#endif
         this.DoAfterInitTasks(true);
     }
 

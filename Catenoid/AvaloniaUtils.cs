@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Threading;
 using Serilog;
 using SilverAudioPlayer.Shared;
@@ -23,9 +24,7 @@ public static class AvaloniaUtils
             var bytes = m.ToArray();
             await Dispatcher.UIThread.InvokeAsync(delegate
             {
-                DataObject dataObject = new();
-                dataObject.Set(f, bytes);
-                window.Clipboard?.SetDataObjectAsync(dataObject);
+                window.Clipboard?.SetValueAsync(DataFormat.CreateBytesPlatformFormat(f), bytes);
             });
         }
         catch (Exception ex)

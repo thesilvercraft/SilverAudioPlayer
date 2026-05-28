@@ -1,161 +1,99 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 
-public class MemoryArrayHolder
+public class WrappedSharedMemoryStream : WrappedStream
 {
-    public byte[] Bytes { get; set; }
-}
-public class FakedMemoryStream : Stream
-{
-    private MemoryArrayHolder MemoryArrayHolder;
+    private SharedBuffer? _sharedBuffer;
+    private readonly ConcurrentBag<Stream> _activeStreams = new();
+    private bool _isDisposed;
 
-    public FakedMemoryStream(MemoryArrayHolder memoryArrayHolder)
+    // Overriding the abstract property from WrappedStream
+    public override MimeType MimeType { get; }
+
+    /// <summary>
+    /// Initializes a new instance of WrappedSharedMemoryStream from a raw byte array.
+    /// </summary>
+    public WrappedSharedMemoryStream(byte[] data, MimeType? mt = null, bool copy = true)
     {
-        MemoryArrayHolder = memoryArrayHolder;
-    }
+        if (data == null) throw new ArgumentNullException(nameof(data));
 
+        byte[] workingBuffer = copy ? data.ToArray() : data;
+        _sharedBuffer = new SharedBuffer(workingBuffer);
 
-    public override void Flush()
-    {
-    }
-
-    public override int Read(byte[] buffer, int offset, int count)
-    {
-        if(MemoryArrayHolder.Bytes==null) { throw new NullReferenceException(); }
-        var n = (int)(Length - Position);
-        if (n > count)
-            n = count;
-        switch (n)
+        if (mt == null)
         {
-            case <= 0:
-                return 0;
-            case <= 8*100:
-            {
-                var byteCount = n;
-                while (--byteCount >= 0)
-                    buffer[offset + byteCount] = MemoryArrayHolder.Bytes[Position+byteCount];
-                break;
-            }
-            default:
-                Buffer.BlockCopy(MemoryArrayHolder.Bytes, (int)Position, buffer, offset, n);
-                break;
-        }
-
-        Position += n;
-        return n;
-    }
-
-    public override long Seek(long offset, SeekOrigin loc)
-    {
-        switch (loc)
-        {
-            case SeekOrigin.Begin:
-            {
-                var tempPosition = unchecked((int)offset);
-                if (offset < 0)
-                    throw new IOException("IO_SeekBeforeBegin");
-                Position = tempPosition;
-                break;
-            }
-            case SeekOrigin.Current:
-            {
-                var tempPosition = (int)unchecked(Position + (int)offset);
-                if (unchecked(Position + offset) < 0 || tempPosition < 0)
-                    throw new IOException("IO_SeekBeforeBegin");
-                Position = tempPosition;
-                break;
-            }
-            case SeekOrigin.End:
-            {
-                var tempPosition = (int)unchecked(Length + (int)offset);
-                if (unchecked(Length + offset) < 0 || tempPosition < 0)
-                    throw new IOException("IO_SeekBeforeBegin");
-                Position = tempPosition;
-                break;
-            }
-            default:
-                throw new ArgumentException("SR.Argument_InvalidSeekOrigin");
-        }
-
-        Debug.Assert(Position >= 0, "_position >= 0");
-        return Position;
-    }
-
-    public override void SetLength(long value)
-    {
-        throw new NotSupportedException();
-    }
-
-    public override void Write(byte[] buffer, int offset, int count)
-    {
-        throw new NotSupportedException();
-    }
-
-
-    public override bool CanRead => true;
-    public override bool CanSeek => true;
-    public override bool CanWrite => false;
-    public override long Length => MemoryArrayHolder.Bytes.Length;
-    public override long Position { get; set; }
-}
-public class WrappedMemoryStream : WrappedStream, IDisposable
-{
-    public WrappedMemoryStream(byte[] data, MimeType? mt = null, bool copy=true)
-    {
-        if(copy)
-        {
-            _data = new() { Bytes = data.ToArray() };
+            using var probeStream = new SharedMemoryStream(_sharedBuffer);
+            // Matches your existing magic byte detection engine
+            MimeType = MagicByteCombos.Match(probeStream, 0)?.MimeType 
+                       ?? throw new InvalidDataException("Could not determine MimeType from the provided data stream.");
         }
         else
         {
-            _data = new() { Bytes = data };
+            MimeType = mt;
         }
-        if (mt == null)
-        {
-            var stream2 = GetStream();
-            try
-            {
-                mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            }
-            finally
-            {
-                stream2.Dispose();
-                Streams.Remove(stream2);
-            }
-        }
-        MimeType = mt;
-    }
-    private MemoryArrayHolder _data;
-    List<Stream> Streams { get; set; } = new();
-    public override MimeType MimeType { get; }
-    public override Stream GetStream()
-    {
-        FakedMemoryStream f = new(_data);
-        Streams.Add(f);
-        return f;
     }
 
- 
+    /// <summary>
+    /// Initializes a new instance using an already existing SharedBuffer context.
+    /// </summary>
+    public WrappedSharedMemoryStream(SharedBuffer sharedBuffer, MimeType mt)
+    {
+        _sharedBuffer = sharedBuffer ?? throw new ArgumentNullException(nameof(sharedBuffer));
+        MimeType = mt ?? throw new ArgumentNullException(nameof(mt));
+    }
+
+    // Overriding the abstract factory method from WrappedStream
+    public override Stream GetStream()
+    {
+        if (_isDisposed || _sharedBuffer == null)
+            throw new ObjectDisposedException(nameof(WrappedSharedMemoryStream), "The wrapped memory stream has already been disposed.");
+
+        var instantiatedStream = new SharedMemoryStream(_sharedBuffer);
+        
+        // Track the stream in case it is invoked outside of the .Use() block helper
+        _activeStreams.Add(instantiatedStream);
+        return instantiatedStream;
+    }
+
+    // Overriding the abstract Dispose method from WrappedStream
     public override void Dispose()
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        foreach (var stream in Streams.Where(x => x.CanRead))
-            stream.Dispose();
-        _data.Bytes = null;
-        _data = null;
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                // Safely clear out outstanding streams across concurrent decoder threads
+                while (_activeStreams.TryTake(out var trackedStream))
+                {
+                    try 
+                    { 
+                        trackedStream.Dispose(); 
+                    } 
+                    catch 
+                    { 
+                        /* Intentionally absorbed to prevent failures during cascading teardowns */ 
+                    }
+                }
+            }
+
+            // Invalidate the backing byte array reference completely
+            _sharedBuffer?.Release();
+            _sharedBuffer = null;
+            _isDisposed = true;
+        }
     }
 
-    ~WrappedMemoryStream()
+    ~WrappedSharedMemoryStream()
     {
         Dispose(false);
     }
-  
 }

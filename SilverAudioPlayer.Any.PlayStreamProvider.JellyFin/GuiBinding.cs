@@ -1,17 +1,21 @@
 using System.Collections.ObjectModel;
+using ReactiveUI;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
-public class GuiBinding
+public class GuiBinding : ReactiveObject
 {
     public void SetResults(ObservableCollection<WrappedDto> wrappedDtos)
     {
-        var old = SearchResults;
-        SearchResults = wrappedDtos;
-        foreach (var wrappedDto in old)
-        {
-           wrappedDto.Cover?.Dispose();
-        }
+            var old = SearchResults;
+            SearchResults = wrappedDtos;
+            if (old == null) return;
+            foreach (var wrappedDto in old)
+            {
+                wrappedDto.Dispose();
+            }
     }
-    public ObservableCollection<WrappedDto> SearchResults { get; private set; } = [];
+    private ObservableCollection<WrappedDto>? _SearchResults;
+    
+    public ObservableCollection<WrappedDto> SearchResults { get => _SearchResults; private set => this.RaiseAndSetIfChanged(ref _SearchResults, value); }
 }

@@ -6,7 +6,6 @@ using SilverAudioPlayer.NAudio;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
-
 [Export(typeof(INaudioWaveStreamWrapper))]
 public class FlacNAudioWaveStreamWrapper : INaudioWaveStreamWrapper
 {

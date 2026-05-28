@@ -48,7 +48,7 @@ public partial class JellyFinPlaybackTracker:IMusicStatusInterface
     private void StateChanged(object? sender, PlaybackState e)
     {
         var currentSong = listener.GetCurrentTrack();
-        if (currentSong.Stream is not WrappedHttpStream httpStream ||
+        if (currentSong?.Stream is not WrappedHttpStream httpStream ||
             JfIdregx.Match(httpStream.Url) is not { Success: true } match) return;
         Debug.WriteLine($"We seeked {match.Groups["id"]}");
         switch (e)

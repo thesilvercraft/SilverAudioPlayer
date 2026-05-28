@@ -10,6 +10,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Input;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -49,9 +50,6 @@ public partial class Settings : Window
     public Settings()
     {
         InitializeComponent();
-#if DEBUG
-        this.AttachDevTools();
-#endif
         MainGrid = this.FindControl<Grid>("MainGrid");
         if (OperatingSystem.IsLinux())
         {
@@ -106,7 +104,7 @@ public partial class Settings : Window
         if (text is not null)
         {
             WindowExtensions.OnStyleChange.Invoke(this,
-                        new(null, WindowExtensions.GetTransparencyLevelsFromString(text), null));
+                        new(null, WindowExtensions.GetTransparencyLevelsFromString(text), null, null,null));
         }
     }
 
@@ -117,8 +115,8 @@ public partial class Settings : Window
     private void EnableMSI(object? sender, RoutedEventArgs e)
     {
         var y = (CheckBox?)sender;
-        if (y is not { DataContext: InfoPRecord { IsMusicStatusInterface: true } record }) return;
-        if (record.Item is not IMusicStatusInterface msi) return;
+        if (y is not { IsFocused: true }) return;
+        if (y is not { DataContext: IMusicStatusInterface msi }) return;
         if (y.IsChecked == msi.IsStarted) return;
         if (y.IsChecked == true)
         {
@@ -132,6 +130,7 @@ public partial class Settings : Window
             ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config, new PropertyChangedEventArgs("BlockedPlugins"));
             msi.StopIPC(mainWindow.Env);
         }
+
     }
 
     string Legalese;
@@ -387,7 +386,7 @@ public partial class Settings : Window
         Dispatcher.UIThread.Post(() =>
         {
             var SapTransparency = WindowExtensions.envBackend.GetBool(ConstStrings.DisableTransparency) != true;
-            WindowExtensions.OnStyleChange(this, new(null, null, null));
+            WindowExtensions.OnStyleChange(this, new(null, null, null,null,null));
             WindowExtensions.envBackend.SetBool(ConstStrings.DisableTransparency, SapTransparency);
         }, DispatcherPriority.Normal);
     }
@@ -492,7 +491,7 @@ public class SettingsDC(Settings settings) : ReactiveObject
             WindowExtensions.envBackend.SetString(ConstStrings.BG, _backgroundColour);
             Dispatcher.UIThread.Post(() =>
             {
-                WindowExtensions.OnStyleChange?.Invoke(this, new(_backgroundColour, null, null));
+                WindowExtensions.OnStyleChange?.Invoke(this, new(_backgroundColour, null, null,null,null));
             }, DispatcherPriority.Normal);
         }
     }
