@@ -1,7 +1,5 @@
-﻿#if CSCore
-using SilverCraft.CSCore.PortAudio;
+﻿using SilverCraft.CSCore.PortAudio;
 using SilverCraft.CSCore.SoundOut;
-#endif
 using System.Composition;
 using System.Diagnostics;
 using System.Globalization;
@@ -332,6 +330,39 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             throw new NotSupportedException();
         }
         logger?.Information("Using {Decoder}", Decoder);
+        var entries = playerEnvironment?.GetEntriesForCurrentTrack();
+        if (entries != null)
+        {
+            if (audioFile is not ILoop and not CSCoreReader { _reader: SampleToWaveBase { Source: ILoop  } } and not CSCoreReader { _reader: ILoop}
+                && entries.TryGetValue("LOOPSTART", out var loopStart))
+            {
+                long loopStartl;
+                if (long.TryParse(loopStart, out loopStartl))
+                {
+                    long loopEndl = 0;
+                    var success = false;
+                    if (entries.TryGetValue("LOOPEND", out var loopEnd))
+                    {
+                        success=long.TryParse(loopEnd, out loopEndl);
+                    }
+                    else if(entries.TryGetValue("LOOPLENGTH", out var loopLength))
+                    {
+                        success=  long.TryParse(loopLength, out loopEndl);
+                        loopEndl += loopStartl;
+                    }
+
+                    if (success)
+                    {
+                        audioFile = audioFile switch
+                        {
+                            WaveStream ws => new LoopableAudioSource(ws, loopStartl, loopEndl),
+                            IWaveStream iws => new LoopableAudioSource(iws, loopStartl, loopEndl),
+                            _ => audioFile
+                        };
+                    }
+                }
+            }
+        }
 
         if (outputDevice == null)
         {
@@ -385,11 +416,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public static bool IsBackendAvaliable()
     {
-#if CSCore
         return OperatingSystem.IsWindows() || PortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
-#else
-        return OperatingSystem.IsWindows();
-#endif
     }
 
     bool? BlacklistPortAudio =null;
@@ -407,7 +434,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     }
     public void InitBackEnd()
     {
-#if CSCore
         if (!OperatingSystem.IsWindows())
         {
             if (PortAudioSoundOut.IsSupported() && CheckForBlocklist()!=true)
@@ -422,7 +448,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             }
         }
         else
-#endif
         {
             logger?.Information("initing backend naudio WaveOutEvent");
             outputDevice = new WavePlayerCompatibilityLayer(new WaveOutEvent());

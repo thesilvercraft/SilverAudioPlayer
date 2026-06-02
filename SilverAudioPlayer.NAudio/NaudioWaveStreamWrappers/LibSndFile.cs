@@ -1,4 +1,3 @@
-#if CSCore
 using System.Composition;
 using SilverCraft.CSCore;
 using NAudio.Wave;
@@ -30,4 +29,3 @@ public class LibSndFile : INaudioWaveStreamWrapper
     public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new SndFileWaveStream(stream).ToWaveSource());
 
 }
-#endif

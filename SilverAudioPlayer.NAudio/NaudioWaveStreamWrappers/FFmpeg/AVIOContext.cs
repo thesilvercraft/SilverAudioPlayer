@@ -1,4 +1,3 @@
-#if CSCore
 #if FFmpeg
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -127,5 +126,4 @@ public struct AvioStreamCallbacks
         return !left.Equals(right);
     }
 }
-#endif
 #endif

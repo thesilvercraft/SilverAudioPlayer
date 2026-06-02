@@ -15,7 +15,6 @@ public class NAudioAiffFileReaderWrapper : INaudioWaveStreamWrapper
     public IWaveProvider GetStream(Stream stream) => new AiffFileReader(stream);
 
 }
-#if CSCore
 [Export(typeof(INaudioWaveStreamWrapper))]
 public class CSCoreAiffFileReaderWrapper : INaudioWaveStreamWrapper
 {
@@ -25,4 +24,3 @@ public class CSCoreAiffFileReaderWrapper : INaudioWaveStreamWrapper
     public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new SilverCraft.CSCore.Codecs.AIFF.AiffReader(stream));
 
 }
-#endif

@@ -1,4 +1,3 @@
-#if CSCore
 #if FFmpeg
 using System.ComponentModel.Composition;
 using System.Diagnostics;
@@ -108,5 +107,4 @@ public class FFmpeg : INaudioWaveStreamWrapper
     public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new FFMpegWaveStream(stream));
 
 }
-#endif
 #endif

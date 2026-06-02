@@ -1,4 +1,3 @@
-#if CSCore
 #if FFmpeg
 using FFmpeg.AutoGen;
 using SilverCraft.CSCore;
@@ -131,5 +130,4 @@ public class FFMpegWaveStream : IWaveSource
 
     public long Length { get=>(long)(helper.GetDuration()*WaveFormat.BytesPerSecond); }
 }
-#endif
 #endif

@@ -1,4 +1,3 @@
-#if CSCore
 #if FFmpeg
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
@@ -159,5 +158,4 @@ public  unsafe class AudioStreamDecoder : IDisposable
         return result;
     }
 }
-#endif
 #endif

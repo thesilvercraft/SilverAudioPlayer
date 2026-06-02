@@ -7,9 +7,6 @@
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
         <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <!-- Disable CSCore integration, makes linux not have any output, disables ffmpeg, openmpt, sndfile   -->
-        <DefineConstants>$(DefineConstants);CSCore</DefineConstants> 
-        <!-- ffmpeg, requires cscore -->
         <DefineConstants>$(DefineConstants);FFmpeg</DefineConstants>
         <AssemblyName>SilverAudioPlayer.Any.PlayProvider.NAudio</AssemblyName>
         <RootNamespace>SilverAudioPlayer.Any.PlayProvider.NAudio</RootNamespace>
@@ -22,22 +19,21 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="NAudioLogo.png" Condition="! $(DefineConstants.Contains('CSCore'))" />
-        <EmbeddedResource Include="cscore.svg" Condition="$(DefineConstants.Contains('CSCore'))" />
+        <EmbeddedResource Include="cscore.svg" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Silver.Composition\Silver.Composition.csproj" />
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-        <PackageReference Include="SilverCraft.CSCore" Version="0.1.2" Condition=" $(DefineConstants.Contains('CSCore'))" />
-        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.2" Condition=" $(DefineConstants.Contains('CSCore'))" />
-        <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.1" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <PackageReference Include="SilverCraft.CSCore" Version="0.1.2" />
+        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.2"  />
+        <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.1" />
         <PackageReference Include="NAudio" Version="2.2.1" />
         <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
         <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-        <PackageReference Include="SilverCraft.OpenMPT" Version="0.1.1" Condition=" $(DefineConstants.Contains('CSCore'))" />
+        <PackageReference Include="SilverCraft.OpenMPT" Version="0.1.1" />
         <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" Condition="$(DefineConstants.Contains('FFmpeg'))" />
     </ItemGroup>
 

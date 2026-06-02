@@ -1,4 +1,3 @@
-#if CSCore
 using SilverCraft.CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
@@ -27,7 +26,6 @@ public class CSCoreReader(IWaveSource reader) : IWaveStream,  IDisposable
         GC.SuppressFinalize(this);
     }
 }
-#endif
 public interface IWaveStream : IWaveProvider,IDisposable
 {
     long Position { get; set; }

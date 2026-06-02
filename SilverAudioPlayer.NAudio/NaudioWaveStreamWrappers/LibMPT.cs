@@ -1,4 +1,3 @@
-#if CSCore
 using System.Composition;
 using NAudio.Wave;
 using Serilog;
@@ -31,4 +30,3 @@ public class LibMPT : INaudioWaveStreamWrapper
     public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new OpenMptWaveStream(stream).ToWaveSource());
 
 }
-#endif

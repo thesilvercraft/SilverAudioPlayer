@@ -1,4 +1,3 @@
-#if CSCore
 using SilverCraft.CSCore;
 using NAudio.Wave;
 using WaveFormat = NAudio.Wave.WaveFormat;
@@ -59,4 +58,3 @@ public class WaveInputNaudioToCsCore(IWaveProvider source) : IWaveInput
     public long Position { get => GetPos(); set=>SetPos(value); }
     public long Length=> GetLength(); 
 }
-#endif

@@ -1,4 +1,3 @@
-#if CSCore
 using SilverCraft.CSCore.SoundOut;
 using NAudio.Wave;
 using ArgumentNullException = System.ArgumentNullException;
@@ -79,4 +78,3 @@ public class CSCorePlayer : IWavePlayer, IWavePosition
 
     public event EventHandler<StoppedEventArgs>? PlaybackStopped;
 }
-#endif
