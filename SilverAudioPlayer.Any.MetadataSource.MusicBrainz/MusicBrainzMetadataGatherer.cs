@@ -18,7 +18,7 @@ public class MusicBrainzMetadataGatherer : IAdditionalMetadataGatherer
         configpath = ConfigPath.GetPath("mb.json");
         if (File.Exists(configpath))
         {
-            ConfigData = JsonSerializer.Deserialize<Data>(File.ReadAllText(configpath),   (JsonSerializerOptions)typeof(Query).GetField("JsonReaderOptions", BindingFlags.Static| BindingFlags.NonPublic ).GetValue(null));
+            ConfigData = JsonSerializer.Deserialize<Data>(File.ReadAllText(configpath));
         }
     }
     public string Name =>  "MusicBrainz metadata gatherer";

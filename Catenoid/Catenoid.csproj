@@ -77,10 +77,10 @@
 		<!-- managed midi - alpha -->
 <!--		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>-->
 		<!-- silverjuke web interface-->
-<!--		<DefineConstants>$(DefineConstants)juke</DefineConstants>-->
+	 <DefineConstants>$(DefineConstants)juke</DefineConstants>
 		<!-- music brainz - POC -->
 <!--	<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
-<!--	    <DefineConstants>$(DefineConstants)listenbrainz</DefineConstants>-->
+    <DefineConstants>$(DefineConstants)listenbrainz</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(DefineConstants.Contains('BuildFor'))">
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

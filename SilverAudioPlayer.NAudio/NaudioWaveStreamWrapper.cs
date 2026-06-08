@@ -7,6 +7,7 @@ using Silver.Composition;
 using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
+using SilverCraft.CSCore.DSP.Resampler;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 
@@ -89,13 +90,9 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
 
     public string Description =>
         "A player that wraps around NAudio (https://github.com/naudio/NAudio) and plays audio files that derive from PCM (or WAV). MP3 is provided using https://github.com/naudio/NLayer";
-#if CSCore
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(NaudioWaveStreamWrapper).Assembly,
         "SilverAudioPlayer.Any.PlayProvider.NAudio.cscore.svg");
-#else
-    public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(NaudioWaveStreamWrapper).Assembly,
-        "SilverAudioPlayer.Any.PlayProvider.NAudio.NAudioLogo.png");
-#endif
+
     public Version? Version => typeof(NaudioWaveStreamWrapper).Assembly.GetName().Version;
 
     public List<Tuple<Uri, URLType>>? Links =>
@@ -109,9 +106,9 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
         new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/NAudio"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/NLayer"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/Vorbis"), URLType.LibraryCode)
-        ,new(new("https://www.nuget.org/packages/CSCore/"),URLType.PackageManager),
-        new(new("https://github.com/filoe/cscore/"),URLType.LibraryCode),
-        new(new("https://filoe.github.io/cscore/sharpDox/"), URLType.LibraryDocumentation),
+        ,new(new("https://www.nuget.org/packages/SilverCraft.CSCore/"+typeof(SimpleResampler).Assembly.GetName().Version),URLType.PackageManager),
+        new(new("https://github.com/thesilvercraft/cscore"),URLType.LibraryCode),
+        new(new("https://thesilvercraft.github.io/cscore/"), URLType.LibraryDocumentation),
         new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
     ];
     public string Licenses => @"NAudio - https://github.com/naudio/NAudio 

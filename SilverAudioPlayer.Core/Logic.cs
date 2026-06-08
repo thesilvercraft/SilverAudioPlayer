@@ -1,6 +1,7 @@
 ﻿using System.Composition;
 using System.Diagnostics;
 using System.Reactive.Linq;
+using Avalonia.Threading;
 using FuzzySharp;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
@@ -349,7 +350,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         Player?.Stop();
         SendIfStateIsNotNull();
         _token?.Cancel();
-        Thread.Sleep(30);
     }
 
     public void OutputDevice_PlaybackStopped(object? sender, object o)
@@ -714,7 +714,9 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public List<Song> GetQueueCopy()
     {
-        return [.. PlayerContext.Queue];
+        List<Song> r=[];
+        Dispatcher.UIThread.Invoke(() => r = [.. PlayerContext.Queue]);
+        return r;
     }
     private static Tuple<List<string>, List<string>> SupportedTrackMimesG(IEnumerable<MimeType> supportedMimes)
     {
