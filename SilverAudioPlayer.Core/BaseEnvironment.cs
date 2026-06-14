@@ -13,13 +13,18 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public event EventHandler<Song>? TrackChangedNotification;
     public event EventHandler<PlaybackState> PlayerStateChanged;
     public event EventHandler<TimeSpan>? PositionChanged;
-
+    private SortedSet<TimedEvent> _timedEvents = new();
+    Logic<T> Logic;
+    private bool _timerEnabled = false;
+    private bool _isDisposed = false;
+    private Timer? _timer=null; // TODO: DISPOSE
+    
     public BaseEnvironment(Logic<T> Logic)
     {
         this.Logic = Logic;
+        _timer = new Timer(TimerElapsed, null, Timeout.Infinite, Timeout.Infinite);
     }
    
-    Logic<T> Logic;
     public void LoadSong(WrappedStream s) => Task.Run(() => Logic.LoadSong(s));
 
     public void LoadSong(WrappedStream s, IMetadata additionalMetadata) => Task.Run(() => Logic.LoadSong(s,additionalMetadata));
@@ -124,8 +129,6 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public virtual void SetRating(byte rating)
     {
-        //A music player should probably not edit the metadata of the music it plays
-        //If someone thinks otherwise feel free to add code to this method
     }
 
 
@@ -138,25 +141,19 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     {
         ClearTimedEvents();
         Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
-        LyricsInDebug(currentSong);
     }
-    [Conditional("DEBUG")]
-    void LyricsInDebug(Song? song)
-    {
-        if (song?.Metadata?.SyncedLyrics == null) return;
-        foreach (var lrc in song.Metadata?.SyncedLyrics)
-        {
-            ((ITimingListener)(this)).AddTimedEvent(lrc.TimeStampInMilliSeconds / 1000,
-                (x, y) =>
-                {
-                    Debug.Write(lrc.Content);
-                    return false;
-                });
-        }
-    }
+    
     void ClearTimedEvents()
     {
-        TimedEvents.Clear();
+        lock (_timedEvents)
+        {
+            foreach (var e in _timedEvents)
+            {
+                e.RemoveFromParent();
+            }
+            _timedEvents.Clear();
+        }
+        StopTimer();
     }
     public void FirePositionChanged(TimeSpan position)
     {
@@ -185,7 +182,6 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
 
     public Task<IReadOnlyList<MimeType>> SupportedMimeTypes() => Task.FromResult<IReadOnlyList<MimeType>>(Logic.PlayableMimes);
-    private SortedSet<TimedEvent> TimedEvents = new();
 
     void TimerLogicOnPositionChanged(double positionTotalSeconds)
     {
@@ -197,9 +193,8 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         {
             case PlaybackState.Stopped:
             case PlaybackState.Paused:
-                timerEnabled = false;
-                timer?.Change(Timeout.Infinite, Timeout.Infinite);
-break;
+                StopTimer();
+                break;
 
             case PlaybackState.Playing:
             case PlaybackState.Buffering:
@@ -209,69 +204,86 @@ break;
                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
         }
     }
+    private void StopTimer()
+    {
+        lock (_timedEvents)
+        {
+            _timerEnabled = false;
+            _timer?.Change(Timeout.Infinite, Timeout.Infinite);
+        }
+    }
 
     void SetTimerToNextEvent()
     {
-        if (TimedEvents.Count > 0)
+        lock (_timedEvents)
         {
-            var currentPos = GetPosition();
-            lock (TimedEvents)
+            if (_isDisposed || _timedEvents.Count == 0)
             {
-                var next = TimedEvents.FirstOrDefault(x => x.Time > currentPos);
-                if (next != null)
-                {
-                    timerEnabled = true;
-                    timer?.Change(TimeSpan.FromSeconds(Math.Max(next.Time - currentPos - 0.02, 0.00)),
-                        Timeout.InfiniteTimeSpan);
-                    return;
-                }
+                _timerEnabled = false;
+                _timer?.Change(Timeout.Infinite, Timeout.Infinite);
+                return;
+            }
+
+            var currentPos = GetPosition();
+            var next = _timedEvents.FirstOrDefault(x => x.Time > currentPos);
+            
+            if (next != null)
+            {
+                _timerEnabled = true;
+                var delay = Math.Max(next.Time - currentPos - 0.01, 0.0); 
+                _timer?.Change(TimeSpan.FromSeconds(delay), Timeout.InfiniteTimeSpan);
+            }
+            else
+            {
+                _timerEnabled = false;
+                _timer?.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
-        timerEnabled = false;
-        timer?.Change(Timeout.Infinite, Timeout.Infinite);
     }
     public void AddTimedEvent(TimedEvent timedEvent)
     {
-        lock (TimedEvents)
+        lock (_timedEvents)
         {
-            TimedEvents.Add(timedEvent);
-        }
-        timedEvent.AddToParent(this);
-        if (timer == null)
-        {
-            var position = GetPosition();
+            _timedEvents.Add(timedEvent);
+            timedEvent.AddToParent(this);
 
-            timer = new(TimerElapsed, null, TimeSpan.FromSeconds(Math.Max( TimedEvents.First().Time - position - 0.02,0.00)),
-                Timeout.InfiniteTimeSpan);
-        }
-        else if (!timerEnabled)
-        {
-            SetTimerToNextEvent();
+            if (GetState() == PlaybackState.Playing || GetState() == PlaybackState.Buffering)
+            {
+                SetTimerToNextEvent();
+            }
         }
     }
-    private Timer? timer=null;
-    private bool timerEnabled = false;
     public void TimerElapsed(object? state)
     {
+        if (_isDisposed) return;
+
+        List<TimedEvent> eventsToInvoke;
         var position = GetPosition();
-        lock (TimedEvents)
+        lock (_timedEvents)
         {
-            var events = TimedEvents.Where(x => Math.Abs(position - x.Time) < 0.04).ToList();
+            eventsToInvoke = _timedEvents.Where(x => x.Time <= position + 0.02).ToList();
+        }
+
+        if (eventsToInvoke.Count > 0)
+        {
             var track = GetCurrentTrack();
-            foreach (var e in events)
+            foreach (var e in eventsToInvoke)
             {
                 e.Invoke(track, position);
             }
         }
-
         SetTimerToNextEvent();
-
     }
     
 
     public void RemoveTimedEvent(TimedEvent timedEvent)
     { 
-        timedEvent.RemoveFromParent();
-        TimedEvents.Remove(timedEvent);
+        lock (_timedEvents)
+        {
+            if (_timedEvents.Remove(timedEvent))
+            {
+                timedEvent.RemoveFromParent();
+            }
+        }
     }
 }

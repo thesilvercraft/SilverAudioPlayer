@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Net.Http.Headers;
 
@@ -11,31 +12,30 @@ public static class HttpSeekableStreamCounter
     public static Counter<long> BytesDownloaded = s_meter.CreateCounter<long>("KB downloaded");
 }
 #endif
+
 public class HttpSeekableStream : Stream, IRefreshableStream
 {
     private const int BuffLength = 524288; // 512 KiB
     private const int MaxChunksToBufferAhead = 6; // Prefetch up to 3MiB ahead
-    private readonly object _downloadLock = new();
-
-    private readonly ConcurrentDictionary<long, Task> BeingDownloaded = new();
-
-    private readonly bool RangeSupport;
+    
+    private readonly ConcurrentDictionary<long, Task<Memory<byte>>> _chunkCache;
+    private readonly bool _rangeSupport;
     private long _currentPos;
     private bool _isDisposed;
-    public ConcurrentDictionary<long, Memory<byte>> CachedStreams = new();
-    private HttpResponseMessage? IMessage;
-
-    public Stream? Internal;
-    public bool IsParent;
+    
+    private HttpResponseMessage? _iMessage;
+    private Stream? _internalStream;
+    public bool IsParent { get; set; }
 
     public HttpSeekableStream(HttpRequestMessage requestMessage)
     {
         RequestMessage = requestMessage;
+        _chunkCache = new ConcurrentDictionary<long, Task<Memory<byte>>>();
         var result = GetLengthAndRangeSupport(RequestMessage);
         if (result != null)
         {
             Length = result.Item1;
-            RangeSupport = result.Item2;
+            _rangeSupport = result.Item2;
         }
     }
 
@@ -45,15 +45,14 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     public HttpSeekableStream(HttpSeekableStream parent)
     {
-        CachedStreams = parent.CachedStreams;
-        BeingDownloaded = parent.BeingDownloaded;
+        _chunkCache = parent._chunkCache;
         RequestMessage = parent.RequestMessage;
-        RangeSupport = parent.RangeSupport;
+        _rangeSupport = parent._rangeSupport;
         Length = parent.Length;
     }
 
     public override bool CanRead => !_isDisposed;
-    public override bool CanSeek => !_isDisposed && RangeSupport;
+    public override bool CanSeek => !_isDisposed && _rangeSupport;
     public override bool CanWrite => false;
     public override long Length { get; }
 
@@ -65,10 +64,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     public HttpRequestMessage RequestMessage { get; }
 
-    public Stream GetStream()
-    {
-        return new HttpSeekableStream(this);
-    }
+    public Stream GetStream() => new HttpSeekableStream(this);
 
     private static HttpRequestMessage CloneMessage(HttpRequestMessage req)
     {
@@ -84,6 +80,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             clone.Options.Set(new HttpRequestOptionsKey<object?>(key), value);
 
         if (req.Content != null)
+        {
             lock (req)
             {
                 using var ms = new MemoryStream();
@@ -93,6 +90,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
                 foreach (var h in req.Content.Headers)
                     clone.Content.Headers.Add(h.Key, h.Value);
             }
+        }
 
         return clone;
     }
@@ -100,7 +98,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     public static Tuple<long, bool>? GetLengthAndRangeSupport(HttpRequestMessage requestMessage)
     {
         using var clone = CloneMessage(requestMessage);
-        using var r = HttpClient.Client.Send(clone, HttpCompletionOption.ResponseHeadersRead);
+        using var r = HttpClient.Client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
         if (r.IsSuccessStatusCode)
         {
             if (r.Content.Headers.ContentLength is { } length)
@@ -111,69 +109,45 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         throw new Exception($"HTTP Status code {r.StatusCode}");
     }
 
-    private (HttpResponseMessage, Stream) GetNewStreamAt(long pos)
+    private async Task<Memory<byte>> GetChunkAsync(long chunkNum, CancellationToken cancellationToken = default)
     {
-        var clone = CloneMessage(RequestMessage);
-        if (RangeSupport)
-            clone.Headers.Range = new RangeHeaderValue(pos, pos + BuffLength - 1);
-
-        var r = HttpClient.Client.Send(clone,
-            RangeSupport ? HttpCompletionOption.ResponseHeadersRead : HttpCompletionOption.ResponseContentRead);
-        return r.IsSuccessStatusCode
-            ? (r, r.Content.ReadAsStream())
-            : throw new Exception($"HTTP Status code {r.StatusCode}");
-    }
-
-    private void EnsureChunkAvailable(long chunkNum)
-    {
-        if (CachedStreams.ContainsKey(chunkNum))
-        {
-            TriggerPrefetch(chunkNum);
-            return;
-        }
-
-        Task? backgroundTask;
-        lock (_downloadLock)
-        {
-            if (CachedStreams.ContainsKey(chunkNum)) return;
-            BeingDownloaded.TryGetValue(chunkNum, out backgroundTask);
-        }
-
-        if (backgroundTask != null)
-            backgroundTask.GetAwaiter().GetResult();
-        else
-            DownloadChunkInternal(chunkNum);
-
-        TriggerPrefetch(chunkNum);
-    }
-
-    private void DownloadChunkInternal(long chunkNum)
-    {
-        if (CachedStreams.ContainsKey(chunkNum)) return;
-
         var byteToStartAt = chunkNum * BuffLength;
-        if (byteToStartAt >= Length) return;
+        if (byteToStartAt >= Length) 
+            return Memory<byte>.Empty;
 
+        using var clone = CloneMessage(RequestMessage);
+        if (_rangeSupport)
+            clone.Headers.Range = new RangeHeaderValue(byteToStartAt, byteToStartAt + BuffLength - 1);
 
-        var (hM, stream) = GetNewStreamAt(byteToStartAt);
-        using (hM)
-        using (stream)
+        using var response = await HttpClient.Client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"HTTP Status code {response.StatusCode} fetching chunk {chunkNum}");
+
+        using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        
+        var buffer = new byte[BuffLength];
+        var totalRead = 0;
+        int read;
+
+        while (totalRead < BuffLength && (read = await stream.ReadAsync(buffer.AsMemory(totalRead, BuffLength - totalRead), cancellationToken).ConfigureAwait(false)) > 0)
         {
-            var b = new byte[BuffLength];
-            var toRead = BuffLength;
-            var offset = 0;
-            int read;
-
-            while (toRead > 0 && (read = stream.Read(b, offset, toRead)) > 0)
-            {
-                offset += read;
-                toRead -= read;
-            }
-#if DEBUG
-            HttpSeekableStreamCounter.BytesDownloaded.Add(offset / 1024);
-#endif
-            if (offset > 0) CachedStreams[chunkNum] = new Memory<byte>(b, 0, offset);
+            totalRead += read;
         }
+
+#if DEBUG
+        HttpSeekableStreamCounter.BytesDownloaded.Add(totalRead / 1024);
+#endif
+
+        return new Memory<byte>(buffer, 0, totalRead);
+    }
+
+    private Memory<byte> GetOrDownloadChunk(long chunkNum)
+    {
+        var downloadTask = _chunkCache.GetOrAdd(chunkNum, id => GetChunkAsync(id));
+        
+        TriggerPrefetch(chunkNum);
+
+        return downloadTask.GetAwaiter().GetResult();
     }
 
     private void TriggerPrefetch(long currentChunkNum)
@@ -186,36 +160,17 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             var nextChunk = currentChunkNum + i;
             if (nextChunk >= maxChunk) break;
 
-            lock (_downloadLock)
-            {
-                if (CachedStreams.ContainsKey(nextChunk) || BeingDownloaded.ContainsKey(nextChunk))
-                    continue;
-
-                var chunkToDownload = nextChunk;
-                BeingDownloaded[chunkToDownload] = Task.Run(() =>
-                {
-                    try
-                    {
-                        DownloadChunkInternal(chunkToDownload);
-                    }
-                    finally
-                    {
-                        lock (_downloadLock)
-                        {
-                            BeingDownloaded.TryRemove(chunkToDownload, out _);
-                        }
-                    }
-                });
-            }
+            // Fire and forget downloading task into the Cache cleanly without locks
+            _ = _chunkCache.GetOrAdd(nextChunk, id => GetChunkAsync(id));
         }
     }
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        if (RangeSupport)
+        if (_rangeSupport)
         {
             if (_currentPos >= Length)
-                return 0; // Standard EOF protection
+                return 0;
 
             var totalRead = 0;
             while (count > 0 && _currentPos < Length)
@@ -223,9 +178,8 @@ public class HttpSeekableStream : Stream, IRefreshableStream
                 var chunkId = _currentPos / BuffLength;
                 var location = _currentPos % BuffLength;
 
-                EnsureChunkAvailable(chunkId);
-
-                if (!CachedStreams.TryGetValue(chunkId, out var chunk))
+                var chunk = GetOrDownloadChunk(chunkId);
+                if (chunk.IsEmpty)
                     break;
 
                 var bytesAvailableInChunk = chunk.Length - (int)location;
@@ -244,31 +198,33 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             return totalRead;
         }
 
-        if (Internal == null)
+        if (_internalStream == null)
         {
-            var (hM, stream) = GetNewStreamAt(0);
-            IMessage = hM;
-            Internal = stream;
+            using var clone = CloneMessage(RequestMessage);
+            var r = HttpClient.Client.Send(clone, HttpCompletionOption.ResponseContentRead);
+            _iMessage = r;
+            _internalStream = r.Content.ReadAsStream();
         }
 
-        var r = Internal.Read(buffer, offset, count);
-        _currentPos = Internal.Position;
-        return r;
+        var bytesRead = _internalStream.Read(buffer, offset, count);
+        _currentPos = _internalStream.Position;
+        return bytesRead;
     }
 
     public override long Seek(long offset, SeekOrigin origin)
     {
-        if (!RangeSupport)
+        if (!_rangeSupport)
         {
-            if (Internal == null)
+            if (_internalStream == null)
             {
-                var (hM, stream) = GetNewStreamAt(0);
-                IMessage = hM;
-                Internal = stream;
+                using var clone = CloneMessage(RequestMessage);
+                var r = HttpClient.Client.Send(clone, HttpCompletionOption.ResponseContentRead);
+                _iMessage = r;
+                _internalStream = r.Content.ReadAsStream();
             }
 
-            Internal.Seek(offset, origin);
-            _currentPos = Internal.Position;
+            _internalStream.Seek(offset, origin);
+            _currentPos = _internalStream.Position;
             return _currentPos;
         }
 
@@ -290,41 +246,30 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         return _currentPos;
     }
 
-    public override void Close()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
+        Debug.WriteLine("Disposing HTTP stream");
+        if (!_isDisposed && disposing)
         {
             if (IsParent)
             {
+                Debug.WriteLine("Disposing Parent http stream");
                 RequestMessage.Dispose();
-                CachedStreams.Clear();
+                _chunkCache.Clear();
             }
 
-            Internal?.Dispose();
-            Internal = null;
-            IMessage?.Dispose();
+            _internalStream?.Dispose();
+            _internalStream = null;
+            _iMessage?.Dispose();
         }
 
         _isDisposed = true;
+        base.Dispose(disposing);
     }
 
-    public override void Flush()
-    {
-    }
+    public override void Flush() { }
 
-    public override void SetLength(long value)
-    {
-        throw new NotSupportedException();
-    }
+    public override void SetLength(long value) => throw new NotSupportedException();
 
-    public override void Write(byte[] buffer, int offset, int count)
-    {
-        throw new NotSupportedException();
-    }
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 }

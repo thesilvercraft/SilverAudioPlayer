@@ -1,4 +1,3 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
 using Avalonia.Input;
@@ -111,7 +110,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
                 dc?.RaisePropertyChanged(nameof(dc.LoopType));
                 if (Player is not ILoop loop) return;
-                if (dc.LoopType == RepeatState.One)
+                if (dc is { LoopType: RepeatState.One })
                 {
                     loop.EnableLoop();
                 }
@@ -197,7 +196,12 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                             {
                                 using var imageDataStream = imageData.GetStream();
                                 var bmp = new Bitmap(imageDataStream);
+                                var xy = Image.Source;
                                 Image.Source = bmp;
+                                if (xy is IDisposable d)
+                                {
+                                    d.Dispose();
+                                }
                                 if (config.DisableAlbumArtBlur)
                                 {
                                     return;

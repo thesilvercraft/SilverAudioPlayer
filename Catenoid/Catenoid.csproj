@@ -89,9 +89,9 @@
 		<DefineConstants Condition="$(DefineConstants.Contains('BuildForwindows'))">$(DefineConstants)SMTCFRTCADDWMID</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net8.0-windows7</TargetFramework>
-		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net8.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net10.0-windows7</TargetFramework>
+		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net10.0-windows10.0.18362.0</TargetFramework>
 		<EnableWindowsTargeting Condition="$(TargetFramework.Contains('windows'))">true</EnableWindowsTargeting>
 		<PlatformTarget Condition="$(TargetFramework.Contains('windows'))">x64</PlatformTarget>
 		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win-x64</RuntimeIdentifiers>

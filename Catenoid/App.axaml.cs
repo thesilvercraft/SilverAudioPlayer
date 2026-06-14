@@ -134,7 +134,7 @@ public class App : Application
     public static Config mwconfig;
     public static CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
     public static string _configPath;
-    public static ComandPalette ComandPalette = new();
+    public static SilverAudioPlayer.Shared.CommandPalette CommandPalette = new();
     public static MainWindow mainWindow;
     public static GuiSink sink = new();
     private static BootupLogic BootupLogic = new();
@@ -241,7 +241,7 @@ public class App : Application
                 mw.Logic.MemoryProvider?.RegisterObjectsToRemember(mainwindowMemory.ObjectsToRememberForMe);
             }
             BootupLogic.SetupMemoryLogic(mw.Logic);
-            BootupLogic.SetupCommandPalette(mw.Logic, ComandPalette, (item, memoryAsker, l) =>
+            BootupLogic.SetupCommandPalette(mw.Logic, CommandPalette, (item, memoryAsker, l) =>
             {
                 var actions = memoryAsker.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)).Select(m =>
                         new SAction

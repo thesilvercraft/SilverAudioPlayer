@@ -34,21 +34,23 @@ public class BootupLogic
     }
     public void ConfigureHttpClient()
     {
-        SilverAudioPlayer.Shared.HttpClient.Client.DefaultRequestHeaders.Add("User-Agent", "SilverAudioPlayer/6.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)");
+        SilverAudioPlayer.Shared.HttpClient.Client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "SilverAudioPlayer/8.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)");
     }
     public void SetupCrashFallNets(Action<Exception> onFatalError)
     {
         AppDomain.CurrentDomain.UnhandledException += (x, y) =>
         {
+            var ex = y.ExceptionObject as Exception ?? new Exception($"Unknown CLR Exception object: {y.ExceptionObject}");
             if (y.IsTerminating)
             {
-                Log.Fatal((Exception)y.ExceptionObject,
+                Log.Fatal(ex,
                     "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating!!!");
                 onFatalError((Exception)y.ExceptionObject);
             }
             else
             {
-                Log.Error((Exception)y.ExceptionObject,
+                Log.Error(ex,
                     "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException");
             }
         };
@@ -56,35 +58,36 @@ public class BootupLogic
         {
             Log.Fatal(y.Exception,
                 "Unhandled exception caught by TaskScheduler.UnobservedTaskException, Terminating!!!");
+            y.SetObserved();
             onFatalError(y.Exception);
         };
         RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
     }
 
-    void HandleCommandPalette<T>(ComandPalette comandPalette, ICodeInformation item, Logic<T> logic, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
+    void HandleCommandPalette<T>(CommandPalette commandPalette, ICodeInformation item, Logic<T> logic, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
     {
         switch (item)
         {
             case IAmConfigurable configurable:
-                comandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
+                commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
                 {
                     showEkorensisWindow.Invoke(configurable);
                 }));
                 break;
             case IConfigurableUiPlugin configurableUiPlugin:
-                comandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
+                commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
                 {
                     configurableUiPlugin.ConfigureUi((IConfigurableListener)x);
                 }));
                 break;
             case IPlayStreamProvider streamProvider:
-                comandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
+                commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
                 {
                     streamProvider.Use((IPlayStreamProviderListener)x);
                 }));
                 break;
             case ISyncPlugin syncPlugin:
-                comandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
+                commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
                 {
                     syncPlugin.Use((ISyncEnvironmentListener)x);
                 }));
@@ -94,7 +97,7 @@ public class BootupLogic
         {
             foreach(var cmd in exporter.GetCommands())
             {
-                comandPalette.AddItem(new CommandPaletteItem(cmd.Name, cmd.Id, (x) =>
+                commandPalette.AddItem(new CommandPaletteItem(cmd.Name, cmd.Id, (x) =>
                 {
                     exporter.RaiseCommand(cmd);
                 }));
@@ -103,7 +106,7 @@ public class BootupLogic
 
         if (item is IMusicStatusInterface musicStatusInterface)
         {
-            comandPalette.AddItem(new CommandPaletteItem("Toggle " + item.Name, "toggle " + item.GetType().Name, (x) =>
+            commandPalette.AddItem(new CommandPaletteItem("Toggle " + item.Name, "toggle " + item.GetType().Name, (x) =>
             {
                 if (musicStatusInterface.IsStarted)
                 {
@@ -117,13 +120,13 @@ public class BootupLogic
         }
         if (item is IAmOnceAgainAskingYouForYourMemory memoryAsker && logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
         {
-            comandPalette.AddItem(new CommandPaletteItem("Open config file for " + item.Name, "config file " + item.GetType().Name, (x) =>
+            commandPalette.AddItem(new CommandPaletteItem("Open config file for " + item.Name, "config file " + item.GetType().Name, (x) =>
             {
                 browseConfigLocations.Invoke(item, memoryAsker, l);
             }));
         }
     }
-    public void SetupCommandPalette<T>(Logic<T> logic, ComandPalette commandPalette, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
+    public void SetupCommandPalette<T>(Logic<T> logic, CommandPalette commandPalette, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
     {
 
         foreach (var item in ((ILogicImportable)logic).PluginCodeInformation)
@@ -145,7 +148,7 @@ public class BootupLogic
         {
             if (logic.Player is not ISelector s) return;
             var c = s.CurrentPattern;
-            if (c - 1 > 0)
+            if (c - 1 > 0) // TODO: CHECK IF PATTERN 0 EXISTS
             {
                 s.SetPattern(c - 1);
             }

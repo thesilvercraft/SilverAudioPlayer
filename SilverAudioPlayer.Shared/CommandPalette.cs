@@ -22,7 +22,7 @@ public class CommandPaletteItem(string name, string id, Action<IPlayerEnvironmen
         _exec(environment);
     }
 }
-public class ComandPalette
+public class CommandPalette
 {
     readonly List<ICommandPaletteItem> Items=[];
     public void AddItems(IEnumerable<ICommandPaletteItem> commandPaletteItems)

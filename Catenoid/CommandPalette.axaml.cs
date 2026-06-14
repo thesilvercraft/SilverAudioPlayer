@@ -31,7 +31,7 @@ public partial class CommandPalette : Window
     {
         if (SearchBox.Text != null)
         {
-            var a = App.ComandPalette.Search(SearchBox.Text);
+            var a = App.CommandPalette.Search(SearchBox.Text);
             dc.Items.Clear();
             dc.Items.AddRange(a);
         }
