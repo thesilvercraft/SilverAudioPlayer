@@ -3,7 +3,6 @@
     <Import Project="../SilverAudioPlayer.Avalonia.targets" />
 
 	<PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>

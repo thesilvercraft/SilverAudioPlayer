@@ -7,6 +7,24 @@ using SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 public class JellyFinPlayStreamProvider : IPlayStreamProvider, IExportCommands
 {
 
+    private readonly JellyFinHelper helper;
+    private Gui? gui;
+    private IMediator _mediator;
+
+    public JellyFinPlayStreamProvider(HttpClient httpClient,IMediator mediator)
+    {
+        helper = new(httpClient);
+        _mediator = mediator;
+        _mediator.OnQueryReceived += args =>
+        {
+            if (args.Query is RequestJellyFinHelper)
+            {
+                args.Handled = true;
+                args.Result = helper;
+            }
+        };
+    }
+
     public IEnumerable<ExportedCommand> GetCommands()
     {
         yield return new ExportedCommand(
@@ -23,16 +41,14 @@ public class JellyFinPlayStreamProvider : IPlayStreamProvider, IExportCommands
         }
     }
 
-    private Gui? gui;
-    private static readonly JellyFinHelper helper = new();
-
-    public static JellyFinHelper? GetJellyFinHelper()
+    public static JellyFinHelper? GetJellyFinHelper(JellyFinPlayStreamProvider provider)
     {
-        return helper;
+        return provider?.helper;
     }
+
     public void Use(IPlayStreamProviderListener env)
     {
-        gui = new Gui(env);
+        gui = new Gui(env,helper);
         gui.Show();
     }
 

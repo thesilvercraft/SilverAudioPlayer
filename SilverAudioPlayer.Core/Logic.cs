@@ -1,11 +1,15 @@
 ﻿using System.Composition;
 using System.Diagnostics;
+using System.Globalization;
 using Avalonia.Collections;
 using Avalonia.Threading;
 using FuzzySharp;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
+using SilverAudioPlayer.Shared.StandardRequests;
 using SilverMagicBytes;
 using Swordfish.NET.Collections;
 using Logger = Serilog.Core.Logger;
@@ -28,19 +32,20 @@ public interface ILogicImportable
 
 
     [Import] public IWillProvideMemory MemoryProvider { get; set; }
-    public IEnumerable<ICodeInformation> PluginCodeInformation => [
-            .. PlayProviders,
-            .. MusicStatusInterfaces,
-            .. MetadataProviders,
-            .. WakeLockInterfaces,
-            .. PlayStreamProviders,
-            .. PlaylistReaders,
-            .. SyncPlugins,
-            .. MetadataGatherers
-        ];
 
-
+    public IEnumerable<ICodeInformation> PluginCodeInformation =>
+    [
+        .. PlayProviders,
+        .. MusicStatusInterfaces,
+        .. MetadataProviders,
+        .. WakeLockInterfaces,
+        .. PlayStreamProviders,
+        .. PlaylistReaders,
+        .. SyncPlugins,
+        .. MetadataGatherers
+    ];
 }
+
 public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 {
     public readonly List<IMusicStatusInterface> LoadedMusicStatusInterfaces = [];
@@ -48,6 +53,8 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     private bool _isSortRequested;
     public Song? NextSong;
     public bool StopAutoLoading;
+    private IMediator _mediator;
+    public bool PreferAlbumReplayGain = false;
 
     public Logic(T playercontext)
     {
@@ -75,8 +82,66 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         ConcurrentObservableCollection<Song> queue = [];
         PlayerContext.GetQueue ??= () => queue;
         ChoosePlayProvider ??= (providers, _) => Task.FromResult(providers.FirstOrDefault());
+        _mediator = PlayerContext.ServiceProvider.GetRequiredService<IMediator>();
+        _mediator.OnQueryReceived += MediatorQuery;
     }
 
+    void MediatorQuery(QueryEventArgs query)
+    {
+        if (query.Query is SilverAudioPlayer.Shared.StandardRequests.RequestReplayGainInfo)
+        {
+            if (PlayerContext.CurrentSong is not { Metadata: { Entries.Count: > 0 } metadata } s) return;
+            var e = metadata.Entries;
+
+            float? TryGetReplayGainPeak(bool isAlbum)
+            {
+                if (e.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_PEAK", out var al) &&
+                    float.TryParse(al, CultureInfo.InvariantCulture, out var r))
+                {
+                    return r;
+                }
+                return null;
+            }
+
+            bool TryGetReplayGain(bool isAlbum, out float gain)
+            {
+                gain = 0;
+                if (e.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_GAIN", out var val))
+                {
+                    var cleanVal = val.Replace("dB", "", StringComparison.OrdinalIgnoreCase).Trim();
+                    return float.TryParse(cleanVal, CultureInfo.InvariantCulture, out gain);
+                }
+                return false;
+            }
+
+            bool primaryIsAlbum = PreferAlbumReplayGain;
+            bool secondaryIsAlbum = !PreferAlbumReplayGain;
+
+            bool album = primaryIsAlbum;
+            bool rgSuccess = TryGetReplayGain(primaryIsAlbum, out float r);
+
+            if (!rgSuccess)
+            {
+                album = secondaryIsAlbum;
+                rgSuccess = TryGetReplayGain(secondaryIsAlbum, out r);
+            }
+
+            float? p = TryGetReplayGainPeak(album);
+
+            query.Handled = true;
+            query.Result = new ReplayGainInfo()
+            {
+                Album = album,
+                Gain = r,
+                Peak = p,
+                Success = rgSuccess
+            };
+        }
+       /* else if (query.Query is Config)
+        {
+            
+        }*/
+    }
     public Action<Action> DoQueueManipulationAction = (a) => { Task.Run(a); };
 
     [ImportMany] public IEnumerable<IPlayProvider> PlayProviders { get; set; }
@@ -96,15 +161,17 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public Func<IEnumerable<IPlayProvider>, WrappedStream, Task<IPlayProvider?>> ChoosePlayProvider { get; set; }
 
-    public Logger Log { get; set; }
+    public ILogger Log { get; set; }
     public T PlayerContext { get; set; }
     public List<MimeType> PlayableMimes { get; set; }
     public IFullPlayerEnvironment PlayerEnvironment { get; set; }
+
     private byte Volume
     {
         get => PlayerContext.Volume;
         set => PlayerContext.Volume = value;
     }
+
     /// <summary>
     /// This Logic's current player
     /// Avoid direct interactions unless necessary 
@@ -113,7 +180,9 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
 
     IMusicStatusInterfaceListenerAdmin _musicStatusInterface;
-    public void AddMSI(IMusicStatusInterface statusInterface, IMusicStatusInterfaceListenerAdmin logicMusicInterfaceListener)
+
+    public void AddMSI(IMusicStatusInterface statusInterface,
+        IMusicStatusInterfaceListenerAdmin logicMusicInterfaceListener)
     {
         LoadedMusicStatusInterfaces.Add(statusInterface);
         _musicStatusInterface = logicMusicInterfaceListener;
@@ -143,7 +212,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     public void PlaybackStateChangedNotification(PlaybackState s)
     {
         _musicStatusInterface?.FirePlayerStateChanged(s);
-        
+
         Task.Run(() =>
         {
             switch (s)
@@ -160,7 +229,8 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     }
 
 
-    public void RemoveMsi(IMusicStatusInterface statusInterface, IMusicStatusInterfaceListener logicMusicInterfaceListener)
+    public void RemoveMsi(IMusicStatusInterface statusInterface,
+        IMusicStatusInterfaceListener logicMusicInterfaceListener)
     {
         statusInterface.StopIPC(logicMusicInterfaceListener);
         statusInterface.Dispose();
@@ -205,6 +275,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             _changeAllowed = true;
         }
     }
+
     public void SetPosition(double seconds) => SetPosition(TimeSpan.FromSeconds(seconds));
 
     public void SetPosition(TimeSpan pos) => Player?.SetPosition(pos);
@@ -214,6 +285,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         var playlistReader = PlaylistReaders.FirstOrDefault(x => x.SupportedMimes.Contains(playlistStream.MimeType));
         return playlistReader != null && playlistReader.TryParse(playlistStream, out var playlist) ? playlist : null;
     }
+
     public Func<string, bool> CheckIfPluginAllowed { get; set; } = _ => true;
 
     public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin musicStatusInterface)
@@ -231,7 +303,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                     Debug.WriteLine("mainwindowload loaded " + dangthing.GetType().FullName);
                 });
             });
-
     }
 
 
@@ -252,6 +323,34 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     {
         Player?.Pause();
         SendIfStateIsNotNull();
+    }
+
+    private Song? GetNextSongInQueue()
+    {
+        if (PlayerContext.CurrentSong == null) return null;
+        lock (PlayerContext.Queue)
+        {
+            var index = PlayerContext.Queue.IndexOf(PlayerContext.CurrentSong);
+            if (index < 0 || index + 1 >= PlayerContext.Queue.Count) return null;
+            return PlayerContext.Queue[index + 1];
+        }
+    }
+
+    private void UpdateNextSongReference()
+    {
+        if (PlayerContext.CurrentSong == null)
+        {
+            NextSong = null;
+            return;
+        }
+
+        lock (PlayerContext.Queue)
+        {
+            var index = PlayerContext.Queue.IndexOf(PlayerContext.CurrentSong);
+            NextSong = index >= 0 && index + 1 < PlayerContext.Queue.Count
+                ? PlayerContext.Queue[index + 1]
+                : null;
+        }
     }
 
     //TODO SEE IF CAN BE REPLACED WITH TASK
@@ -278,6 +377,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 return;
             }
         }
+
         Player?.Stop();
         bool newPlayerRequired = true;
         if (Player is IPlayStreams p && p.SupportedMimes?.Contains(PlayerContext.CurrentSong.Stream.MimeType) == true)
@@ -293,14 +393,23 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             if (Player != null)
             {
                 Player.PositionChanged -= OnPositionChanged;
+                if (Player is IPlayLancer oldLancer)
+                {
+                    oldLancer.NextStreamStarted -= OnNextStreamStarted;
+                }
                 Player.Dispose();
             }
+
             try
             {
                 Player = await GetPlayerFromStream(PlayerContext.CurrentSong.Stream);
                 if (Player != null)
                 {
                     Player.PositionChanged += OnPositionChanged;
+                    if (Player is IPlayLancer newLancer)
+                    {
+                        newLancer.NextStreamStarted += OnNextStreamStarted;
+                    }
                 }
             }
             catch (Exception e)
@@ -309,7 +418,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 Player?.Dispose();
                 Player = null;
             }
-
         }
 
         if (Player == null)
@@ -318,8 +426,37 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 "I do not know how to play " + PlayerContext.CurrentSong.URI);
             return;
         }
-        Serilog.Log.Information("Got player of type {PlayerType} New: {newPlayer}", Player.GetType(), newPlayerRequired);
+
+        Serilog.Log.Information("Got player of type {PlayerType} New: {newPlayer}", Player.GetType(),
+            newPlayerRequired);
         TrackChangedNotification(PlayerContext.CurrentSong);
+        UpdateNextSongReference();
+        if (Player is IPlayLancer lancer)
+        {
+            lancer.NextStreamStarted -= OnNextStreamStarted;
+            lancer.NextStreamStarted += OnNextStreamStarted;
+
+            var nextSong = GetNextSongInQueue();
+            if (nextSong != null)
+            {
+                try
+                {
+                    if (lancer.EnqueueNextStream(nextSong.Stream))
+                    {
+                        Log.Debug("Enqueued next stream for gapless playback: {NextSong}", nextSong.URI);
+                    }
+                    else
+                    {
+                        Log.Debug("Player refused to enqueue next stream: {NextSong}", nextSong.URI);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to enqueue next stream for {NextSong}", nextSong.URI);
+                }
+            }
+        }
+
         if (play)
         {
             Player.SetVolume(Volume);
@@ -341,6 +478,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             {
                 Player.TrackEnd += OutputDevice_PlaybackStopped;
             }
+
             PlayerContext?.ResetUIScrollBar?.Invoke();
             if (Player?.Length() is { } total) PlayerContext?.SetScrollBarTextTo?.Invoke(total);
             PlayerContext?.HandleLateStageMetadataAndScrollBar?.Invoke();
@@ -354,6 +492,41 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     private void OnPositionChanged(object? sender, TimeSpan e)
     {
         _musicStatusInterface?.FirePositionChanged(e);
+    }
+
+    private void OnNextStreamStarted(object? sender, EventArgs e)
+    {
+        var promotedSong = GetNextSongInQueue();
+        if (promotedSong == null) return;
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            PlayerContext.CurrentSong = promotedSong;
+            UpdateNextSongReference();
+            TrackChangedNotification(promotedSong);
+            PlayerContext?.ResetUIScrollBar?.Invoke();
+            if (Player?.Length() is { } total)
+            {
+                PlayerContext?.SetScrollBarTextTo?.Invoke(total);
+            }
+            PlayerContext?.HandleLateStageMetadataAndScrollBar?.Invoke();
+
+            var followingSong = GetNextSongInQueue();
+            if (followingSong != null && Player is IPlayLancer lancer)
+            {
+                try
+                {
+                    if (lancer.EnqueueNextStream(followingSong.Stream))
+                    {
+                        Log.Debug("Enqueued following stream for gapless playback: {NextSong}", followingSong.URI);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to enqueue following stream for {NextSong}", followingSong.URI);
+                }
+            }
+        });
     }
 
     public void RemoveTrack()
@@ -406,6 +579,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 PlayerContext.CurrentSong = null;
             }
         }
+
         Serilog.Log.Information("StopAutoLoading set to false in OutputDevice_PlaybackStopped");
         StopAutoLoading = false;
     }
@@ -424,7 +598,9 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     {
         if (SupportedPlaylistMimes().Item2.Any(file.EndsWith))
         {
-            var playlist = TryReadPlaylist(file.StartsWith("http") ? new WrappedHttpStream(file) : new WrappedFileStream(file));
+            var playlist = TryReadPlaylist(file.StartsWith("http")
+                ? new WrappedHttpStream(file, PlayerContext.ServiceProvider.GetRequiredService<HttpClient>())
+                : new WrappedFileStream(file));
             if (playlist == null) return;
             foreach (var song in playlist.Tracks)
             {
@@ -440,7 +616,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         {
             AddWithURLBad(file, file.StartsWith("http"), oneFile);
         }
-
     }
 
     public void AddWithURLBad(string f, bool http, bool oneFile)
@@ -463,10 +638,13 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             }
             else
             {
-                AddSong(new Song(new WrappedHttpStream(f), f, logic: this), !oneFile);
+                AddSong(
+                    new Song(new WrappedHttpStream(f, PlayerContext.ServiceProvider.GetRequiredService<HttpClient>()),
+                        f, logic: this), !oneFile);
             }
         }
     }
+
     public void ProcessFiles(IEnumerable<string> files)
     {
         var enumerable = files.ToList();
@@ -495,6 +673,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 ProcessFile(path, oneFile);
             }
         }
+
         SuggestDoingSort();
     }
 
@@ -511,7 +690,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public void LoadSong(WrappedStream stream)
     {
-        LoadSong(stream,null);
+        LoadSong(stream, null);
     }
 
     public void LoadSong(WrappedStream stream, IMetadata? additionalMetadata)
@@ -520,18 +699,20 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             ? new Song(stream, "unknown", logic: this, metadata: additionalMetadata)
             : new Song(stream, "unknown", logic: this));
     }
-    public void LoadSongs(IEnumerable<Tuple<WrappedStream,IMetadata?>> streams)
+
+    public void LoadSongs(IEnumerable<Tuple<WrappedStream, IMetadata?>> streams)
     {
         ArgumentNullException.ThrowIfNull(streams);
         var wrappedStreams = streams.ToList();
         if (wrappedStreams.Count == 0) return;
         var oneFile = wrappedStreams.Count == 1;
-        foreach (var (file,meta) in wrappedStreams)
+        foreach (var (file, meta) in wrappedStreams)
         {
             AddSong(meta != null
                 ? new Song(file, "unknown", logic: this, metadata: meta)
                 : new Song(file, "unknown", logic: this), true);
         }
+
         if (oneFile) return;
         SuggestDoingSort();
     }
@@ -554,7 +735,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                         track.Dispose();
                     }
                 }
-            
+
                 Log.Information("Queue cleared. Preserved currently playing track.");
             });
         }
@@ -566,32 +747,42 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         if (expectmore) return;
         SuggestDoingSort();
     }
+
     public void RemoveSong(Song song)
     {
         ArgumentNullException.ThrowIfNull(song, nameof(song));
         var index = PlayerContext.Queue.IndexOf(song);
-        if(index == -1) return;
+        if (index == -1) return;
+
+        // 1. Handle NextSong reference shifting
         if (song.Equals(NextSong))
         {
-            Log.Information("Selected is nextsong");
-            if (index + 1 < PlayerContext.Queue.Count)
-            {
-                Log.Information("NextSong is set to the next one");
-                NextSong = PlayerContext.Queue[index + 1];
-            }
-            else
-            {
-                Log.Information("NextSong is set to null");
-                NextSong = null;
-            }
+            NextSong = (index + 1 < PlayerContext.Queue.Count) ? PlayerContext.Queue[index + 1] : null;
         }
 
-        if (PlayerContext.CurrentSong?.Equals(song) != true)
+        // 2. Safely teardown if it's the active track
+        if (PlayerContext.CurrentSong?.Equals(song) == true)
         {
+            Log.Information("Removing the currently playing track. Halting engine audio pipeline first.");
+
+            // Stops the player backend and breaks the stream hook
+            RemoveTrack();
+
+            // Null out the reference so UI/Context let go of the instance
+            PlayerContext.CurrentSong = null;
+
+            // Now it is safe to tear down the HTTP connection / buffers
             song.Dispose();
         }
+        else
+        {
+            // If it's just sitting in the queue, it's safe to dispose immediately
+            song.Dispose();
+        }
+
         PlayerContext.Queue.RemoveAt(index);
     }
+
     public void RemoveSongs(IReadOnlyList<Song?> selectedItems)
     {
         foreach (var song in selectedItems.ToList())
@@ -599,47 +790,22 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             RemoveSong(song);
         }
     }
-    public void RemoveSong(int index)
-    {
-        if (index < 0 || index >= PlayerContext.Queue.Count)
-        {
-            throw new IndexOutOfRangeException("The index specified is out of the range of the queue");
-        }
-        var song = PlayerContext.Queue[index];
-        if (song.Equals(NextSong))
-        {
-            Log.Information("Selected is nextsong");
-            if (index + 1 < PlayerContext.Queue.Count)
-            {
-                Log.Information("NextSong is set to the next one");
-                NextSong = PlayerContext.Queue[index + 1];
-            }
-            else
-            {
-                Log.Information("NextSong is set to null");
-                NextSong = null;
-            }
-        }
 
-        if (PlayerContext.CurrentSong?.Equals(song) != true)
-        {
-            song.Dispose();
-        }
-        PlayerContext.Queue.RemoveAt(index);
-    }
     private readonly object _sortLock = new();
     private CancellationTokenSource? _sortCancellationTokenSource;
+
     private void SuggestDoingSort()
     {
         lock (_sortLock)
         {
             _sortCancellationTokenSource?.Cancel();
             _sortCancellationTokenSource = new CancellationTokenSource();
-            
+
             var token = _sortCancellationTokenSource.Token;
             Task.Run(async () => await DoSortAsync(token), token);
         }
     }
+
     public async Task DoSortAsync(CancellationToken cancellationToken)
     {
         try
@@ -659,7 +825,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             foreach (var album in albums)
             {
                 if (cancellationToken.IsCancellationRequested) return;
-                
+
                 var matchedGroup = fuzzedAlbums.Find(x => Fuzz.Ratio(x.Item1 ?? "", album.Key ?? "") > 80);
                 if (matchedGroup != null)
                     matchedGroup.Item2.AddRange(album.ToList());
@@ -687,6 +853,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                         PlayerContext.Queue.Add(song);
                     }
                 }
+
                 Log.Information("Sorted through {Count} songs dynamically.", sortedSongs.Count);
             });
         }
@@ -698,10 +865,12 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public async Task<IPlay?> GetPlayerFromStream(WrappedStream stream)
     {
-        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream, PlayerEnvironment);
+        return (await ChoosePlayProvider(PlayProviders.Where(x => x.CanPlayFile(stream)), stream))?.GetPlayer(stream,
+            PlayerEnvironment);
     }
 
-    public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata?>? additionalMetadata = null)
+    public Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream,
+        IEnumerable<IMetadata?>? additionalMetadata = null)
     {
         try
         {
@@ -709,24 +878,23 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 .Select(async x => await x.GetMetadata(stream)).Select(t => t.Result).Where(i => i != null).ToList();
             if (additionalMetadata != null)
             {
-                listofmetadatas.AddRange(additionalMetadata.Where(x=>x is not null));
+                listofmetadatas.AddRange(additionalMetadata.Where(x => x is not null));
             }
+
             return Task.FromResult<IMetadata?>(new MetadataCombo(listofmetadatas, MetadataGatherers));
         }
         catch (Exception e)
         {
-            Log.Error(e,"Error loading metadata from stream");
+            Log.Error(e, "Error loading metadata from stream");
             return null;
         }
-        
     }
-
 
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
     {
         return files.Where(x => !(
-            x==null ||
+            x == null ||
             x.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
             || x.EndsWith(".txt", StringComparison.InvariantCultureIgnoreCase)
             || x.EndsWith(".docx", StringComparison.InvariantCultureIgnoreCase)
@@ -764,17 +932,19 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public List<Song> GetQueueCopy()
     {
-        List<Song> r=[];
+        List<Song> r = [];
         if (PlayerContext.Queue is AvaloniaList<Song>)
         {
             Dispatcher.UIThread.Invoke(() => r = [.. PlayerContext.Queue]);
         }
         else
         {
-             r = new List<Song>(PlayerContext.Queue);
+            r = new List<Song>(PlayerContext.Queue);
         }
+
         return r;
     }
+
     private static Tuple<List<string>, List<string>> SupportedTrackMimesG(IEnumerable<MimeType> supportedMimes)
     {
         var enumerable = supportedMimes.ToList();
@@ -783,6 +953,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         var fileExt = enumerable.SelectMany(x => x.FileExtensions).ToList();
         return new(mimeTypes, fileExt);
     }
+
     public Tuple<List<string>, List<string>> SupportedTrackMimes()
     {
         return SupportedTrackMimesG(PlayableMimes);
@@ -793,6 +964,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         var playlistMimes = PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct();
         return SupportedTrackMimesG(playlistMimes);
     }
+
     public Tuple<List<string>, List<string>> SupportedTrackAndPlaylistMimes()
     {
         var (a, b) = SupportedTrackMimesG(PlayableMimes);
@@ -801,7 +973,4 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         b.AddRange(d);
         return new(a, b);
     }
-
-   
 }
-

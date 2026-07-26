@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="../SilverAudioPlayer.targets" />
+    <Import Project="../SilverAudioPlayer.Avalonia.targets" />
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="z440.atl.core" Version="5.16.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
+        <ProjectReference Include="..\SilverCraft.Ekorensis\SilverCraft.Ekorensis.csproj" />
+    </ItemGroup>
+
+</Project>

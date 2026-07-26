@@ -4,14 +4,21 @@ using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
-using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 using Timer = System.Threading.Timer;
 
 namespace SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz;
 
 [Export(typeof(IMusicStatusInterface))]
-public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
+file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
 {
+    public ListenBrainzMsi(ILogger logger,HttpClient client)
+    {
+        _logger = logger;
+        _client = client;
+    }
+
+    private HttpClient _client;
+
     public void Dispose()
     {
         l?.Dispose();
@@ -35,24 +42,22 @@ public class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAg
 
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
-        var logger = Logger.GetLogger(typeof(ListenBrainzMsi));
         if (ConfigObject.Value is not ListenBrainzConfig x || !Guid.TryParse(x.UserToken, out _))
         {
             return;
         }
 
-        l = new(HttpClient.Client, false);
+        l = new(_client, false);
         try
         {
             if (l.ValidateToken(x.UserToken).Valid != true) return;
         }
         catch (Exception e)
         {
-            logger?.Error($"ListenBrainzMsi start error {e}", e);
+            _logger?.Error($"ListenBrainzMsi start error {e}", e);
             return;
         }
 
-        _logger = logger;
         l.UserToken = x.UserToken;
         IsStarted = true;
         listener.TrackChangedNotification += TrackChanged;

@@ -13,9 +13,9 @@ using SilverConfig;
 public class MusicBrainzMetadataGatherer : IAdditionalMetadataGatherer
 {
     private string configpath = "/tmp/mb.json";
-    public MusicBrainzMetadataGatherer()
+    public MusicBrainzMetadataGatherer(IConfigPathProvider configPathProvider)
     {
-        configpath = ConfigPath.GetPath("mb.json");
+        configpath = configPathProvider.GetPath("mb.json");
         if (File.Exists(configpath))
         {
             ConfigData = JsonSerializer.Deserialize<Data>(File.ReadAllText(configpath));

@@ -9,8 +9,10 @@ using SilverCraft.Ekorensis;
 
 namespace Catenoid;
 
-public class SapAvaloniaPlayerEnviroment(Logic<MainWindowContext> Logic) : BaseEnvironment<MainWindowContext>(Logic)
+public class SapAvaloniaPlayerEnviroment(Logic<MainWindowContext> Logic, IConfigPathProvider configPathProvider) : BaseEnvironment<MainWindowContext>(Logic,configPathProvider)
 {
+  
+       
     public override string Name => "Catenoid";
 
     public override string Description => "A hackable modular audio player.";
@@ -58,7 +60,7 @@ Catenoid
 
     public override string[] KnownConfigFileLocations =>
     [
-        ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
+        _configPathProvider.GetPath("SilverAudioPlayer.Config.xml"),
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "SilverCraftAvaloniav1Shared", "dotfile.json")
     ];

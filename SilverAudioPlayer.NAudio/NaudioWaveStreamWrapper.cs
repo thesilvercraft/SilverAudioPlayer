@@ -1,12 +1,9 @@
-﻿using System.ComponentModel;
-using System.Composition;
+﻿using System.Composition;
 using System.Diagnostics;
-using System.Xml.Serialization;
 using NAudio.Wave;
 using Silver.Composition;
 using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Shared;
-using SilverConfig;
 using SilverCraft.CSCore.DSP.Resampler;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
@@ -29,29 +26,16 @@ public static class NaudioWaveStreamWrapperTypeHolder
         return instnc ??= new();
     }
 }
-public class WaveConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
-{
-    [Comment("Should the wave module try reading the album replaygain first or should it try the track replaygain first")]
 
-    public bool PreferAlbumReplayGain { get; set; } = true;
-    public bool EnableReplayGain { get; set; } = true;
-    [Comment("When gathering replaygain information use the peak if avaliable to calculate whether the amplification does not clip (aka doesnt go above 1)")]
-    public bool TrySafeReplayGain { get; set; } = true;
-    [Comment("The preamp to use for tracks without replaygain information (in dB), replaygain must be enabled, TrySafeReplayGain WONT SAVE YOU")]
-    public float PreampNoReplayGain { get; set; } = 0;
-    [Comment("The preamp to use for tracks with replaygain information (in dB), replaygain must be enabled")]
-    public float PreampReplayGain { get; set; } = 0;
-    void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
-    {
-        PropertyChanged?.Invoke(e, a);
-    }
-    [XmlIgnore] public bool AllowedToRead { get; set; } = true;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-}
 [Export(typeof(IPlayProvider))]
 public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin
 {
+    IMediator _mediator;
+    public NaudioWaveStreamWrapper(IMediator mediator)
+    {
+        _mediator = mediator;
+        player = new(_mediator);
+    }
     public ObjectToRemember ConfigObject =
     new(Guid.Parse("2374197d-6fad-4285-a7f9-5b349debc4be"), new WaveConfig());
 
@@ -756,7 +740,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     {
         return WaveFilePlayer.IsBackendAvaliable() && NaudioWaveStreamWrapperTypeHolder.Get().HasWrapper(stream);
     }
-    WaveFilePlayer player = new();
+
+    private WaveFilePlayer player;
     public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment)
     {
         if (stream is WrappedHttpStream wrappedHttpStream && !wrappedHttpStream.Seekable)

@@ -1,14 +1,12 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using Avalonia.Controls;
-using Avalonia.Media;
 using SilverCraft.AvaloniaUtils;
 
 namespace Catenoid
 {
     public static class SAPAWindowExtensions
     {
-        
         public static void DoAfterInitTasksF(this Window w, bool register=true, SubscriptionOptions? options=null, bool followOptionsOnCall=true)
         {
             if(WindowExtensions.envBackend.GetBool("SAPDoNotDoInitTasks")==true)
@@ -27,3 +25,11 @@ namespace Catenoid
         }
     }
 }
+
+
+
+
+
+
+
+

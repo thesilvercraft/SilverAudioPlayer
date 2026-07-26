@@ -8,6 +8,7 @@ using Serilog;
 using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.StandardRequests;
 using SilverCraft.CSCore;
 using SilverCraft.CSCore.Streams.SampleConverter;
 using SilverMagicBytes;
@@ -17,26 +18,26 @@ using StoppedEventArgs = NAudio.Wave.StoppedEventArgs;
 namespace SilverAudioPlayer.NAudio;
 
 [Export(typeof(IPlay))]
-public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop
+public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop, IPlayLancer
 {
     private readonly List<string> FilesToCleanUp = [];
     public IWaveProvider? audioFile;
     public WaveConfig Config;
-    private ILogger? logger;
     public IWavePlayer? outputDevice;
     public IPlayerEnvironment? playerEnvironment;
     private float ReplayGainMultiplier = 1;
     private bool SearchForReplayGain = true;
+    private IMediator _mediator;
 
-    static WaveFilePlayer()
-    {
-        LogLocation.GetFunc = Logger.GetLogger;
-    }
+    private GaplessWaveProvider? _gaplessWaveProvider;
+    private IWaveProvider? _currentWaveProvider;
+    private WrappedStream? _currentWrappedStream;
 
-    public WaveFilePlayer()
+
+    public WaveFilePlayer(IMediator m)
     {
         Debug.WriteLine("NewInstance of WaveFilePlayer");
-        logger = Logger.GetLogger(typeof(WaveFilePlayer));
+        _mediator = m;
     }
 
     public byte Volume { get; set; } = 70;
@@ -54,6 +55,11 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             FilesToCleanUp.Remove(file);
         }
 
+        _gaplessWaveProvider?.Dispose();
+        _gaplessWaveProvider = null;
+        _currentWrappedStream?.Dispose();
+        _currentWrappedStream = null;
+
         if (outputDevice != null)
         {
             outputDevice.Dispose();
@@ -64,7 +70,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             disposableaudioFile.Dispose();
         }
-        logger = null;
+        
         if (LoadedStream is { CanRead: true }) LoadedStream.Dispose();
     }
 
@@ -111,6 +117,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     }
 
     public event EventHandler<TimeSpan>? PositionChanged;
+    public event EventHandler? NextStreamStarted;
     public bool IsTrackLoaded => audioFile != null;
 
     public void Play()
@@ -121,7 +128,17 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void Stop()
     {
         outputDevice?.Stop();
-        
+
+        if (_gaplessWaveProvider != null)
+        {
+            _gaplessWaveProvider.CurrentProviderChanged -= GaplessWaveProvider_CurrentProviderChanged;
+            _gaplessWaveProvider.Dispose();
+            _gaplessWaveProvider = null;
+        }
+
+        _currentWrappedStream?.Dispose();
+        _currentWrappedStream = null;
+
         if (audioFile is IDisposable disposableaudioFile)
         {
             disposableaudioFile.Dispose();
@@ -143,75 +160,43 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public void SetVolume(byte volume)
     {
-        if (!SearchForReplayGain)
+        Volume = volume;
+
+        if (SearchForReplayGain)
         {
-            Volume = volume;
-            if (outputDevice != null) outputDevice.Volume = Math.Min(ReplayGainMultiplier*(volume / 100f), 1);
-        }
-        else
-        {
-            logger?.Information("searching for replaygain");
-            var rgSuccess = false;
-            var album = false;
+            Log.Information("Searching for ReplayGain...");
             SearchForReplayGain = false;
-            if (playerEnvironment == null) return;
-            var e = playerEnvironment.GetEntriesForCurrentTrack();
-            if(e==null) return;
-            float? TryGetReplayGainPeak(bool album)
+
+            var result = _mediator.RequestQuery(RequestReplayGainInfo.Instance);
+
+            if (result is { Success: true, Gain: { } gainValue })
             {
-                if (e != null && e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_PEAK", out var al) &&
-                    float.TryParse(al, CultureInfo.InvariantCulture, out var r)) return r;
-                return null;
-            }
-                bool TryGetReplayGain(bool album)
-                {
-                    if (!e.TryGetValue($"REPLAYGAIN_{(album ? "ALBUM" : "TRACK")}_GAIN", out var al) ||
-                        !float.TryParse(al.Split(' ')[0], CultureInfo.InvariantCulture, out var r)) return false;
-                    ReplayGainMultiplier = dBToRatio(r);
-                    return true;
-                }
+                float targetGainMultiplier = dBToRatio(gainValue);
+                float preampMultiplier = dBToRatio(Config.PreampReplayGain);
 
+                float calculatedMultiplier = targetGainMultiplier * preampMultiplier;
 
-                if (Config.PreferAlbumReplayGain)
+                if (Config.TrySafeReplayGain && result.Peak is { } peakVal && peakVal > 0)
                 {
-                    rgSuccess = TryGetReplayGain(true);
-                    album = true;
-                    if (!rgSuccess)
+                    if (peakVal * calculatedMultiplier > 1.0f)
                     {
-                        rgSuccess = TryGetReplayGain(false);
-                        album = false;
-                    }
-                }
-                else
-                {
-                    rgSuccess = TryGetReplayGain(false);
-                    album = false;
-                    if (!rgSuccess)
-                    {
-                        rgSuccess = TryGetReplayGain(true);
-                        album = true;
+                        Log.Information("ReplayGainMultiplier peaks, setting to 1/Peak");
+                        calculatedMultiplier = 1.0f / peakVal;
+                        Debug.WriteLine($"RGM went to max safe limit: {calculatedMultiplier}");
                     }
                 }
 
-            if (rgSuccess)
-            {
-                if (Config.TrySafeReplayGain && TryGetReplayGainPeak(album) is { } val)
-                {
-                    if (val != 1) ReplayGainMultiplier *= dBToRatio(Config.PreampReplayGain);
-                    if (!(val * ReplayGainMultiplier > 1)) return;
-                    logger?.Information("ReplayGainMultiplier peaks, setting to 1/Peak");
-                    ReplayGainMultiplier = 1f / val;
-                    Debug.WriteLine($"RGM went to max safe {ReplayGainMultiplier}");
-                }
-                else
-                {
-                    ReplayGainMultiplier *= dBToRatio(Config.PreampReplayGain);
-                }
+                ReplayGainMultiplier = calculatedMultiplier;
             }
             else
             {
                 ReplayGainMultiplier = dBToRatio(Config.PreampNoReplayGain);
             }
+        }
+
+        if (outputDevice != null)
+        {
+            outputDevice.Volume = Math.Min(ReplayGainMultiplier * (Volume / 100f), 1.0f);
         }
     }
 
@@ -219,7 +204,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         if (outputDevice != null)
         {
-            return audioFile switch
+            var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
+            return currentProvider switch
             {
                 WaveStream ws => ws.CurrentTime,
                 IWaveStream iws => iws.CurrentTime,
@@ -232,7 +218,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void SetPosition(TimeSpan position)
     {
         if (outputDevice == null) return;
-        switch (audioFile)
+        var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
+        switch (currentProvider)
         {
             case WaveStream ws:
                 ws.SetPosition(position);
@@ -259,9 +246,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public TimeSpan? Length()
     {
-        if (audioFile != null)
+        var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
+        if (currentProvider != null)
         {
-            return audioFile switch
+            return currentProvider switch
             {
                 WaveStream ws => ws.TotalTime,
                 IWaveStream iws => iws.TotalTime,
@@ -316,7 +304,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 }
                 catch (Exception e)
                 {
-                    logger?.Error(e, "Failed to use {WrapperType}", wrapper.GetType());
+                    Log.Error(e, "Failed to use {WrapperType}", wrapper.GetType());
                 }
         }
         else if (stream is WrappedFileStream wf)
@@ -329,7 +317,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             throw new NotSupportedException();
         }
-        logger?.Information("Using {Decoder}", Decoder);
+        Log.Information("Using {Decoder}", Decoder);
         var entries = playerEnvironment?.GetEntriesForCurrentTrack();
         if (entries != null)
         {
@@ -377,11 +365,69 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             outputDevice.Stop();
         }
 
+        _currentWaveProvider = audioFile;
+        _currentWrappedStream = stream;
+        if (_gaplessWaveProvider != null)
+        {
+            _gaplessWaveProvider.CurrentProviderChanged -= GaplessWaveProvider_CurrentProviderChanged;
+            _gaplessWaveProvider.Dispose();
+        }
+        _gaplessWaveProvider = new GaplessWaveProvider(_currentWaveProvider);
+        _gaplessWaveProvider.CurrentProviderChanged += GaplessWaveProvider_CurrentProviderChanged;
+
         ReplayGainMultiplier = 1;
         SearchForReplayGain = Config?.EnableReplayGain ?? false;
         SetVolume(Volume);
-        outputDevice?.Init(audioFile);
+        outputDevice?.Init(_gaplessWaveProvider);
         LoadedWrappedStream = stream;
+    }
+
+    public bool EnqueueNextStream(WrappedStream stream)
+    {
+        if (stream == null) throw new ArgumentNullException(nameof(stream));
+        if (_gaplessWaveProvider == null || _currentWaveProvider == null) return false;
+
+        var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream).ToList();
+        if (wrappers.Count != 0)
+        {
+            foreach (var wrapper in wrappers)
+            {
+                try
+                {
+                    var nextLoadedStream = stream.GetStream();
+                    var nextWaveProvider = wrapper.GetStream(nextLoadedStream);
+                    return _gaplessWaveProvider.Enqueue(nextWaveProvider);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to enqueue next stream using {WrapperType}", wrapper.GetType());
+                }
+            }
+        }
+        else if (stream is WrappedFileStream wf)
+        {
+            try
+            {
+                var nextWaveProvider = new AudioFileReader(wf.URL);
+                return _gaplessWaveProvider.Enqueue(nextWaveProvider);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to enqueue next file stream");
+            }
+        }
+
+        return false;
+    }
+
+    private void GaplessWaveProvider_CurrentProviderChanged(object? sender, EventArgs e)
+    {
+        if (_gaplessWaveProvider != null)
+        {
+            audioFile = _gaplessWaveProvider.CurrentProvider;
+        }
+
+        NextStreamStarted?.Invoke(this, EventArgs.Empty);
     }
 
     public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
@@ -438,18 +484,18 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             if (PortAudioSoundOut.IsSupported() && CheckForBlocklist()!=true)
             {
-                logger?.Information("initing backend CSCorePlayer PortAudioSoundOut");
+                Log.Information("initing backend CSCorePlayer PortAudioSoundOut");
                 outputDevice = new CSCorePlayer(new PortAudioSoundOut());
             }
             else if (ALSoundOut.IsSupported)
             {
-                logger?.Information("initing backend CSCorePlayer ALSoundOut");
+                Log.Information("initing backend CSCorePlayer ALSoundOut");
                 outputDevice = new CSCorePlayer(new ALSoundOut(50));
             }
         }
         else
         {
-            logger?.Information("initing backend naudio WaveOutEvent");
+            Log.Information("initing backend naudio WaveOutEvent");
             outputDevice = new WavePlayerCompatibilityLayer(new WaveOutEvent());
         }
     }

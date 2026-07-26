@@ -39,11 +39,19 @@ public enum Confidence : byte
     /// </summary>
     Confident
 }
-[Obsolete("SilverAudioPlayer doesn't make use of this yet")]
 public interface IPlayLancer : IPlayStreams
 {
-    [Obsolete("SilverAudioPlayer doesn't make use of this yet")]
+    /// <summary>
+    /// Queues the next stream for seamless playback inside the current player.
+    /// </summary>
+    /// <param name="stream">The next stream to play.</param>
+    /// <returns>True when the stream was queued successfully.</returns>
     bool EnqueueNextStream(WrappedStream stream);
+
+    /// <summary>
+    /// Raised when the player switches to the next queued stream.
+    /// </summary>
+    event EventHandler? NextStreamStarted;
 }
 public interface ISelector
 {

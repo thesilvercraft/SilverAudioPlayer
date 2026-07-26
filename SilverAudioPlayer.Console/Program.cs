@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Silver.Composition;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
-using Logger = SilverAudioPlayer.Shared.Logger;
 namespace SilverAudioPlayer.Console;
 
 public class App
@@ -18,28 +18,20 @@ public class App
         Config mwconfig;
         CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
         string _configPath;
-        BootupLogic.ConfigureConfigPath();
-        _configPath = ConfigPath.GetPath("SilverAudioPlayer.Config.xml");
+        var services = BootupLogic.BuildServices();
+        var configPathProvider = services.GetRequiredService<IConfigPathProvider>();
+        _configPath = configPathProvider.GetPath("SilverAudioPlayer.Config.xml");
         mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
-        BootupLogic.ConfigureHttpClient();
         if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
         mwconfig = mwconfreader.Read(_configPath) ?? new Config();
-        if (mwconfig.UserLogPreferences == ConfigStyle.Unknown)
-        {
-            //TODO: show user dialog to choose
-        }
-        //TODO: logging based on config
-        var logger = new LoggerConfiguration()
-            .WriteTo.Debug(LogEventLevel.Debug)
-            .CreateLogger();
+        var logger = services.GetRequiredService<ILogger>();
         Log.Logger = logger;
         BootupLogic.SetupCrashFallNets(System.Console.Error.WriteLine);
-        Logger.GetLoggerFunc += logger.ForContext;
-        Context context = new();
+        Context context = new(){ServiceProvider = services};
         Logic<Context> Logic = new(context);
-        ConsoleEnvironment env = new(Logic);
+        ConsoleEnvironment env = new(Logic,configPathProvider);
         Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
-        PlatformLogicHelper.SatisfyImports(Logic);
+        PlatformLogicHelper.SatisfyImports(Logic,services);
         if (Logic.PlayProviders == null)
             throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
         Logic.PlayableMimes = [];

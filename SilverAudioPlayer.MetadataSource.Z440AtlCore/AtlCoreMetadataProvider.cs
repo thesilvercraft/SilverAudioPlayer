@@ -1,7 +1,7 @@
 ﻿using System.Composition;
 using ATL;
 using ATL.Logging;
-using Serilog.Events;
+using Microsoft.Extensions.Logging;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
@@ -15,9 +15,9 @@ public class AtlCoreFileMetadataProvider : IMetadataProvider,
     IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin, IMetadataPictureOptOut
  {
 
-    public AtlCoreFileMetadataProvider()
+    public AtlCoreFileMetadataProvider(ILogger<AtlCoreFileMetadataProvider> logger)
     {
-        log = new();
+        log = new(logger);
     }
     ATLSerilogDevice log;
     public ObjectToRemember ConfigObject =
@@ -123,23 +123,23 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
 public class ATLSerilogDevice : ILogDevice
 {
   Log theLog = new();
-  Serilog.ILogger? logger;
-  public ATLSerilogDevice()
+ ILogger? logger;
+  public ATLSerilogDevice(ILogger<AtlCoreFileMetadataProvider> logger)
   {
       LogDelegator.SetLog(ref theLog);
       theLog.Register(this);
-      logger = Logger.GetLogger(typeof(AtlCoreFileMetadataProvider));
+      this.logger = logger;
 
   }
 
   public void DoLog(Log.LogItem anItem)
   {
-      logger.Write(anItem.Level switch
+      logger.Log(anItem.Level switch
       {
-          8 => LogEventLevel.Debug,
-          4 => LogEventLevel.Information,
-          2 => LogEventLevel.Warning,
-          1 => LogEventLevel.Error,
+          8 => LogLevel.Debug,
+          4 => LogLevel.Information,
+          2 => LogLevel.Warning,
+          1 => LogLevel.Error,
           _ => throw new NotImplementedException(),
       }, anItem.Location + " | " + anItem.Message);
   }

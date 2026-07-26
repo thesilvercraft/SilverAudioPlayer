@@ -1,3 +1,6 @@
+using Serilog;
+using Serilog.Core;
+
 namespace SilverAudioPlayer.Shared.Metadata;
 
 public interface IMetadataCombo : IMetadata
@@ -28,7 +31,7 @@ public class MetadataCombo : IMetadataCombo
             }
             catch (Exception e)
             {
-                Logger.GetLogger(GetType())?.Error(e,"Error while trying to parse unsynced lyrics as lyrics");
+                Log.Error(e,"Error while trying to parse unsynced lyrics as lyrics");
             }
         }
         DiscNumber = metadata.Select(x => x.DiscNumber).MaxBy(x => x is not null);

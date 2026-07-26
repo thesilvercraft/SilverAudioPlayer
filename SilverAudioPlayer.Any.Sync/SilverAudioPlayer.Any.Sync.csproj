@@ -2,7 +2,6 @@
 	<Import Project="../SilverAudioPlayer.targets" />
     <Import Project="../SilverAudioPlayer.Avalonia.targets" />
 	<PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <LangVersion>default</LangVersion>

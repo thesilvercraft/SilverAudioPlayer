@@ -10,24 +10,24 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 {
     private readonly IRefreshableStream inside;
 
-    public WrappedHttpStream(string url) : this(new HttpRequestMessage(HttpMethod.Get, url))
+    public WrappedHttpStream(string url, HttpClient client) : this(new HttpRequestMessage(HttpMethod.Get, url),client)
     {
     }
 
-    public WrappedHttpStream(HttpRequestMessage requestMessage)
+    public WrappedHttpStream(HttpRequestMessage requestMessage, HttpClient client)
     {
-        var stype = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage);
+        var stype = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage,client);
         switch (stype)
         {
             case { Item2: true }:
-                inside = new HttpSeekableStream(requestMessage) { IsParent = true };
+                inside = new HttpSeekableStream(requestMessage,client) { IsParent = true };
                 Seekable = true;
                 break;
             case null:
-                inside = new NoEndHttpStream(requestMessage);
+                inside = new NoEndHttpStream(requestMessage,client);
                 break;
             default:
-                inside = new WrappedSusHttpStream(requestMessage);
+                inside = new WrappedSusHttpStream(requestMessage,client);
                 break;
         }
 
@@ -36,6 +36,7 @@ public class WrappedHttpStream : WrappedStream, IDisposable
     }
 
     public bool Seekable { get; }
+    public override bool IsSeekable => Seekable;
     public override MimeType MimeType => _MimeType;
     private MimeType _MimeType { get; }
 

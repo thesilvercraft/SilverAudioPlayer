@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,13 +27,14 @@ internal static class Program
             {
                 if (WindowExtensions.envBackend.GetString("SAPIgnoreMutex") == null)
                 {
+                    var shortLivedHttpClient = new HttpClient();
                     if (!mutex.WaitOne(0, false))
                     {
                         if (args is { Length: > 0 })
                         {
                             try
                             {
-                                var r = Task.Run(async () => await SilverAudioPlayer.Shared.HttpClient.Client.PostAsync("http://localhost:36169/loadfiles", JsonContent.Create(args))).GetAwaiter().GetResult();
+                                var r = Task.Run(async () => await shortLivedHttpClient.PostAsync("http://localhost:36169/loadfiles", JsonContent.Create(args))).GetAwaiter().GetResult();
                                 r.EnsureSuccessStatusCode();
                             }
                             catch (Exception ex)
@@ -48,7 +50,7 @@ internal static class Program
                         {
                             try
                             {
-                                var r = Task.Run(async () => await SilverAudioPlayer.Shared.HttpClient.Client.GetAsync("http://localhost:36169/state")).GetAwaiter().GetResult();
+                                var r = Task.Run(async () => await shortLivedHttpClient.GetAsync("http://localhost:36169/state")).GetAwaiter().GetResult();
                                 r.EnsureSuccessStatusCode();
 
                             }
@@ -92,6 +94,7 @@ internal static class Program
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .UseWayland()
             .LogToTrace();
     }
 }

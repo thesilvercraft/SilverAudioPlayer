@@ -45,8 +45,6 @@ public static class ConstStrings
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
-    private ILogger? Logger;
-
     public Settings()
     {
         InitializeComponent();
@@ -56,7 +54,6 @@ public partial class Settings : Window
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
 
-        Logger = SilverAudioPlayer.Shared.Logger.GetLogger(typeof(Settings));
         this.DoAfterInitTasksF();
     }
 
@@ -415,7 +412,7 @@ public partial class Settings : Window
             instance?.Use(x => { });
             if (instance?.MimeType is not SVGMime)
             {
-                Logger?.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",
+                Log.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",
                     instance?.MimeType);
                 return;
             }

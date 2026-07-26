@@ -2,13 +2,13 @@
 	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Tmds.DBus" Version="0.21.2" />
+    <PackageReference Include="Tmds.DBus" Version="0.94.2" />
   </ItemGroup>
 
   <ItemGroup>

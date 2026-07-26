@@ -7,9 +7,16 @@ using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
+class RequestJellyFinHelper():IQuery<JellyFinHelper?>
+{}
 [Export(typeof(IMusicStatusInterface))]
 public partial class JellyFinPlaybackTracker:IMusicStatusInterface
 {
+    private IMediator _mediator;
+    public JellyFinPlaybackTracker(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
     public void Dispose()
     {
     }
@@ -35,7 +42,8 @@ public partial class JellyFinPlaybackTracker:IMusicStatusInterface
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         if(_started) return;
-        var helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
+        var r= _mediator.RequestQuery(new RequestJellyFinHelper());
+        var helper = r;
         if (!helper.GetValidUser()) return;
         this.helper = helper;
         this.listener = listener;

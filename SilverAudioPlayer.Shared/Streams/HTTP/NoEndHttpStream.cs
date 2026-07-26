@@ -1,21 +1,19 @@
 namespace SilverAudioPlayer.Shared;
 
-public class NoEndHttpStream : IRefreshableStream, IDisposable
+public class NoEndHttpStream(HttpRequestMessage requestMessage, HttpClient client) : IRefreshableStream, IDisposable
 {
     private bool _disposedValue;
-    public NoEndHttpStream(HttpRequestMessage requestMessage)
-    {
-        RequestMessage = requestMessage;
-    }
+
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    public HttpRequestMessage RequestMessage { get; }
+    public HttpRequestMessage RequestMessage { get; } = requestMessage;
+
     public Stream GetStream()
     {
-        return HttpClient.Client
+        return client
             .Send(new HttpRequestMessage(RequestMessage.Method, RequestMessage.RequestUri),
                 HttpCompletionOption.ResponseHeadersRead).Content.ReadAsStream();
     }

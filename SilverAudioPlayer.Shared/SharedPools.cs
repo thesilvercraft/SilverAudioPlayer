@@ -20,13 +20,8 @@ namespace SilverAudioPlayer.Shared
         public string SharedId { get; internal set; } = sharedId;
         public T Object { get; internal set; } = obj;
     }
-    class SharedPool<T> : ISharedPool<T> where T : IDisposable
+    public  class SharedPool<T> : ISharedPool<T> where T : IDisposable
     {
-        private ILogger? _logger;
-        public SharedPool()
-        {
-            _logger = Logger.GetLogger(typeof(SharedPool<T>));
-        }
         private readonly Dictionary<string, List<RelianceOnShared<T>>> _reliances = [];
         private readonly object _reliancesLock = new();
         public Dictionary<string, List<RelianceOnShared<T>>> Reliances => _reliances;
@@ -56,7 +51,6 @@ namespace SilverAudioPlayer.Shared
                 Reliances.Remove(reliance.SharedId);
                 if (Shared.FirstOrDefault(x => x.SharedId == reliance.SharedId) is not
                     { } sharedStream) return;
-                _logger?.Debug("remove str {RelianceSharedStreamId}", reliance.SharedId);
                 sharedStream.Object.Dispose();
             }
         }

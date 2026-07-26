@@ -9,6 +9,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using SilverAudioPlayer.Shared;
 
@@ -23,7 +24,7 @@ public partial class PlaylistWindow : Window
     {
         InitializeComponent();
         this.mainWindow = mainWindow;
-        PlaylistPath=    ConfigPath.GetPath("Playlists");
+        PlaylistPath=  mainWindow.Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath("Playlists");
         dataContext = new();
         dataContext.Playlists.AddRange(Directory.GetFiles(PlaylistPath));
 

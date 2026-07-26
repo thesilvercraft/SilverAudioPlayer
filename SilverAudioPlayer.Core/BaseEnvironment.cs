@@ -18,10 +18,11 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     private bool _timerEnabled = false;
     private bool _isDisposed = false;
     private Timer? _timer=null; // TODO: DISPOSE
-    
-    public BaseEnvironment(Logic<T> Logic)
+    protected internal IConfigPathProvider _configPathProvider;
+    public BaseEnvironment(Logic<T> Logic, IConfigPathProvider configPathProvider)
     {
         this.Logic = Logic;
+        this._configPathProvider=configPathProvider;
         _timer = new Timer(TimerElapsed, null, Timeout.Infinite, Timeout.Infinite);
     }
    
@@ -173,7 +174,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public virtual string[] KnownConfigFileLocations =>
     [
-        ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
+        _configPathProvider.GetPath("SilverAudioPlayer.Config.xml"),
     ];
 
     public virtual IConfigurableWindow? TryGetWindow(IEnumerable<IConfigurableElement> elements)

@@ -11,14 +11,17 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
     public class SilverConfigMemoryProvider : IWillProvideMemory, IWillTellYouWhereIStoreTheConfigs
     {
         private ILogger? logger;
+        private IConfigPathProvider _configPathProvider;
 
-        public SilverConfigMemoryProvider()
+        public SilverConfigMemoryProvider(ILogger logger, IConfigPathProvider configPathProvider)
         {
-            logger = Logger.GetLogger(typeof(SilverConfigMemoryProvider));
+            _configPathProvider = configPathProvider;
+            this.logger = logger;
+            _basedir = _configPathProvider.GetPath("Pandora");
         }
 
         List<RememberedConfig> ConfigMemory = [];
-        readonly string _basedir = ConfigPath.GetPath("Pandora");
+        private string _basedir;
 
         public void RegisterObjectsToRemember(IEnumerable<ObjectToRemember> objectsToRemember)
         {
@@ -57,14 +60,14 @@ namespace SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider
                     obj.Value = x;
                     if (obj.Value is INotifyPropertyChanged y)
                     {
-                        y.PropertyChanged += (x, y) =>
+                        void OnYOnPropertyChanged(object? x, PropertyChangedEventArgs _)
                         {
-                            if (x != obj.Value || obj.Value is not ICanBeToldThatAPartOfMeIsChanged L ||
-                                !L.AllowedToRead) return;
+                            if (x != obj.Value || obj.Value is not ICanBeToldThatAPartOfMeIsChanged { AllowedToRead: true } L) return;
                             L.AllowedToRead = false;
                             genericType.GetMethod("Write")?.Invoke(reader, [obj.Value, loc]);
                             L.AllowedToRead = true;
-                        };
+                        }
+                        y.PropertyChanged += OnYOnPropertyChanged;
                     }
                     ConfigMemory.Add(new(obj, reader, loc, genericType));
                 }

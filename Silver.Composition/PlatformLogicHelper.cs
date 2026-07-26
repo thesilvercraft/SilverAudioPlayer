@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Silver.Composition;
 
@@ -11,12 +12,14 @@ public class WrappedAssembly : IDisposable
     UnloadableAssemblyLoadContext alc = new();
     internal Assembly Assembly { get; set; }
     public string Path { get; set; }
-    internal WrappedAssembly(Assembly a) 
+
+    internal WrappedAssembly(Assembly a)
     {
-        Assembly=a;
-        alc=null;
-        Path=null;
+        Assembly = a;
+        alc = null;
+        Path = null;
     }
+
     public WrappedAssembly(string path)
     {
         Path = path;
@@ -27,7 +30,7 @@ public class WrappedAssembly : IDisposable
 
     public void Dispose()
     {
-        if (alc!=null && alc.IsCollectible)
+        if (alc != null && alc.IsCollectible)
         {
             alc.Unload();
         }
@@ -86,21 +89,32 @@ class UnloadableAssemblyLoadContext : AssemblyLoadContext
 
 public static class Helper
 {
-    public static IEnumerable<T> GetFromAssembly<T>(Assembly assembly) =>
+    public static IEnumerable<T> GetFromAssembly<T>(Assembly assembly, IServiceProvider? serviceProvider = null) =>
         assembly.GetTypes()
             .Where(type =>
-                typeof(T).IsAssignableFrom(type) && type.GetCustomAttributes().Any(x =>
+                typeof(T).IsAssignableFrom(type) &&
+                type is { IsAbstract: false, IsInterface: false } &&
+                type.GetCustomAttributes().Any(x =>
                     x is System.Composition.ExportAttribute or System.ComponentModel.Composition.ExportAttribute))
-            .Select(type => type.GetConstructor(Type.EmptyTypes))
-            .Where(constructor => constructor != null)
-            .Select(constructor => (T)constructor.Invoke(null))
-            .Where(result => result != null);
+            .Select(type =>
+            {
+                if (serviceProvider != null)
+                {
+                    return (T)ActivatorUtilities.CreateInstance(serviceProvider, type);
+                }
 
-    public static IEnumerable<T> GetFromAssemblies<T>(IEnumerable<Assembly> assemblies) =>
-        assemblies.SelectMany(GetFromAssembly<T>);
+                var constructor = type.GetConstructor(Type.EmptyTypes);
+                return constructor != null ? (T)constructor.Invoke(null) : default;
+            })
+            .Where(result => result != null)!;
 
-    public static IEnumerable<T> GetFromAssembliesWrapped<T>(IEnumerable<WrappedAssembly> assemblies) =>
-        assemblies.SelectMany(a => GetFromAssembly<T>(a));
+    public static IEnumerable<T> GetFromAssemblies<T>(IEnumerable<Assembly> assemblies,
+        IServiceProvider? serviceProvider = null) =>
+        assemblies.SelectMany(a => GetFromAssembly<T>(a, serviceProvider));
+
+    public static IEnumerable<T> GetFromAssembliesWrapped<T>(IEnumerable<WrappedAssembly> assemblies,
+        IServiceProvider? serviceProvider = null) =>
+        assemblies.SelectMany(a => GetFromAssembly<T>(a, serviceProvider));
 }
 
 public static class PlatformLogicHelper
@@ -118,33 +132,37 @@ public static class PlatformLogicHelper
         return Helper.GetFromAssembliesWrapped<T>(assemblies).First();
     }
 
-    public static void SatisfyImports(object a, bool tolist = true)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="tolist"> Set tolist = false only if the properties on object a receiving [ImportMany] are typed as IEnumerable<T>.</param>
+    public static void SatisfyImports(object a, IServiceProvider? serviceProvider = null, bool tolist = true)
     {
         RefreshCatalogsAndAssemblies();
+
         foreach (var field in a.GetType().GetProperties().Where(field => field.GetCustomAttributes().Any(x =>
                      x is System.Composition.ImportManyAttribute
                          or System.ComponentModel.Composition.ImportManyAttribute)))
         {
-            var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped")
-                ?.MakeGenericMethod(field.PropertyType.GetGenericArguments()[0])
-                .Invoke(null, [assemblies]);
-            if (field.PropertyType.IsInstanceOfType(res))
+            var elementType = field.PropertyType.GetGenericArguments()[0];
+
+            var res = typeof(Helper).GetMethod(nameof(Helper.GetFromAssembliesWrapped))
+                ?.MakeGenericMethod(elementType)
+                .Invoke(null, [assemblies, serviceProvider]);
+
+            if (res != null)
             {
                 if (tolist)
                 {
-                    field.SetValue(a,
-                        typeof(List<>).MakeGenericType(field.PropertyType.GetGenericArguments()[0])
-                            .GetConstructor([res.GetType()]).Invoke([res]));
+                    var listType = typeof(List<>).MakeGenericType(elementType);
+                    var listInstance = Activator.CreateInstance(listType, res);
+                    field.SetValue(a, listInstance);
                 }
                 else
                 {
                     field.SetValue(a, res);
                 }
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res?.GetType()?.ToString()?? "null type"}");
             }
         }
 
@@ -152,46 +170,21 @@ public static class PlatformLogicHelper
                      x is System.Composition.ImportAttribute
                          or System.ComponentModel.Composition.ImportAttribute)))
         {
-            var res = typeof(Helper).GetMethod("GetFromAssembliesWrapped")
+            var res = typeof(Helper).GetMethod(nameof(Helper.GetFromAssembliesWrapped))
                 ?.MakeGenericMethod(field.PropertyType)
-                .Invoke(null, new[] { assemblies });
-            var resType = typeof(IEnumerable<>).MakeGenericType(field.PropertyType);
-            if (resType.IsInstanceOfType(res))
-            {
-                if (res is not IEnumerable enumerable) continue;
-                var current = enumerable.GetEnumerator();
-                if (current.MoveNext())
-                {
-                    field.SetValue(a, current.Current);
-                }
-                else
-                {
-                    Console.WriteLine(
-                        $"No matching object was found for {field.Name}.");
-                }
-            }
-            else
-            {
-                Console.WriteLine(
-                    $"Failed to set {field.Name}, its type {field.PropertyType} differs from {res?.GetType()?.ToString() ?? "null type"}");
-            }
-        }
+                .Invoke(null, [assemblies, serviceProvider]);
 
-        foreach (var catalog in catalogs)
-        {
-            /*catalog.Change += (sender, s) =>
+            if (res is IEnumerable enumerable)
             {
-                var a = assemblies.First(x => x.Path == s);
-                a.Dispose();
-            };
-            catalog.Delete += (sender, s) =>
-            {
-                var a = assemblies.First(x => x.Path == s);
-                a.Dispose();
-            };*/
+                var enumerator = enumerable.GetEnumerator();
+                if (enumerator.MoveNext())
+                {
+                    field.SetValue(a, enumerator.Current);
+                }
+            }
         }
     }
-    /// <summary>
+
     /// For use to not load the same thing twice, you might not want to use this
     /// </summary>
     /// <param name="a">the already loaded assembly</param>
@@ -199,6 +192,7 @@ public static class PlatformLogicHelper
     {
         assemblies.Add(new WrappedAssembly(a));
     }
+
     public static void RefreshCatalogsAndAssemblies()
     {
         if (assemblies.Count == 0)

@@ -7,11 +7,11 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
 
     public HttpRequestMessage RequestMessage { get; }
 
-    public WrappedSusHttpStream(HttpRequestMessage requestMessage)
+    public WrappedSusHttpStream(HttpRequestMessage requestMessage, HttpClient client)
     {
         RequestMessage = requestMessage;
         
-        using var response = HttpClient.Client.Send(requestMessage, HttpCompletionOption.ResponseContentRead);
+        using var response = client.Send(requestMessage, HttpCompletionOption.ResponseContentRead);
         response.EnsureSuccessStatusCode();
 
         using var responseStream = response.Content.ReadAsStream();

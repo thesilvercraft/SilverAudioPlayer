@@ -26,12 +26,13 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     private HttpResponseMessage? _iMessage;
     private Stream? _internalStream;
     public bool IsParent { get; set; }
-
-    public HttpSeekableStream(HttpRequestMessage requestMessage)
+    private HttpClient _client;
+    public HttpSeekableStream(HttpRequestMessage requestMessage, HttpClient client)
     {
         RequestMessage = requestMessage;
+        _client = client;
         _chunkCache = new ConcurrentDictionary<long, Task<Memory<byte>>>();
-        var result = GetLengthAndRangeSupport(RequestMessage);
+        var result = GetLengthAndRangeSupport(RequestMessage,_client);
         if (result != null)
         {
             Length = result.Item1;
@@ -39,12 +40,13 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         }
     }
 
-    public HttpSeekableStream(string getURL) : this(new HttpRequestMessage(HttpMethod.Get, getURL))
+    public HttpSeekableStream(string getURL, HttpClient client) : this(new HttpRequestMessage(HttpMethod.Get, getURL), client)
     {
     }
 
     public HttpSeekableStream(HttpSeekableStream parent)
     {
+        _client = parent._client;
         _chunkCache = parent._chunkCache;
         RequestMessage = parent.RequestMessage;
         _rangeSupport = parent._rangeSupport;
@@ -95,10 +97,10 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         return clone;
     }
 
-    public static Tuple<long, bool>? GetLengthAndRangeSupport(HttpRequestMessage requestMessage)
+    public static Tuple<long, bool>? GetLengthAndRangeSupport(HttpRequestMessage requestMessage, HttpClient client)
     {
         using var clone = CloneMessage(requestMessage);
-        using var r = HttpClient.Client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
+        using var r = client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
         if (r.IsSuccessStatusCode)
         {
             if (r.Content.Headers.ContentLength is { } length)
@@ -119,7 +121,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         if (_rangeSupport)
             clone.Headers.Range = new RangeHeaderValue(byteToStartAt, byteToStartAt + BuffLength - 1);
 
-        using var response = await HttpClient.Client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+        using var response = await _client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
             throw new Exception($"HTTP Status code {response.StatusCode} fetching chunk {chunkNum}");
 
@@ -201,7 +203,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         if (_internalStream == null)
         {
             using var clone = CloneMessage(RequestMessage);
-            var r = HttpClient.Client.Send(clone, HttpCompletionOption.ResponseContentRead);
+            var r = _client.Send(clone, HttpCompletionOption.ResponseContentRead);
             _iMessage = r;
             _internalStream = r.Content.ReadAsStream();
         }
@@ -218,7 +220,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             if (_internalStream == null)
             {
                 using var clone = CloneMessage(RequestMessage);
-                var r = HttpClient.Client.Send(clone, HttpCompletionOption.ResponseContentRead);
+                var r = _client.Send(clone, HttpCompletionOption.ResponseContentRead);
                 _iMessage = r;
                 _internalStream = r.Content.ReadAsStream();
             }

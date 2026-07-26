@@ -6,8 +6,8 @@ using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Serilog;
+using Serilog.Core;
 using SilverAudioPlayer.Shared;
-using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 
@@ -32,21 +32,25 @@ public class JellyFinHelper
     private UserDto userDto;
     private bool validServer;
     private bool validUser;
-
-    public JellyFinHelper()
+    private HttpClient _httpClient;
+    public JellyFinHelper(HttpClient httpClient)
     {
-        logger = Logger.GetLogger(typeof(JellyFinHelper)) ?? Log.Logger;
-
+        logger =  Log.Logger;
+        _httpClient = httpClient;
         settings = new JellyfinSdkSettings();
         settings.Initialize(
             "Catenoid",
             typeof(JellyFinHelper).Assembly.GetName().Version.ToString(),
             Environment.MachineName,
             "1");
+            
         jellyfinAuthentication = new JellyfinAuthenticationProvider(settings);
-        jellyfinRequestAdapter = new JellyfinRequestAdapter(jellyfinAuthentication, settings, HttpClient.Client);
+        jellyfinRequestAdapter = new JellyfinRequestAdapter(jellyfinAuthentication, settings, httpClient);
         apiClient = new JellyfinApiClient(jellyfinRequestAdapter);
         app = PublicClientApplicationBuilder.Create(SilverAudioPlayerJellyfinGuid).Build();
+        
+        // Note: This still uses a sync-over-async pattern. 
+        // Consider moving this logic to a proper initialization sequence if possible.
         Task.Run(async () => await MoreLibSecretStuff()).GetAwaiter().GetResult();
     }
 
@@ -143,8 +147,6 @@ public class JellyFinHelper
                     new TraceSource(TraceSourceName))
                 .ConfigureAwait(false);
 
-            // the underlying persistence mechanism might not be usable
-            // this typically happens on Linux over SSH
             cacheHelper.VerifyPersistence();
 
             return cacheHelper;
@@ -169,7 +171,7 @@ public class JellyFinHelper
     {
         var a = await apiClient.Items.GetAsync(configuration =>
             configuration.QueryParameters.ParentId =
-                dto.Id); // itemsClient.GetItemsByUserIdAsync(userDto.Id, parentId: dto.Id)
+                dto.Id); 
         return a.Items;
     }
 
@@ -198,6 +200,7 @@ public class JellyFinHelper
                 LinuxKeyRingAttr2);
         return storageProperties.Build();
     }
+
 
     public async Task<bool> TryLogInAsync(string username, string password)
     {
@@ -247,7 +250,7 @@ public class JellyFinHelper
         using var s_cts = new CancellationTokenSource();
         try
         {
-            s_cts.CancelAfter(250); // if your jellyfin server is slower than that, you have other problems
+            s_cts.CancelAfter(250); 
             var systemInfo = await apiClient.System.Info.Public.GetAsync(cancellationToken: s_cts.Token)
                 .ConfigureAwait(false);
             validServer = true;
@@ -272,7 +275,7 @@ public class JellyFinHelper
         var baseUri = new Uri(settings.ServerUrl);
         var audioUri = new Uri(baseUri,
             $"/Audio/{dto.Id}/universal?UserId={userDto.Id}&DeviceId=1&MaxStreamingBitrate=140000000&Container=opus%2Cwebm%7Copus%2Cmp3%2Caac%2Cm4a%7Caac%2Cm4b%7Caac%2Cflac%2Cwebma%2Cwebm%7Cwebma%2Cwav%2Cogg&TranscodingContainer=ts&TranscodingProtocol=hls&AudioCodec=aac&api_key={settings.AccessToken}&PlaySessionId=1&StartTimeTicks=0&EnableRedirection=true&EnableRemoteMedia=false");
-        return new WrappedHttpStream(audioUri.ToString());
+        return new WrappedHttpStream(audioUri.ToString(), _httpClient);
     }
 
     public async Task<IReadOnlyList<BaseItemDto>> InstantMix(BaseItemDto dto)
@@ -285,7 +288,6 @@ public class JellyFinHelper
 
     public async Task<Tuple<WrappedStream, string>?> GetImageStreamAndId(BaseItemDto dto)
     {
-        // If both are null, no image is available
         if (dto.ImageTags == null && dto.AlbumPrimaryImageTag == null)
             return null;
 
@@ -305,7 +307,7 @@ public class JellyFinHelper
             var uri = apiClient.BuildUri(ri);
             var r = new HttpRequestMessage(HttpMethod.Get, uri);
             r.Headers.Add("X-Emby-Token", settings.AccessToken);
-            return new Tuple<WrappedStream, string>(new WrappedHttpStream(r), desiredId);
+            return new Tuple<WrappedStream, string>(new WrappedHttpStream(r, _httpClient), desiredId);
         }
         catch (Exception ex)
         {

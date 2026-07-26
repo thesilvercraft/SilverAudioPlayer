@@ -3,7 +3,7 @@
     <Import Project="../SilverAudioPlayer.Avalonia.targets" />
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <Configurations>Debug;Release</Configurations>
@@ -12,6 +12,9 @@
     <ItemGroup>
         <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.16" />
         <PackageReference Include="FuzzySharp" Version="2.0.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+        <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     </ItemGroup>
 
     <ItemGroup>

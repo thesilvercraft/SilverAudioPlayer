@@ -7,6 +7,7 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 {
     private readonly Assembly Assembly;
     private bool disposedValue;
+    public override bool IsSeekable => true;
     public WrappedEmbeddedResourceStream(Assembly assembly, string resourceLoc)
     {
         Assembly = assembly;

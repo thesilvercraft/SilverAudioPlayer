@@ -26,10 +26,11 @@ public partial class Gui : Window
 
     private readonly IPlayStreamProviderListener ProviderListner;
 
-    public Gui()
+    public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider, JellyFinHelper helper)
     {
         InitializeComponent();
-        helper = JellyFinPlayStreamProvider.GetJellyFinHelper();
+        ProviderListner = jellyFinPlayStreamProvider;
+        this.helper = helper; 
         Opened += Gui_Opened;
         g = new GuiBinding();
         DataContext = g;
@@ -39,11 +40,7 @@ public partial class Gui : Window
         LB.DoubleTapped += LB_DoubleTapped;
         Closed += OnClosed;
     }
-
-    public Gui(IPlayStreamProviderListener jellyFinPlayStreamProvider) : this()
-    {
-        ProviderListner = jellyFinPlayStreamProvider;
-    }
+  
 
     protected void OnClosed(object? o, EventArgs e)
     {

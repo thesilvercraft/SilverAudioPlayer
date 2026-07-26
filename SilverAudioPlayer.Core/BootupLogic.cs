@@ -1,15 +1,49 @@
 using System.Collections;
+using Microsoft.Extensions.Configuration;
 using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.Ekorensis;
+using Microsoft.Extensions.DependencyInjection;
+public class ConfigPathProvider(string basePath) : IConfigPathProvider
+{
+    public string BasePath { get; set; } = basePath;
 
+    public string GetPath(string subpath)
+    {
+        return Path.Combine(BasePath, subpath);
+    }
+   
+}
 public class BootupLogic
 {
-    public void ConfigureConfigPath()
+    public IServiceProvider BuildServices()
     {
-        var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
+        var services = new ServiceCollection();
+        IConfiguration _configuration = new ConfigurationBuilder()
+            .SetBasePath(Path.GetDirectoryName(typeof(BootupLogic).Assembly.Location))
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+        services.AddSingleton(_configuration);
+        services.AddSingleton<IConfigPathProvider>(new ConfigPathProvider(GetConfigPath()));
+        services.AddHttpClient(_configuration["HttpClientName"] ?? "SilverAudioPlayer", 
+            x=>x.DefaultRequestHeaders.UserAgent.ParseAdd(_configuration["HttpClientDetails"] ??
+            "SilverAudioPlayer/8.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)"));
+        services.AddSingleton(typeof(ISharedPool<>), typeof(SharedPool<>));
+        Log.Logger  = new LoggerConfiguration()
+            .ReadFrom.Configuration(_configuration)
+            .WriteTo.Console()
+            .CreateLogger();
+        services.AddSingleton(Log.Logger);
+        services.AddSingleton<IMediator>(new Mediator());
+        services.AddLogging(builder => builder.AddSerilog());
+        return services.BuildServiceProvider();
+    }
+    string GetConfigPath()
+    {
+         var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
         if (!File.Exists(Path.Combine(AppContext.BaseDirectory, ".portable")))
         {
             if (OperatingSystem.IsLinux())
@@ -29,14 +63,10 @@ public class BootupLogic
         {
             Directory.CreateDirectory(confdir);
         }
+        return confdir;
+    }
 
-        ConfigPath.Set(confdir);
-    }
-    public void ConfigureHttpClient()
-    {
-        SilverAudioPlayer.Shared.HttpClient.Client.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "SilverAudioPlayer/8.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)");
-    }
+  
     public void SetupCrashFallNets(Action<Exception> onFatalError)
     {
         AppDomain.CurrentDomain.UnhandledException += (x, y) =>
@@ -173,6 +203,9 @@ public class BootupLogic
         }
     }
 }
+
+
+
 public class RxObservableExceptionHandler : IObserver<Exception>
 {
     public void OnNext(Exception value)

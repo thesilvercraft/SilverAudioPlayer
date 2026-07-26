@@ -3,18 +3,19 @@ using System.Text.Json;
 using CatBox.NET.Client;
 using CatBox.NET.Requests;
 using SilverAudioPlayer.Shared;
-using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 
 namespace SilverAudioPlayer.DiscordRP;
 
 public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPresenceURLs
 {
+    
     private MscArtFile[] cached;
     public bool Uploadit;
     private CatBoxClient client;
 
-    public RememberRichPresenceURLsUsingCatboxAndAJsonFile()
+    public RememberRichPresenceURLsUsingCatboxAndAJsonFile(IConfigPathProvider configPathProvider, HttpClient hclient)
     {
+        MusicArtFile = configPathProvider.GetPath("musicart.json");
         var options = new RealOptions()
         {
             Value = new()
@@ -22,7 +23,7 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
                 CatBoxUrl = new Uri("https://catbox.moe/user/api.php")
             }
         };
-        client = new CatBoxClient(HttpClient.Client, options);
+        client = new CatBoxClient(hclient, options);
     }
 
     public string? GetURL(Song? track, IMusicStatusInterfaceListener Env)
@@ -64,13 +65,13 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
 
     private void GetCache()
     {
-        if (File.Exists(Path.Combine(ConfigPath.BasePath, "musicart.json")))
+        if (File.Exists(MusicArtFile))
             cached = JsonSerializer.Deserialize<MscArtFile[]>(
                 File.ReadAllText(MusicArtFile));
         cached ??= Array.Empty<MscArtFile>();
     }
 
-    private string MusicArtFile = Path.Combine(ConfigPath.BasePath, "musicart.json");
+    private string MusicArtFile;
     object filelock = new();
     private void SetCache()
     {

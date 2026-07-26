@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using SkiaSharp;
 using Avalonia.Collections;
 using Avalonia.Platform.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using SilverAudioPlayer.Shared.SilverPlaylist;
 using SilverCraft.Shared;
 
@@ -96,10 +97,11 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     public Config config => App.mwconfig;
     public CommentXmlConfigReaderNotifyWhenChanged<Config> reader => App.mwconfreader;
     private string? CurrentAlbumArtHash = null;
-    public MainWindow()
+    public MainWindow(IServiceProvider provider)
     {
         dc = new MainWindowContext(this)
         {
+            ServiceProvider = provider,
             SetLoopType = lt =>
             {
                 if (config.LoopType != lt)
@@ -135,6 +137,11 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             {
                 Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
                 Dispatcher.UIThread.InvokeAsync(() => LT.Text = TimeSpan.Zero.ToString());
+                if (token != null)
+                {
+                    token.Cancel();
+                    token.Dispose();
+                }
                 token = new CancellationTokenSource();
                 th = new Thread(() => SeekBarUpdateThread(token.Token));
             },
@@ -148,7 +155,10 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             },
             HandleLateStageMetadataAndScrollBar = () =>
             {
-                th.Start();
+                if (!th.IsAlive)
+                {
+                    th.Start();
+                }
                 if (CurrentSong?.Metadata != null)
                 {
                     Dispatcher.UIThread.InvokeAsync(() =>
@@ -227,9 +237,10 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                                             ]);
                                         canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
                                     }
-
-                                    surface.Snapshot().Encode(SKEncodedImageFormat.Png, 76).AsStream()
-                                        .CopyTo(blur);
+                                    using var snapshot = surface.Snapshot();
+                                    using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
+                                    using var imgStream = encoded.AsStream();
+                                    imgStream.CopyTo(blur);
                                     blur.Position = 0;
                                 }
                                 var imgbrsh = new ImageBrush(new Bitmap(blur))
@@ -334,7 +345,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             },
             
         };
-        Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic);
+        Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic,Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>());
         InitializeComponent();
         if (OperatingSystem.IsLinux())
         {
@@ -393,7 +404,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     {
         ChangeAutoSaveInterval(config.AutoSaveInterval);
         if (!config.AutoSave || dc.Queue.Count != 0) return;
-        var dirpath = ConfigPath.GetPath(AutoSavePlaylistPath);
+        var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath(AutoSavePlaylistPath);
         if (!Directory.Exists(dirpath)) return;
         var filepath = Path.Combine(dirpath, AutoSavePlaylistName);
         if (!File.Exists(filepath)) return;
@@ -464,7 +475,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         if (dc?.queue == null) return;
         Log.Information("Autosaving");
         var queue = Logic.GetQueueCopy();
-        var dirpath = ConfigPath.GetPath(AutoSavePlaylistPath);
+        var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath(AutoSavePlaylistPath);
         Directory.CreateDirectory(dirpath);
         using var s = new FileStream(Path.Combine(dirpath, AutoSavePlaylistName), FileMode.Create);
         SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
@@ -521,6 +532,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     private void MainWindow_Closing(object? sender, CancelEventArgs e)
     {
         Logic.StopAutoLoading = true;
+        config.PropertyChanged -= Config_PropertyChanged;
         if (config.AutoSave)
         {
            AutoSave(null);
@@ -646,7 +658,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     {
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
-        else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text) || e.DataTransfer.Formats.Any(x=>x.Identifier == "UniformResourceLocatorW"))
+        else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text) || e.DataTransfer.Formats.Any(x=>x.Identifier is "UniformResourceLocatorW" or "text/x-moz-url" or "text/uri-list"))
             e.DragEffects = DragDropEffects.Copy;
         else
             e.DragEffects = DragDropEffects.None;
@@ -667,10 +679,25 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             }
         }
 
-        if (e.DataTransfer.Formats.All(x => x.Identifier != "UniformResourceLocatorW"))return;
+        if (e.DataTransfer.Formats.All(x => x.Identifier != "UniformResourceLocatorW" && x.Identifier is not "text/x-moz-url" and not "text/uri-list"))return;
         {
             var url = e!.DataTransfer!.TryGetText();
-            if (!string.IsNullOrEmpty(url))
+            if (url == null && e.DataTransfer.Formats.Any(x => x.Identifier == "text/x-moz-url"))
+            {
+                url = e!.DataTransfer.TryGetValue(DataFormat.CreateStringPlatformFormat("text/x-moz-url"));
+            }
+            else if (url == null && e.DataTransfer.Formats.Any(x => x.Identifier == "text/uri-list"))
+            {
+                url = e!.DataTransfer.TryGetValue(DataFormat.CreateStringPlatformFormat("text/uri-list"));
+            }
+            if (string.IsNullOrEmpty(url)) return;
+            if (url.Contains('\n'))
+            {
+                // actually multiple urls
+                var urls = url.Split('\n');
+                Logic.ProcessFiles(urls);
+            }
+            else
             {
                 Logic.ProcessFiles([url]);
             }

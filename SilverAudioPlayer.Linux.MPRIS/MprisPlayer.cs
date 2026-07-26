@@ -3,7 +3,7 @@ using DBusInterop;
 using System.Diagnostics;
 using SilverAudioPlayer.Shared;
 namespace SilverAudioPlayer.Linux.MPRIS;
-public class MprisPlayer : IPlayer, IMediaPlayer2
+public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
 {
     private readonly IMusicStatusInterfaceListener Env;
 
@@ -250,6 +250,10 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
     public event Action<PropertyChanges> PropertyChanged;
     public event Action<PropertyChanges> BoringPropertyChanged;
 
+    public event Action<(ObjectPath[] tracks, ObjectPath currentTrack)> TrackListReplaced;
+    public event Action<(IDictionary<string, object> metadata, ObjectPath afterTrack)> TrackAdded;
+    public event Action<ObjectPath> TrackRemoved;
+    public event Action<(ObjectPath trackId, IDictionary<string, object> metadata)> TrackMetadataChanged;
 
 
     public Task<IDisposable> WatchSeekedAsync(Action<long> handler, Action<Exception> onError = null)
@@ -274,7 +278,9 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
             "shuffle" => await GetShuffleAsync(),
             "loopstatus" => GetLoopStatusAsync(),
             "supportedmimetypes" => await Mimes(),
-            "SupportedUriSchemes" => supportedUri,
+            "supportedurischemes" => supportedUri,
+            "tracks" => (await ((IMprisTrackList)this).GetAllAsync()).Tracks,
+            "canedittracks" => false, 
             _ => throw new NotImplementedException(),
         };
     }
@@ -305,6 +311,12 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
         }
         return Task.CompletedTask;
 
+    }
+    public event Action<PropertyChanges> TrackListPropertyChanged;
+
+    public Task<IDisposable> WatchPropertiesAsync(Action<PropertyChanges> handler)
+    {
+        return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(TrackListPropertyChanged), handler));
     }
 
     Task<IDisposable> IPlayer.WatchPropertiesAsync(Action<PropertyChanges> handler)
@@ -346,4 +358,123 @@ public class MprisPlayer : IPlayer, IMediaPlayer2
             SupportedMimeTypes = await Mimes(),
         };
     }
+    #region ITrackList Implementation
+
+    public async Task<IDictionary<string, object>[]> GetTracksMetadataAsync(ObjectPath[] TrackIds)
+    {
+        var resultList = new List<IDictionary<string, object>>();
+        var playlistQueue = await Env?.GetQueue() ?? [];
+
+        foreach (var trackId in TrackIds)
+        {
+            var trackIdStr = trackId.ToString().ToLowerInvariant();
+
+            var matchingSong = playlistQueue.FirstOrDefault(song => 
+                trackIdStr.EndsWith(song.Guid.ToString("N").ToLowerInvariant()));
+
+            if (matchingSong != null)
+            {
+                resultList.Add(BuildMetadataMapForSong(matchingSong));
+            }
+            else
+            {
+                resultList.Add(new Dictionary<string, object>());
+            }
+        }
+
+        return resultList.ToArray();
+    }
+
+    public Task AddTrackAsync(string Uri, ObjectPath AfterTrack, bool SetAsCurrent)
+    {
+        if (Env is IPlayStreamProviderListener l)
+        {
+            l.ProcessFiles(new[] { Uri });
+        }
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveTrackAsync(ObjectPath TrackId)
+    {
+        Debug.WriteLine($"MPRIS TrackList requested removal of: {TrackId}");
+        return Task.CompletedTask;
+    }
+
+    public Task GoToAsync(ObjectPath TrackId)
+    {
+        return SetPositionAsync(TrackId, 0);
+    }
+
+    public Task<IDisposable> WatchTrackListReplacedAsync(Action<(ObjectPath[] tracks, ObjectPath currentTrack)> handler, Action<Exception> onError = null)
+    {
+        return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(TrackListReplaced), handler));
+    }
+
+    public Task<IDisposable> WatchTrackAddedAsync(Action<(IDictionary<string, object> metadata, ObjectPath afterTrack)> handler, Action<Exception> onError = null)
+    {
+        return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(TrackAdded), handler));
+    }
+
+    public Task<IDisposable> WatchTrackRemovedAsync(Action<ObjectPath> handler, Action<Exception> onError = null)
+    {
+        return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(TrackRemoved), handler));
+    }
+
+    public Task<IDisposable> WatchTrackMetadataChangedAsync(Action<(ObjectPath trackId, IDictionary<string, object> metadata)> handler, Action<Exception> onError = null)
+    {
+        return Task.FromResult<IDisposable>(SignalWatcher.AddAsync(this, nameof(TrackMetadataChanged), handler));
+    }
+    
+    private IDictionary<string, object> BuildMetadataMapForSong(Song track)
+    {
+        if (track == null) return new Dictionary<string, object>();
+
+        var g = track.Guid.ToString("N").ToLowerInvariant();
+        var res = new Dictionary<string, object>()
+        {
+            { "mpris:length", ((long?)Env?.GetDuration() ?? 10) * 1000 * 1000 }, 
+            { "mpris:trackid", new ObjectPath("/org/mpris/MediaPlayer2/Track/" + (string.IsNullOrWhiteSpace(g) ? "NoTrack" : g)) },
+            { "xesam:title", track.Metadata?.Title ?? "Unknown Title" },
+            { "xesam:album", track.Metadata?.Album ?? "Unknown Album" },
+            { "xesam:artist", new string[] { track.Metadata?.Artist ?? "Unknown Artist" } },
+            { "xesam:discNumber", track.Metadata?.DiscNumber ?? 0 },
+            { "xesam:trackNumber", track.Metadata?.TrackNumber ?? 0 },
+            { "xesam:genre", track.Metadata?.Genre ?? "" },
+            { "xesam:asText", track.Metadata?.Lyrics ?? "" }
+        };
+        var currentTrack = Env?.GetCurrentTrack();
+        if (currentTrack != null && currentTrack.Guid == track.Guid && HasAlbumArtWritten)
+        {
+            res["mpris:artUrl"] = new Uri("file://" + TempFile).ToString();
+        }
+
+        return res;
+    }
+    async Task<TrackListProperties> IMprisTrackList.GetAllAsync()
+    {
+        IEnumerable<Song> playlistQueue =(await Env?.GetQueue()) ?? [];
+
+        var trackPaths = playlistQueue.Select(song => 
+        {
+            var g = song?.Guid.ToString("N");
+            return new ObjectPath("/org/mpris/MediaPlayer2/Track/" + (string.IsNullOrWhiteSpace(g) ? "NoTrack" : g));
+        }).ToArray();
+
+        if (trackPaths.Length == 0)
+        {
+            var currentMetadata = await GetMetadataAsync();
+            if (currentMetadata.TryGetValue("mpris:trackid", out var idObj) && idObj is ObjectPath path)
+            {
+                trackPaths = new[] { path };
+            }
+        }
+
+        return new TrackListProperties
+        {
+            Tracks = trackPaths,
+            CanEditTracks = false 
+        };
+    }
+
+    #endregion
 }

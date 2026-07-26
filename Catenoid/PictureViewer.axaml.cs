@@ -14,14 +14,14 @@ public partial class PictureViewer : Window
     private readonly IReadOnlyList<IPicture> pictures = [];
     private int pos;
     private readonly DContext x;
-    private readonly ILogger? Log;
+
 
     public PictureViewer()
     {
         InitializeComponent();
         this.DoAfterInitTasksF();
         x = new DContext { Picture = null }; DataContext = x;
-        Log = Logger.GetLogger(typeof(MetadataView));
+     
     }
 
     public PictureViewer(IReadOnlyList<IPicture>? pictures) : this()
@@ -29,14 +29,14 @@ public partial class PictureViewer : Window
         if (pictures == null)
         {
             Close();
-            Log?.Error("The pictureviewer was initialised with NULL pictures???????");
+            Log.Error("The pictureviewer was initialised with NULL pictures???????");
             return;
         }
         this.pictures = pictures;
         if (pictures?.Count < 0)
         {
             Close();
-            Log?.Error("The pictureviewer was initialised with no pictures???????");
+            Log.Error("The pictureviewer was initialised with no pictures???????");
             return;
         }
         ChangePicture();
@@ -67,7 +67,7 @@ public partial class PictureViewer : Window
     {
         var wrappedStream = pictures[pos].Data;
         if (wrappedStream == null) return;
-        await this.SetClipboardImage(wrappedStream, Log);
+        await this.SetClipboardImage(wrappedStream, Log.Logger);
         SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
     }
 }

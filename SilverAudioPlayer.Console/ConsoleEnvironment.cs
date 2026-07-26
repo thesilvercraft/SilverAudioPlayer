@@ -3,8 +3,9 @@ using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Console;
 
-public class ConsoleEnvironment(Logic<Context> Logic) : BaseEnvironment<Context>(Logic)
+public class ConsoleEnvironment(Logic<Context> Logic, IConfigPathProvider configPathProvider) : BaseEnvironment<Context>(Logic,configPathProvider)
 {
+
     public override string Name => "SilverAudioPlayer.Consol";
 
     public override string Description => "console UI for SilverAudioPlayer";
@@ -36,6 +37,6 @@ public class ConsoleEnvironment(Logic<Context> Logic) : BaseEnvironment<Context>
 
     public override string[] KnownConfigFileLocations =>
     [
-        ConfigPath.GetPath("SilverAudioPlayer.Config.xml"),
+        _configPathProvider.GetPath("SilverAudioPlayer.Config.xml"),
     ];
 }

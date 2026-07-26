@@ -14,7 +14,7 @@ public interface IMusicStatusInterfaceListenerAdmin : IMusicStatusInterfaceListe
     public void FirePlayerStateChanged(PlaybackState state);
     public void FirePositionChanged(TimeSpan position);
 }
-public interface IMusicStatusInterfaceListener : IPlayerEnvironment, ITimingListener
+public interface IMusicStatusInterfaceListener : IPlayerEnvironment, ISyncEnvironmentListener, ITimingListener
 {
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front);
     void Play();

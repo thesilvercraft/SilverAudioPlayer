@@ -6,6 +6,8 @@ public class WrappedFileStream : WrappedStream, IDisposable
 {
     private bool disposedValue;
 
+    public override bool IsSeekable => true;
+
     public WrappedFileStream(string url)
     {
         URL = url;

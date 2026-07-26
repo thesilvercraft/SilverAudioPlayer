@@ -69,12 +69,11 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         jukeConfig = (JukeConfig)ConfigObject.Value;
-        _logger = Logger.GetLogger(typeof(SilverJuke));
         _IsStarted = true;
         this.listener = listener;
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddSingleton<IHostLifetime, NotAHostLifeTime>();
-        builder.Host.UseSerilog(_logger);
+        builder.Host.UseSerilog();
     
         builder.WebHost.UseUrls("http://localhost:36169");
         builder.Services.AddEndpointsApiExplorer();

@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -48,9 +47,9 @@
 <!--	<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
 	</PropertyGroup>
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net8.0-windows7</TargetFramework>
-		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net8.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework Condition="$(DefineConstants.Contains('CAD'))">net10.0-windows7</TargetFramework>
+		<TargetFramework Condition="$(DefineConstants.Contains('SMTC'))">net10.0-windows10.0.18362.0</TargetFramework>
 		<EnableWindowsTargeting Condition="$(TargetFramework.Contains('windows'))">true</EnableWindowsTargeting>
 		<PlatformTarget Condition="$(TargetFramework.Contains('windows'))">x64</PlatformTarget>
 		<RuntimeIdentifiers Condition="$(TargetFramework.Contains('windows'))">win-x64</RuntimeIdentifiers>
@@ -72,7 +71,6 @@
 <!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />-->
 <!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />-->
 <!--		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />-->
-	<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.MPRIS\SilverAudioPlayer.Linux.MPRIS.csproj" Condition="$(DefineConstants.Contains('MPRIS'))" />
 <!--		<ProjectReference Include="..\SilverAudioPlayer.DryWetMidi\SilverAudioPlayer.Win.PlayProvider.DryWetMidi.csproj" Condition="$(DefineConstants.Contains('DWMID'))" />-->
@@ -85,9 +83,6 @@
 		 <ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" /> 
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="System.Composition" Version="10.0.0" />

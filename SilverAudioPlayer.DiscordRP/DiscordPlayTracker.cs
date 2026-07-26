@@ -2,6 +2,7 @@
 using System.Composition;
 using System.Diagnostics;
 using DiscordRPC;
+using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverCraft.Ekorensis;
 using ILogger = DiscordRPC.Logging.ILogger;
@@ -11,33 +12,28 @@ namespace SilverAudioPlayer.DiscordRP;
 
 public class SerilogLogger : ILogger
 {
-    private Serilog.ILogger? _logger;
-
-    public SerilogLogger()
-    {
-        _logger = Logger.GetLogger(typeof(SerilogLogger));
-    }
+  
 
     public void Trace(string message, params object[] args)
     {
-        _logger?.Verbose(message, args);
+        Log.Verbose(message, args);
     }
 
     public void Info(string message, params object[] args)
     {
-        _logger?.Information(message, args);
+        Log.Information(message, args);
     }
 
 
     public void Warning(string message, params object[] args)
     {
-        _logger?.Warning(message, args);
+        Log.Warning(message, args);
     }
 
 
     public void Error(string message, params object[] args)
     {
-        _logger?.Error(message, args);
+        Log.Error(message, args);
     }
 
     public LogLevel Level { get; set; }
@@ -76,9 +72,12 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
     string id = "926595775574712370";
     private static readonly string[] optionsForUploader = new string[] { "None", "Catbox", "Imgur" };
-
-    public DiscordPlayTracker()
+    private IConfigPathProvider _configPathProvider;
+    private HttpClient _httpClient;
+    public DiscordPlayTracker(IConfigPathProvider configPathProvider, HttpClient httpClient)
     {
+        _configPathProvider = configPathProvider;
+        _httpClient = httpClient;
         Debug.WriteLine("New instance of discordplaytracker");
         ConfigurableElements = new List<IConfigurableElement>
         {
@@ -459,8 +458,8 @@ SilverAudioPlayer.DiscordRP
             richPresenceURLs = x.Uploader switch
             {
                 Uploader.None => null,
-                Uploader.Catbox => new RememberRichPresenceURLsUsingCatboxAndAJsonFile { Uploadit = true },
-                Uploader.Imgur => new RememberRichPresenceUrLsUsingImgurAndAJsonFile { Uploadit = true },
+                Uploader.Catbox => new RememberRichPresenceURLsUsingCatboxAndAJsonFile(_configPathProvider, _httpClient) { Uploadit = true },
+                Uploader.Imgur => new RememberRichPresenceUrLsUsingImgurAndAJsonFile(_configPathProvider,_httpClient) { Uploadit = true },
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

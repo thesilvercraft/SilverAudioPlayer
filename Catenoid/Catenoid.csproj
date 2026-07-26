@@ -18,6 +18,9 @@
 		<None Update="custom-mime/silvercraft-spl.xml">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="appsettings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="icon.svg" />
@@ -57,7 +60,7 @@
 		<!--Local library POC-->
 <!--        <DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
 		<!--Discord -->
-<!--		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants> -->
+	<DefineConstants>$(DefineConstants)DISCRD</DefineConstants> 
 		<!--VLC (Alpha)-->
 		<!-- <DefineConstants>$(DefineConstants)VLC</DefineConstants> -->
 		<!--Windows only-->
@@ -108,7 +111,6 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib\SilverAudioPlayer.Any.PlayStreamProvider.VideoLib.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj" Condition="$(DefineConstants.Contains('listenbrainz'))"/>
@@ -130,15 +132,15 @@
 	</ItemGroup>
 	<Import Project="../SilverAudioPlayer.Avalonia.targets" />
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.7" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
 		<PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.6" />
 		<PackageReference Include="Svg.Skia" Version="4.6.0" />
-		<PackageReference Include="System.Composition" Version="10.0.7" />
+		<PackageReference Include="System.Composition" Version="10.0.10" />
 	</ItemGroup>
 	
 

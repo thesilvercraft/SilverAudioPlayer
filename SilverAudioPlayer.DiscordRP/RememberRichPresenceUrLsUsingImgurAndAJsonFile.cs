@@ -3,7 +3,6 @@ using System.Text.Json;
 using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using SilverAudioPlayer.Shared;
-using HttpClient = SilverAudioPlayer.Shared.HttpClient;
 
 namespace SilverAudioPlayer.DiscordRP;
 
@@ -14,11 +13,13 @@ public class RememberRichPresenceUrLsUsingImgurAndAJsonFile : IRememberRichPrese
     private readonly ImageEndpoint imageEndpoint;
     public bool Uploadit;
 
-    public RememberRichPresenceUrLsUsingImgurAndAJsonFile()
+    public RememberRichPresenceUrLsUsingImgurAndAJsonFile(IConfigPathProvider configPathProvider, HttpClient hclient)
     {
-        imageEndpoint = new ImageEndpoint(client, HttpClient.Client);
+        MusicArtFile = configPathProvider.GetPath("musicart.json");
+        imageEndpoint = new ImageEndpoint(client, hclient);
     }
 
+    private string MusicArtFile;
     public string? GetURL(Song? track, IMusicStatusInterfaceListener Env)
     {
         Debug.WriteLine("Geturl");
@@ -54,14 +55,14 @@ public class RememberRichPresenceUrLsUsingImgurAndAJsonFile : IRememberRichPrese
 
     private void GetCache()
     {
-        if (File.Exists(Path.Combine(ConfigPath.BasePath, "musicart.json")))
+        if (File.Exists(MusicArtFile))
             cached = JsonSerializer.Deserialize<MscArtFile[]>(
-                File.ReadAllText(Path.Combine(ConfigPath.BasePath, "musicart.json")));
+                File.ReadAllText(MusicArtFile));
         cached ??= Array.Empty<MscArtFile>();
     }
 
     private void SetCache()
     {
-        File.WriteAllText(Path.Combine(ConfigPath.BasePath, "musicart.json"), JsonSerializer.Serialize(cached));
+        File.WriteAllText(MusicArtFile, JsonSerializer.Serialize(cached));
     }
 }

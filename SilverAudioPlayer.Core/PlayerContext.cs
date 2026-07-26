@@ -18,6 +18,7 @@ public class PlayerContext : ReactiveObject
     public Action<byte>? VolumeChanged;
     public Func<IList<Song>>? GetQueue;
     public Action<IList<Song>>? SetQueue;
+    public IServiceProvider ServiceProvider { get; init; }
 
     public byte Volume
     {

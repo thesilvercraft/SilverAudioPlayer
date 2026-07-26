@@ -17,11 +17,6 @@ public interface ISharedMemoryStreamPool
 
 public class SharedMemoryStreamPool : ISharedMemoryStreamPool
 {
-    private ILogger? _logger;
-    public SharedMemoryStreamPool()
-    {
-        _logger = Logger.GetLogger(typeof(SharedMemoryStreamPool));
-    }
     private Dictionary<Guid, List<RelianceOnSharedStream>> _reliances = new();
     private readonly object _reliancesLock = new object();
 
@@ -37,7 +32,6 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
             var sharedStream2 = new SharedStream(memoryStream, hash);
 
             SharedStreams.Add(sharedStream2);
-            _logger?.Debug("return new {Hash}", hash);
             return sharedStream2;
         }
     }
@@ -84,7 +78,6 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
             Reliances.Remove(reliance.SharedStreamId);
             if (SharedStreams.FirstOrDefault(x => x.SharedStreamId == reliance.SharedStreamId) is not
                 { } sharedStream) return;
-            _logger?.Debug("remove str {RelianceSharedStreamId}", reliance.SharedStreamId);
             sharedStream.Stream.Dispose();
         }
     }

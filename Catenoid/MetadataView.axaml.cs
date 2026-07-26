@@ -16,7 +16,6 @@ namespace Catenoid;
 public partial class MetadataView : Window
 {
     private readonly DC dataContext = new();
-    private readonly ILogger? Log;
     private Song? s;
 
     public MetadataView()
@@ -25,7 +24,7 @@ public partial class MetadataView : Window
         InitializeComponent();
         mainTreeView = this.FindControl<TreeView>("mainTreeView");
         this.DoAfterInitTasksF();
-        Log = Logger.GetLogger(typeof(MetadataView));
+  
     }
 
     public void LoadSong(Song s)
@@ -127,7 +126,7 @@ public partial class MetadataView : Window
             catch (Exception e)
             {
                 //No crash needed
-                Log?.Information(e, "Exception in ProcessSubProperties");
+                Log.Information(e, "Exception in ProcessSubProperties");
             }
     }
 

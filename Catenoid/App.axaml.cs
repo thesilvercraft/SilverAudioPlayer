@@ -13,6 +13,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using DynamicData.Kernel;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -20,7 +21,6 @@ using Serilog.Parsing;
 using Silver.Composition;
 using SilverAudioPlayer.Shared;
 using SilverCraft.Shared;
-using Logger = SilverAudioPlayer.Shared.Logger;
 
 namespace Catenoid;
 
@@ -142,8 +142,9 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            BootupLogic.ConfigureConfigPath();
-            _configPath = ConfigPath.GetPath("SilverAudioPlayer.Config.xml");
+            var services = BootupLogic.BuildServices();
+            var configPathProvider = services.GetRequiredService<IConfigPathProvider>();
+            _configPath = configPathProvider.GetPath("SilverAudioPlayer.Config.xml");
             mwconfreader = new CommentXmlConfigReaderNotifyWhenChanged<Config>();
             if (!File.Exists(_configPath)) mwconfreader.Write(new Config(), _configPath);
             mwconfig = mwconfreader.Read(_configPath) ?? new Config();
@@ -157,28 +158,6 @@ public class App : Application
                     L.AllowedToRead = true;
                 };
             }
-            BootupLogic.ConfigureHttpClient();
-            var loggerConfig = new LoggerConfiguration();
-            if (Debugger.IsAttached && mwconfig.UserLogPreferences!=ConfigStyle.None)
-            {
-                loggerConfig.WriteTo.Debug(LogEventLevel.Debug);
-            }
-            switch (mwconfig.UserLogPreferences)
-            {
-                case ConfigStyle.LogWindow:
-                    loggerConfig.WriteTo.Sink(sink);
-                    break;
-                case ConfigStyle.System:
-                    loggerConfig.WriteTo.Console();
-                    break;
-                case ConfigStyle.Unknown:
-                    break;
-                case ConfigStyle.None:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-            var logger = loggerConfig.CreateLogger();
             if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
             {
                 LogWindow lw = new();
@@ -203,22 +182,22 @@ public class App : Application
                     }
                 });
             }
-            Log.Logger = logger;
-            Logger.GetLoggerFunc += logger.ForContext;
-            var mw = new MainWindow
+            var logger = services.GetRequiredService<ILogger>();
+            var mw = new MainWindow(services)
             {
                 Logic =
                 {
-                    Log = logger
+                    Log = logger,
                 }
             };
             mainWindow = mw;
             Environment.SetEnvironmentVariable("BASEDIR", AppContext.BaseDirectory);
             desktop.MainWindow = mw;
-            PlatformLogicHelper.SatisfyImports(mw.Logic);
+            PlatformLogicHelper.SatisfyImports(mw.Logic,services);
             if (mw.Logic.PlayProviders == null)
                 throw new ProvidersReturnedNullException("The 'mw.Logic.Providers' returned null.");
             mw.Logic.PlayableMimes = [];
+            
             var canProvideMemory = mw.Logic.MemoryProvider != null;
             if (!canProvideMemory)
             {
