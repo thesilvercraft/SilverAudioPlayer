@@ -104,6 +104,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.SLIbIndex\SilverAudioPlayer.Any.MetadataSource.SLIbIndex.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />
