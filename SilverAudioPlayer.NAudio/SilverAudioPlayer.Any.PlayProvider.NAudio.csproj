@@ -23,11 +23,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\cscore\SilverCraft.CSCore.PortAudio\SilverCraft.CSCore.PortAudio.csproj" />
         <ProjectReference Include="..\Silver.Composition\Silver.Composition.csproj" />
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
         <PackageReference Include="SilverCraft.CSCore" Version="0.1.8" />
-<!--        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.7" />-->
+        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.9" />
         <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.8" />
         <PackageReference Include="SilverCraft.CSCore.OpenMPT" Version="0.1.8" />
         <PackageReference Include="NAudio" Version="2.2.1" />
