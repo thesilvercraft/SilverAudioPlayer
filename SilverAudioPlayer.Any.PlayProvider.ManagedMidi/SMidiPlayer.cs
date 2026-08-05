@@ -84,33 +84,35 @@ internal class SMidiPlayer : IPlay, IPlayProvider
         PositionChanged?.Invoke(this, position);
     }
 
-    int GetTicksFromTime(TimeSpan time)
+    private int GetTicksFromTime(TimeSpan time)
     {
-        double milliseconds = time.TotalMilliseconds;
-        int num1 = 500000;
-        int num2 = 0;
-        double ticksAtMilliseconds = 0.0;
-        double accumulatedMilliseconds = 0.0;
-        foreach (var message in mf.Tracks[0].Messages)
+        if (mf == null) return 0;
+        var targetMs = (int)time.TotalMilliseconds;
+        if (targetMs <= 0) return 0;
+        var totalTicks = mf.GetTotalTicks();
+        var low = 0;
+        var high = totalTicks;
+        var bestTick = 0;
+        while (low <= high)
         {
-            double deltaTimeInMilliseconds = (double)num1 / 1000.0 * (double)message.DeltaTime / (double)mf.DeltaTimeSpec;
-            if (accumulatedMilliseconds + deltaTimeInMilliseconds < milliseconds)
-            {
-                accumulatedMilliseconds += deltaTimeInMilliseconds;
-                ticksAtMilliseconds += message.DeltaTime;
-                num2 += message.DeltaTime;
+            var mid = low + (high - low) / 2;
+            var midMs = mf.GetTimePositionInMillisecondsForTick(mid);
 
-                if (message.Event.EventType == byte.MaxValue && message.Event.Msb == (byte)81)
-                    num1 = MidiMetaType.GetTempo(message.Event.ExtraData, message.Event.ExtraDataOffset);
+            if (midMs == targetMs)
+            {
+                return mid;
+            }
+            if (midMs < targetMs)
+            {
+                bestTick = mid;
+                low = mid + 1;
             }
             else
             {
-                double remainingMilliseconds = milliseconds - accumulatedMilliseconds;
-                ticksAtMilliseconds += remainingMilliseconds * mf.DeltaTimeSpec * 1000.0 / num1;
-                break;
+                high = mid - 1;
             }
         }
-        return (int)ticksAtMilliseconds;
+        return bestTick;
     }
     public void SetVolume(byte volume)
     {

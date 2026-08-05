@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Layout;
+using Avalonia.Controls.Documents;
 using Avalonia.Media;
 using Avalonia.Threading;
-using DynamicData;
 using SilverCraft.AvaloniaUtils;
 
 namespace Catenoid;
@@ -16,124 +13,218 @@ namespace Catenoid;
 public partial class LyricsView : Window
 {
     private MainWindow mainWindow;
+    private double heightm = 20.12242;
     public LyricsView(MainWindow mainWindow) 
     {
         this.mainWindow = mainWindow;
         DataContext = mainWindow.config;
         InitializeComponent();
         this.DoAfterInitTasksF();
+
         MainGrid = this.FindControl<Grid>("MainGrid");
         if (OperatingSystem.IsLinux())
         {
             MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
         }
-        Dictionary<double, SelectableTextBlock> d = [];
+
         sv = this.FindControl<ScrollViewer>("sv");
-        var red = WindowExtensions.envBackend.GetString("SAPLRCColor").ParseBackground(new SolidColorBrush(Color.FromRgb(230, 255, 0)));
-        if(red is SolidColorBrush scb)
+
+        var red = WindowExtensions.envBackend.GetString("SAPLRCColor")
+            .ParseBackground(new SolidColorBrush(Color.FromRgb(230, 255, 0)));
+        if (red is SolidColorBrush scb)
         {
-            scb.Opacity=1;
+            scb.Opacity = 1;
         }
         var white = new SolidColorBrush(KnownColor.White.ToColor());
-        Guid? Song = null;
+
+        Guid? songGuid = null;
         var close = false;
         Closed += (_, _) => close = true;
+
+        SelectableTextBlock masterTextBlock = new()
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Inlines = new InlineCollection()
+        };
+
+        Dictionary<double, List<Run>> lyricRuns = new();
+        Dictionary<Run, double> inverseLyricRuns = new();
+
         DispatcherTimer.Run(() =>
         {
-            if (Song != mainWindow?.CurrentSong?.Guid)
+            if (close)
+                return false;
+            if (songGuid != mainWindow?.CurrentSong?.Guid)
             {
-                d = [];
-                Song = mainWindow?.CurrentSong?.Guid;
-                StackPanel g = new()
-                {
-                    Orientation = Orientation.Vertical
-                };
-                sv.Content = g;
-                StackPanel parentPanel = new()
-                {
-                    Orientation = Orientation.Horizontal,
-                };
-                g.Children.Add(parentPanel);
-                foreach (var lyric in mainWindow?.CurrentSong?.Metadata?.SyncedLyrics ?? [])
-                {
-                    SelectableTextBlock textLyricBlock = new()
-                    {
-                        Text = lyric.Content.Replace("\n","").Replace("\r","\r")
-                    };
-                  
+                lyricRuns.Clear();
+                inverseLyricRuns.Clear();
+                masterTextBlock.Inlines.Clear();
+                songGuid = mainWindow?.CurrentSong?.Guid;
 
-                    if (!d.TryGetValue(lyric.TimeStampInMilliSeconds, out SelectableTextBlock? value))
+                sv.Content = masterTextBlock;
+
+                var lyrics = mainWindow?.CurrentSong?.Metadata?.SyncedLyrics ?? [];
+
+                for (var lyricIdx = 0; lyricIdx < lyrics.Count; lyricIdx++)
+                {
+                    var lyric = lyrics[lyricIdx];
+                    if (string.IsNullOrEmpty(lyric.Content))
+                        continue;
+
+                    var trimmedContent = lyric.Content.TrimEnd('\r', '\n');
+                    var lines = trimmedContent.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+
+                    for (var i = 0; i < lines.Length; i++)
                     {
-                        parentPanel.Children.Add(textLyricBlock);
-                        d.Add(lyric.TimeStampInMilliSeconds, textLyricBlock);
-                        textLyricBlock.DoubleTapped+=(a,c)=>{
-                            mainWindow.Logic.SetPosition(lyric.TimeStampInMilliSeconds/1000d);
-                        };
-                    }
-                    else if (string.IsNullOrWhiteSpace(lyric.Content))
-                    {
-                        StackPanel emptyLyricNewLinePanel = new()
+                        var line = lines[i];
+                        if (string.IsNullOrEmpty(line))
+                            continue;
+
+                        Run run = new()
                         {
-                            Orientation = Orientation.Horizontal
+                            Text = line,
+                            Foreground = white
                         };
-                        g.Children.Add(emptyLyricNewLinePanel);
-                        parentPanel = emptyLyricNewLinePanel;
-                    }
-                    else
-                    {
-                        value.Text += lyric.Content;
+
+                        masterTextBlock.Inlines.Add(run);
+
+                        if (lyricRuns.TryGetValue(lyric.TimeStampInMilliSeconds, out var runs))
+                        {
+                            runs.Add(run);
+                        }
+                        else
+                        {
+                            lyricRuns[lyric.TimeStampInMilliSeconds] = [run];
+                        }
+                        inverseLyricRuns[run] = lyric.TimeStampInMilliSeconds;
+
+                        if (i < lines.Length - 1)
+                        {
+                            masterTextBlock.Inlines.Add(new LineBreak());
+                        }
                     }
 
-                    if (!lyric.Content.EndsWith('\n')) continue;
-                    StackPanel newLinePanel = new()
+                    if (lyricIdx < lyrics.Count - 1 && masterTextBlock.Inlines.Count > 0)
                     {
-                        Orientation = Orientation.Horizontal
-                    };
-                    g.Children.Add(newLinePanel);
-                    parentPanel = newLinePanel;
+                        masterTextBlock.Inlines.Add(new LineBreak());
+                    }
                 }
             }
-            var pos=mainWindow?.Player?.GetPosition().TotalMilliseconds;
-            double? lastr = null;
-            foreach (var x in d)
+
+            var pos = mainWindow?.Player?.GetPosition().TotalMilliseconds;
+            double? lastActiveTs = null;
+
+            foreach (var (timestamp, runs) in lyricRuns)
             {
-                if (heightm == 20.12242)
+                if (timestamp <= pos)
                 {
-                    if(x.Value.Bounds.Size.Height>heightm)
-                        heightm=x.Value.Bounds.Size.Height+ x.Value.Padding.Top+
-                                x.Value.Padding.Bottom;
-                }
-            
-                
-                if (x.Key <= pos)
-                {
-                    x.Value.Foreground = red;
-                    lastr = x.Key;
+                    foreach (var run in runs)
+                    {
+                        run.Foreground = red;
+                    }
+                    lastActiveTs = timestamp;
                 }
                 else
                 {
-                    x.Value.Foreground = white;
+                    foreach (var run in runs)
+                    {
+                        run.Foreground = white;
+                    }
                 }
             }
 
-
-            if (mainWindow == null || mainWindow.config.LyricsAdvance == -1 || lastr is not { } c) return !close;
+            if (mainWindow != null && mainWindow.config.LyricsAdvance != -1 && lastActiveTs is { } activeTs) 
             {
-                var a = mainWindow.config.LyricsAdvance;
-                if (a < -1)
+                if (lyricRuns.TryGetValue(activeTs, out var activeRuns) && activeRuns.Count > 0 && masterTextBlock.TextLayout != null)
                 {
-                    a = Math.Max(1, (int)(Height / heightm / 2));
+                    var firstRun = activeRuns[0];
+                    int charOffset = GetCharacterOffsetForRun(masterTextBlock, firstRun);
+                    
+                    if (charOffset >= 0)
+                    {
+                        var rects = masterTextBlock.TextLayout.HitTestTextRange(charOffset, firstRun.Text?.Length ?? 1);
+                        var firstRect = rects.FirstOrDefault();
+                        
+                        if (firstRect != default)
+                        {
+                            // Center active line in ScrollViewer viewport
+                            double targetY = firstRect.Top - (sv.Bounds.Height / 2) + (firstRect.Height / 2);
+                            sv.Offset = new Vector(sv.Offset.X, Math.Max(0, targetY));
+                        }
+                    }
                 }
-                SelectableTextBlock t = d[d.Keys.ElementAt( Math.Min( d.Keys.Count-1, d.Keys.IndexOf(c)+a))];
-                t.BringIntoView(new Rect(0, t.Bounds.Height, t.Bounds.Width, t.Bounds.Height));
             }
-            return !close;
+
+            return true;
         }, TimeSpan.FromMilliseconds(25), DispatcherPriority.Render);
+
+        masterTextBlock.DoubleTapped += (sender, e) =>
+        {
+            if (lyricRuns.Count == 0) 
+                return;
+
+            int totalTextLength = 0;
+            foreach (var inline in masterTextBlock.Inlines)
+            {
+                switch (inline)
+                {
+                    case Run run:
+                        totalTextLength += run.Text?.Length ?? 0;
+                        break;
+                    case LineBreak:
+                        totalTextLength += 1;
+                        break;
+                }
+            }
+
+            var selectionLength = Math.Abs(masterTextBlock.SelectionEnd - masterTextBlock.SelectionStart);
+            if (selectionLength >= totalTextLength && totalTextLength > 0)
+            {
+                return;
+            }
+
+            var characterIndex = masterTextBlock.SelectionStart;
+            Run tappedRun = null;
+            var currentOffset = 0;
+
+            foreach (var inline in masterTextBlock.Inlines)
+            {
+                if (inline is Run run)
+                {
+                    var length = run.Text?.Length ?? 0;
+                    if (characterIndex >= currentOffset && characterIndex <= currentOffset + length)
+                    {
+                        tappedRun = run;
+                        break;
+                    }
+                    currentOffset += length;
+                }
+                else if (inline is LineBreak)
+                {
+                    currentOffset += 1;
+                }
+            }
+
+            if (tappedRun != null && inverseLyricRuns.TryGetValue(tappedRun, out double timestampMs))
+            {
+                mainWindow?.Logic?.SetPosition(timestampMs / 1000d);
+            }
+        };
     }
 
-    
+    private static int GetCharacterOffsetForRun(SelectableTextBlock textBlock, Run targetRun)
+    {
+        int offset = 0;
+        foreach (var inline in textBlock.Inlines)
+        {
+            if (inline == targetRun)
+                return offset;
 
-
-    double heightm = 20.12242;
-
+            if (inline is Run r)
+                offset += r.Text?.Length ?? 0;
+            else if (inline is LineBreak)
+                offset += 1;
+        }
+        return -1;
+    }
 }

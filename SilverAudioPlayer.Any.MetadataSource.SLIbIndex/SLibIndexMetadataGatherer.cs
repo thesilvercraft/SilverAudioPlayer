@@ -38,14 +38,13 @@ public class SLibIndexMetadataGatherer : IMetadataProvider
         PropertyNameCaseInsensitive = true
     };
 
-    private string MagicString = ":32542/tracks";
+    private string MagicString = "/api/tracks/";
     public async Task<IMetadata?> GetMetadata(WrappedStream stream)
     {
         if (stream is not WrappedHttpStream { Url: not null } s || !s.Url.Contains(MagicString)) return null; //TODO: BETTER CHECK
-        //http://fridge.lan:32542/tracks/eff39dcd-85fc-dd45-ed36-bc7677293370/download/B1%20-%20%20Clean%2C%20Clean!.wav
-        //                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        //  http://localhost:5244/api/tracks/1019dcae-1c83-3be6-c9af-1f400ab94688/download/17.%20Deep%20Breath%20Deep%20Breath%20-Reload-.flac                             
         //to
-        //http://fridge.lan:32542/tracks/a3d0c9ea-8058-1b6a-bc26-fe4617fac22b/lyrics
+        //http://localhost:5244/api/tracks/1019dcae-1c83-3be6-c9af-1f400ab94688/lyrics
         var indexOfDownload = s.Url.IndexOf("download", StringComparison.Ordinal);
         if (indexOfDownload < 0) return null;
         var lyricUrl =  s.Url[0..indexOfDownload]+"lyrics";

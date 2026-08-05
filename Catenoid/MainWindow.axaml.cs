@@ -86,19 +86,21 @@ public class MainWindowContext : PlayerContext
 }
 public partial class MainWindow : Window, IWindowSuggestVisualChange
 {
-
     public readonly MainWindowContext dc;
     public IFullPlayerEnvironment Env => Logic.PlayerEnvironment;
     private MetadataView? metadataView;
-
-    private Thread? th;
-    private CancellationTokenSource? token = new();
+    private DispatcherTimer? _seekBarTimer;
     private bool AlbumArtTransparencyChanged = false;
     public Config config => App.mwconfig;
     public CommentXmlConfigReaderNotifyWhenChanged<Config> reader => App.mwconfreader;
     private string? CurrentAlbumArtHash = null;
     public MainWindow(IServiceProvider provider)
     {
+        _seekBarTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(33),
+        };
+        _seekBarTimer.Tick += SeekBarUpdate;
         dc = new MainWindowContext(this)
         {
             ServiceProvider = provider,
@@ -137,13 +139,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             {
                 Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
                 Dispatcher.UIThread.InvokeAsync(() => LT.Text = TimeSpan.Zero.ToString());
-                if (token != null)
-                {
-                    token.Cancel();
-                    token.Dispose();
-                }
-                token = new CancellationTokenSource();
-                th = new Thread(() => SeekBarUpdateThread(token.Token));
+                _seekBarTimer.Start();
             },
             SetScrollBarTextTo = scrl =>
             {
@@ -155,120 +151,41 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             },
             HandleLateStageMetadataAndScrollBar = () =>
             {
-                if (!th.IsAlive)
+                if (!_seekBarTimer.IsEnabled)
                 {
-                    th.Start();
+                    _seekBarTimer.Start();
                 }
-                if (CurrentSong?.Metadata != null)
+                if (CurrentSong?.Metadata == null) return;
+                Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    Dispatcher.UIThread.InvokeAsync(() =>
+                    if (CurrentSong.Metadata.Title != null)
                     {
-                        if (CurrentSong.Metadata.Title != null)
+                        Title = CurrentSong.TitleOrURL() + " - Catenoid";
+                    }
+                    if (CurrentSong?.Metadata?.SyncedLyrics?.Count is not null and not 0)
+                    {
+                        if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
                         {
-                            Title = CurrentSong.TitleOrURL() + " - Catenoid";
-                        }
-                        if (CurrentSong?.Metadata?.SyncedLyrics?.Count is not null and not 0)
-                        {
-                            if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
-                            {
-                                LyricsButton.Foreground = brush;
-                            }
-                            else
-                            {
-                                Log.Error("Failed to find SystemControlForegroundAccentBrush?");
-                            }
+                            LyricsButton.Foreground = brush;
                         }
                         else
                         {
-                            if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
-                            {
-                                LyricsButton.Foreground = brush;
-                            }
-                            else
-                            {
-                                Log.Error("Failed to find SystemControlForegroundBaseHighBrush?");
-                            }
+                            Log.Error("Failed to find SystemControlForegroundAccentBrush?");
                         }
-                        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+                    }
+                    else
+                    {
+                        if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
                         {
-                            if (Image.Source != null && CurrentSong.Metadata.Pictures[0].Hash ==
-                                CurrentAlbumArtHash &&
-                                !AlbumArtTransparencyChanged)
-                            {
-                                    return;
-                            }
-
-                            AlbumArtTransparencyChanged = false;
-                            var imageData = CurrentSong.Metadata.Pictures[0].Data;
-                            CurrentAlbumArtHash = CurrentSong.Metadata.Pictures[0].Hash;
-                            if (imageData == null) return;
-                            try
-                            {
-                                using var imageDataStream = imageData.GetStream();
-                                var bmp = new Bitmap(imageDataStream);
-                                var xy = Image.Source;
-                                Image.Source = bmp;
-                                if (xy is IDisposable d)
-                                {
-                                    d.Dispose();
-                                }
-                                if (config.DisableAlbumArtBlur)
-                                {
-                                    return;
-                                }
-
-                                using MemoryStream blur = new();
-                                using var stream = imageData.GetStream();
-                                using var wrbmp = SKBitmap.Decode(stream);
-                                var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
-                                using (var surface = SKSurface.Create(info))
-                                {
-                                    var canvas = surface.Canvas;
-                                    using (var paint = new SKPaint())
-                                    {
-                                        paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                                        paint.ColorFilter =
-                                            SKColorFilter.CreateColorMatrix(
-                                            [
-                                                1, 0, 0, 0, 0,
-                                                0, 1, 0, 0, 0,
-                                                0, 0, 1, 0, 0,
-                                                0, 0, 0, config.AlbumArtTransparency, 0
-                                            ]);
-                                        canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
-                                    }
-                                    using var snapshot = surface.Snapshot();
-                                    using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
-                                    using var imgStream = encoded.AsStream();
-                                    imgStream.CopyTo(blur);
-                                    blur.Position = 0;
-                                }
-                                var imgbrsh = new ImageBrush(new Bitmap(blur))
-                                {
-                                    Stretch = Stretch.UniformToFill
-                                };
-                                var s = Background;
-                                Background = imgbrsh;
-                                var x = s as IDisposable;
-                                x?.Dispose();
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex, "Error loading image into main window");
-                            }
+                            LyricsButton.Foreground = brush;
                         }
                         else
                         {
-                            Image.Source = null;
-                            CurrentAlbumArtHash = null;
-                            if (!config.DisableAlbumArtBlur)
-                            {
-                                Background = WindowExtensions.envBackend.GetString("SAPColor")
-                                    .ParseBackground();
-                            }
+                            Log.Error("Failed to find SystemControlForegroundBaseHighBrush?");
                         }
-                    });
-                }
+                    }
+                });
+                HandleSongChangingImage();
             },
             ShowMessageBox = (s, s1) =>
             {
@@ -292,14 +209,13 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 if (q is AvaloniaList<Song> l)
                 {
                     dc.queue = l;
-                    dc.RaisePropertyChanged("Queue");
                 }
                 else
                 {
                     var n = new AvaloniaList<Song>(q);
                     dc.queue = n;
-                    dc.RaisePropertyChanged("Queue");
                 }
+                dc.RaisePropertyChanged(nameof(dc.Queue));
             });
         };
         Logic = new Logic<MainWindowContext>(dc)
@@ -381,6 +297,93 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         }, followOptionsOnCall: false);
     }
 
+    private void HandleSongChangingImage()
+    {
+        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+        {
+            if (Image.Source != null && CurrentSong.Metadata.Pictures[0].Hash ==
+                CurrentAlbumArtHash &&
+                !AlbumArtTransparencyChanged)
+            {
+                return;
+            }
+
+            AlbumArtTransparencyChanged = false;
+            var imageData = CurrentSong.Metadata.Pictures[0].Data;
+            CurrentAlbumArtHash = CurrentSong.Metadata.Pictures[0].Hash;
+            if (imageData == null) return;
+            try
+            {
+                using var imageDataStream = imageData.GetStream();
+                var bmp = new Bitmap(imageDataStream);
+                var xy = Image.Source;
+                Image.Source = bmp;
+                if (xy is IDisposable d)
+                {
+                    d.Dispose();
+                }
+                if (config.DisableAlbumArtBlur)
+                {
+                    return;
+                }
+
+                using MemoryStream blur = new();
+                using var stream = imageData.GetStream();
+                using var wrbmp = SKBitmap.Decode(stream);
+                var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
+                using (var surface = SKSurface.Create(info))
+                {
+                    var canvas = surface.Canvas;
+                    using (var paint = new SKPaint())
+                    {
+                        paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                        paint.ColorFilter =
+                            SKColorFilter.CreateColorMatrix(
+                            [
+                                1, 0, 0, 0, 0,
+                                0, 1, 0, 0, 0,
+                                0, 0, 1, 0, 0,
+                                0, 0, 0, config.AlbumArtTransparency, 0
+                            ]);
+                        canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
+                    }
+                    using var snapshot = surface.Snapshot();
+                    using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
+                    using var imgStream = encoded.AsStream();
+                    imgStream.CopyTo(blur);
+                    blur.Position = 0;
+                }
+                var imgbrsh = new ImageBrush(new Bitmap(blur))
+                {
+                    Stretch = Stretch.UniformToFill
+                };
+                Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    var s = Background;
+                    Background = imgbrsh;
+                    var x = s as IDisposable;
+                    x?.Dispose();
+                });
+              
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error loading image into main window");
+            }
+        }
+        else
+        {
+            Image.Source = null;
+            CurrentAlbumArtHash = null;
+            if (!config.DisableAlbumArtBlur)
+            {
+                Background = WindowExtensions.envBackend.GetString("SAPColor")
+                    .ParseBackground();
+            }
+        }
+    }
+
+
     private bool FirstThemeColrChange = true;
     public void SuggestVisualChange(StylingChangeData data, bool isColorSet)
     {
@@ -398,7 +401,15 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
     public void Startup()
     {
-        FindPrevShutdownAndLoad();
+        try
+        {
+            FindPrevShutdownAndLoad();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex,"Exception trying to load previous tracks");
+        }
+        
     }
     void FindPrevShutdownAndLoad()
     {
@@ -537,7 +548,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         {
            AutoSave(null);
         }
-        Parallel.ForEach(Logic.MusicStatusInterfaces.ToArray(), dangthing => Logic.RemoveMsi(dangthing, Env));
+        Parallel.ForEach([.. Logic.MusicStatusInterfaces], musicStatusInterface => Logic.RemoveMsi(musicStatusInterface, Env));
         if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
         Logic.StopAutoLoading = true;
         Player?.Stop();
@@ -595,7 +606,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         var a = PB.Minimum + (PB.Maximum - PB.Minimum) * sp.X / PB.Bounds.Width;
         PB.Value = a;
         var at = TimeSpan.FromMilliseconds(a);
-        LT.Text = at.ToString();
+        LT.Text = at.ToString(TimestampFormat);
         Player?.SetPosition(at);
     }
 
@@ -603,54 +614,46 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
     private void PlayButton_Click(object? x, RoutedEventArgs y) => Logic.Play();
 
-    private const string TimestampFormat = "hh\\:mm\\:ss\\.ff";
-    private void SeekBarUpdateThread(CancellationToken e)
+    private const string TimestampFormat = @"hh\:mm\:ss\.ff";
+    private void SeekBarUpdate(object? sender, EventArgs e)
     {
-        var exit = false;
-        Thread.CurrentThread.Name = "SeekBarUpdateThread";
-        while (!(e.IsCancellationRequested && exit))
-            if (Player?.GetPlaybackState() == PlaybackState.Playing)
+        try
+        {
+            if (!IsVisible) return;
+            var state = Player?.GetPlaybackState();
+            switch (state)
             {
-                if (e.IsCancellationRequested) return;
-                try
+                case PlaybackState.Playing:
                 {
-                    Dispatcher.UIThread.Post(() =>
+                    var x = Player?.GetPosition() ?? TimeSpan.Zero;
+                    PB.Value = x.TotalMilliseconds % PB.Maximum;
+                    LT.Text = x.ToString(TimestampFormat);
+                    if (x.TotalMilliseconds >= PB.Maximum)
                     {
-                        if (IsVisible)
-                        {
-                            var x = Player?.GetPosition() ?? TimeSpan.FromMilliseconds(2);
-                            PB.Value = x.TotalMilliseconds % PB.Maximum;
-                            LT.Text = x.ToString(TimestampFormat);
-                        }
-
-                        exit = PB.Value >= PB.Maximum;
-                    }, DispatcherPriority.Normal);
+                        _seekBarTimer?.Stop();
+                    }
+                    break;
                 }
-                catch (Exception ex)
-                {
-                    Logic.Log.Error(ex.Message);
-                    return;
-                }
-
-                Thread.Sleep(70);
+                case PlaybackState.Paused or PlaybackState.Buffering:
+                    //No need to update the progress bar 
+                    break;
+                default:
+                    _seekBarTimer?.Stop();
+                    break;
             }
-            else if (Player?.GetPlaybackState() == PlaybackState.Paused ||
-                     Player?.GetPlaybackState() == PlaybackState.Buffering)
-            {
-                //uses 12% of cpu when paused if removed lmao
-                Thread.Sleep(270);
-            }
-            else
-            {
-                return;
-            }
+        }
+        catch (Exception ex)
+        {
+            Logic.Log.Error(ex, "Error in SeekBarTimer Tick");
+            _seekBarTimer?.Stop();
+        }
     }
 
     public void RemoveTrack()
     {
         Dispatcher.UIThread.InvokeAsync(() => Title = "Catenoid");
         Logic.RemoveTrack();
-        token?.Cancel();
+        
     }
 
 

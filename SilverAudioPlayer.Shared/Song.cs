@@ -124,6 +124,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
     public void Dispose()
     {
         _Metadata?.Dispose();
+        _Metadata = null;
         Stream?.Dispose();
     }
 }
