@@ -20,16 +20,13 @@
     <ItemGroup>
         <PackageReference Include="System.Composition" Version="10.0.0" />
         <PackageReference Include="z440.atl.core" Version="7.9.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-        <HintPath>..\..\..\.nuget\packages\microsoft.extensions.logging.abstractions\10.0.10\lib\net10.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
+   
 
 </Project>
