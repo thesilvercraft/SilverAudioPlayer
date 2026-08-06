@@ -259,7 +259,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                          return w.Selected;
                      });
             },
-            
+
         };
         Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic,Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>());
         InitializeComponent();
@@ -364,7 +364,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     var x = s as IDisposable;
                     x?.Dispose();
                 });
-              
+
             }
             catch (Exception ex)
             {
@@ -397,7 +397,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             }
         }
     }
-   
+
 
     public void Startup()
     {
@@ -409,7 +409,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         {
             Log.Error(ex,"Exception trying to load previous tracks");
         }
-        
+
     }
     void FindPrevShutdownAndLoad()
     {
@@ -635,7 +635,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     break;
                 }
                 case PlaybackState.Paused or PlaybackState.Buffering:
-                    //No need to update the progress bar 
+                    //No need to update the progress bar
                     break;
                 default:
                     _seekBarTimer?.Stop();
@@ -653,7 +653,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     {
         Dispatcher.UIThread.InvokeAsync(() => Title = "Catenoid");
         Logic.RemoveTrack();
-        
+
     }
 
 
@@ -661,7 +661,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     {
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
-        else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text) || e.DataTransfer.Formats.Any(x=>x.Identifier is "UniformResourceLocatorW" or "text/x-moz-url" or "text/uri-list"))
+        else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text || x == DataFormat.File) || e.DataTransfer.Formats.Any(x=>x.Identifier is "UniformResourceLocatorW" or "text/x-moz-url" or "text/uri-list"))
             e.DragEffects = DragDropEffects.Copy;
         else
             e.DragEffects = DragDropEffects.None;
@@ -673,7 +673,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             e.DragEffects &= DragDropEffects.Move;
         else
             e.DragEffects &= DragDropEffects.Copy;
-        if (e.DataTransfer.Formats.Any(x=>x == DataFormat.File)) 
+        if (e.DataTransfer.Formats.Any(x=>x == DataFormat.File))
         {
             var files = e!.DataTransfer.TryGetFiles();
             if (files != null)
