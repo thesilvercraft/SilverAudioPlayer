@@ -32,31 +32,20 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
                 Metadata = null;
             }
         }
-        Guid = GetIdFromMetadata(metadata);
+        Guid = GetIdFromMetadata(metadata, URI);
     }
 
-    public static Guid GetIdFromMetadata(IMetadata? metadata)
+    public static Guid GetIdFromMetadata(IMetadata? metadata, string? uri=null)
     {
-        if (metadata is null) return Guid.NewGuid();
-        var a = metadata?.Title?.GetHashCode()??-1;
-        var b = metadata?.Artist?.GetHashCode()??-1;
-        var c = metadata?.Album?.GetHashCode()??-1;
-        var d = metadata?.Genre?.GetHashCode()??-1;
-        List<byte> by =
-        [
-            .. BitConverter.GetBytes(a),
-            .. BitConverter.GetBytes(b),
-            .. BitConverter.GetBytes(c),
-            .. BitConverter.GetBytes(d),
-        ];
-        return new Guid(by.ToArray());
+        if (metadata is not null && CurrentGuidHashingAlgorithm.HasUsableMetadata(metadata)) return CurrentGuidHashingAlgorithm.GetIdFromMetadata(metadata);
+        if (!string.IsNullOrEmpty(uri)) return CurrentGuidHashingAlgorithm.GetIdFromString(uri);
+        return Guid.NewGuid();
     }
     public WrappedStream Stream { get; set; }
     public string URI { get; set; }
     public string Name { get; set; }
     /// <summary>
     /// A Guid assigned to this song by the constructor of the Song object
-    /// A collection of the hashes of the metadata Title, Artist, Album and Genre objects (-1 when null) OR a completely random hash
     /// </summary>
     public Guid Guid { get; set; }
     /// <summary>

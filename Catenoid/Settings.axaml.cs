@@ -25,14 +25,28 @@ using SilverCraft.AvaloniaUtils;
 using SilverCraft.Ekorensis;
 using SilverCraft.Shared;
 using SilverMagicBytes;
+using Svg;
+using Svg.Model;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using KnownColor = SilverCraft.AvaloniaUtils.KnownColor;
+using SvgImage = Avalonia.Svg.Skia.SvgImage;
 
 namespace Catenoid;
 
-public record InfoPRecord(string Name, string Description, Version? Version, IImage? Icon, string Licenses,
-    ICodeInformation Item, bool Configurable, bool IsPlayStreamProvider, bool IsAskingMemoryProvider, bool IsSyncPlugin,
-    bool IsMusicStatusInterface);
+public record InfoPRecord(
+    string Name, 
+    string Description, 
+    Version? Version, 
+    IImage? Icon, 
+    string Licenses,
+    ICodeInformation Item, 
+    bool Configurable, 
+    bool IsPlayStreamProvider, 
+    bool IsAskingMemoryProvider, 
+    bool IsSyncPlugin,
+    bool IsMusicStatusInterface,
+    object? RawIcon = null
+);
 public static class ConstStrings
 {
     public const string Lrc = "SAPLRCColor";
@@ -73,25 +87,46 @@ public partial class Settings : Window
         TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
 
         TransparencyText.TextChanged += TransparencyTextChanged;
-    
 
         List<ICodeInformation> info =
         [
             mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).PluginCodeInformation
         ];
-        var ir = GetInfoRecords(info);
+
         _settingsDc = new SettingsDC(this)
         {
-            Items = ir.Item1,
             ProductName = mainWindow.Env.Name,
             ProductDescription = mainWindow.Env.Description,
-            ProductIcon = ir.Item1.First().Icon,
             Config = mainWindow.config
         };
 
         DataContext = _settingsDc;
-        Legalese = ir.Item2;
+
+        _ = LoadSettingsDataAsync(info);
     }
+
+    private async Task LoadSettingsDataAsync(List<ICodeInformation> info)
+    {
+        var (rawRecords, legalese) = await GetInfoRecordsAsync(info);
+        Dispatcher.UIThread.Post(() =>
+        {
+            foreach (var record in rawRecords)
+            {
+               var uiIcon = record.RawIcon switch
+                {
+                    SvgSource svgSource => new SvgImage { Source = svgSource },
+                    IImage img => img,
+                    _ => null
+                };
+
+                _settingsDc.Items.Add(record with { Icon = uiIcon });
+            }
+
+            _settingsDc.ProductIcon = _settingsDc.Items.FirstOrDefault()?.Icon;
+            Legalese = legalese;
+        });
+    }
+
     private void TransparencyTextChanged(object? sender, TextChangedEventArgs e)
     {
         var text = TransparencyText.Text;
@@ -132,33 +167,40 @@ public partial class Settings : Window
 
     string Legalese;
 
-    public static Tuple<ObservableCollection<InfoPRecord>, string> GetInfoRecords(List<ICodeInformation> info)
+    public static async Task<(List<InfoPRecord> Records, string Legalese)> GetInfoRecordsAsync(List<ICodeInformation> info)
     {
-        ObservableCollection<InfoPRecord> infop = [];
-        StringBuilder licenses = new();
-        foreach (var item in info)
+        var recordsTasks = info.Select(item => Task.Run(() =>
         {
             var icon = DecodeImage(item.Icon);
-            infop.Add(new InfoPRecord(
+
+            return new InfoPRecord(
                 item.Name,
                 item.Description,
                 item.Version,
-                icon,
+                icon as IImage,
                 item.Licenses,
                 item,
                 item is IAmConfigurable or IConfigurableUiPlugin,
                 item is IPlayStreamProvider,
                 item is IAmOnceAgainAskingYouForYourMemory or IHaveConfigFilesWithKnownLocations,
                 item is ISyncPlugin,
-                item is IMusicStatusInterface
-            ));
+                item is IMusicStatusInterface,
+                icon
+            );
+        }));
+
+        var records = (await Task.WhenAll(recordsTasks)).ToList();
+
+        var licenses = new StringBuilder();
+        foreach (var item in info)
+        {
             licenses.AppendLine(item.Licenses);
         }
 
-        return new(infop, licenses.ToString());
+        return (records, licenses.ToString());
     }
 
-    public static IImage? DecodeImage(WrappedStream? stream, int width = 80)
+    public static object? DecodeImage(WrappedStream? stream, int width = 80)
     {
         if (stream == null) return null;
         stream.Use((_) => { });
@@ -166,17 +208,12 @@ public partial class Settings : Window
         {
             return Bitmap.DecodeToWidth(stream.GetStream(), width);
         }
-
         if (stream.MimeType == KnownMimes.SVGMime)
         {
-            return new SvgImage
-            {
-                Source = SvgSource.LoadFromStream(stream.GetStream())
-            };
+            return  SvgSource.LoadFromStream(stream.GetStream());
         }
         return null;
     }
-
 
     public void ElementDoubleTapped(object _, TappedEventArgs args)
     {
@@ -564,16 +601,15 @@ public class SettingsDC(Settings settings) : ReactiveObject
         KnownColor.LightYellow, KnownColor.Ivory, KnownColor.White
     ];
 
-    public ObservableCollection<InfoPRecord> Items { get; set; }
+    public ObservableCollection<InfoPRecord> Items { get; set; } = [];
     public string ProductName { get; internal set; }
     public string ProductDescription { get; internal set; }
     public Config Config { get; set; }
 
+    private IImage? _productIcon;
     public IImage? ProductIcon
     {
         get => _productIcon;
-        set => this.RaiseAndSetIfChanged(ref _productIcon, value, nameof(ProductIcon));
+        set => this.RaiseAndSetIfChanged(ref _productIcon, value);
     }
-
-    public IImage? _productIcon;
 }

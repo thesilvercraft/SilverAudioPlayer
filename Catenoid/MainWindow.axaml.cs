@@ -220,7 +220,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         };
         Logic = new Logic<MainWindowContext>(dc)
         {
-            CheckIfPluginAllowed=s=>!config.BlockedPlugins.Contains(s),
+            CheckIfPluginAllowed = s => !config.BlockedPlugins.Contains(s),
             ChoosePlayProvider = async (x, m) =>
             {
                 var playProviders = x.ToList();
@@ -233,7 +233,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     return (IPlayProvider?)await Dispatcher.UIThread.InvokeAsync(async () =>
                     {
                         ChooseProvider w = new();
-                        w.SetProviders(playProviders);
+                        await w.SetProvidersAsync(playProviders);
                         await w.ShowDialog(this);
 
                         if (w.SetAsDefaultForFileType != true) return w.Selected;
@@ -242,24 +242,25 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                         reader.Write(config, App._configPath);
                         return w.Selected;
                     });
+
                 var y = playProviders.FirstOrDefault(playProvider => playProvider.GetType().FullName == v);
                 if (y != null)
                 {
                     return y;
                 }
+
                 return (IPlayProvider?)await Dispatcher.UIThread.InvokeAsync(async () =>
-                     {
-                         ChooseProvider w = new();
-                         w.SetProviders(playProviders);
-                         await w.ShowDialog(this);
+                {
+                    ChooseProvider w = new();
+                    await w.SetProvidersAsync(playProviders);
+                    await w.ShowDialog(this);
 
-                         if (w.SetAsDefaultForFileType != true) return w.Selected;
-                         config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
-                         reader.Write(config, App._configPath);
-                         return w.Selected;
-                     });
+                    if (w.SetAsDefaultForFileType != true) return w.Selected;
+                    config.PreferredPlayers[m.MimeType.Common] = w.Selected?.GetType().FullName;
+                    reader.Write(config, App._configPath);
+                    return w.Selected;
+                });
             },
-
         };
         Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic,Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>());
         InitializeComponent();
@@ -297,105 +298,129 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         }, followOptionsOnCall: false);
     }
 
-    private void HandleSongChangingImage()
+ private void HandleSongChangingImage()
+{
+    if (CurrentSong?.Metadata?.Pictures?.Any() == true)
     {
-        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+        var newPicture = CurrentSong.Metadata.Pictures[0];
+        
+        var skip = Dispatcher.UIThread.Invoke(() =>
         {
-            if (Image.Source != null && CurrentSong.Metadata.Pictures[0].Hash ==
-                CurrentAlbumArtHash &&
-                !AlbumArtTransparencyChanged)
-            {
-                return;
-            }
-
+            if (Image.Source != null && newPicture.Hash == CurrentAlbumArtHash && !AlbumArtTransparencyChanged)
+                return true;
             AlbumArtTransparencyChanged = false;
-            var imageData = CurrentSong.Metadata.Pictures[0].Data;
-            CurrentAlbumArtHash = CurrentSong.Metadata.Pictures[0].Hash;
-            if (imageData == null) return;
-            try
-            {
-                using var imageDataStream = imageData.GetStream();
-                var bmp = new Bitmap(imageDataStream);
-                var xy = Image.Source;
-                Image.Source = bmp;
-                if (xy is IDisposable d)
-                {
-                    d.Dispose();
-                }
-                if (config.DisableAlbumArtBlur)
-                {
-                    return;
-                }
+            CurrentAlbumArtHash = newPicture.Hash;
+            return false;
+        });
+        
+        if (skip) return;
+        
+        var imageData = newPicture.Data;
+        if (imageData == null) return;
 
-                using MemoryStream blur = new();
+        try
+        {
+            using var imageDataStream = imageData.GetStream();
+            var rawImageStream = new MemoryStream();
+            imageDataStream.CopyTo(rawImageStream);
+            rawImageStream.Position = 0;
+
+            MemoryStream? blurredStream = null;
+
+            if (!config.DisableAlbumArtBlur)
+            {
+                blurredStream = new MemoryStream();
                 using var stream = imageData.GetStream();
-                using var wrbmp = SKBitmap.Decode(stream);
-                var info = new SKImageInfo(wrbmp.Info.Width, wrbmp.Info.Height);
-                using (var surface = SKSurface.Create(info))
-                {
-                    var canvas = surface.Canvas;
-                    using (var paint = new SKPaint())
-                    {
-                        paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                        paint.ColorFilter =
-                            SKColorFilter.CreateColorMatrix(
-                            [
-                                1, 0, 0, 0, 0,
-                                0, 1, 0, 0, 0,
-                                0, 0, 1, 0, 0,
-                                0, 0, 0, config.AlbumArtTransparency, 0
-                            ]);
-                        canvas.DrawBitmap(wrbmp, SKPoint.Empty, paint: paint);
-                    }
-                    using var snapshot = surface.Snapshot();
-                    using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
-                    using var imgStream = encoded.AsStream();
-                    imgStream.CopyTo(blur);
-                    blur.Position = 0;
-                }
-                var imgbrsh = new ImageBrush(new Bitmap(blur))
-                {
-                    Stretch = Stretch.UniformToFill
-                };
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    var s = Background;
-                    Background = imgbrsh;
-                    var x = s as IDisposable;
-                    x?.Dispose();
-                });
+                using var writableBitmap = SKBitmap.Decode(stream);
+                var info = new SKImageInfo(writableBitmap.Info.Width, writableBitmap.Info.Height);
+                using var surface = SKSurface.Create(info);
+                
+                var canvas = surface.Canvas;
+                using var paint = new SKPaint();
+                paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                paint.ColorFilter = SKColorFilter.CreateColorMatrix(
+                [
+                    1, 0, 0, 0, 0,
+                    0, 1, 0, 0, 0,
+                    0, 0, 1, 0, 0,
+                    0, 0, 0, config.AlbumArtTransparency, 0
+                ]);
+                canvas.DrawBitmap(writableBitmap, SKPoint.Empty, paint: paint);
 
+                using var snapshot = surface.Snapshot();
+                using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
+                using var imgStream = encoded.AsStream();
+                imgStream.CopyTo(blurredStream);
+                blurredStream.Position = 0;
             }
-            catch (Exception ex)
+
+            Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Log.Error(ex, "Error loading image into main window");
-            }
+                using (rawImageStream)
+                {
+                    var newBmp = new Bitmap(rawImageStream);
+                    var oldSource = Image.Source;
+                    Image.Source = newBmp;
+                    
+                    if (oldSource is IDisposable disposableSource)
+                    {
+                        disposableSource.Dispose();
+                    }
+                }
+
+                if (config.DisableAlbumArtBlur || blurredStream == null) return;
+                using (blurredStream)
+                {
+                    var blurBmp = new Bitmap(blurredStream);
+                    var newBrush = new ImageBrush(blurBmp)
+                    {
+                        Stretch = Stretch.UniformToFill
+                    };
+
+                    var oldBackground = Background;
+                    Background = newBrush;
+
+                    if (oldBackground is IDisposable disposableBackground)
+                    {
+                        disposableBackground.Dispose();
+                    }
+                }
+            });
         }
-        else
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error loading image into main window");
+        }
+    }
+    else
+    {
+        Dispatcher.UIThread.InvokeAsync(() =>
         {
             Image.Source = null;
             CurrentAlbumArtHash = null;
-            if (!config.DisableAlbumArtBlur)
+            
+            if (config.DisableAlbumArtBlur) return;
+            
+            var oldBackground = Background;
+            Background = WindowExtensions.envBackend.GetString("SAPColor").ParseBackground();
+            
+            if (oldBackground is IDisposable disposableBackground)
             {
-                Background = WindowExtensions.envBackend.GetString("SAPColor")
-                    .ParseBackground();
+                disposableBackground.Dispose();
             }
-        }
+        });
     }
+}
 
 
     private bool FirstThemeColrChange = true;
     public void SuggestVisualChange(StylingChangeData data, bool isColorSet)
     {
-        if (!isColorSet && FirstThemeColrChange)
-        {
-            if (data.Accent != null)
-            {
-                var transparency=   WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true ? 1 : WindowExtensions.envBackend.GetDouble("BackgroundTransparency") ?? 0.75;
-                Background =new SolidColorBrush((Color)data.Accent, transparency);
-                FirstThemeColrChange = false;
-            }
-        }
+        if (isColorSet || !FirstThemeColrChange) return;
+        if (data.Accent == null) return;
+        var transparency= WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true ? 1 : WindowExtensions.envBackend.GetDouble("BackgroundTransparency") ?? 0.75;
+        Background =new SolidColorBrush((Color)data.Accent, transparency);
+        FirstThemeColrChange = false;
     }
 
 

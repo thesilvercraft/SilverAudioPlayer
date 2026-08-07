@@ -3,7 +3,7 @@ using DynamicData;
 using SilverAudioPlayer.Shared;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace Catenoid
 {
@@ -11,7 +11,6 @@ namespace Catenoid
     {
         public ObservableCollection<InfoPRecord> playProviders { get; set; } = [];
         public bool? SetAsDefaultForFileType { get; set; } = false;
-
     }
 
     public partial class ChooseProvider : Window
@@ -33,15 +32,16 @@ namespace Catenoid
             Selected = ((InfoPRecord)CapBox.SelectedItem).Item;
             Close();
         }
+
         public bool? SetAsDefaultForFileType => dc.SetAsDefaultForFileType;
 
         public ICodeInformation? Selected = null;
-     
 
-        public void SetProviders(IEnumerable<ICodeInformation> providers )
+        public async Task SetProvidersAsync(IEnumerable<ICodeInformation> providers)
         {
             dc.playProviders.Clear();
-            dc.playProviders.AddRange(Settings.GetInfoRecords(providers.ToList()).Item1);
+            var (records, _) = await Settings.GetInfoRecordsAsync([.. providers]);
+            dc.playProviders.AddRange(records);
         }
     }
 }

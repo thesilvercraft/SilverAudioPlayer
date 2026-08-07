@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    width="512"
    height="512"
    viewBox="0 0 512 512"
    version="1.1"
    id="svg1"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
    sodipodi:docname="icon.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -22,13 +23,13 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
      inkscape:zoom="1.2871553"
-     inkscape:cx="180.63088"
-     inkscape:cy="154.21605"
-     inkscape:window-width="1947"
-     inkscape:window-height="1243"
-     inkscape:window-x="309"
-     inkscape:window-y="173"
-     inkscape:window-maximized="0"
+     inkscape:cx="181.01934"
+     inkscape:cy="154.6045"
+     inkscape:window-width="3840"
+     inkscape:window-height="2088"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="g3" />
   <defs
      id="defs1">
@@ -105,7 +106,7 @@
        style="color-interpolation-filters:sRGB"
        id="filter39"
        x="-0.029942202"
-       y="-0.082483835"
+       y="-0.082483837"
        width="1.0598844"
        height="1.1649677">
       <feGaussianBlur
@@ -121,7 +122,8 @@
        y1="253.66591"
        x2="410.53113"
        y2="253.66591"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-8.7253434,1.7096782)" />
     <linearGradient
        id="linearGradient1"
        inkscape:collect="always">
@@ -144,7 +146,7 @@
        transform="matrix(1.2072207,0,0,1.2072207,-43.002252,-52.298956)">
       <path
          style="fill:url(#linearGradient2);fill-opacity:1;fill-rule:evenodd;stroke:#3e3e3e;stroke-width:7.68128;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
-         d="M 407.4489,447.90637 104.26095,450.0935 103.71421,59.421217 311.7629,57.234101 409.08922,152.37333 Z"
+         d="M 398.72356,449.61605 95.535607,451.80318 94.988867,61.130895 303.03756,58.943779 400.36388,154.08301 Z"
          id="path2" />
       <path
          style="fill:#bbbbbb;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.87709;stroke-opacity:0.255749;paint-order:stroke markers fill"
@@ -152,23 +154,19 @@
          id="path3" />
       <g
          id="g1"
-         transform="matrix(0.60358618,0,0,0.60358618,100.23106,132.88845)">
-        <text
-           xml:space="preserve"
+         transform="matrix(0.60358618,0,0,0.60358618,89.207231,105.41875)">
+        <path
+           d="M 68.969222,204.92768 46.80179,145.87741 h -0.377318 q 0.282988,2.92422 0.471647,7.92368 0.188659,4.90513 0.188659,10.28192 v 40.84467 H 39.25543 v -67.35126 h 12.545823 l 20.75249,55.18275 h 0.377318 l 21.129808,-55.18275 h 12.451491 v 67.35126 h -8.395323 v -41.41065 q 0,-4.90513 0.188659,-9.71594 0.282989,-4.8108 0.471648,-7.82935 h -0.377318 l -22.450421,58.95594 z m 93.197508,-51.59824 q 0,6.79173 -3.77318,10.8479 -3.77318,3.96183 -10.18759,5.28245 v 0.37732 q 8.11234,0.94329 12.07418,5.09379 3.96184,4.1505 3.96184,10.84789 0,5.84843 -2.73556,10.47058 -2.73555,4.52781 -8.48965,7.07471 -5.65977,2.54689 -14.62108,2.54689 -5.28245,0 -9.81026,-0.84896 -4.52782,-0.75464 -8.67832,-2.82989 v -7.73502 q 4.24483,2.07525 9.14996,3.30154 4.90514,1.13195 9.43295,1.13195 9.05564,0 13.01747,-3.49019 4.05617,-3.58452 4.05617,-9.81027 0,-6.32007 -4.99946,-9.05563 -4.90513,-2.82988 -13.86644,-2.82988 h -6.50873 v -7.07472 h 6.60306 q 8.301,0 12.54583,-3.49019 4.33915,-3.49019 4.33915,-9.24429 0,-4.90513 -3.30153,-7.54636 -3.30153,-2.73555 -8.9613,-2.73555 -5.47111,0 -9.33862,1.6036 -3.86751,1.6036 -7.64069,4.05616 l -4.1505,-5.65976 q 3.58452,-2.82989 8.86697,-4.90514 5.37678,-2.07525 12.16851,-2.07525 10.5649,0 15.6587,4.71648 5.18812,4.71647 5.18812,11.97984 z m 67.82295,27.82721 q 0,6.98038 -2.82988,12.64015 -2.82989,5.56544 -8.67831,8.86697 -5.7541,3.2072 -14.71541,3.2072 -12.54582,0 -19.14888,-6.79172 -6.50874,-6.88605 -6.50874,-18.11126 v -43.39157 h 8.48965 v 43.67455 q 0,8.20667 4.33916,12.73449 4.43349,4.52781 13.30046,4.52781 9.14996,0 13.20613,-4.8108 4.1505,-4.90514 4.1505,-12.54582 v -43.58023 h 8.39532 z"
            id="text2-5"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:94.3295px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect2-9);display:inline;fill:url(#linearGradient39);fill-opacity:1;stroke:#000000;stroke-width:1.74608;stroke-linecap:square;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill;filter:url(#filter39)"
-           transform="matrix(2.3709714,0,0,2.3709714,-56.63714,-157.58465)"><tspan
-             x="30.105469"
-             y="204.92768"
-             id="tspan1">M3U</tspan></text>
-        <text
-           xml:space="preserve"
+           style="font-size:94.3295px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';white-space:pre;fill:url(#linearGradient39);stroke:#000000;stroke-width:1.74608;stroke-linecap:square;paint-order:stroke markers fill;filter:url(#filter39)"
+           transform="matrix(2.3709714,0,0,2.3709714,-56.63714,-157.58465)"
+           aria-label="M3U" />
+        <path
+           d="M 68.969222,204.92768 46.80179,145.87741 h -0.377318 q 0.282988,2.92422 0.471647,7.92368 0.188659,4.90513 0.188659,10.28192 v 40.84467 H 39.25543 v -67.35126 h 12.545823 l 20.75249,55.18275 h 0.377318 l 21.129808,-55.18275 h 12.451491 v 67.35126 h -8.395323 v -41.41065 q 0,-4.90513 0.188659,-9.71594 0.282989,-4.8108 0.471648,-7.82935 h -0.377318 l -22.450421,58.95594 z m 93.197508,-51.59824 q 0,6.79173 -3.77318,10.8479 -3.77318,3.96183 -10.18759,5.28245 v 0.37732 q 8.11234,0.94329 12.07418,5.09379 3.96184,4.1505 3.96184,10.84789 0,5.84843 -2.73556,10.47058 -2.73555,4.52781 -8.48965,7.07471 -5.65977,2.54689 -14.62108,2.54689 -5.28245,0 -9.81026,-0.84896 -4.52782,-0.75464 -8.67832,-2.82989 v -7.73502 q 4.24483,2.07525 9.14996,3.30154 4.90514,1.13195 9.43295,1.13195 9.05564,0 13.01747,-3.49019 4.05617,-3.58452 4.05617,-9.81027 0,-6.32007 -4.99946,-9.05563 -4.90513,-2.82988 -13.86644,-2.82988 h -6.50873 v -7.07472 h 6.60306 q 8.301,0 12.54583,-3.49019 4.33915,-3.49019 4.33915,-9.24429 0,-4.90513 -3.30153,-7.54636 -3.30153,-2.73555 -8.9613,-2.73555 -5.47111,0 -9.33862,1.6036 -3.86751,1.6036 -7.64069,4.05616 l -4.1505,-5.65976 q 3.58452,-2.82989 8.86697,-4.90514 5.37678,-2.07525 12.16851,-2.07525 10.5649,0 15.6587,4.71648 5.18812,4.71647 5.18812,11.97984 z m 67.82295,27.82721 q 0,6.98038 -2.82988,12.64015 -2.82989,5.56544 -8.67831,8.86697 -5.7541,3.2072 -14.71541,3.2072 -12.54582,0 -19.14888,-6.79172 -6.50874,-6.88605 -6.50874,-18.11126 v -43.39157 h 8.48965 v 43.67455 q 0,8.20667 4.33916,12.73449 4.43349,4.52781 13.30046,4.52781 9.14996,0 13.20613,-4.8108 4.1505,-4.90514 4.1505,-12.54582 v -43.58023 h 8.39532 z"
            id="text2"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:94.3295px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect2);fill:url(#linearGradient7);fill-opacity:1;stroke:none;stroke-width:1.74608;stroke-linecap:square;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
-           transform="matrix(2.3314257,0,0,2.3314257,-51.050506,-152.86597)"><tspan
-             x="30.105469"
-             y="204.92768"
-             id="tspan2">M3U</tspan></text>
+           style="font-size:94.3295px;font-family:'Noto Sans';-inkscape-font-specification:'Noto Sans, Normal';white-space:pre;fill:url(#linearGradient7);stroke-width:1.74608;stroke-linecap:square;paint-order:stroke markers fill"
+           transform="matrix(2.3314257,0,0,2.3314257,-51.050506,-152.86597)"
+           aria-label="M3U" />
       </g>
     </g>
   </g>
