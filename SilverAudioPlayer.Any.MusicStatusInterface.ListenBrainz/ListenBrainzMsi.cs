@@ -50,7 +50,7 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
         l = new(_client, false);
         try
         {
-            if (l.ValidateToken(x.UserToken).Valid != true) return;
+            if ( l.ValidateTokenAsync(x.UserToken).GetAwaiter().GetResult().Valid != true) return;
         }
         catch (Exception e)
         {
@@ -76,7 +76,15 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
         if (e.Metadata?.Duration == null) return;
         m = e.Metadata;
         if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist) || string.IsNullOrEmpty(m.Album)) return;
-        _ = Task.Run(async () => await l.SetNowPlayingAsync(m.Title, m.Artist, m.Album));
+        _ = Task.Run(async () => await l.SetNowPlayingAsync(new SubmittedListen()
+        {
+            Track = new SubmittedTrackInfo()
+            {
+                Artist = m.Artist,
+                Name = m.Title,
+                Release = m.Album
+            }
+        }));
         length = x.ListenPolicy switch
         {
             Policy.Percentage => (double)(e.Metadata.Duration / 1000 * (x.ListenPolicyValue / 100d)),
@@ -91,26 +99,35 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
         if (!(pos - length < 0.2)) return true;
         if (l == null) return false;
         if (string.IsNullOrWhiteSpace(m.Title) || string.IsNullOrWhiteSpace(m.Artist) || string.IsNullOrWhiteSpace(m.Album)) return false;
-        var listen = new SubmittedListen(Started, m.Title, m.Artist, m.Album);
-        listen.Track.AdditionalInfo ??= new();
+        var additionalInfo = new Dictionary<string, object?>();
+        var listen = new SubmittedListen()
+        {
+            Track = new SubmittedTrackInfo()
+            {
+                Artist = m.Artist,
+                Name = m.Title,
+                Release = m.Album,
+                AdditionalInfo = additionalInfo
+            }
+        };
         if (m.Entries != null && m.Entries.Count != 0)
         {
             if (m.Entries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
             {
-                listen.Track.AdditionalInfo.Add("recording_mbid", trackGuid);
+                additionalInfo.Add("recording_mbid", trackGuid);
             }
 
             if (m.Entries.TryGetValue("MUSICBRAINZ_ALBUMID", out var albumGuid))
             {
-                listen.Track.AdditionalInfo.Add("release_mbid", albumGuid);
+                additionalInfo.Add("release_mbid", albumGuid);
             }
             /* if (m.Entries.TryGetValue("MUSICBRAINZ_ARTISTID", out var artistGuid))
                  {
                      listen.Track.AdditionalInfo.Add("artist_mbids", new []{artistGuid}); //incorrect format
                  }  */
         }
-
-        l.SubmitSingleListen(listen); // TODO: find a way to make this not stutter playback
+        // TODO: recheck if it stutters playback
+        Task.Run(async () => { await l.SubmitSingleListenAsync(listen); });
         return true;
     }
 

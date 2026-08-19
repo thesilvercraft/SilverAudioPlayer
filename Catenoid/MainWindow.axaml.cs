@@ -517,6 +517,8 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
     }
 
+    private readonly DataFormat<string> _queueReorderFormat = DataFormat.CreateStringApplicationFormat("SilverAudioPlayer.QueueReorder");
+    private bool _isReorderDrag;
     public Logic<MainWindowContext> Logic { get; set; }
 
     public IPlay? Player => Logic.Player;
@@ -607,6 +609,30 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         RemoveTrack();
     }
 
+    private async void QueueItem_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is not Control control) return;
+        if (!e.GetCurrentPoint(control).Properties.IsLeftButtonPressed) return;
+        if (control.DataContext is not Song song) return;
+        var sourceIndex = dc.Queue.IndexOf(song);
+        if (sourceIndex < 0) return;
+
+        mainListBox.SelectedItem = song;
+
+        var dragData = new DataTransfer();
+        dragData.Add(DataTransferItem.Create(_queueReorderFormat, sourceIndex.ToString()));
+
+        _isReorderDrag = true;
+        try
+        {
+            await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Move);
+        }
+        finally
+        {
+            _isReorderDrag = false;
+        }
+    }
+
     private void LyricsButton_Click(object? sender, RoutedEventArgs e) => dc.LyricsView();
 
     public void Metadata_Click(object? sender, PointerPressedEventArgs e)
@@ -681,9 +707,40 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
     }
 
+    private int GetDropTargetIndex(DragEventArgs e)
+    {
+        var point = e.GetPosition(mainListBox);
+        for (var i = 0; i < mainListBox.ItemCount; i++)
+        {
+            if (mainListBox.ContainerFromIndex(i) is Control container && container.Bounds.Contains(point))
+            {
+                return i;
+            }
+        }
+
+        return dc.Queue.Count;
+    }
+
+    private void ReorderQueueItem(int sourceIndex, int targetIndex)
+    {
+        if (sourceIndex < 0 || sourceIndex >= dc.Queue.Count) return;
+        targetIndex = Math.Clamp(targetIndex, 0, dc.Queue.Count);
+        if (sourceIndex == targetIndex || sourceIndex + 1 == targetIndex) return;
+
+        var song = dc.Queue[sourceIndex];
+        Logic.ReorderQueue(sourceIndex, targetIndex);
+        mainListBox.SelectedItem = song;
+    }
 
     private void DragOver(object? sender, DragEventArgs e)
     {
+        if (e.DataTransfer.Formats.Contains(_queueReorderFormat))
+        {
+            e.DragEffects = DragDropEffects.Move;
+            e.Handled = true;
+            return;
+        }
+
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
         else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text || x == DataFormat.File) || e.DataTransfer.Formats.Any(x=>x.Identifier is "UniformResourceLocatorW" or "text/x-moz-url" or "text/uri-list"))
@@ -694,6 +751,19 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
     private void Drop(object? sender, DragEventArgs e)
     {
+        if (e.DataTransfer.Formats.Contains(_queueReorderFormat))
+        {
+            var sourceIndexText = e.DataTransfer.TryGetValue(_queueReorderFormat) as string;
+            if (sourceIndexText != null && int.TryParse(sourceIndexText, out var sourceIndex))
+            {
+                var targetIndex = GetDropTargetIndex(e);
+                ReorderQueueItem(sourceIndex, targetIndex);
+                e.DragEffects = DragDropEffects.Move;
+                e.Handled = true;
+                return;
+            }
+        }
+
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
         else

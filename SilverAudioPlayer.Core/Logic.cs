@@ -353,6 +353,37 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         }
     }
 
+    private void TryEnqueueNextSongForGaplessPlayback()
+    {
+        if (Player is not IPlayLancer lancer) return;
+        if (PlayerContext.CurrentSong == null) return;
+
+        var nextSong = GetNextSongInQueue();
+        if (nextSong == null) return;
+
+        if (NextSong != null && ReferenceEquals(nextSong, NextSong))
+        {
+            return;
+        }
+
+        try
+        {
+            if (lancer.EnqueueNextStream(nextSong.Stream))
+            {
+                NextSong = nextSong;
+                Log.Debug("Enqueued next stream for gapless playback after add: {NextSong}", nextSong.URI);
+            }
+            else
+            {
+                Log.Debug("Player refused to enqueue next stream after add: {NextSong}", nextSong.URI);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to enqueue next stream after add: {NextSong}", nextSong.URI);
+        }
+    }
+
     //TODO SEE IF CAN BE REPLACED WITH TASK
     public void StartPlaying(bool play = true, bool resetsal = false)
     {
@@ -746,6 +777,61 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
         PlayerContext.Queue.Add(song);
         if (expectmore) return;
         SuggestDoingSort();
+
+        if (PlayerContext.CurrentSong != null && Player is IPlayLancer)
+        {
+            TryEnqueueNextSongForGaplessPlayback();
+        }
+    }
+
+    public void ReorderQueue(int sourceIndex, int targetIndex)
+    {
+        lock (PlayerContext.Queue)
+        {
+            if (sourceIndex < 0 || sourceIndex >= PlayerContext.Queue.Count) return;
+            targetIndex = Math.Clamp(targetIndex, 0, PlayerContext.Queue.Count);
+            if (sourceIndex == targetIndex || sourceIndex + 1 == targetIndex) return;
+
+            var song = PlayerContext.Queue[sourceIndex];
+            PlayerContext.Queue.RemoveAt(sourceIndex);
+            if (targetIndex > sourceIndex)
+            {
+                targetIndex--;
+            }
+            PlayerContext.Queue.Insert(targetIndex, song);
+
+            if (PlayerContext.CurrentSong != null)
+            {
+                var oldNext = NextSong;
+                UpdateNextSongReference();
+                if (Player is IPlayLancer && !ReferenceEquals(oldNext, NextSong))
+                {
+                    if (NextSong != null && ReplaceNextStreamForGaplessPlayback(NextSong))
+                    {
+                        Log.Debug("Replaced queued gapless stream after reorder: {NextSong}", NextSong.URI);
+                    }
+                    else
+                    {
+                        TryEnqueueNextSongForGaplessPlayback();
+                    }
+                }
+            }
+        }
+    }
+
+    private bool ReplaceNextStreamForGaplessPlayback(Song nextSong)
+    {
+        if (nextSong == null) return false;
+        if (Player is not IPlayLancer lancer) return false;
+        try
+        {
+            return lancer.ReplaceNextStream(nextSong.Stream);
+        }
+        catch (Exception e)
+        {
+            Log.Error(e, "Failed to replace next stream for gapless playback");
+            return false;
+        }
     }
 
     public void RemoveSong(Song song)
@@ -855,6 +941,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                 }
 
                 Log.Information("Sorted through {Count} songs dynamically.", sortedSongs.Count);
+                TryEnqueueNextSongForGaplessPlayback();
             });
         }
         catch (TaskCanceledException)

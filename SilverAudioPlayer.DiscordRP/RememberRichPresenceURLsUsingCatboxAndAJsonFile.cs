@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using CatBox.NET.Client;
 using CatBox.NET.Requests;
+using CatBox.NET.Requests.File;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.DiscordRP;
@@ -47,8 +48,8 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
         var stream = bits.GetStream();
         try
         {
-            var res = Task.Run(async () => await client.UploadImage(new StreamUploadRequest()
-                { Stream = stream, FileName = "a" + bits.MimeType.FileExtensions[0] })).GetAwaiter().GetResult();
+            var res = Task.Run(async () => await client.UploadFilesAsStreamAsync([new StreamUploadRequest()
+                { Stream = stream, FileName = "a" + bits.MimeType.FileExtensions[0] }]).FirstAsync()).GetAwaiter().GetResult();
             return res;
         }
         catch (Exception e)

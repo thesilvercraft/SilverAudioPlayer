@@ -49,6 +49,13 @@ public interface IPlayLancer : IPlayStreams
     bool EnqueueNextStream(WrappedStream stream);
 
     /// <summary>
+    /// Replaces the player's currently queued next stream.
+    /// </summary>
+    /// <param name="stream">The next stream to play instead.</param>
+    /// <returns>True when the queued next stream was replaced successfully.</returns>
+    bool ReplaceNextStream(WrappedStream stream) => false;
+
+    /// <summary>
     /// Raised when the player switches to the next queued stream.
     /// </summary>
     event EventHandler? NextStreamStarted;

@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Humanizer" Version="3.0.1" />
+        <PackageReference Include="Humanizer" Version="3.0.10" />
         <PackageReference Include="System.Management" Version="10.0.0" />
     </ItemGroup>
 

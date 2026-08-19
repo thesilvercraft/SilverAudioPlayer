@@ -110,7 +110,7 @@
 
 				<ListBox.DataTemplates>
 					<DataTemplate DataType="{x:Type shared:Song}">
-						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" >
+						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" PointerPressed="QueueItem_PointerPressed">
 							<TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
 								<TextBlock.Text>
 									<MultiBinding StringFormat="CD{0}/{1}">

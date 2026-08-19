@@ -91,6 +91,42 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
         return true;
     }
 
+    public bool ReplaceNextProvider(IWaveProvider nextProvider)
+    {
+        ArgumentNullException.ThrowIfNull(nextProvider);
+
+        if (!WaveFormat.Equals(nextProvider.WaveFormat))
+        {
+            return false;
+        }
+
+        lock (_lock)
+        {
+            while (_queuedProviders.Count > 0)
+            {
+                var queued = _queuedProviders.Dequeue();
+                if (queued is IDisposable disposableQueued)
+                {
+                    disposableQueued.Dispose();
+                }
+            }
+
+            _queuedProviders.Enqueue(nextProvider);
+            var currentLength = GetCurrentLength(_currentProvider);
+            var nextLength = GetLength(nextProvider);
+            if (currentLength >= 0 && nextLength >= 0)
+            {
+                _length = currentLength + nextLength;
+            }
+            else
+            {
+                _length = -1;
+            }
+        }
+
+        return true;
+    }
+
     private bool SwitchToNextProvider()
     {
         lock (_lock)

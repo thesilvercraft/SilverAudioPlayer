@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using System.Diagnostics;
+using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared.Metadata;
@@ -24,21 +25,26 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         {
             try
             {
-                Metadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream,[metadata])!).GetAwaiter().GetResult(); //TODO:TEST SLOWDOWN
+                var fetchedMetadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream, [metadata])!).GetAwaiter().GetResult();
+                if (fetchedMetadata is not null)
+                {
+                    Metadata = fetchedMetadata;
+                }
             }
             catch (Exception e)
             {
-                Log.Error(e,"Error loading metadata from stream in Song"); 
-                Metadata = null;
+                Log.Error(e, "Error loading metadata from stream in Song");
             }
         }
-        Guid = GetIdFromMetadata(metadata, URI);
+        Guid = GetIdFromMetadata(Metadata, URI);
     }
 
     public static Guid GetIdFromMetadata(IMetadata? metadata, string? uri=null)
     {
         if (metadata is not null && CurrentGuidHashingAlgorithm.HasUsableMetadata(metadata)) return CurrentGuidHashingAlgorithm.GetIdFromMetadata(metadata);
+        Debug.WriteLine("Not enough metadata to hash for guid");
         if (!string.IsNullOrEmpty(uri)) return CurrentGuidHashingAlgorithm.GetIdFromString(uri);
+        Debug.WriteLine("No path to hash for guid");
         return Guid.NewGuid();
     }
     public WrappedStream Stream { get; set; }

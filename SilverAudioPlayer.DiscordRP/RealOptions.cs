@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace SilverAudioPlayer.DiscordRP;
 
-public class RealOptions : IOptions<CatBoxConfig>
+public class RealOptions : IOptions<CatboxOptions>
 {
-    public CatBoxConfig Value { get; init; }
+    public CatboxOptions Value { get; init; }
 }

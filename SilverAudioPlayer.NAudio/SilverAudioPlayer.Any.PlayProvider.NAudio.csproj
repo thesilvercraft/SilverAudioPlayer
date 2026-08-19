@@ -25,8 +25,8 @@
     <ItemGroup>
         <ProjectReference Include="..\Silver.Composition\Silver.Composition.csproj" />
         <ProjectReference Include="..\SilverAudioPlayer.Shared\SilverAudioPlayer.Shared.csproj" />
-        <PackageReference Include="SilverCraft.CSCore" Version="0.1.8" />
-        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.9" />
+        <PackageReference Include="SilverCraft.CSCore" Version="0.1.11" />
+        <PackageReference Include="SilverCraft.CSCore.PortAudio" Version="0.1.11" />
         <PackageReference Include="SilverCraft.CSCore.SndFile" Version="0.1.8" />
         <PackageReference Include="SilverCraft.CSCore.OpenMPT" Version="0.1.8" />
         <PackageReference Include="NAudio" Version="2.2.1" />
@@ -34,7 +34,7 @@
         <PackageReference Include="NLayer.NAudioSupport" Version="1.4.0" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-        <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" Condition="$(DefineConstants.Contains('FFmpeg'))" />
+        <PackageReference Include="FFmpeg.AutoGen" Version="9.0.1.1" Condition="$(DefineConstants.Contains('FFmpeg'))" />
     </ItemGroup>
 
 

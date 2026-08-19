@@ -362,7 +362,9 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
         else
         {
+            outputDevice.PlaybackStopped -= OutputDeviceOnPlaybackStopped;
             outputDevice.Stop();
+            outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
         }
 
         _currentWaveProvider = audioFile;
@@ -384,7 +386,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public bool EnqueueNextStream(WrappedStream stream)
     {
-        if (stream == null) throw new ArgumentNullException(nameof(stream));
+        ArgumentNullException.ThrowIfNull(stream);
         if (_gaplessWaveProvider == null || _currentWaveProvider == null) return false;
 
         var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream).ToList();
@@ -414,6 +416,44 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             catch (Exception e)
             {
                 Log.Error(e, "Failed to enqueue next file stream");
+            }
+        }
+
+        return false;
+    }
+
+    public bool ReplaceNextStream(WrappedStream stream)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        if (_gaplessWaveProvider == null || _currentWaveProvider == null) return false;
+
+        var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream).ToList();
+        if (wrappers.Count != 0)
+        {
+            foreach (var wrapper in wrappers)
+            {
+                try
+                {
+                    var nextLoadedStream = stream.GetStream();
+                    var nextWaveProvider = wrapper.GetStream(nextLoadedStream);
+                    return _gaplessWaveProvider.ReplaceNextProvider(nextWaveProvider);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Failed to replace next stream using {WrapperType}", wrapper.GetType());
+                }
+            }
+        }
+        else if (stream is WrappedFileStream wf)
+        {
+            try
+            {
+                var nextWaveProvider = new AudioFileReader(wf.URL);
+                return _gaplessWaveProvider.ReplaceNextProvider(nextWaveProvider);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to replace next file stream");
             }
         }
 

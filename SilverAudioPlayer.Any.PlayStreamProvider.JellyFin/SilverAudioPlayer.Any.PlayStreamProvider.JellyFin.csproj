@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Jellyfin.Sdk" Version="2025.10.21" />
-        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.79.2" />
+        <PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.87.0" />
     </ItemGroup>
     <ItemGroup>
         <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
