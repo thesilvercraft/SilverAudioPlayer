@@ -7,6 +7,8 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 
 public sealed class FFmpegAVIOHelper : IDisposable
 {
+
+    [SuppressMessage("SonarLint", "S6640:Avoid using unsafe code blocks", Justification = "Interop delegate requires raw pointers")]
     public FFmpegAVIOHelper([NotNull] Stream stream, bool disposeStream = true)
     {
         unsafe
@@ -36,33 +38,28 @@ public sealed class FFmpegAVIOHelper : IDisposable
         Disposed = true;
     }
 
-
+    [SuppressMessage("SonarLint", "S6640:Avoid using unsafe code blocks", Justification = "Interop requires raw pointers")]
     private unsafe long Seek(void* stream, long offset, int whence)
     {
-        //Debug.WriteLine($"seek {offset} to {whence}");
-        var force = whence & ffmpeg.AVSEEK_FORCE;
+        if (whence == ffmpeg.AVSEEK_SIZE) 
+            return Stream.Length;
         whence &= ~ffmpeg.AVSEEK_FORCE;
-        if ((Whence)whence == Whence.AVSEEK_SIZE) return Stream.Length;
-        if ((Whence)whence != Whence.Current && (Whence)whence != Whence.Set && (Whence)whence != Whence.End)
-            return ffmpeg.AVERROR(ffmpeg.EINVAL);
-        Stream.Seek(offset, (Whence)whence switch
+        var origin = (Whence)whence switch
         {
+            Whence.Set => SeekOrigin.Begin,
             Whence.Current => SeekOrigin.Current,
             Whence.End => SeekOrigin.End,
-            Whence.Set => SeekOrigin.Begin,
-            _ => throw new NotImplementedException()
-        });
-
-        return 0;
+            _ => throw new ArgumentOutOfRangeException(nameof(whence), "Invalid seek origin")
+        };
+        return Stream.Seek(offset, origin);
     }
-
+    [SuppressMessage("SonarLint", "S6640:Avoid using unsafe code blocks", Justification = "Interop requires raw pointers")]
     private unsafe int Read(void* stream, byte* destination, int count)
     {
         var buffer = new byte[count];
         var read = Stream.Read(buffer, 0, buffer.Length);
         if (read == 0 && Stream.Position == Stream.Length) return ffmpeg.AVERROR_EOF;
         Marshal.Copy(buffer, 0, (IntPtr)destination, read);
-        //Debug.WriteLine($"read {read}/{count} ");
         return read;
     }
 }
@@ -77,10 +74,11 @@ public enum Whence
     End = 2,
     AVSEEK_SIZE = ffmpeg.AVSEEK_SIZE
 }
-
+[SuppressMessage("SonarLint", "S6640:Avoid using unsafe code blocks", Justification = "Interop delegate requires raw pointers")]
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 public unsafe delegate int* VirtualSeek(IntPtr opaque, nint offset, Whence whence);
 
+[SuppressMessage("SonarLint", "S6640:Avoid using unsafe code blocks", Justification = "Interop delegate requires raw pointers")]
 [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 public unsafe delegate int* VirtualRead(IntPtr opaque, IntPtr destination, nuint bytes);
 

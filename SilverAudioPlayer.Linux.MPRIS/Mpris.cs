@@ -91,7 +91,7 @@ namespace SilverAudioPlayer.Linux.MPRIS
         public List<Tuple<Uri, URLType>>? Links =>
         [
             new Tuple<Uri, URLType>(
-                new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.MPRIS"),
+                new Uri(ConstantCodeInfo.GetCurrentUrl()),
                 URLType.Code),
             new Tuple<Uri, URLType>(
                 new Uri("https://specifications.freedesktop.org/mpris-spec/latest/"),

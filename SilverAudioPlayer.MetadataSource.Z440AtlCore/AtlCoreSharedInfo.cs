@@ -8,8 +8,7 @@ public class AtlCoreSharedInfo
     public static readonly List<Tuple<Uri, URLType>>? Links =
     [
         new Tuple<Uri, URLType>(
-            new Uri(
-                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.MetadataSource.Z440AtlCore"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri($"https://www.nuget.org/packages/z440.atl.core/{typeof(Track).Assembly.GetName().Version}"),

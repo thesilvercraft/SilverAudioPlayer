@@ -1,13 +1,13 @@
-﻿using SilverAudioPlayer.Shared;
-using System.Composition;
+﻿using System.Composition;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using Windows.Media;
 using Windows.Media.Playback;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.SMTC;
+namespace SilverAudioPlayer.Windows.MusicStatusInterface.SMTC;
 
 [Export(typeof(IMusicStatusInterface))]
 [SupportedOSPlatform("windows10.0.17763.24")]
@@ -35,7 +35,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     public List<Tuple<Uri, URLType>>? Links =>
     [
-        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.SMTC"),
+        new(new(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new(new("https://docs.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols?view=winrt-22621"),
             URLType.LibraryDocumentation)
@@ -87,7 +87,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
         if (_systemMediaTransportControls != null && newtrack != null)
         {
             _systemMediaTransportControls.IsEnabled = true;
-            SystemMediaTransportControlsDisplayUpdater updater = _systemMediaTransportControls.DisplayUpdater;
+            var updater = _systemMediaTransportControls.DisplayUpdater;
             updater.ClearAll();
             updater.Type = MediaPlaybackType.Music;
             updater.AppMediaId = newtrack.Guid.ToString();
@@ -95,24 +95,22 @@ public class SMTCPlayTracker : IMusicStatusInterface
             updater.MusicProperties.AlbumTitle = newtrack?.Metadata?.Album;
             updater.MusicProperties.Title = newtrack?.Metadata?.Title ?? newtrack?.Name;
             updater.MusicProperties.TrackNumber = (uint)(newtrack?.Metadata?.TrackNumber ?? 0);
-            //string s = newtrack.URI.ToLower();
-            // bool isWeb = s.StartsWith("http://") || s.StartsWith("https://");
 
             if (newtrack?.Metadata?.Pictures?.Count >= 1)
             {
                 var first = newtrack?.Metadata?.Pictures?[0];
                 if (first != null)
                 {
-                    var fullPath = Path.GetTempFileName();
+                    var randomPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                     await using var imageData = first.Data.GetStream();
-                    FileStream fs = new(fullPath, FileMode.OpenOrCreate);
+                    FileStream fs = new(randomPath, FileMode.OpenOrCreate);
                     await imageData.CopyToAsync(fs);
-                    fs.Flush();
+                    await fs.FlushAsync();
                     fs.Close();
                     await fs.DisposeAsync();
-                    TempFiles.Add(fullPath);
+                    TempFiles.Add(randomPath);
                     updater.Thumbnail =
-                        RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(fullPath));
+                        RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(randomPath));
                 }
             }
 
@@ -314,8 +312,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
         _mediaPlayer?.Dispose();
         _systemMediaTransportControls = null;
         TimeLineTimer.Dispose();
-        foreach (var file in TempFiles)
-            if (File.Exists(file))
+        foreach (var file in TempFiles.Where(file=>File.Exists(file)))
                 File.Delete(file);
     }
 

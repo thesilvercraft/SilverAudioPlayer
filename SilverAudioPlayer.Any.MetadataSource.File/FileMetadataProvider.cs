@@ -21,8 +21,7 @@ public class FileMetadataProvider : IMetadataProvider
     public List<Tuple<Uri, URLType>>? Links =>
     [
         new Tuple<Uri, URLType>(
-            new Uri(
-                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.MetadataSource.File"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         
     ];

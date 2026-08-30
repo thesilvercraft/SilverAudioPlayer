@@ -58,8 +58,8 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
     private const string StoppedTextState = "Stopped";
     private const string StoppedSmallIcon = "stop";
-    
-    public DiscordRpcClient? client;
+
+    private DiscordRpcClient? _client;
 
     private readonly List<IConfigurableElement> ConfigurableElements;
     public IRememberRichPresenceURLs? richPresenceURLs;
@@ -156,7 +156,7 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
     public void Dispose()
     {
-        client?.Dispose();
+        _client?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -244,7 +244,7 @@ SilverAudioPlayer.DiscordRP
     public List<Tuple<Uri, URLType>>? Links => new()
     {
         new Tuple<Uri, URLType>(
-            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DiscordRP"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri(
@@ -277,7 +277,6 @@ SilverAudioPlayer.DiscordRP
     {
         if (!IsStarted) return;
         if (a == null) return;
-        //    TimeUpdateTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         if (a.Metadata != null)
         {
             var bigimage = GetAlbumArt(a);
@@ -291,8 +290,6 @@ SilverAudioPlayer.DiscordRP
                 PauseTextState);
         }
     }
-
-//    private Timer? TimeUpdateTimer;
 
     public static void TimerCallback(object? state)
     {
@@ -309,14 +306,12 @@ SilverAudioPlayer.DiscordRP
             Start = DateTime.Now.AddSeconds(-Env.GetPosition()).ToUniversalTime(),
             End = DateTime.Now.AddSeconds(Env.GetDuration()-Env.GetPosition()).ToUniversalTime()
         };
-        client.SetPresence(_currentPresence);
+        _client.SetPresence(_currentPresence);
     }
 
     private void SPlay(Song? a)
     {
         if (!IsStarted) return;
-  //      TimeUpdateTimer ??= new(TimerCallback, this, 500, 500);
-    //        TimeUpdateTimer?.Change(500, 500);
         
         if (a != null)
         {
@@ -345,7 +340,6 @@ SilverAudioPlayer.DiscordRP
     private void SStop()
     {
         if (!IsStarted) return;
-      //      TimeUpdateTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
         SetStatus(StoppedTextState, "Not playing anything", "sap", AppName, StoppedSmallIcon, StoppedTextState, appName:true);
         
@@ -382,7 +376,7 @@ SilverAudioPlayer.DiscordRP
                     buttons = [..buttons, new Button()
                     {
                         Label = "SilverAudioPlayer",
-                        Url = "https://gitlab.com/silvercraft/SilverAudioPlayer"
+                        Url = ConstantCodeInfo.GitRepo
                     }];
                 }
             }
@@ -391,7 +385,7 @@ SilverAudioPlayer.DiscordRP
                 buttons = [new Button()
                 {
                     Label = "SilverAudioPlayer",
-                    Url = "https://gitlab.com/silvercraft/SilverAudioPlayer"
+                    Url = ConstantCodeInfo.GitRepo
                 }];
             }
             _currentPresence = new RichPresence
@@ -410,7 +404,7 @@ SilverAudioPlayer.DiscordRP
                 Timestamps = x,
                 Buttons = buttons
             };
-            client.SetPresence(_currentPresence);
+            _client.SetPresence(_currentPresence);
         }
         catch (Exception ex)
         {
@@ -423,12 +417,12 @@ SilverAudioPlayer.DiscordRP
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
-        client = new DiscordRpcClient(id)
+        _client = new DiscordRpcClient(id)
         {
             SkipIdenticalPresence = false,
             Logger = new SerilogLogger(),
         };
-        IsStarted = client.Initialize();
+        IsStarted = _client.Initialize();
         if (!IsStarted)
         {
             StopIPC(listener);
@@ -458,7 +452,7 @@ SilverAudioPlayer.DiscordRP
                 Uploader.None => null,
                 Uploader.Catbox => new RememberRichPresenceURLsUsingCatboxAndAJsonFile(_configPathProvider, _httpClient) { Uploadit = true },
                 Uploader.Imgur => new RememberRichPresenceUrLsUsingImgurAndAJsonFile(_configPathProvider,_httpClient) { Uploadit = true },
-                _ => throw new ArgumentOutOfRangeException()
+                _ => throw new ArgumentOutOfRangeException(nameof(x.Uploader), x.Uploader, "The uploader type is unknown to this plugin")
             };
         }
     }
@@ -469,14 +463,14 @@ SilverAudioPlayer.DiscordRP
         listener.PlayerStateChanged -= PlayerStateChanged;
         listener.TrackChangedNotification -= SongChanged;
         listener.PositionChanged -= Seeked;
-        
         try
         {
-            client.Deinitialize();
-            client.Dispose();
+            _client.Deinitialize();
+            _client.Dispose();
         }
-        catch
+        catch (Exception e)
         {
+            Log.Error(e,$"Error during StopIPC on {nameof(DiscordPlayTracker)}");
         }
     }
 }

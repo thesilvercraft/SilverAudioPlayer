@@ -21,8 +21,7 @@ public class Win32WakeLock : IWakeLockProvider
     public List<Tuple<Uri, URLType>> Links =>
     [
         new Tuple<Uri, URLType>(
-            new Uri(
-                "https://gitlab.com/silvercraft/SilverAudioPlayer/SilverAudioPlayer.Windows.PlatformHelper.Win10"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri("https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setthreadexecutionstate"),

@@ -162,11 +162,11 @@ public class App : Application
                 lw.Show();
                 BootupLogic.SetupCrashFallNets(exception =>
                 {
-                    var a = Path.GetTempFileName();
-                    File.WriteAllText(a, sink.writer.ToString());
-                    if (File.Exists("/usr/bin/kdialog"))
+                    var randomPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                    File.WriteAllText(randomPath, sink.writer.ToString());
+                    if (File.Exists(Program.KDialogLocation))
                     {
-                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{exception}\"");
+                        Process.Start(Program.KDialogLocation, $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {randomPath}\n{exception}\"");
                     }
                 });
             }
@@ -174,9 +174,9 @@ public class App : Application
             {
                 BootupLogic.SetupCrashFallNets(exception =>
                 {
-                    if (File.Exists("/usr/bin/kdialog"))
+                    if (File.Exists(Program.KDialogLocation))
                     {
-                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"{exception}\"");
+                        Process.Start(Program.KDialogLocation, $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"{exception}\"");
                     }
                 });
             }
@@ -202,15 +202,14 @@ public class App : Application
                 logger.Warning("Failed to find a memory provider, proceeding anyways");
             }
 
-            foreach (var provider in mw.Logic.PlayProviders)
+            foreach (var mimes in mw.Logic.PlayProviders.Select(provider=>provider.SupportedMimes).Where(mimes=>mimes!=null))
             {
-                if (provider.SupportedMimes != null) mw.Logic.PlayableMimes.AddRange(provider.SupportedMimes);
+                mw.Logic.PlayableMimes.AddRange(mimes);
             }
 
             var playproviderloadtask = Task.Run(async () =>
             {
-                foreach (var playprovider in mw.Logic.PlayProviders)
-                    if (playprovider != null)
+                foreach (var playprovider in mw.Logic.PlayProviders.Where(provider=>provider!=null))
                         await playprovider.OnStartup();
             });
             if (canProvideMemory && mw is IAmOnceAgainAskingYouForYourMemory mainwindowMemory)

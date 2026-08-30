@@ -19,6 +19,12 @@ public interface ICodeInformation
 
     public Version? Version { get; }
     public string Licenses { get; }
+    /// <summary>
+    /// Links to the code or documentation
+    /// <remarks> If part of SilverAudioPlayer, implement through <code> = new Tuple&lt;Uri, URLType&gt;(new Uri(ConstantCodeInfo.GetCurrentUrl()), URLType.Code);
+    /// </code> 
+    /// </remarks>
+    /// </summary>
     public List<Tuple<Uri, URLType>>? Links { get; }
 }
 

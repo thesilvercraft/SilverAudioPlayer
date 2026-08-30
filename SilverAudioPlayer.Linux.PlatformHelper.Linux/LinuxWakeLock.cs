@@ -30,7 +30,7 @@ public class LinuxWakeLock : IWakeLockProvider
     public List<Tuple<Uri, URLType>>? Links =>
     [
         new Tuple<Uri, URLType>(
-            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Linux.PlatformHelper.Linux"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri("https://specifications.freedesktop.org/idle-inhibit-spec/latest/re01.html"),

@@ -25,7 +25,10 @@ public partial class CommandPalette : Window
     }
     public void ElementDoubleTapped(object _, Avalonia.Input.TappedEventArgs args)
     {
-        ((ICommandPaletteItem?)List.SelectedItem)?.Execute(App.mainWindow.Env);
+        if (List.SelectedItem is ICommandPaletteItem item)
+        {
+            item.Execute(App.mainWindow.Env);
+        }
     }
     private void TextChanged(object? sender, TextChangedEventArgs e)
     {

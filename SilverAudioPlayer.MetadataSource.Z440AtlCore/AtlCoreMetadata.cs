@@ -75,7 +75,7 @@ public class AtlCoreMetadata : IMetadata
         initialEmbeddedPictures.SetValue(theTrack, new List<PictureInfo>());
         var fio = fileIO.GetValue(theTrack);
         var fioType = fio.GetType();
-        if (fio is IAudioDataIO fileio)
+        if (fio is IAudioDataIO)
         {
             var metaFF = fioType?.GetProperty("Metadata", BindingFlags.Instance | BindingFlags.Public);
             var metaX = metaFF.GetValue(fio);
@@ -107,12 +107,10 @@ public class AtlCoreMetadata : IMetadata
 
 #endif
         Entries = theTrack?.AdditionalFields;
-        foreach (var lyricsInfo in  theTrack.Lyrics)
+        foreach (var lyricsInfo in theTrack.Lyrics
+                     .Where(ly=>ly.Format.HasFlag(LyricsInfo.LyricsFormat.SYNCHRONIZED)))
         {
-            if (lyricsInfo.Format.HasFlag(LyricsInfo.LyricsFormat.SYNCHRONIZED))
-            {
-                SyncedLyrics = lyricsInfo.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampStart, x.Text.EndsWith('\n')?x.Text : x.Text+'\n')).ToList();
-            }
+            SyncedLyrics = lyricsInfo.SynchronizedLyrics.Select(x => new LyricPhrase(x.TimestampStart, x.Text.EndsWith('\n')?x.Text : x.Text+'\n')).ToList();
         }
     }
 
@@ -127,9 +125,7 @@ public class AtlCoreMetadata : IMetadata
     private void Dispose(bool disposing)
     {
         ReleaseUnmanagedResources();
-        if (disposing)
-        {
-        }
+       
     }
 
     public void Dispose()

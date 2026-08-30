@@ -14,12 +14,13 @@ namespace Catenoid;
 
 internal static class Program
 {
+    public const string KDialogLocation = "/usr/bin/kdialog";
     private static void HandleExceptionCode(Exception ex)
     {
         Console.Error.WriteLine(ex.ToString());
-        if (File.Exists("/usr/bin/kdialog"))
+        if (File.Exists(KDialogLocation))
         {
-            Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
+            Process.Start(KDialogLocation, $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
         }
     }
     // Initialization code. Don't use any Avalonia, third-party APIs or any

@@ -126,7 +126,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
 
     public Task SetPositionAsync(ObjectPath TrackId, long Position)
     {
-        Env.SetPosition(Position / 1000000);
+        Env.SetPosition(Position / 1000000.0);
         return Task.CompletedTask;
     }
 
@@ -263,7 +263,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
 
     public async Task<object> GetAsync(string prop)
     {
-        prop = prop.ToLower();
+        prop = prop.ToLowerInvariant();
         return prop switch
         {
             "cancontrol" or "cangonext" or "cangoprevious" or "canpause" or "canseek" or "canplay" => true,
@@ -343,7 +343,8 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
         List<string> mimes = [.. tm.Select(x => x.Common), .. tm.SelectMany(x => x.AlternativeTypes)];
         return [.. mimes];
     }
-    string[] supportedUri = ["file", "http", "https"];
+
+    private string[] supportedUri = ["file", "http", "https"];
     const string Identity = "Catenoid";
     const string DesktopEntry = "Catenoid";
     async Task<MediaPlayer2Properties> IMediaPlayer2.GetAllAsync()

@@ -13,6 +13,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public event EventHandler<PlaybackState> PlayerStateChanged;
     public event EventHandler<TimeSpan>? PositionChanged;
     private SortedSet<TimedEvent> _timedEvents = new();
+    private readonly object _timeEventsLock =new ();
     Logic<T> Logic;
     private bool _timerEnabled = false;
     private bool _isDisposed = false;
@@ -48,7 +49,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public virtual Version? Version { get; } = typeof(WrappedStream).Assembly.GetName().Version;
     public virtual List<Tuple<Uri, URLType>>? Links   =>
     [
-        new Tuple<Uri, URLType>(new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/"), URLType.Code),
+        new Tuple<Uri, URLType>(new Uri(ConstantCodeInfo.GitRepo), URLType.Code),
     ];
 
     public Task<IMetadata?>? GetMetadataAsync(WrappedStream stream)
@@ -148,7 +149,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     
     void ClearTimedEvents()
     {
-        lock (_timedEvents)
+        lock (_timeEventsLock)
         {
             foreach (var e in _timedEvents)
             {
@@ -209,7 +210,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
     private void StopTimer()
     {
-        lock (_timedEvents)
+        lock (_timeEventsLock)
         {
             _timerEnabled = false;
             _timer?.Change(Timeout.Infinite, Timeout.Infinite);
@@ -218,7 +219,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     void SetTimerToNextEvent()
     {
-        lock (_timedEvents)
+        lock (_timeEventsLock)
         {
             if (_isDisposed || _timedEvents.Count == 0)
             {
@@ -245,7 +246,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
     public void AddTimedEvent(TimedEvent timedEvent)
     {
-        lock (_timedEvents)
+        lock (_timeEventsLock)
         {
             _timedEvents.Add(timedEvent);
             timedEvent.AddToParent(this);
@@ -262,7 +263,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
         List<TimedEvent> eventsToInvoke;
         var position = GetPosition();
-        lock (_timedEvents)
+        lock (_timeEventsLock)
         {
             eventsToInvoke = _timedEvents.Where(x => x.Time <= position + 0.02).ToList();
         }
@@ -281,7 +282,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public void RemoveTimedEvent(TimedEvent timedEvent)
     { 
-        lock (_timedEvents)
+        lock (_timeEventsLock)
         {
             if (_timedEvents.Remove(timedEvent))
             {

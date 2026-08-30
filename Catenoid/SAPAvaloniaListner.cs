@@ -25,7 +25,7 @@ public class SapAvaloniaPlayerEnviroment(Logic<MainWindowContext> Logic, IConfig
     public override List<Tuple<Uri, URLType>>? Links =>
     [
         new Tuple<Uri, URLType>(
-            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/Catenoid"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri($"https://www.nuget.org/packages/Avalonia/{typeof(Window).Assembly.GetName().Version}"),
