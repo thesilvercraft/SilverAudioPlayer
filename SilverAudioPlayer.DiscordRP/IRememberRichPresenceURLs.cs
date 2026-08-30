@@ -1,6 +1,6 @@
 using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.DiscordRP;
+namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public interface IRememberRichPresenceURLs
 {

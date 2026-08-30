@@ -18,7 +18,6 @@ namespace SilverAudioPlayer.NAudio;
 [Export(typeof(IPlay))]
 public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop, IPlayLancer
 {
-    private readonly List<string> FilesToCleanUp = [];
     public IWaveProvider? audioFile;
     public WaveConfig Config;
     public IWavePlayer? outputDevice;
@@ -47,11 +46,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         Debug.WriteLine("Disposing WaveFilePlayer");
         GC.SuppressFinalize(this);
-        foreach (var file in FilesToCleanUp.ToArray())
-        {
-            File.Delete(file);
-            FilesToCleanUp.Remove(file);
-        }
 
         _gaplessWaveProvider?.Dispose();
         _gaplessWaveProvider = null;

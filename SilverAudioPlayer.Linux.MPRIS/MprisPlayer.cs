@@ -344,7 +344,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
         return [.. mimes];
     }
 
-    private string[] supportedUri = ["file", "http", "https"];
+    private readonly string[] supportedUri = ["file", "http", "https"];
     const string Identity = "Catenoid";
     const string DesktopEntry = "Catenoid";
     async Task<MediaPlayer2Properties> IMediaPlayer2.GetAllAsync()

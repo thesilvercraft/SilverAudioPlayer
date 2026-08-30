@@ -32,12 +32,7 @@ public class LocalLibraryPlayStreamProvider : IPlayStreamProvider, IAmOnceAgainA
             catch (Exception e)
             {
                 Log.Error(e,"error indexing");
-                try
-                {
-                    if (File.Exists(IndexedTrack.ExpectedFileLocation)) File.Delete(IndexedTrack.ExpectedFileLocation);
-                }
-                catch { }
-
+                if (File.Exists(IndexedTrack.ExpectedFileLocation)) File.Delete(IndexedTrack.ExpectedFileLocation);
             }
        
             RunningIndex = false;

@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
 
-namespace SilverAudioPlayer.DiscordRP;
+namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public class DiscordPlayTrackerConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {

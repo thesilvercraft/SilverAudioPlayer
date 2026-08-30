@@ -1,2 +1,0 @@
-﻿namespace SilverAudioPlayer.Shared;
-

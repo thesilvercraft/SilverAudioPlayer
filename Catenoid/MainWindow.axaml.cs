@@ -518,7 +518,6 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     }
 
     private readonly DataFormat<string> _queueReorderFormat = DataFormat.CreateStringApplicationFormat("SilverAudioPlayer.QueueReorder");
-    private bool _isReorderDrag;
     public Logic<MainWindowContext> Logic { get; set; }
 
     public IPlay? Player => Logic.Player;
@@ -621,16 +620,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
         var dragData = new DataTransfer();
         dragData.Add(DataTransferItem.Create(_queueReorderFormat, sourceIndex.ToString()));
-
-        _isReorderDrag = true;
-        try
-        {
-            await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Move);
-        }
-        finally
-        {
-            _isReorderDrag = false;
-        }
+        await DragDrop.DoDragDropAsync(e, dragData, DragDropEffects.Move);
     }
 
     private void LyricsButton_Click(object? sender, RoutedEventArgs e) => dc.LyricsView();

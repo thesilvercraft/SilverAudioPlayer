@@ -19,7 +19,7 @@
 							<TextBlock Text="{Binding Description}" FontSize="12" Margin="5" />
 							<TextBlock Text="{Binding Version}" FontSize="10" Margin="5" />
 						</StackPanel>
-						<Image Source="{Binding Icon}" Grid.Column="0" />
+						<Image Source="{Binding Icon}" Grid.Row="0" Grid.Column="0" />
 					</Grid>
 				</DataTemplate>
 			</ListBox.ItemTemplate>

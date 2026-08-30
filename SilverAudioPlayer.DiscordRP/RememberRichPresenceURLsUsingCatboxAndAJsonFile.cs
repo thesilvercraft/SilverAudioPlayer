@@ -4,7 +4,7 @@ using CatBox.NET.Client;
 using CatBox.NET.Requests.File;
 using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.DiscordRP;
+namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPresenceURLs
 {
@@ -15,7 +15,7 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
 
     public RememberRichPresenceURLsUsingCatboxAndAJsonFile(IConfigPathProvider configPathProvider, HttpClient hclient)
     {
-        MusicArtFile = configPathProvider.GetPath("musicart.json");
+        _musicArtFile = configPathProvider.GetPath("musicart.json");
         var options = new RealOptions()
         {
             Value = new()
@@ -65,19 +65,19 @@ public class RememberRichPresenceURLsUsingCatboxAndAJsonFile : IRememberRichPres
 
     private void GetCache()
     {
-        if (File.Exists(MusicArtFile))
+        if (File.Exists(_musicArtFile))
             cached = JsonSerializer.Deserialize<MscArtFile[]>(
-                File.ReadAllText(MusicArtFile));
+                File.ReadAllText(_musicArtFile));
         cached ??= Array.Empty<MscArtFile>();
     }
 
-    private string MusicArtFile;
-    object filelock = new();
+    private readonly string _musicArtFile;
+    private readonly object _filelock = new();
     private void SetCache()
     {
-        lock (filelock)
+        lock (_filelock)
         {
-            using var fs = new FileStream(MusicArtFile, FileMode.Create, FileAccess.Write);
+            using var fs = new FileStream(_musicArtFile, FileMode.Create, FileAccess.Write);
             using var w = new StreamWriter(fs);
             w.Write(JsonSerializer.Serialize(cached));
             w.Flush();

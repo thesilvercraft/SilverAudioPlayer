@@ -1,7 +1,7 @@
 using CatBox.NET;
 using Microsoft.Extensions.Options;
 
-namespace SilverAudioPlayer.DiscordRP;
+namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public class RealOptions : IOptions<CatboxOptions>
 {

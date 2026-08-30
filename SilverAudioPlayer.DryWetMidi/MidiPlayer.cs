@@ -84,8 +84,8 @@ internal class MidiPlayer : IPlay, IPlayProvider
         player.NoteCallback = (rawNoteData, rawTime, rawLength, playbackTime) =>
             new NotePlaybackData(
                 rawNoteData.NoteNumber, // leave note number as is
-                E(rawNoteData.Velocity, volume), // change velocity
-                E(rawNoteData.OffVelocity, volume), // change off velocity
+                Scale(rawNoteData.Velocity, volume), // change velocity
+                Scale(rawNoteData.OffVelocity, volume), // change off velocity
                 rawNoteData.Channel); // leave channel as is
     }
 
@@ -120,7 +120,7 @@ internal class MidiPlayer : IPlay, IPlayProvider
     public List<Tuple<Uri, URLType>>? Links =>
     [
         new Tuple<Uri, URLType>(
-            new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.DryWetMidi"),
+            new Uri(ConstantCodeInfo.GetCurrentUrl()),
             URLType.Code),
         new Tuple<Uri, URLType>(
             new Uri(
@@ -172,7 +172,7 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
         return OperatingSystem.IsWindows() &&stream.MimeType == KnownMimes.MidMime;
     }
 
-    public IPlay? GetPlayer(WrappedStream stream,IPlayerEnvironment? playerEnvironmen)
+    public IPlay? GetPlayer(WrappedStream stream,IPlayerEnvironment? _)
     {
         midiOut ??= OutputDevice.GetByIndex(0);
         mf = MidiFile.Read(stream.GetStream());
@@ -193,10 +193,10 @@ SilverAudioPlayer.Win.PlayProvider.DryWetMidi
         return Task.CompletedTask;
     }
 
-    private static SevenBitNumber E(SevenBitNumber e, int a)
+    private static SevenBitNumber Scale(SevenBitNumber number, int percent)
     {
-        if (e * (a * 0.01f) < 0) return (SevenBitNumber)1;
-        return (SevenBitNumber)(e * (a * 0.01f));
+        if (number * (percent * 0.01f) < 0) return (SevenBitNumber)1;
+        return (SevenBitNumber)(number * (percent * 0.01f));
     }
 
 

@@ -514,7 +514,7 @@ public class SettingsDC(Settings settings) : ReactiveObject
         {
             if (value.Contains('@'))
             {
-                throw new ArgumentException(nameof(BackgroundColour), "Not a valid colour");
+                throw new ArgumentException("Not a valid colour",nameof(BackgroundColour));
             }
             this.RaiseAndSetIfChanged(ref _backgroundColour, value); 
             WindowExtensions.envBackend.SetString(ConstStrings.BG, _backgroundColour);
@@ -533,7 +533,7 @@ public class SettingsDC(Settings settings) : ReactiveObject
         {
             if (value.Contains('@'))
             {
-                throw new ArgumentException(nameof(ProgressBarColour), "Not a valid colour");
+                throw new ArgumentException("Not a valid colour",nameof(ProgressBarColour));
             }
             this.RaiseAndSetIfChanged(ref _progressBarColour, value); 
             WindowExtensions.envBackend.SetEnv(ConstStrings.PB, _progressBarColour);
@@ -552,7 +552,7 @@ public class SettingsDC(Settings settings) : ReactiveObject
         {
             if (value.Contains('@'))
             {
-                throw new ArgumentException(nameof(LyricsColour), "Not a valid colour");
+                throw new ArgumentException("Not a valid colour",nameof(LyricsColour));
             }
             this.RaiseAndSetIfChanged(ref _lyricsColour, value); 
             WindowExtensions.envBackend.SetEnv(ConstStrings.Lrc, _lyricsColour);

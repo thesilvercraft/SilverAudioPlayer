@@ -1,67 +1,56 @@
-﻿using SilverMagicBytes;
+﻿using System.Collections.Concurrent;
+using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 
 public class WrappedFileStream : WrappedStream, IDisposable
 {
-    private bool disposedValue;
+    private bool _disposedValue;
+    private readonly ConcurrentBag<Stream> _streams = [];
 
     public override bool IsSeekable => true;
+    public string URL { get; }
+    public override MimeType MimeType { get; }
 
     public WrappedFileStream(string url)
     {
-        URL = url;
+        URL = url ?? throw new ArgumentNullException(nameof(url));
         MimeType? mt;
-        var stream2 = InternalGetStream();
-        try
+        using (var tempStream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read))
         {
-            mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
+            mt = MagicByteCombos.Match(tempStream, 0)?.MimeType;
         }
-        finally
-        {
-            stream2.Dispose();
-            Streams.Remove(stream2);
-        }
-
         mt ??= KnownMimes.GetKnownMimeByExtension(new FileInfo(URL).Extension);
-        MimeType = mt;
+        MimeType = mt ?? KnownMimes.OctetMime;
     }
-
-    public string URL { get; set; }
-    public List<Stream> Streams { get; set; } = new();
-
-    public override MimeType MimeType { get; } = KnownMimes.OctetMime;
-
 
     private Stream InternalGetStream()
     {
-        var Stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
-        Streams.Add(Stream);
-        return Stream;
+        ObjectDisposedException.ThrowIf(_disposedValue, this);
+        var stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
+        _streams.Add(stream);
+        return stream;
     }
 
     public override Stream GetStream()
     {
-        var Stream = InternalGetStream();
-        return Stream;
+        return InternalGetStream();
     }
-
 
     public override void Dispose()
     {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        foreach (var stream in Streams.Where(x => x.CanRead))
+        if (_disposedValue) return;
+        _disposedValue = true;
+        if (!disposing) return;
+        while (_streams.TryTake(out var stream))
+        {
             stream.Dispose();
-    }
-
-    ~WrappedFileStream()
-    {
-        Dispose(false);
+        }
     }
 }

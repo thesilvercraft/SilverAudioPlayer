@@ -57,12 +57,10 @@ public class GuiBinding : ReactiveObject
 
 public partial class MainWindow : Window
 {
-    private IPlayStreamProviderListener Env;
-    private GuiBinding _binding = new();
+    private readonly IPlayStreamProviderListener _env;
+    private readonly GuiBinding _binding = new();
     public MainWindow()
     {
-       // Logger.GetLogger();
-        
         InitializeComponent();
         DataContext = _binding;
         LB = this.FindControl<ListBox>("LB");
@@ -78,21 +76,15 @@ public partial class MainWindow : Window
         }
         this.DoAfterInitTasks(true);
     }
-
-    
-    private void AddEntireScreen(object? sender, RoutedEventArgs e)
-    {
-        Env.LoadSongs(_binding.WrappedSongs.Select(song => new WrappedFileStream(song.Loc)).ToList()); //TODO GET SORTED PROPERLY
-    }
     public MainWindow(LocalLibraryPlayStreamProviderConfig value, IPlayStreamProviderListener env) : this()
     {
-        config = value;
-        Env = env;
+        _config = value;
+        _env = env;
         if (File.Exists(IndexedTrack.ExpectedFileLocation))
         {
             try
             {
-             songs = IndexedTrack.LoadFromExpectedLocation();
+             _songs = IndexedTrack.LoadFromExpectedLocation();
             }
             catch (Exception e)
             {
@@ -101,7 +93,7 @@ public partial class MainWindow : Window
         }
         _binding.WrappedAlbums = new();
         var albums = new AvaloniaList<IndexAlbum>();
-        foreach (var group in songs.GroupBy(x => x.Album))
+        foreach (var group in _songs.GroupBy(x => x.Album))
         {
             albums.Add(new()
             {
@@ -113,8 +105,12 @@ public partial class MainWindow : Window
         }
         _binding.WrappedAlbums = albums;
     }
-    private List<IndexedTrack> songs=new();
-    LocalLibraryPlayStreamProviderConfig? config;
+    private void AddEntireScreen(object? sender, RoutedEventArgs e)
+    {
+        _env.LoadSongs(_binding.WrappedSongs.Select(song => new WrappedFileStream(song.Loc)).ToList()); //TODO GET SORTED PROPERLY
+    }
+    private readonly List<IndexedTrack> _songs= [];
+    private readonly LocalLibraryPlayStreamProviderConfig? _config;
 
     private async void LoadNewFolder(object? sender, RoutedEventArgs e)
     {
@@ -127,8 +123,8 @@ public partial class MainWindow : Window
                 AllowMultiple = true
             });
             if (folders is not { Count: > 0 }) return;
-            config?.Directories.AddRange(folders.Select(x=>x.Path.ToString()).Where(Directory.Exists));
-            ((ICanBeToldThatAPartOfMeIsChanged?)config)?.PropertyChanged(config, new("Directories"));
+            _config?.Directories.AddRange(folders.Select(x=>x.Path.ToString()).Where(Directory.Exists));
+            ((ICanBeToldThatAPartOfMeIsChanged?)_config)?.PropertyChanged(_config, new("Directories"));
         }
         catch (Exception ex)
         {
@@ -140,7 +136,7 @@ public partial class MainWindow : Window
     {
         if (RB.SelectedItem is IndexSong ws)
         {
-            Env.LoadSong(new WrappedFileStream(ws.Loc));
+            _env.LoadSong(new WrappedFileStream(ws.Loc));
         }
     }
 
@@ -148,7 +144,7 @@ public partial class MainWindow : Window
     {
         if (LB.SelectedItem is IndexAlbum wa)
         {
-            _binding.WrappedSongs = new (songs.Where(x=>x.Album== wa.Name).Select(x=> new IndexSong(x.Location, x, Env)));
+            _binding.WrappedSongs = new (_songs.Where(x=>x.Album== wa.Name).Select(x=> new IndexSong(x.Location, x, _env)));
         }
     }
 }

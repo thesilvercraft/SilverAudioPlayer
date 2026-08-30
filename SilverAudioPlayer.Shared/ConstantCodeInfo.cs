@@ -4,7 +4,7 @@ namespace SilverAudioPlayer.Shared;
 
 public static class ConstantCodeInfo
 {
-    public const string GitRepo = "https://gitlab.com/silvercraft/SilverAudioPlayer";
+    public static string GitRepo = "https://gitlab.com/silvercraft/SilverAudioPlayer";
 
     private static string GetCurrentSourceFolderName(string callerPath)
     {

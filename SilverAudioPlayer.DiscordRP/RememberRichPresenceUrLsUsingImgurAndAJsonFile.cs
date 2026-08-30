@@ -4,7 +4,7 @@ using Imgur.API.Authentication;
 using Imgur.API.Endpoints;
 using SilverAudioPlayer.Shared;
 
-namespace SilverAudioPlayer.DiscordRP;
+namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public class RememberRichPresenceUrLsUsingImgurAndAJsonFile : IRememberRichPresenceURLs
 {

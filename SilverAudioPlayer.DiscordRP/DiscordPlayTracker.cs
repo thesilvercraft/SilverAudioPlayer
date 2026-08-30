@@ -8,7 +8,7 @@ using SilverCraft.Ekorensis;
 using ILogger = DiscordRPC.Logging.ILogger;
 using LogLevel = DiscordRPC.Logging.LogLevel;
 
-namespace SilverAudioPlayer.DiscordRP;
+namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public class SerilogLogger : ILogger
 {
@@ -70,10 +70,10 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new[] { ConfigObject };
 
 
-    string id = "926595775574712370";
+    private const string id = "926595775574712370";
     private static readonly string[] optionsForUploader = new string[] { "None", "Catbox", "Imgur" };
-    private IConfigPathProvider _configPathProvider;
-    private HttpClient _httpClient;
+    private readonly IConfigPathProvider _configPathProvider;
+    private readonly HttpClient _httpClient;
     public DiscordPlayTracker(IConfigPathProvider configPathProvider, HttpClient httpClient)
     {
         _configPathProvider = configPathProvider;

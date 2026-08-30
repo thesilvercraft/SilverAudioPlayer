@@ -21,7 +21,7 @@ public interface ICodeInformation
     public string Licenses { get; }
     /// <summary>
     /// Links to the code or documentation
-    /// <remarks> If part of SilverAudioPlayer, implement through <code> = new Tuple&lt;Uri, URLType&gt;(new Uri(ConstantCodeInfo.GetCurrentUrl()), URLType.Code);
+    /// <remarks> If part of SilverAudioPlayer, implement through <code> = [new Tuple&lt;Uri, URLType&gt;(new Uri(ConstantCodeInfo.GetCurrentUrl()), URLType.Code)];
     /// </code> 
     /// </remarks>
     /// </summary>

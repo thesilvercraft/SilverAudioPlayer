@@ -92,7 +92,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
 
     public string Licenses => "The awful FortnitePlayTracker is licensed under the MIT license (called the expat license because MIT actually uses many licenses)";
 
-    public List<Tuple<Uri, URLType>>? Links { get; set; }
+    public List<Tuple<Uri, URLType>>? Links { get;  }= [new Tuple<Uri, URLType>(new Uri(ConstantCodeInfo.GetCurrentUrl()), URLType.Code)];
     IMusicStatusInterfaceListener Env;
 
     FileSystemWatcher Watcher;

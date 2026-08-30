@@ -17,8 +17,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private SystemMediaTransportControls? _systemMediaTransportControls;
     private readonly bool DISABLE = false;
     private bool disposedValue;
-    private List<string> TempFiles = [];
-    private System.Timers.Timer TimeLineTimer;
+    private readonly List<string> _tempFiles = [];
+    private System.Timers.Timer _timeLineTimer;
     public bool IsStarted => _IsStarted;
     private bool _IsStarted;
 
@@ -108,7 +108,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
                     await fs.FlushAsync();
                     fs.Close();
                     await fs.DisposeAsync();
-                    TempFiles.Add(randomPath);
+                    _tempFiles.Add(randomPath);
                     updater.Thumbnail =
                         RandomAccessStreamReference.CreateFromFile(await StorageFile.GetFileFromPathAsync(randomPath));
                 }
@@ -289,15 +289,15 @@ public class SMTCPlayTracker : IMusicStatusInterface
         _systemMediaTransportControls.ShuffleEnabledChangeRequested += SystemControls_ShuffleEnabledChangeRequested;
         _systemMediaTransportControls.AutoRepeatModeChangeRequested += SystemControls_AutoRepeatModeChangeRequested;
         _systemMediaTransportControls.PlaybackPositionChangeRequested += SystemControls_PlaybackPositionChangeRequested;
-        TimeLineTimer = new(interval: 1000);
-        TimeLineTimer.Elapsed += (s, e) =>
+        _timeLineTimer = new(interval: 1000);
+        _timeLineTimer.Elapsed += (s, e) =>
         {
             var state = Env.GetState();
             var track = Env.GetCurrentTrack();
             var pos = Env.GetPosition();
             UpdateTimeline(state, track, pos);
         };
-        TimeLineTimer.Start();
+        _timeLineTimer.Start();
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
@@ -305,15 +305,16 @@ public class SMTCPlayTracker : IMusicStatusInterface
         if (DISABLE) return;
         _IsStarted = false;
 
-        TimeLineTimer.Stop();
+        _timeLineTimer.Stop();
         Env.TrackChangedNotification -= TrackChangedNotification;
         Env.PlayerStateChanged -= PlayerStateChanged;
 
         _mediaPlayer?.Dispose();
         _systemMediaTransportControls = null;
-        TimeLineTimer.Dispose();
-        foreach (var file in TempFiles.Where(file=>File.Exists(file)))
-                File.Delete(file);
+        _timeLineTimer.Dispose();
+        foreach (var file in _tempFiles.Where(file=>File.Exists(file)))
+        {
+            File.Delete(file);
+        }
     }
-
 }
