@@ -1,9 +1,6 @@
-using System.Composition;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
 using System.Xml.Serialization;
-using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared.SilverPlaylist;
 

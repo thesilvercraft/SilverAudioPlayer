@@ -135,10 +135,11 @@ public class Mp3StreamPlayer :IPlayStreams
     public event EventHandler<object>? TrackEnd;
     public event EventHandler<object>? TrackPause;
     public event EventHandler<TimeSpan>? PositionChanged;
-    public bool IsTrackLoaded { get; }
+    public bool IsTrackLoaded { get; private set; }
     public void LoadStream(WrappedStream stream)
     {
        this.stream = stream.GetStream();
+       IsTrackLoaded = true;
     }
     private BufferedWaveProvider bufferedWaveProvider;
     private bool IsBufferNearlyFull
@@ -229,8 +230,8 @@ public class Mp3StreamPlayer :IPlayStreams
                 }
             }
         }
-
-    public IReadOnlyList<MimeType>? SupportedMimes { get; }
+     // Eh it does support mp3 mimes but nah since its a stream i handle it differently
+    public IReadOnlyList<MimeType>? SupportedMimes { get; } = null; 
 }
  public class ReadFullyStream : Stream
     {

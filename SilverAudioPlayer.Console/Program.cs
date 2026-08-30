@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Events;
 using Silver.Composition;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
@@ -105,7 +104,7 @@ public class App
                     int last = 0;
                     for (int i = 0; i < lyrics.Count; i++)
                     {
-                        LyricPhrase? l = lyrics[i];
+                        var l = lyrics[i];
                         if (l.TimeStampInMilliSeconds <= Logic.Player?.GetPosition().TotalMilliseconds)
                         {
                             last = i;
@@ -189,8 +188,6 @@ public class App
                             break;
                         case ConsoleKey.Q:
                             Environment.Exit(0);
-                            break;
-                        default:
                             break;
                     }
                 }

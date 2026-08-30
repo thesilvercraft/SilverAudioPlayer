@@ -9,9 +9,9 @@ namespace Silver.Composition;
 
 public class WrappedAssembly : IDisposable
 {
-    UnloadableAssemblyLoadContext alc = new();
+    UnloadableAssemblyLoadContext? alc;
     internal Assembly Assembly { get; set; }
-    public string Path { get; set; }
+    public string? Path { get; set; }
 
     internal WrappedAssembly(Assembly a)
     {
@@ -23,6 +23,7 @@ public class WrappedAssembly : IDisposable
     public WrappedAssembly(string path)
     {
         Path = path;
+        alc= new();
         Assembly = alc.LoadFromAssemblyPath(path);
     }
 

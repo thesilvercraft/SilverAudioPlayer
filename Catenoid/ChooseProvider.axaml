@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shared="clr-namespace:SilverAudioPlayer.Shared;assembly=SilverAudioPlayer.Shared"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Catenoid.ChooseProvider"
         Title="Choose player"
@@ -11,7 +12,7 @@
 		<TextBlock Grid.Row="0">Choose player:</TextBlock>
 		<ListBox Grid.Row="1" Name="CapBox" ItemsSource="{Binding playProviders}" Background="Transparent">
 			<ListBox.ItemTemplate>
-				<DataTemplate>
+				<DataTemplate DataType="shared:ICodeInformation">
 					<Grid RowDefinitions="*,*,*" ColumnDefinitions="95,*">
 						<StackPanel Grid.Column="1">
 							<TextBlock Text="{Binding Name}" FontSize="25" Margin="5" />

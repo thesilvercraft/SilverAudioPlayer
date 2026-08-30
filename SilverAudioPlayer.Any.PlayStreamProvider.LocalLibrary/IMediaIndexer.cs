@@ -1,9 +1,4 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using Avalonia.Collections;
-using Avalonia.Controls.Embedding.Offscreen;
 using Avalonia.Media.Imaging;
-using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SLibIndex;

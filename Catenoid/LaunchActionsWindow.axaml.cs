@@ -28,8 +28,8 @@ public partial class LaunchActionsWindow : Window
 
     public LaunchActionsWindow()
     {
-        InitializeComponent();
         DataContext = x;
+        InitializeComponent();
         LB = this.FindControl<ListBox>("LB");
         this.DoAfterInitTasksF();
     }

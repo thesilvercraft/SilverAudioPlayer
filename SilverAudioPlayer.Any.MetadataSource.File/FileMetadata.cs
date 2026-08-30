@@ -74,23 +74,23 @@ public class FileMetadata : IMetadata
         }
     }
 
-    public string? Title { get; }
-    public string? Artist { get; }
-    public string? Album { get; }
-    public string? Genre { get; }
-    public int? Year { get; }
-    public ulong? Bitrate { get; }
-    public ulong? SampleRate { get; }
-    public uint? Channels { get; }
-    public int? TrackNumber { get; }
-    public int? DiscNumber { get; }
-    public string[]? Comments { get; }
-    public double? Duration { get; }
+    public string? Title => null;
+    public string? Artist  => null;
+    public string? Album  => null;
+    public string? Genre => null;
+    public int? Year  => null;
+    public ulong? Bitrate  => null;
+    public ulong? SampleRate  => null;
+    public uint? Channels  => null;
+    public int? TrackNumber  => null;
+    public int? DiscNumber  => null;
+    public string[]? Comments => null;
+    public double? Duration  => null;
     public string? Lyrics { get; }
     public IList<LyricPhrase>? SyncedLyrics { get; set; }
     private List<IPicture>? _internalPictures = [];
     public IReadOnlyList<IPicture>? Pictures => _internalPictures;
 
-    public IDictionary<string, string>? Entries {get;}
+    public IDictionary<string, string>? Entries  => null;
 }
 

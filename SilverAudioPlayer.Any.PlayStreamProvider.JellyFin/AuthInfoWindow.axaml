@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.AuthInfoWindow"
-        Title="Log in" ExtendClientAreaToDecorationsHint="True" Margin="25,5,5,5">
+        Title="Log in"  Margin="25,5,5,5">
     <Grid>
         <Grid ColumnDefinitions="*,500,*" RowDefinitions="*,*,*,*,*">
             <TextBlock Grid.Column="0" Grid.Row="1" Text="Username:" TextAlignment="Left" VerticalAlignment="Top" />

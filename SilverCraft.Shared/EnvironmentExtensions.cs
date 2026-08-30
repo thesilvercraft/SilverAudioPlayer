@@ -29,7 +29,7 @@ public static class EnvironmentExtensions
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            string method = null;
+            string? method = null;
             if (File.Exists(path))
             {
                 method = "org.freedesktop.FileManager1.ShowItems";

@@ -304,12 +304,12 @@ SilverAudioPlayer.DiscordRP
     void UpdateTime()
     {
         if(Env.GetState()!=PlaybackState.Playing) return;
-        CurrentPresence.Timestamps =  new Timestamps
+        _currentPresence.Timestamps =  new Timestamps
         {
             Start = DateTime.Now.AddSeconds(-Env.GetPosition()).ToUniversalTime(),
             End = DateTime.Now.AddSeconds(Env.GetDuration()-Env.GetPosition()).ToUniversalTime()
         };
-        client.SetPresence(CurrentPresence);
+        client.SetPresence(_currentPresence);
     }
 
     private void SPlay(Song? a)
@@ -351,9 +351,7 @@ SilverAudioPlayer.DiscordRP
         
     }
 
-    private Guid? currentSong;
-    private DateTime currentSongStarted=DateTime.Now;
-    private RichPresence CurrentPresence = new();
+    private RichPresence _currentPresence = new();
 
     private void SetStatus(string details, string state, string largeimage, string largeimagetext, string smallimage,
         string smallimagetext, DateTime? start = null, DateTime? end = null, bool appName = false)
@@ -396,7 +394,7 @@ SilverAudioPlayer.DiscordRP
                     Url = "https://gitlab.com/silvercraft/SilverAudioPlayer"
                 }];
             }
-            CurrentPresence = new RichPresence
+            _currentPresence = new RichPresence
             {
                 Type = ActivityType.Listening,
                 Details = details,
@@ -412,7 +410,7 @@ SilverAudioPlayer.DiscordRP
                 Timestamps = x,
                 Buttons = buttons
             };
-            client.SetPresence(CurrentPresence);
+            client.SetPresence(_currentPresence);
         }
         catch (Exception ex)
         {

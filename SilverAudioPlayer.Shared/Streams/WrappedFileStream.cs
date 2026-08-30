@@ -11,7 +11,7 @@ public class WrappedFileStream : WrappedStream, IDisposable
     public WrappedFileStream(string url)
     {
         URL = url;
-        MimeType? mt = null;
+        MimeType? mt;
         var stream2 = InternalGetStream();
         try
         {

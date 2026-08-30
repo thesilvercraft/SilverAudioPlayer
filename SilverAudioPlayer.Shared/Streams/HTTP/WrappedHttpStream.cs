@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using SilverMagicBytes;
+﻿using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 

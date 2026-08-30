@@ -12,7 +12,6 @@ using SilverAudioPlayer.Shared.Metadata;
 using SilverAudioPlayer.Shared.StandardRequests;
 using SilverMagicBytes;
 using Swordfish.NET.Collections;
-using Logger = Serilog.Core.Logger;
 
 namespace SilverAudioPlayer.Core;
 
@@ -50,7 +49,6 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 {
     public readonly List<IMusicStatusInterface> LoadedMusicStatusInterfaces = [];
     private bool _changeAllowed = true;
-    private bool _isSortRequested;
     public Song? NextSong;
     public bool StopAutoLoading;
     private IMediator _mediator;

@@ -2,7 +2,6 @@
 using System.Xml.Serialization;
 using SilverAudioPlayerModuleHandler.Build;
 using File = System.IO.File;
-using SilverAudioPlayerModuleHandler;
 using Microsoft.Extensions.DependencyModel;
 string Version = "7.1.0";
 //Q&A
@@ -261,8 +260,8 @@ string? ProcessDepOfModule(RuntimeLibrary r, SilverAudioPlayerModulesInfo info, 
                 Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, x))
             }).GroupBy(x => Path.GetExtension(x.Name) is ".pdb" or ".dbg");
 
-        m.Files.AddRange(range.Where(x => x.Key == false).SelectMany(x => x));
-        m.Debug.AddRange(range.Where(x => x.Key == true).SelectMany(x => x));
+        m.Files.AddRange(range.Where(x => !x.Key).SelectMany(x => x));
+        m.Debug.AddRange(range.Where(x => x.Key).SelectMany(x => x));
         m.Files.Add(new SilverAudioPlayerModuleHandler.Build.File()
         {
             Name = Path.GetRelativePath(parent, Path.Combine(parentPublishFolder, "Catenoid.desktop")),

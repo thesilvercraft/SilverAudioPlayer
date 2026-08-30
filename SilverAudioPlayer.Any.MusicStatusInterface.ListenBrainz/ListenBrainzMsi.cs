@@ -4,7 +4,6 @@ using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
-using Timer = System.Threading.Timer;
 
 namespace SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz;
 

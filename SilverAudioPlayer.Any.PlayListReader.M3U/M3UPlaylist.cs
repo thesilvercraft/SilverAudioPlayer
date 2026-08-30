@@ -1,5 +1,4 @@
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.SilverPlaylist;
 
 namespace SilverAudioPlayer.Any.PlayListReader.M3U;
 

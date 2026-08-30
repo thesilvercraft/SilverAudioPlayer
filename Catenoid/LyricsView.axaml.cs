@@ -13,7 +13,6 @@ namespace Catenoid;
 public partial class LyricsView : Window
 {
     private MainWindow mainWindow;
-    private double heightm = 20.12242;
     public LyricsView(MainWindow mainWindow) 
     {
         this.mainWindow = mainWindow;
@@ -54,7 +53,7 @@ public partial class LyricsView : Window
         {
             if (close)
                 return false;
-            if (songGuid != mainWindow?.CurrentSong?.Guid)
+            if (songGuid != mainWindow.CurrentSong?.Guid)
             {
                 lyricRuns.Clear();
                 inverseLyricRuns.Clear();
@@ -207,7 +206,7 @@ public partial class LyricsView : Window
 
             if (tappedRun != null && inverseLyricRuns.TryGetValue(tappedRun, out double timestampMs))
             {
-                mainWindow?.Logic?.SetPosition(timestampMs / 1000d);
+                mainWindow.Logic?.SetPosition(timestampMs / 1000d);
             }
         };
     }

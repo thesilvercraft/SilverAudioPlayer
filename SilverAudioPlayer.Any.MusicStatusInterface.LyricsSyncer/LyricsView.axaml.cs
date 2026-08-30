@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -75,7 +76,7 @@ public partial class LyricsView : Window
                 CurrentLyric--;
                 d[CurrentLyric].Foreground = white;
                 box.Text= box.Text.Remove(box.Text.Length - 2, 1);
-                box.Text= box.Text.Remove(box.Text.LastIndexOf("\n"));
+                box.Text= box.Text.Remove(box.Text.LastIndexOf("\n", StringComparison.Ordinal));
             }
             e.Handled = true;
         }

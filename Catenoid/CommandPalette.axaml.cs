@@ -5,13 +5,13 @@ using ReactiveUI;
 using SilverAudioPlayer.Shared;
 
 namespace Catenoid;
-public class ComandPaletteWindowDataContext : ReactiveObject
+public class CommandPaletteWindowDataContext : ReactiveObject
 {
     public AvaloniaList<ICommandPaletteItem> Items { get; set; } = new();
 }
 public partial class CommandPalette : Window
 {
-    readonly ComandPaletteWindowDataContext dc = new();
+    readonly CommandPaletteWindowDataContext dc = new();
     public CommandPalette()
     {
         InitializeComponent();

@@ -12,11 +12,12 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
     private IMetadata? _Metadata;
     public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic=null)
     {
+        ArgumentNullException.ThrowIfNull(data);
         URI = data switch
         {
             WrappedFileStream w => w.URL,
             WrappedHttpStream h => h.Url,
-            _ => ""
+            _ => null
         };
         Stream = data;
         Name = name;
@@ -48,7 +49,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         return Guid.NewGuid();
     }
     public WrappedStream Stream { get; set; }
-    public string URI { get; set; }
+    public string? URI { get; set; }
     public string Name { get; set; }
     /// <summary>
     /// A Guid assigned to this song by the constructor of the Song object

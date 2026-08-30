@@ -1,6 +1,5 @@
 ﻿using System.Composition;
 using System.Diagnostics;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MetaBrainz.MusicBrainz;
@@ -120,6 +119,7 @@ public class MusicBrainzMetadata : IMetadata
         Genre=recording.Genres == null ? null : string.Join(';',recording.Genres?.Select(x=>x.Name));
         Year = recording.FirstReleaseDate.Year;
         Duration = recording.Length.Value.TotalMilliseconds;
+        
         var jsonOptions = new JsonSerializerOptions() 
         { 
             WriteIndented = false,
@@ -137,11 +137,11 @@ public class MusicBrainzMetadata : IMetadata
     public string? Album { get; }
     public string? Genre { get; }
     public int? Year { get; }
-    public ulong? Bitrate { get; }
-    public ulong? SampleRate { get; }
-    public uint? Channels { get; }
-    public int? TrackNumber { get; }
-    public int? DiscNumber { get; }
+    public ulong? Bitrate => null;
+    public ulong? SampleRate  => null;
+    public uint? Channels => null;
+    public int? TrackNumber  => null;
+    public int? DiscNumber  => null;
     public string[]? Comments { get; }
     public IDictionary<string, string>? Entries { get; } = new Dictionary<string, string>();
     public double? Duration { get; }

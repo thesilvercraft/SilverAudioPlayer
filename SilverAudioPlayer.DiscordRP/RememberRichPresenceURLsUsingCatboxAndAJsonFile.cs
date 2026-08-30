@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
 using CatBox.NET.Client;
-using CatBox.NET.Requests;
 using CatBox.NET.Requests.File;
 using SilverAudioPlayer.Shared;
 

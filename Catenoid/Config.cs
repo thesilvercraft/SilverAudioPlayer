@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 using Avalonia.Controls;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
-using Swordfish.NET.Collections;
 
 namespace Catenoid;
 

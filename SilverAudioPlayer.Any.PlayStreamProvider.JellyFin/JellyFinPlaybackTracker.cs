@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using Jellyfin.Sdk;
 using Jellyfin.Sdk.Generated.Models;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.Metadata;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
 class RequestJellyFinHelper():IQuery<JellyFinHelper?>

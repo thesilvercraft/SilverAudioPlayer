@@ -1,6 +1,4 @@
-﻿using Serilog;
-
-namespace SilverAudioPlayer.Shared
+﻿namespace SilverAudioPlayer.Shared
 {
     public interface ISharedPool<T> where T : IDisposable
     { 

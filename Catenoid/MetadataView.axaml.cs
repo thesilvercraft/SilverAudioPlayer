@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
@@ -15,7 +14,7 @@ namespace Catenoid;
 
 public partial class MetadataView : Window
 {
-    private readonly DC dataContext = new();
+    private readonly MetadataViewDataContext dataContext = new();
     private Song? s;
 
     public MetadataView()
@@ -24,7 +23,6 @@ public partial class MetadataView : Window
         InitializeComponent();
         mainTreeView = this.FindControl<TreeView>("mainTreeView");
         this.DoAfterInitTasksF();
-  
     }
 
     public void LoadSong(Song s)
@@ -157,7 +155,7 @@ public class Field
     public string FieldValue { get; }
 }
 
-internal class DC
+internal class MetadataViewDataContext
 {
     public ObservableCollection<Field> ValuePairs { get; } = [];
 

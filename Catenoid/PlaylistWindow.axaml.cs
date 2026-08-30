@@ -1,16 +1,13 @@
 using System;
 using System.IO;
-using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
-using ReactiveUI;
 using SilverAudioPlayer.Shared;
 
 namespace Catenoid;

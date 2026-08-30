@@ -5,7 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.Gui"
 		xmlns:local="using:SilverAudioPlayer.Any.PlayStreamProvider.JellyFin"
-        Title="SilverAudioPlayer Provider for JellyFin ALPHA" ExtendClientAreaToDecorationsHint="True">
+        Title="SilverAudioPlayer Provider for JellyFin ALPHA" >
     <Grid Margin="25,5,5,5" RowDefinitions="40,40,*" >
         <Grid ColumnDefinitions="*,*,*,*" >
             <Button  Grid.Column="0" Click="Button_Click">Home</Button>
@@ -13,7 +13,7 @@
             <Button  Grid.Column="2" Click="BackButton_Click">Back</Button>
         </Grid>
         <Grid Grid.Row="1" ColumnDefinitions="*,auto">
-            <TextBox Name="SearchBox" Watermark="Search" KeyUp="SearchBox_KeyUp" Margin="0,0,5,0" />
+            <TextBox Name="SearchBox" PlaceholderText="Search" KeyUp="SearchBox_KeyUp" Margin="0,0,5,0" />
             <Button Content="Search" Click="SearchButton_Click" Grid.Column="1" />
         </Grid>
         <ListBox Grid.Row="2" Background="Transparent" DockPanel.Dock="Bottom" ItemsSource="{Binding SearchResults}" Name="LB"

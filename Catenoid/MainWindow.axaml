@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Catenoid;assembly=Catenoid"
         xmlns:shared="using:SilverAudioPlayer.Shared"
         Title="Catenoid" DragDrop.AllowDrop="True" Icon="/icon.ico"
-        ExtendClientAreaToDecorationsHint="True">
+       >
 	<Window.Resources>
 		<local:NullableReplacingConverter x:Key="nullableReplacingConverter" />
 		<local:RelativePointConverter x:Key="relativePointConverter" />
@@ -63,9 +63,8 @@
 			<Setter Property="FontSize" Value="20" />
 		</Style>
 	</Window.Styles>
-	<Grid RowDefinitions="25,260,*" Margin="5" Name="MainGrid">
-		<TextBlock Text="{Binding Title}" Margin="5" />
-		<Border Grid.Row="1">
+	<Grid RowDefinitions="260,*" Margin="5" Name="MainGrid">
+		<Border Grid.Row="0">
 			<Grid ColumnDefinitions="256,*">
 				<Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
 					<Image Height="256" Width="256" Name="Image" />
@@ -96,7 +95,7 @@
 		</Border>
 			<ListBox ItemsSource="{Binding Queue}" Selection="{Binding Selection}"  Name="mainListBox"
                  DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"
-                 Background="Transparent" Grid.IsSharedSizeScope="True" Grid.Row="2" >
+                 Background="Transparent" Grid.IsSharedSizeScope="True" Grid.Row="1" >
 				<ListBox.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="Remove Selected" Click="RemoveSelected" />
@@ -111,7 +110,7 @@
 				<ListBox.DataTemplates>
 					<DataTemplate DataType="{x:Type shared:Song}">
 						<Grid HorizontalAlignment="Stretch" ColumnDefinitions="100,*,*,*" PointerPressed="QueueItem_PointerPressed">
-							<TextBlock Classes="c c1" Grid.Column="0" HorizontalAlignment="Left">
+							<TextBlock Classes="c" Grid.Column="0" HorizontalAlignment="Left">
 								<TextBlock.Text>
 									<MultiBinding StringFormat="CD{0}/{1}">
 										<Binding Path="Metadata.DiscNumber" />
@@ -119,7 +118,7 @@
 									</MultiBinding>
 								</TextBlock.Text>
 							</TextBlock>
-							<TextBlock Classes="c c2" Grid.Column="1" HorizontalAlignment="Center">
+							<TextBlock Classes="c" Grid.Column="1" HorizontalAlignment="Center">
 								<TextBlock.Text>
 									<MultiBinding Converter="{StaticResource ResourceKey=nullableReplacingConverter}">
 										<Binding Path="Metadata.Title" />
@@ -127,9 +126,9 @@
 									</MultiBinding>
 								</TextBlock.Text>
 							</TextBlock>
-							<TextBlock Classes="c c3" Text="{Binding Metadata.Artist}" Grid.Column="2"
+							<TextBlock Classes="c" Text="{Binding Metadata.Artist}" Grid.Column="2"
 									   HorizontalAlignment="Center" />
-							<TextBlock Classes="c c4" Text="{Binding Metadata.Album}" Grid.Column="3"
+							<TextBlock Classes="c" Text="{Binding Metadata.Album}" Grid.Column="3"
 									   HorizontalAlignment="Center" />
 						</Grid>
 					</DataTemplate>

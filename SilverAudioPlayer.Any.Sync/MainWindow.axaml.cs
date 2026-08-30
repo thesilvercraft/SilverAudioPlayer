@@ -9,7 +9,6 @@ using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaEdit;
 using SilverAudioPlayer.Shared;
-using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.AvaloniaUtils;
 
 namespace SilverAudioPlayer.Any.Sync;

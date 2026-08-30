@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
@@ -29,7 +28,7 @@ public partial class EkonrensisWindow : Window, IConfigurableWindow
                         Content = checkBox.Content,
                         IsChecked = checkBox.Toggled
                     };
-                    cb.IsCheckedChanged += (x, y) => checkBox.Toggled = (bool)cb.IsChecked;
+                    cb.IsCheckedChanged += (_, _) => checkBox.Toggled = (bool)cb.IsChecked;
                     return cb;
                 }
             case IConfigurableTextBox textBox:
@@ -37,9 +36,9 @@ public partial class EkonrensisWindow : Window, IConfigurableWindow
                     TextBox tb = new()
                     {
                         Text = textBox.Content,
-                        Watermark = textBox.Placeholder
+                        PlaceholderText = textBox.Placeholder
                     };
-                    tb.TextChanged += (x, y) =>
+                    tb.TextChanged += (_, _) =>
                     {
                         textBox.Content = tb.Text;
                     };
@@ -60,7 +59,7 @@ public partial class EkonrensisWindow : Window, IConfigurableWindow
                         ItemsSource = dropDown.Options,
                         SelectedItem = dropDown.Selection
                     };
-                    cb.SelectionChanged += (x, y) => dropDown.Selection = (string)cb.SelectedItem;
+                    cb.SelectionChanged += (_, _) => dropDown.Selection =  (string)cb.SelectedItem;
                     cb.PlaceholderText = dropDown.Placeholder;
                     return cb;
                 }
@@ -70,7 +69,7 @@ public partial class EkonrensisWindow : Window, IConfigurableWindow
                     {
                         Content = button.Content
                     };
-                    cb.Click += (x, y) => button.Click();
+                    cb.Click += (_, _) => button.Click();
                     return cb;
                 }
             case IConfigurableRow row:

@@ -4,7 +4,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media.Imaging;
 using ReactiveUI;
 using Serilog;
-using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 
 namespace Catenoid;

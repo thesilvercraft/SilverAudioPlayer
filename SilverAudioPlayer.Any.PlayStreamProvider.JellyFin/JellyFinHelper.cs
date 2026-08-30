@@ -6,7 +6,6 @@ using Jellyfin.Sdk.Generated.Models;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Extensions.Msal;
 using Serilog;
-using Serilog.Core;
 using SilverAudioPlayer.Shared;
 
 namespace SilverAudioPlayer.Any.PlayStreamProvider.JellyFin;
@@ -338,7 +337,7 @@ public class JellyFinHelper
             var lyrics = ri.Lyrics.Select(x => new LyricPhrase(((double)x.Start / 10000)!, x.Text + "\n")).ToList();
             return lyrics;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return null;
         }

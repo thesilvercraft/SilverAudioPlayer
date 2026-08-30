@@ -2,14 +2,12 @@
 using SilverCraft.CSCore.SoundOut;
 using System.Composition;
 using System.Diagnostics;
-using System.Globalization;
 using NAudio.Wave;
 using Serilog;
 using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.StandardRequests;
-using SilverCraft.CSCore;
 using SilverCraft.CSCore.Streams.SampleConverter;
 using SilverMagicBytes;
 using PlaybackState = SilverAudioPlayer.Shared.PlaybackState;

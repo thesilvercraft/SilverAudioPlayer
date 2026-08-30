@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="200"
         x:Class="SilverAudioPlayer.Any.PlayStreamProvider.JellyFin.ServerUrlWindow"
-        Title="ServerUrlWindow" ExtendClientAreaToDecorationsHint="True" Height="200">
+        Title="ServerUrlWindow" Height="200">
     <Grid Margin="25,5,5,5">
 
         <Grid ColumnDefinitions="*,500,*">

@@ -132,6 +132,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "Error loading folder to config in locallib");
         }
     }
 

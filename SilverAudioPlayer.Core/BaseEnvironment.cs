@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
@@ -40,14 +39,17 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         return Logic.FilterFiles(files);
     }
 
-    public virtual string Name { get; }
+    public virtual string Name => "SilverAudioPlayer Base Implementation";
 
-    public virtual string Description  { get; }
+    public virtual string Description => "The base implementation on which other player environments are based on";
 
-    public virtual WrappedStream? Icon { get; }
+    public virtual WrappedStream? Icon => null;
 
-    public virtual Version? Version { get; }
-    public virtual List<Tuple<Uri, URLType>>? Links { get; }
+    public virtual Version? Version { get; } = typeof(WrappedStream).Assembly.GetName().Version;
+    public virtual List<Tuple<Uri, URLType>>? Links   =>
+    [
+        new Tuple<Uri, URLType>(new Uri("https://gitlab.com/silvercraft/SilverAudioPlayer/"), URLType.Code),
+    ];
 
     public Task<IMetadata?>? GetMetadataAsync(WrappedStream stream)
     {

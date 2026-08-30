@@ -32,7 +32,8 @@ public class SLibIndexMetadataGatherer : IMetadataProvider
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.";
-    public List<Tuple<Uri, URLType>>? Links { get; }
+
+    public List<Tuple<Uri, URLType>>? Links => null;
     private JsonSerializerOptions options = new()
     {
         PropertyNameCaseInsensitive = true

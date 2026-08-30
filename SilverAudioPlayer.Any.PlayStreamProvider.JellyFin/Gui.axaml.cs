@@ -136,13 +136,13 @@ public partial class Gui : Window
     }
 
     private async Task GetSongStreamUrls(IEnumerable<WrappedDto> dtos,
-        ConcurrentBag<Tuple<WrappedStream, IMetadata>> streams)
+        ConcurrentBag<Tuple<WrappedStream, IMetadata?>> streams)
     {
         foreach (var song in dtos.OrderBy(x => x.IndexNumber))
         {
             var ws = await helper.GetStream(song.dto);
             var lyrics = await helper.GetLyrics(song.dto);
-            streams.Add(new Tuple<WrappedStream, IMetadata>(ws, new JellyfinMeta(song.dto, lyrics)));
+            streams.Add(new Tuple<WrappedStream, IMetadata?>(ws, new JellyfinMeta(song.dto, lyrics)));
         }
     }
 
@@ -160,7 +160,7 @@ public partial class Gui : Window
     private async void AddEntireScreen(object? sender, RoutedEventArgs e)
     {
         Cursor = new Cursor(StandardCursorType.Wait);
-        ConcurrentBag<Tuple<WrappedStream, IMetadata>> streams = [];
+        ConcurrentBag<Tuple<WrappedStream, IMetadata?>> streams = [];
         List<Task> tasks = [];
         var groups = g.SearchResults.GroupBy(x => x.IsFolder);
         foreach (var group in groups)

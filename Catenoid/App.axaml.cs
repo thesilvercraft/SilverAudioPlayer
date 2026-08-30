@@ -5,9 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Json;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -162,23 +160,23 @@ public class App : Application
             {
                 LogWindow lw = new();
                 lw.Show();
-                BootupLogic.SetupCrashFallNets(y =>
+                BootupLogic.SetupCrashFallNets(exception =>
                 {
                     var a = Path.GetTempFileName();
                     File.WriteAllText(a, sink.writer.ToString());
                     if (File.Exists("/usr/bin/kdialog"))
                     {
-                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{y}\"");
+                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {a}\n{exception}\"");
                     }
                 });
             }
             else
             {
-                BootupLogic.SetupCrashFallNets(y =>
+                BootupLogic.SetupCrashFallNets(exception =>
                 {
                     if (File.Exists("/usr/bin/kdialog"))
                     {
-                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"{y}\"");
+                        Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"{exception}\"");
                     }
                 });
             }

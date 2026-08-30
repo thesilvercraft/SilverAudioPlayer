@@ -14,6 +14,14 @@ namespace Catenoid;
 
 internal static class Program
 {
+    private static void HandleExceptionCode(Exception ex)
+    {
+        Console.Error.WriteLine(ex.ToString());
+        if (File.Exists("/usr/bin/kdialog"))
+        {
+            Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
+        }
+    }
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -22,7 +30,7 @@ internal static class Program
     {
         using (Mutex mutex = new(false, @"Global\" + "Catenoid"))
         {
-            bool hasMutex = false;
+            var hasMutex = false;
             try
             {
                 if (WindowExtensions.envBackend.GetString("SAPIgnoreMutex") == null)
@@ -39,11 +47,7 @@ internal static class Program
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine(ex.ToString());
-                                if (File.Exists("/usr/bin/kdialog"))
-                                {
-                                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
-                                }
+                                HandleExceptionCode(ex);
                             }
                         }
                         else
@@ -52,15 +56,10 @@ internal static class Program
                             {
                                 var r = Task.Run(async () => await shortLivedHttpClient.GetAsync("http://localhost:36169/state")).GetAwaiter().GetResult();
                                 r.EnsureSuccessStatusCode();
-
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine(ex.ToString());
-                                if (File.Exists("/usr/bin/kdialog"))
-                                {
-                                    Process.Start("kdialog", $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
-                                }
+                                HandleExceptionCode(ex);
                             }
                         }
                         return;
@@ -82,9 +81,7 @@ internal static class Program
                     mutex.ReleaseMutex();
                 }
             }
-
         }
-
     }
 
     // Avalonia configuration, don't remove; also used by visual designer.
@@ -94,7 +91,6 @@ internal static class Program
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .UseWayland()
             .LogToTrace();
     }
 }

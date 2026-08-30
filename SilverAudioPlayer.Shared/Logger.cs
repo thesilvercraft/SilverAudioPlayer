@@ -1,4 +1,2 @@
-﻿using Serilog;
-
-namespace SilverAudioPlayer.Shared;
+﻿namespace SilverAudioPlayer.Shared;
 
