@@ -32,7 +32,7 @@ public class Mediator : IMediator
         foreach (var delegateHandler in OnQueryReceived.GetInvocationList())
         {
             var handler = (Action<QueryEventArgs>)delegateHandler;
-            
+
             handler(args);
 
             if (args.Handled)

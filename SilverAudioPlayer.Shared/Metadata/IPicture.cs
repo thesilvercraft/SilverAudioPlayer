@@ -11,13 +11,13 @@ public interface IPicture : IDisposable
     /// <summary>
     /// Contents of said picture
     /// </summary>
-    public WrappedStream? Data { get;  }
+    public WrappedStream? Data { get; }
     /// <summary>
     /// Type of picture
     /// </summary>
-    public PictureType? PicType { get;  }
+    public PictureType? PicType { get; }
     /// <summary>
     /// Implementation specific hash (avoid using to compare with image hashes of other file formats)
     /// </summary>
-    public string? Hash { get;  }
+    public string? Hash { get; }
 }

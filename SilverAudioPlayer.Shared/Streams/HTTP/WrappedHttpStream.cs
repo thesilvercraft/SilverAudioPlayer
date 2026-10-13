@@ -9,24 +9,24 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 {
     private readonly IRefreshableStream inside;
 
-    public WrappedHttpStream(string url, HttpClient client) : this(new HttpRequestMessage(HttpMethod.Get, url),client)
+    public WrappedHttpStream(string url, HttpClient client) : this(new HttpRequestMessage(HttpMethod.Get, url), client)
     {
     }
 
     public WrappedHttpStream(HttpRequestMessage requestMessage, HttpClient client)
     {
-        var stype = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage,client);
+        var stype = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage, client);
         switch (stype)
         {
             case { Item2: true }:
-                inside = new HttpSeekableStream(requestMessage,client) { IsParent = true };
+                inside = new HttpSeekableStream(requestMessage, client) { IsParent = true };
                 Seekable = true;
                 break;
             case null:
-                inside = new NoEndHttpStream(requestMessage,client);
+                inside = new NoEndHttpStream(requestMessage, client);
                 break;
             default:
-                inside = new WrappedSusHttpStream(requestMessage,client);
+                inside = new WrappedSusHttpStream(requestMessage, client);
                 break;
         }
 

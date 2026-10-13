@@ -22,31 +22,31 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
         Debug.WriteLine($"Writing config");
         void TryWrite()
         {
-                try
+            try
+            {
+                if (Locks.TryGetValue(path, out var obj))
                 {
-                    if (Locks.TryGetValue(path, out var obj))
+                    lock (obj)
                     {
-                        lock (obj)
-                        {
-                            base.Write(config, path);
-                        }
-                    }
-                    else
-                    {
-                        object o = new();
-                        Locks[path] = o;
-                        lock (o)
-                        {
-                            base.Write(config, path);
-                        }
+                        base.Write(config, path);
                     }
                 }
-                catch (IOException e) when (e.Message.StartsWith("The process cannot access the file ") && e.Message.EndsWith(" because it is being used by another process."))
+                else
                 {
-                    //Try again later, i guess
-                    throw;
+                    object o = new();
+                    Locks[path] = o;
+                    lock (o)
+                    {
+                        base.Write(config, path);
+                    }
                 }
-            
+            }
+            catch (IOException e) when (e.Message.StartsWith("The process cannot access the file ") && e.Message.EndsWith(" because it is being used by another process."))
+            {
+                //Try again later, i guess
+                throw;
+            }
+
         }
         if (config is ICanBeToldThatAPartOfMeIsChanged a)
         {

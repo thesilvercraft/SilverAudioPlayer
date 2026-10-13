@@ -13,7 +13,7 @@ public interface ILogic : IPlayStreamProviderListenerBare
     /// <param name="statusInterface">the interface to subscribe</param>
     /// <param name="logicMusicInterfaceListener">the logic's music interface listener</param>
     void AddMSI(IMusicStatusInterface statusInterface, IMusicStatusInterfaceListenerAdmin logicMusicInterfaceListener);
-    
+
     /// <summary>
     /// Unsubscribes a <see cref="IMusicStatusInterface"/> to the current logic
     /// </summary>
@@ -75,8 +75,8 @@ public interface ILogic : IPlayStreamProviderListenerBare
     /// <param name="stream">the stream</param>
     /// <param name="additionalMetadata">additional already known metadata to include in metadatacombo</param>
     /// <returns>A <see cref="MetadataCombo"/> containing all the known metadata</returns>
-    Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata=null);
-  
+    Task<IMetadata?>? GetMetadataFromStream(WrappedStream stream, IEnumerable<IMetadata>? additionalMetadata = null);
+
     /// <summary>
     /// Copy the queue to a list of songs
     /// </summary>

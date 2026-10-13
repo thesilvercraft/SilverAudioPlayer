@@ -153,14 +153,14 @@ public static class SilverPlaylistHelper
             };
             playList.Song.Add(s);
         }
-        if (msiInterface != null && msiInterface.GetState()!= PlaybackState.Stopped)
+        if (msiInterface != null && msiInterface.GetState() != PlaybackState.Stopped)
         {
             var currentSong = msiInterface.GetCurrentTrack();
-            if (currentSong != null && songscopy.Select((v, i) => new {s = v, i = i})
-                    .FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is {} i)
+            if (currentSong != null && songscopy.Select((v, i) => new { s = v, i = i })
+                    .FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is { } i)
             {
-                playList.CurrentIndex=i.ToString();
-                playList.CurrentIndexPosition=msiInterface.GetPosition().ToString(CultureInfo.InvariantCulture);
+                playList.CurrentIndex = i.ToString();
+                playList.CurrentIndexPosition = msiInterface.GetPosition().ToString(CultureInfo.InvariantCulture);
             }
         }
 

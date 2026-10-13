@@ -15,7 +15,7 @@ namespace SilverAudioPlayer.Shared
     public interface ICanBeToldThatAPartOfMeIsChanged
     {
         public void PropertyChanged(object sender, PropertyChangedEventArgs e);
-        public bool AllowedToRead { get; set;}
+        public bool AllowedToRead { get; set; }
     }
     /// <summary>
     /// An object representing a config to serialise and deserialize
@@ -25,7 +25,7 @@ namespace SilverAudioPlayer.Shared
         public ObjectToRemember(Guid id, object value)
         {
             Id = id;
-            if(value is INotifyPropertyChanged and ICanBeToldThatAPartOfMeIsChanged && value.GetType().GetConstructor(Type.EmptyTypes) !=null)
+            if (value is INotifyPropertyChanged and ICanBeToldThatAPartOfMeIsChanged && value.GetType().GetConstructor(Type.EmptyTypes) != null)
             {
                 Value = value ?? throw new ArgumentNullException(nameof(value));
             }

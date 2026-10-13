@@ -17,12 +17,12 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 {
     private const int BuffLength = 524288; // 512 KiB
     private const int MaxChunksToBufferAhead = 6; // Prefetch up to 3MiB ahead
-    
+
     private readonly ConcurrentDictionary<long, Task<Memory<byte>>> _chunkCache;
     private readonly bool _rangeSupport;
     private long _currentPos;
     private bool _isDisposed;
-    
+
     private HttpResponseMessage? _iMessage;
     private Stream? _internalStream;
     public bool IsParent { get; set; }
@@ -32,7 +32,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         RequestMessage = requestMessage;
         _client = client;
         _chunkCache = new ConcurrentDictionary<long, Task<Memory<byte>>>();
-        var result = GetLengthAndRangeSupport(RequestMessage,_client);
+        var result = GetLengthAndRangeSupport(RequestMessage, _client);
         if (result != null)
         {
             Length = result.Item1;
@@ -114,7 +114,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     private async Task<Memory<byte>> GetChunkAsync(long chunkNum, CancellationToken cancellationToken = default)
     {
         var byteToStartAt = chunkNum * BuffLength;
-        if (byteToStartAt >= Length) 
+        if (byteToStartAt >= Length)
             return Memory<byte>.Empty;
 
         using var clone = CloneMessage(RequestMessage);
@@ -126,7 +126,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             throw new Exception($"HTTP Status code {response.StatusCode} fetching chunk {chunkNum}");
 
         using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        
+
         var buffer = new byte[BuffLength];
         var totalRead = 0;
         int read;
@@ -146,7 +146,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     private Memory<byte> GetOrDownloadChunk(long chunkNum)
     {
         var downloadTask = _chunkCache.GetOrAdd(chunkNum, id => GetChunkAsync(id));
-        
+
         TriggerPrefetch(chunkNum);
 
         return downloadTask.GetAwaiter().GetResult();

@@ -31,7 +31,7 @@ public class SharedMemoryStream : Stream
     public override int Read(byte[] buffer, int offset, int count)
     {
         // Safe access check; automatically throws ObjectDisposedException via wrapper if released
-        byte[] source = _buffer.Bytes; 
+        byte[] source = _buffer.Bytes;
 
         long available = source.Length - _position;
         if (available <= 0) return 0;

@@ -26,7 +26,7 @@ public class WrappedSharedMemoryStream : WrappedStream
         {
             using var probeStream = new SharedMemoryStream(_sharedBuffer);
             // Matches your existing magic byte detection engine
-            MimeType = MagicByteCombos.Match(probeStream, 0)?.MimeType 
+            MimeType = MagicByteCombos.Match(probeStream, 0)?.MimeType
                        ?? throw new InvalidDataException("Could not determine MimeType from the provided data stream.");
         }
         else
@@ -51,7 +51,7 @@ public class WrappedSharedMemoryStream : WrappedStream
             throw new ObjectDisposedException(nameof(WrappedSharedMemoryStream), "The wrapped memory stream has already been disposed.");
 
         var instantiatedStream = new SharedMemoryStream(_sharedBuffer);
-        
+
         // Track the stream in case it is invoked outside of the .Use() block helper
         _activeStreams.Add(instantiatedStream);
         return instantiatedStream;
@@ -73,13 +73,13 @@ public class WrappedSharedMemoryStream : WrappedStream
                 // Safely clear out outstanding streams across concurrent decoder threads
                 while (_activeStreams.TryTake(out var trackedStream))
                 {
-                    try 
-                    { 
-                        trackedStream.Dispose(); 
-                    } 
-                    catch 
-                    { 
-                        /* Intentionally absorbed to prevent failures during cascading teardowns */ 
+                    try
+                    {
+                        trackedStream.Dispose();
+                    }
+                    catch
+                    {
+                        /* Intentionally absorbed to prevent failures during cascading teardowns */
                     }
                 }
             }

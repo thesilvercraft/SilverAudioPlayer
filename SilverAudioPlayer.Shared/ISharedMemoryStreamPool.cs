@@ -26,7 +26,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
         {
             if (SharedStreams.FirstOrDefault(x => x.Hash == hash) is { } sharedStream)
                 return sharedStream;
-            
+
             var memoryStream = new WrappedSharedMemoryStream(bytes);
             var sharedStream2 = new SharedStream(memoryStream, hash);
 

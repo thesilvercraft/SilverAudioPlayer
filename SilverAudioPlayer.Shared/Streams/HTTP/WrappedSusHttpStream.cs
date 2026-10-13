@@ -10,12 +10,12 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
     public WrappedSusHttpStream(HttpRequestMessage requestMessage, HttpClient client)
     {
         RequestMessage = requestMessage;
-        
+
         using var response = client.Send(requestMessage, HttpCompletionOption.ResponseContentRead);
         response.EnsureSuccessStatusCode();
 
         using var responseStream = response.Content.ReadAsStream();
-        
+
         if (responseStream is MemoryStream standardMemoryStream)
         {
             _sharedBuffer = new SharedBuffer(standardMemoryStream.ToArray());
@@ -30,7 +30,7 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
 
     public Stream GetStream()
     {
-        if (_isDisposed || _sharedBuffer == null) 
+        if (_isDisposed || _sharedBuffer == null)
             throw new ObjectDisposedException(nameof(WrappedSusHttpStream));
 
         return new SharedMemoryStream(_sharedBuffer);

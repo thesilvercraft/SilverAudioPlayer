@@ -1,7 +1,7 @@
 ﻿namespace SilverAudioPlayer.Shared
 {
     public interface ISharedPool<T> where T : IDisposable
-    { 
+    {
         public bool ContainsHash(string hash);
         Dictionary<string, List<RelianceOnShared<T>>> Reliances { get; }
         public void AddReliance(RelianceOnShared<T> reliance);
@@ -18,7 +18,7 @@
         public string SharedId { get; internal set; } = sharedId;
         public T Object { get; internal set; } = obj;
     }
-    public  class SharedPool<T> : ISharedPool<T> where T : IDisposable
+    public class SharedPool<T> : ISharedPool<T> where T : IDisposable
     {
         private readonly Dictionary<string, List<RelianceOnShared<T>>> _reliances = [];
         private readonly object _reliancesLock = new();
@@ -54,7 +54,7 @@
         }
         public bool ContainsHash(string hash)
         {
-           return Shared.Any(x=>x.SharedId== hash);
+            return Shared.Any(x => x.SharedId == hash);
         }
         public Shared<T> AddT(T ws, string hash)
         {
@@ -63,19 +63,19 @@
                 return s;
             }
 
-            Shared<T> shared = new(ws,hash);
+            Shared<T> shared = new(ws, hash);
             Shared.Add(shared); return shared;
         }
         public Shared<T>? GetWithHash(string hash)
         {
-            if(Shared.FirstOrDefault(x=>x.SharedId==hash) is { }s)
+            if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
             {
                 return s;
             }
             return null;
         }
 
-      
+
     }
     public class RelianceOnShared<T> : IDisposable where T : IDisposable
     {

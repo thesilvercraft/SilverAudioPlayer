@@ -2,7 +2,7 @@ namespace SilverAudioPlayer.Shared;
 
 public class CommandPalette
 {
-    readonly List<ICommandPaletteItem> Items=[];
+    readonly List<ICommandPaletteItem> Items = [];
     public void AddItems(IEnumerable<ICommandPaletteItem> commandPaletteItems)
     {
         Items.AddRange(commandPaletteItems);
@@ -13,9 +13,9 @@ public class CommandPalette
     }
     public List<ICommandPaletteItem> Search(string term)
     {
-        if(string.IsNullOrWhiteSpace(term))
+        if (string.IsNullOrWhiteSpace(term))
             return Items;
-        var i = Items.OrderBy(x=>LevenshteinDistance.Compute(x.HumanName.ToLower(),term.ToLower()));
+        var i = Items.OrderBy(x => LevenshteinDistance.Compute(x.HumanName.ToLower(), term.ToLower()));
         return [.. i];
     }
 }

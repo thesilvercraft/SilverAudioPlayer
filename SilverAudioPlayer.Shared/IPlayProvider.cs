@@ -20,7 +20,7 @@ public interface IPlayProvider : ICodeInformation
     /// </summary>
     /// <param name="URI">the file</param>
     /// <returns>a player or null if the provider is unable to find a player suited for the job</returns>
-    IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment=null);
+    IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment = null);
 
     Task OnStartup();
 }

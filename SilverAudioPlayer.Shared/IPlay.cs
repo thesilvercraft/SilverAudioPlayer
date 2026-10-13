@@ -25,7 +25,7 @@ public enum Confidence : byte
     /// <summary>
     /// The player is unsure whether it can play the stream
     /// </summary>
-    Unknown=0, 
+    Unknown = 0,
     /// <summary>
     /// The player is sure that it is NOT ABLE to play the stream
     /// </summary>
@@ -62,21 +62,21 @@ public interface IPlayLancer : IPlayStreams
 }
 public interface ISelector
 {
-    public int CurrentPattern{get;}
+    public int CurrentPattern { get; }
     public void SetPattern(int pattern);
-    public int NumberOfPatterns {get;}
+    public int NumberOfPatterns { get; }
 }
 public interface ILoop
 {
-    public bool CanLoop{get;}
-      public void EnableLoop();
+    public bool CanLoop { get; }
+    public void EnableLoop();
     public void DisableLoop();
 }
-public interface IPlayerLoop : IPlay,ILoop
+public interface IPlayerLoop : IPlay, ILoop
 {
-  
+
 }
-public interface IPlayWithSelector : IPlay,ISelector
+public interface IPlayWithSelector : IPlay, ISelector
 {
 }
 public interface IPlay : IDisposable
@@ -164,6 +164,6 @@ public interface IPlay : IDisposable
     /// <summary>
     /// Query if a track is loaded or if the player is empty
     /// </summary>
-    bool IsTrackLoaded {get;} 
+    bool IsTrackLoaded { get; }
 }
 

@@ -10,7 +10,7 @@ namespace SilverAudioPlayer.Shared;
 public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, IDisposable
 {
     private IMetadata? _Metadata;
-    public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic=null)
+    public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic = null)
     {
         ArgumentNullException.ThrowIfNull(data);
         URI = data switch
@@ -40,13 +40,9 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         Guid = GetIdFromMetadata(Metadata, URI);
     }
 
-    public static Guid GetIdFromMetadata(IMetadata? metadata, string? uri=null)
+    public static Guid GetIdFromMetadata(IMetadata? metadata, string? uri = null)
     {
-        if (metadata is not null && CurrentGuidHashingAlgorithm.HasUsableMetadata(metadata)) return CurrentGuidHashingAlgorithm.GetIdFromMetadata(metadata);
-        Debug.WriteLine("Not enough metadata to hash for guid");
-        if (!string.IsNullOrEmpty(uri)) return CurrentGuidHashingAlgorithm.GetIdFromString(uri);
-        Debug.WriteLine("No path to hash for guid");
-        return Guid.NewGuid();
+        return CurrentGuidHashingAlgorithm.GetIdFromMetadata(metadata, uri);
     }
     public WrappedStream Stream { get; set; }
     public string? URI { get; set; }

@@ -22,7 +22,7 @@ public interface IPlayStreamProviderListenerBare
     /// </summary>
     /// <param name="files">URLs to load</param>
     public void ProcessFiles(IEnumerable<string> files);
-    
+
     /// <summary>
     /// Load <see cref="WrappedStream"/>s
     /// </summary>

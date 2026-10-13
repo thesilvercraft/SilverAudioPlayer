@@ -11,43 +11,43 @@ public interface IMetadata : IDisposable
     /// <summary>
     /// The title of a song
     /// </summary>
-    public string? Title { get;  }
+    public string? Title { get; }
     /// <summary>
     /// The artist of a song
     /// </summary>
-    public string? Artist { get;  }
+    public string? Artist { get; }
     /// <summary>
     /// The album of a song
     /// </summary>
-    public string? Album { get;  }
+    public string? Album { get; }
     /// <summary>
     /// The genre of a song
     /// </summary>
-    public string? Genre { get;  }
+    public string? Genre { get; }
     /// <summary>
     /// The year a song was released
     /// </summary>
-    public int? Year { get;  }
+    public int? Year { get; }
     /// <summary>
     /// The bitrate of the file housing the song
     /// </summary>
-    public ulong? Bitrate { get;  }
+    public ulong? Bitrate { get; }
     /// <summary>
     ///  The sample rate of the file housing the song
     /// </summary>
-    public ulong? SampleRate { get;  }
+    public ulong? SampleRate { get; }
     /// <summary>
     ///  The amount of channels of the file housing the song
     /// </summary>
-    public uint? Channels { get;  }
+    public uint? Channels { get; }
     /// <summary>
     /// The track number of a song
     /// </summary>
-    public int? TrackNumber { get;  }
+    public int? TrackNumber { get; }
     /// <summary>
     /// The disc number of a song
     /// </summary>
-    public int? DiscNumber { get;  }
+    public int? DiscNumber { get; }
     /// <summary>
     /// Comments embedded in the metadata of a song
     /// </summary>
@@ -55,15 +55,15 @@ public interface IMetadata : IDisposable
     /// <summary>
     /// Comments that are key value pairs
     /// </summary>
-    public IDictionary<string, string>? Entries {get;}
+    public IDictionary<string, string>? Entries { get; }
     /// <summary>
     ///  Duration in milliseconds according to the metadata
     /// </summary>
-    public double? Duration { get;  }
+    public double? Duration { get; }
     /// <summary>
     /// Plain text lyrics
     /// </summary>
-    public string? Lyrics { get;  }
+    public string? Lyrics { get; }
     /// <summary>
     /// Synchronised lyrics embedded in the song's metadata
     /// </summary>
