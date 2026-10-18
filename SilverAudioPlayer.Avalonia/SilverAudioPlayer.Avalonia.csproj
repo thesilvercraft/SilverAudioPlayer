@@ -125,7 +125,7 @@
 		<ProjectReference Include="..\SilverJuke\SilverAudioPlayer.Any.SilverJuke.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.0.0-rc1.1" />
+		<PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1" />
 		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-rc1.1" />
 		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-preview.4.23259.5" />
