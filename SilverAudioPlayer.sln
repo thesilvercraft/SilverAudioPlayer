@@ -99,10 +99,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Windows.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverAudioPlayer.Any.MetadataSource.SLIbIndex", "SilverAudioPlayer.Any.MetadataSource.SLIbIndex\SilverAudioPlayer.Any.MetadataSource.SLIbIndex.csproj", "{671FC3B6-3321-4494-8E43-142068E1E9C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverCraft.CSCore", "..\cscore\SilverCraft.CSCore\SilverCraft.CSCore.csproj", "{9479F157-AF85-40B6-B8A2-C4F4E74B3465}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverCraft.CSCore.NativeLibraryResolver", "..\cscore\SilverCraft.CSCore.NativeLibraryResolver\SilverCraft.CSCore.NativeLibraryResolver.csproj", "{7B7E8B24-D550-4C45-8961-FFA01BF942CD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

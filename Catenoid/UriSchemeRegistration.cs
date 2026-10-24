@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.Win32;
 
@@ -12,6 +13,8 @@ public static class RegistryRegistration
 {
     private const string WinProgId = "SilverAudioPlayerA";
     private const string DesktopFileName = "Catenoid.desktop";
+    private const string AppUserModelId = "SilverCraft.Catenoid";
+    private const string StartMenuShortcutName = "Catenoid.lnk";
 
     public static void RegisterUrlScheme(MainWindow mainWindow)
     {
@@ -126,6 +129,8 @@ public static class RegistryRegistration
     [SupportedOSPlatform("windows")]
     private static void RegisterURLSchemeWindows(MainWindow mainWindow)
     {
+        RegisterStartMenuShortcut();
+
         const string baseKeyPath = $@"HKEY_CURRENT_USER\Software\Classes\{WinProgId}";
         if (!string.IsNullOrEmpty((string?)Registry.GetValue(baseKeyPath, string.Empty, null)))
             return;
@@ -158,6 +163,10 @@ public static class RegistryRegistration
     [SupportedOSPlatform("windows")]
     private static void UnRegisterUrlSchemeWindows(MainWindow mainWindow)
     {
+        var shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),
+            StartMenuShortcutName);
+        if (File.Exists(shortcutPath)) File.Delete(shortcutPath);
+
         var baseKeyPath = $@"HKEY_CURRENT_USER\Software\Classes\{WinProgId}";
         if (Registry.GetValue(baseKeyPath, string.Empty, null) == null)
             return;
@@ -186,6 +195,123 @@ public static class RegistryRegistration
                 using var subKey = Registry.CurrentUser.OpenSubKey($@"Software\Classes\{ext}", true);
                 subKey?.DeleteValue(string.Empty, false);
             }
+        }
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static void RegisterStartMenuShortcut()
+    {
+        var programsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+        Directory.CreateDirectory(programsDirectory);
+        var shortcutPath = Path.Combine(programsDirectory, StartMenuShortcutName);
+        var executablePath = Environment.ProcessPath;
+        if (string.IsNullOrWhiteSpace(executablePath)) return;
+
+        var shell = (IShellLinkW)new ShellLink();
+        try
+        {
+            shell.SetPath(executablePath);
+            shell.SetWorkingDirectory(AppContext.BaseDirectory);
+            shell.SetDescription("Catenoid");
+            shell.SetIconLocation(executablePath, 0);
+
+            var persistFile = (IPersistFile)shell;
+            persistFile.Save(shortcutPath, true);
+
+            var propertyStore = (IPropertyStore)shell;
+            var key = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
+            var value = PropVariant.FromString(AppUserModelId);
+            try
+            {
+                Marshal.ThrowExceptionForHR(propertyStore.SetValue(ref key, ref value));
+                Marshal.ThrowExceptionForHR(propertyStore.Commit());
+            }
+            finally
+            {
+                value.Clear();
+            }
+
+            persistFile.Save(shortcutPath, true);
+        }
+        finally
+        {
+            Marshal.FinalReleaseComObject(shell);
+        }
+    }
+
+    [ComImport, Guid("00021401-0000-0000-C000-000000000046")]
+    private class ShellLink
+    {
+    }
+
+    [ComImport, Guid("000214F9-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IShellLinkW
+    {
+        void GetPath();
+        void GetIDList();
+        void SetIDList();
+        void GetDescription();
+        void SetDescription([MarshalAs(UnmanagedType.LPWStr)] string description);
+        void GetWorkingDirectory();
+        void SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string directory);
+        void GetArguments();
+        void SetArguments([MarshalAs(UnmanagedType.LPWStr)] string arguments);
+        void GetHotkey();
+        void SetHotkey();
+        void GetShowCmd();
+        void SetShowCmd();
+        void GetIconLocation();
+        void SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string iconPath, int iconIndex);
+        void SetRelativePath();
+        void Resolve();
+        void SetPath([MarshalAs(UnmanagedType.LPWStr)] string path);
+    }
+
+    [ComImport, Guid("0000010B-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IPersistFile
+    {
+        void GetClassID();
+        void IsDirty();
+        void Load([MarshalAs(UnmanagedType.LPWStr)] string fileName, uint mode);
+        void Save([MarshalAs(UnmanagedType.LPWStr)] string fileName, [MarshalAs(UnmanagedType.Bool)] bool remember);
+        void SaveCompleted([MarshalAs(UnmanagedType.LPWStr)] string fileName);
+        void GetCurFile();
+    }
+
+    [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IPropertyStore
+    {
+        void GetCount();
+        void GetAt();
+        void GetValue();
+
+        [PreserveSig]
+        int SetValue(ref PropertyKey key, ref PropVariant value);
+
+        [PreserveSig]
+        int Commit();
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PropertyKey(Guid formatId, uint propertyId)
+    {
+        public Guid FormatId = formatId;
+        public uint PropertyId = propertyId;
+    }
+
+    [StructLayout(LayoutKind.Explicit)]
+    private struct PropVariant
+    {
+        [FieldOffset(0)] private ushort _type;
+        [FieldOffset(8)] private nint _pointer;
+
+        public static PropVariant FromString(string value) =>
+            new() { _type = 31, _pointer = Marshal.StringToCoTaskMemUni(value) };
+
+        public void Clear()
+        {
+            if (_pointer != 0) Marshal.FreeCoTaskMem(_pointer);
+            _pointer = 0;
         }
     }
 
