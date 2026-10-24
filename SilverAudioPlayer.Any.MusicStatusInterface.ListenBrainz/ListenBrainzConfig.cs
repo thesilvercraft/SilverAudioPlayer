@@ -18,3 +18,8 @@ public class ListenBrainzConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfM
 
     public event PropertyChangedEventHandler? PropertyChanged;
 }
+public enum Policy
+{
+    Percentage,
+    Seconds
+}

@@ -66,7 +66,7 @@ public partial class MainWindow : Window
         RefreshDevices();
     }
 
-    public async Task SyncAsync(string baseLoc, string format)
+    public async Task SyncAsync(string baseLoc, string format, string? extensionChoice = null)
     {
         if (Lock) return;
         if ( string.IsNullOrWhiteSpace(baseLoc))            return;
@@ -127,62 +127,94 @@ public partial class MainWindow : Window
                 {
                     TempLoc = true;
                     var fnamm = Path.Combine( Path.GetTempPath(), song.Guid.ToString() + song.Stream.MimeType.FileExtensions[0]);
-                    using (FileStream fs = new FileStream(fnamm, FileMode.Create))
+                    using (var reader = song.Stream.GetStream())
                     {
-                        using var reader = song.Stream.GetStream();
-                        await reader.CopyToAsync(fs);
+                        if (reader is HttpSeekableStream httpStream && httpStream.IsFullyDownloaded)
+                            await httpStream.SaveFullyDownloadedAsync(fnamm);
+                        else
+                        {
+                            await using var fs = new FileStream(fnamm, FileMode.Create);
+                            await reader.CopyToAsync(fs);
+                        }
                     }
                      songLocation = fnamm;
                 }
                 Append(songLocation);
                 scroll();
+                var metadata = song.Metadata;
+                var targetExtension = extensionChoice == "copy"
+                    ? Path.GetExtension(songLocation)
+                    : extensionChoice ?? config.PreferredFileExtension;
+                if (!targetExtension.StartsWith('.')) targetExtension = "." + targetExtension;
                 var songFormat = new Dictionary<string, string>{
-                    {"Album", FileSystemHelper.Clean(song.Metadata.Album??"Unknown album", FileSystemHelper.InvalidPathCharactersForFormat(format)) },
-                    {"Artist", FileSystemHelper.Clean(song.Metadata.Artist??"Unknown artist", FileSystemHelper.InvalidPathCharactersForFormat(format))},
-                    {"DiscNumber",song.Metadata.DiscNumber?.ToString()??"?"},
-                    {"TrackNumber",song.Metadata.TrackNumber?.ToString()??"?"},
-                    {"Title",song.Metadata.Title},
-                    {"Extension",config.PreferredFileExtension},
-                    {"Year",song.Metadata.Year?.ToString()??"?"},
-                    {"Genre", song.Metadata.Genre},
-                    {"Bitrate", song.Metadata.Bitrate?.ToString()??"?"},
+                    {"Album", metadata?.Album ?? "Unknown album"},
+                    {"Artist", metadata?.Artist ?? "Unknown artist"},
+                    {"DiscNumber",metadata?.DiscNumber?.ToString()??"?"},
+                    {"TrackNumber",metadata?.TrackNumber?.ToString()??"?"},
+                    {"Title",metadata?.Title ?? song.Name},
+                    {"Extension",targetExtension},
+                    {"Year",metadata?.Year?.ToString()??"?"},
+                    {"Genre", metadata?.Genre ?? "Unknown genre"},
+                    {"Bitrate", metadata?.Bitrate?.ToString()??"?"},
                 };
-                var path = Path.Combine(baseLoc, Formatter.Format(config.PathToStore, songFormat));
+                var invalidPathCharacters = FileSystemHelper.InvalidPathCharactersForFormat(format);
+                var pathTemplate = Formatter.Format(config.PathToStore, songFormat);
+                var safeRelativePath = string.Join(Path.DirectorySeparatorChar,
+                    pathTemplate.Split(['/', '\\'], StringSplitOptions.RemoveEmptyEntries)
+                        .Select(segment => FileSystemHelper.Clean(segment, invalidPathCharacters))
+                        .Where(segment => !string.IsNullOrWhiteSpace(segment)));
+                var path = Path.Combine(baseLoc, safeRelativePath);
                 Directory.CreateDirectory(path);
-                var loc = Path.Combine(path, FileSystemHelper.Clean(Formatter.Format(config.NameFormatting, songFormat), FileSystemHelper.InvalidFileCharactersForFormat(format)));
+                var formattedName = Formatter.Format(config.NameFormatting, songFormat);
+                var loc = Path.Combine(path, FileSystemHelper.Clean(formattedName, FileSystemHelper.InvalidFileCharactersForFormat(format)));
                 if (File.Exists(loc))
                 {
+                    if (TempLoc) File.Delete(songLocation);
                     continue;
                 }
-                var arguments = Formatter.Format(config.FFmpegOptions, new Dictionary<string, string>(){
-                    {"in", songLocation},
-                    {"out", loc}
-                });
-                Append($"Calling ffmpeg {arguments}");
-                scroll();
-                var proc = new Process
+                if (extensionChoice == "copy")
                 {
-                    StartInfo = new ProcessStartInfo("ffmpeg", arguments)
+                    File.Copy(songLocation, loc);
+                    Append($"Copied {songLocation} to {loc}");
+                }
+                else
+                {
+                    var arguments = Formatter.Format(config.FFmpegOptions, new Dictionary<string, string>(){
+                        {"in", songLocation},
+                        {"out", loc}
+                    });
+                    Append($"Calling ffmpeg {arguments}");
+                    scroll();
+                    var proc = new Process
                     {
-                        RedirectStandardError = true,
-                        RedirectStandardOutput = true,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
+                        StartInfo = new ProcessStartInfo("ffmpeg", arguments)
+                        {
+                            RedirectStandardError = true,
+                            RedirectStandardOutput = true,
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                        }
+                    };
+                    proc.Start();
+                    proc.BeginOutputReadLine();
+                    proc.BeginErrorReadLine();
+                    proc.OutputDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Append(e.Data);
+                        scroll();
+                    });
+                    proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        Append(e.Data);
+                        scroll();
+                    });
+                    await proc.WaitForExitAsync();
+                    if (proc.ExitCode != 0)
+                    {
+                        Append("FAIL\n");
+                        scroll();
                     }
-                };
-                proc.Start();
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
-                proc.OutputDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Append(e.Data);
-                    scroll();
-                });
-                proc.ErrorDataReceived += (s, e) => Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Append(e.Data);
-                    scroll();
-                });
+                }
                 Append($"{i + 1}/{list.Count} {(double)(i + 1) / list.Count * 100}N% {(CurrSize / FullSize) * 100}L%\n");
                 Dispatcher.UIThread.Post(() =>
                 {
@@ -190,8 +222,7 @@ public partial class MainWindow : Window
                 }, DispatcherPriority.Background);
                 scroll();
 
-                await proc.WaitForExitAsync();
-                if (song?.Metadata?.SyncedLyrics?.Count is not (0 or null) && !TempLoc)
+                if (metadata?.SyncedLyrics?.Count is not (0 or null) && !TempLoc)
                 {
                     var possiblelrc = Path.ChangeExtension(songLocation, "lrc");
                     if (Path.Exists(possiblelrc))
@@ -200,17 +231,11 @@ public partial class MainWindow : Window
                     }
                 }
                     
-                if (proc.ExitCode != 0)
-                {
-                    Append("FAIL\n");
-                    scroll();
-                }
-
                 if (TempLoc)
                 {
-                    File.Delete(loc);
+                    File.Delete(songLocation);
                 }
-                CurrSize += (double)song?.Metadata?.Duration;
+                CurrSize += (double)(metadata?.Duration ?? 0);
             }
 
             Append("Done with queue\n");
@@ -227,7 +252,8 @@ public partial class MainWindow : Window
     {
         var dev = ((Device?)DeviceBox.SelectedItem)?.Format??"";
         var loc = LocationBox.Text;
-        Task.Run(async () => await SyncAsync(loc, dev));
+        var extensionChoice = (ExtensionBox.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+        Task.Run(async () => await SyncAsync(loc, dev, extensionChoice));
     }
 
     private void LocationBox_OnTextChanged(object? sender, TextChangedEventArgs e)

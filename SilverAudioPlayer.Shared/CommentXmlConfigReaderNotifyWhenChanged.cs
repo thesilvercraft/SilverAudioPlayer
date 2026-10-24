@@ -5,121 +5,164 @@ using System.Diagnostics;
 
 namespace SilverAudioPlayer.Shared;
 
-
 public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable
     where T : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
-    private readonly List<FileSystemWatcher> fileSystemWatchers = new();
+    private readonly List<FileSystemWatcher> _fileSystemWatchers = new();
 
     public void Dispose()
     {
-        foreach (var fsw in fileSystemWatchers) fsw.Dispose();
+        foreach (var fsw in _fileSystemWatchers) fsw.Dispose();
+        _fileSystemWatchers.Clear();
         GC.SuppressFinalize(this);
     }
-    public static ConcurrentDictionary<string, object> Locks = new();
+
+    public static readonly ConcurrentDictionary<string, object> Locks = new(StringComparer.OrdinalIgnoreCase);
+
+    private static object GetLockObject(string fullPath)
+    {
+        return Locks.GetOrAdd(fullPath, _ => new object());
+    }
+
     public override void Write(T config, string path)
     {
-        Debug.WriteLine($"Writing config");
+        var fullPath = Path.GetFullPath(path);
+        var lockObj = GetLockObject(fullPath);
+
         void TryWrite()
         {
-            try
-            {
-                if (Locks.TryGetValue(path, out var obj))
-                {
-                    lock (obj)
-                    {
-                        base.Write(config, path);
-                    }
-                }
-                else
-                {
-                    object o = new();
-                    Locks[path] = o;
-                    lock (o)
-                    {
-                        base.Write(config, path);
-                    }
-                }
-            }
-            catch (IOException e) when (e.Message.StartsWith("The process cannot access the file ") && e.Message.EndsWith(" because it is being used by another process."))
-            {
-                //Try again later, i guess
-                throw;
-            }
+            const int maxRetries = 10;
+            const int baseDelayMs = 25;
 
+            for (var attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    lock (lockObj)
+                    {
+                        base.Write(config, fullPath);
+                    }
+                    return;
+                }
+                catch (IOException ex) when (attempt < maxRetries)
+                {
+                    Debug.WriteLine($"[CommentXmlConfigReader] Write contention on attempt {attempt}/{maxRetries} for {fullPath}: {ex.Message}");
+                    Thread.Sleep(baseDelayMs * attempt);
+                }
+            }
         }
+
         if (config is ICanBeToldThatAPartOfMeIsChanged a)
         {
             a.AllowedToRead = false;
-            TryWrite();
-            a.AllowedToRead = true;
+            try
+            {
+                TryWrite();
+            }
+            finally
+            {
+                a.AllowedToRead = true;
+            }
         }
         else
         {
             TryWrite();
         }
     }
+
     public override T? Read(string path)
     {
-        Debug.WriteLine($"Reading config {path}");
-        T c;
-        if (Locks.TryGetValue(path, out var obj))
-        {
-            lock (obj)
-            {
-                c = base.Read(path);
-            }
-        }
-        else
-        {
-            object o = new();
-            Locks[path] = o;
-            lock (o)
-            {
-                c = base.Read(path);
-            }
-        }
-        var fp = Path.GetFullPath(path);
-        var fpdir = Path.GetDirectoryName(fp) ?? "";
-        var fpnm = Path.GetFileName(fp);
+        var fullPath = Path.GetFullPath(path);
+        var lockObj = GetLockObject(fullPath);
 
-        FileSystemWatcher j = new()
-        {
-            Path = fpdir,
-            EnableRaisingEvents = true,
-            Filter = fpnm,
-            NotifyFilter = NotifyFilters.CreationTime
-                           | NotifyFilters.DirectoryName
-                           | NotifyFilters.LastWrite
-                           | NotifyFilters.Size
-        };
-        j.Changed += (x, y) =>
-        {
-            if (y.ChangeType != WatcherChangeTypes.Changed) return;
-            if (y.FullPath != fp || !c.AllowedToRead) return;
+        T? c = default;
+        const int maxRetries = 10;
+        const int baseDelayMs = 25;
 
+        for (var attempt = 1; attempt <= maxRetries; attempt++)
+        {
             try
             {
-                Debug.WriteLine($"ChangedRead config");
-                T? c2 = base.Read(path);
-                var t = typeof(T);
-                foreach (var a in t.GetProperties())
-                    if (a.Name != "AllowedToRead" && a.CanRead && a.GetValue(c)?.Equals(a.GetValue(c2)) != true)
-                    {
-                        if (a.CanWrite)
-                            a.SetValue(c, a.GetValue(c2));
-                        else
-                            Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
-                        c?.PropertyChanged(this, new PropertyChangedEventArgsFromFile(a.Name));
-                    }
+                lock (lockObj)
+                {
+                    c = base.Read(fullPath);
+                }
+                break;
             }
-            catch (Exception e)
+            catch (IOException ex) when (attempt < maxRetries)
             {
-                //dont kill entire app for that
-                Debug.WriteLine(e);
+                Debug.WriteLine($"[CommentXmlConfigReader] Read contention on attempt {attempt}/{maxRetries} for {fullPath}: {ex.Message}");
+                Thread.Sleep(baseDelayMs * attempt);
             }
-        };
-        fileSystemWatchers.Add(j);
+        }
+
+        if (c == null) return default;
+
+        var fpDir = Path.GetDirectoryName(fullPath) ?? "";
+        var fpNm = Path.GetFileName(fullPath);
+
+        if (Directory.Exists(fpDir))
+        {
+            FileSystemWatcher j = new()
+            {
+                Path = fpDir,
+                EnableRaisingEvents = true,
+                Filter = fpNm,
+                NotifyFilter = NotifyFilters.CreationTime
+                               | NotifyFilters.DirectoryName
+                               | NotifyFilters.LastWrite
+                               | NotifyFilters.Size
+            };
+
+            j.Changed += (x, y) =>
+            {
+                if (y.ChangeType != WatcherChangeTypes.Changed) return;
+                if (!string.Equals(y.FullPath, fullPath, StringComparison.OrdinalIgnoreCase) || !c.AllowedToRead) return;
+
+                try
+                {
+                    T? c2 = default;
+                    for (var attempt = 1; attempt <= 5; attempt++)
+                    {
+                        try
+                        {
+                            lock (lockObj)
+                            {
+                                c2 = base.Read(fullPath);
+                            }
+                            break;
+                        }
+                        catch (IOException) when (attempt < 5)
+                        {
+                            Thread.Sleep(20 * attempt);
+                        }
+                    }
+
+                    if (c2 == null) return;
+
+                    var t = typeof(T);
+                    foreach (var a in t.GetProperties())
+                    {
+                        if (a.Name != "AllowedToRead" && a.CanRead && a.GetValue(c)?.Equals(a.GetValue(c2)) != true)
+                        {
+                            if (a.CanWrite)
+                                a.SetValue(c, a.GetValue(c2));
+                            else
+                                Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
+
+                            c.PropertyChanged(this, new PropertyChangedEventArgsFromFile(a.Name));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"[CommentXmlConfigReader] Error handling file change: {e}");
+                }
+            };
+
+            _fileSystemWatchers.Add(j);
+        }
+
         return c;
     }
 }

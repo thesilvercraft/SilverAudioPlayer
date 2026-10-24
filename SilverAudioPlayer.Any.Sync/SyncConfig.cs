@@ -14,7 +14,7 @@ public class SyncConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChang
     public string FFmpegOptions { get; set; } = "-i \"{in}\" -b:a 320k \"{out}\"";
 
     [Comment("used verbatim when calling FFmpeg")]
-    public string PathToStore { get; set; } = "{{Album}}";
+    public string PathToStore { get; set; } = "{Album}";
     [Comment("used verbatim when calling FFmpeg")]
     public string NameFormatting { get; set; } = "{DiscNumber}.{TrackNumber}.{Title}{Extension}";
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)

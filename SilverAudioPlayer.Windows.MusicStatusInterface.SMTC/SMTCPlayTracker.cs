@@ -90,7 +90,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
             var updater = _systemMediaTransportControls.DisplayUpdater;
             updater.ClearAll();
             updater.Type = MediaPlaybackType.Music;
-            updater.AppMediaId = newtrack.Guid.ToString();
+            updater.AppMediaId = "SilverCraft.Catenoid";
             updater.MusicProperties.Artist = newtrack?.Metadata?.Artist;
             updater.MusicProperties.AlbumTitle = newtrack?.Metadata?.Album;
             updater.MusicProperties.Title = newtrack?.Metadata?.Title ?? newtrack?.Name;
@@ -271,9 +271,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
         Env.TrackChangedNotification += TrackChangedNotification;
         Env.PlayerStateChanged += PlayerStateChanged;
         if (DISABLE) return;
-        _mediaPlayer = new MediaPlayer();
-        _mediaPlayer.CommandManager.IsEnabled = true;
-        _systemMediaTransportControls = _mediaPlayer.SystemMediaTransportControls;
+        IntPtr hwnd = NativeWindowHelper.GetMainWindowHandle();
+        _systemMediaTransportControls = SystemMediaTransportControlsInterop.GetForWindow(hwnd);
         _systemMediaTransportControls.IsEnabled = true;
         _systemMediaTransportControls.IsNextEnabled = true;
         _systemMediaTransportControls.IsPauseEnabled = true;
@@ -283,7 +282,7 @@ public class SMTCPlayTracker : IMusicStatusInterface
         _systemMediaTransportControls.IsRewindEnabled = false;
         _systemMediaTransportControls.IsFastForwardEnabled = false;
         _systemMediaTransportControls.ShuffleEnabled = true;
-        _mediaPlayer.IsLoopingEnabled = false;
+//        _mediaPlayer.IsLoopingEnabled = false;
 
         _systemMediaTransportControls.ButtonPressed += SystemControls_ButtonPressed;
         _systemMediaTransportControls.ShuffleEnabledChangeRequested += SystemControls_ShuffleEnabledChangeRequested;

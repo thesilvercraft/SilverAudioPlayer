@@ -8,32 +8,42 @@ using Humanizer;
 
 static class FileSystemHelper
 {
-    public static string InvalidPathCharactersForFormat(string format)
+    public static string InvalidPathCharactersForFormat(string format) => InvalidCharactersForFormat(format);
+    public static string InvalidFileCharactersForFormat(string format) => InvalidCharactersForFormat(format);
+
+    private static string BuildWindowsInvalidChars()
     {
-        return format.ToLower() switch
+        var chars = new char[9 + 32];
+        "<>:\"/\\|?*".CopyTo(chars);
+        for (var i = 0; i < 32; i++)
         {
-            "exfat" or "fat" or "vfat" => "*?.,;:/\\|+=<>[]\"\0",
-            "ntfs" or "fuseblk" => "/\0",
-            "btrfs" or "ext4" or "ext3" => "\0",
-            _ => "*?.,;:/\\|+=<>[]\"\0"
-        };
+            chars[9 + i] = (char)i;
+        }
+        return new string(chars);
     }
-    public static string InvalidFileCharactersForFormat(string format)
+    private static readonly string WindowsInvalidChars = BuildWindowsInvalidChars();
+    private const string PosixInvalidChars = "/\0";
+
+    private static string InvalidCharactersForFormat(string format)
     {
-        return format.ToLower() switch
-        {
-            "exfat" or "fat" or "vfat" => "*?,;:/\\|+=<>[]\"\0",
-            "ntfs" or "fuseblk" => "/\0",
-            "btrfs" or "ext4" or "ext3" => "\0",
-            _ => "*?,;:/\\|+=<>[]\"\0"
-        };
+        var normalized = format.ToLowerInvariant();
+        return normalized is "ntfs" or "exfat" or "fat" or "vfat" or "fuseblk" or "unknown" or ""
+            ? WindowsInvalidChars
+            : PosixInvalidChars;
     }
+
     public static string Clean(string i, string notallowed)
     {
-        foreach (var invalid in notallowed)
-        {
-            i = i.Replace(invalid, '_');
-        }
+        i = notallowed.Aggregate(i, (current, invalid) => current.Replace(invalid, '_'));
+        i = i.TrimEnd(' ', '.');
+        if (string.IsNullOrWhiteSpace(i)) return "_";
+
+        var deviceName = i.Split('.')[0].TrimEnd(' ').ToUpperInvariant();
+        if (deviceName is "CON" or "PRN" or "AUX" or "NUL" ||
+            deviceName.Length == 4 &&
+            (deviceName.StartsWith("COM", StringComparison.Ordinal) || deviceName.StartsWith("LPT", StringComparison.Ordinal)) &&
+            deviceName[3] is >= '1' and <= '9')
+            return "_" + i;
 
         return i;
     }
@@ -44,8 +54,8 @@ static class FileSystemHelper
     {
         var collection = new ObservableCollection<Device>();
         ret.Invoke(collection);
-        var driveinfo = DriveInfo.GetDrives();
-        foreach (var queryObj in driveinfo)
+        var driveInfos = DriveInfo.GetDrives();
+        foreach (var queryObj in driveInfos)
         {
             Device device = new()
             {
@@ -56,7 +66,6 @@ static class FileSystemHelper
                 Size = queryObj.TotalSize,
                 Format = queryObj.DriveFormat,
             };
-
             collection.Add(device);
         }
 
@@ -70,7 +79,7 @@ static class FileSystemHelper
         var mtab = File.ReadAllLines("/etc/mtab");
         var collection = new ObservableCollection<Device>();
         ret.Invoke(collection);
-        var driveinfo = DriveInfo.GetDrives();
+        var driveInfos = DriveInfo.GetDrives();
 
         foreach (var mount in mtab)
         {
@@ -110,7 +119,7 @@ static class FileSystemHelper
                 Format = dev[2]
             };
 
-            var d = driveinfo.FirstOrDefault(x => x.Name == dev[1]);
+            var d = driveInfos.FirstOrDefault(x => x.Name == dev[1]);
             if (d != null)
             {
                 device.Usage = d.TotalSize - d.TotalFreeSpace;

@@ -264,10 +264,6 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         };
         Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic,Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>());
         InitializeComponent();
-        if (OperatingSystem.IsLinux())
-        {
-            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
-        }
 
         AddHandler(DragDrop.DropEvent, Drop);
         AddHandler(DragDrop.DragOverEvent, DragOver);
@@ -506,17 +502,28 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     }
     private const string AutoSavePlaylistPath = "Playlists/Autosave/";
     private const string AutoSavePlaylistName = "AutoSave.spl.br";
+    private readonly object _autoSaveLock = new();
+
     private void AutoSave(object? state)
     {
-        if (dc?.queue == null) return;
-        Log.Information("Autosaving");
-        var queue = Logic.GetQueueCopy();
-        var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath(AutoSavePlaylistPath);
-        Directory.CreateDirectory(dirpath);
-        using var s = new FileStream(Path.Combine(dirpath, AutoSavePlaylistName), FileMode.Create);
-        SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
+        try
+        {
+            if (dc?.queue == null) return;
+            Log.Information("Autosaving");
+            var queue = Logic.GetQueueCopy();
+            var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath(AutoSavePlaylistPath);
+            Directory.CreateDirectory(dirpath);
+            lock (_autoSaveLock)
+            {
+                using var s = new FileStream(Path.Combine(dirpath, AutoSavePlaylistName), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error during autosave");
+        }
     }
-
     private readonly DataFormat<string> _queueReorderFormat = DataFormat.CreateStringApplicationFormat("SilverAudioPlayer.QueueReorder");
     public Logic<MainWindowContext> Logic { get; set; }
 

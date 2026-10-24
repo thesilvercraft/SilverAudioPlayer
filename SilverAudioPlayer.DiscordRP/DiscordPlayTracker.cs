@@ -39,12 +39,6 @@ public class SerilogLogger : ILogger
     public LogLevel Level { get; set; }
 }
 
-public enum Uploader
-{
-    None = 0,
-    Catbox = 1,
-    Imgur = 2
-}
 
 [Export(typeof(IMusicStatusInterface))]
 public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
@@ -71,19 +65,18 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
 
     private const string id = "926595775574712370";
-    private static readonly string[] optionsForUploader = new string[] { "None", "Catbox", "Imgur" };
+
     private readonly IConfigPathProvider _configPathProvider;
     private readonly HttpClient _httpClient;
     public DiscordPlayTracker(IConfigPathProvider configPathProvider, HttpClient httpClient)
     {
         _configPathProvider = configPathProvider;
         _httpClient = httpClient;
-        Debug.WriteLine("New instance of discordplaytracker");
         ConfigurableElements = new List<IConfigurableElement>
         {
             new SimpleDropDown()
             {
-                GetOptions = () => optionsForUploader,
+                GetOptions = Enum.GetNames<Uploader>,
                 GetPlaceholder = () => "None",
                 GetSelection = () =>
                 {
@@ -145,6 +138,35 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
                     ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("CustomButtonUrl"));
                 },
             },
+            new SimpleRow
+            {
+                Content =
+                [
+                    new SimpleLabel
+                    {
+                        GetContent = () => "Show playback state icon (play/pause)"
+                    },
+                    new SimpleDropDown()
+                    {
+                        GetOptions = Enum.GetNames<WhenToShowStatusIcon>,
+                        GetPlaceholder = () => "None",
+                        GetSelection = () =>
+                        {
+                            if (ConfigObject.Value is DiscordPlayTrackerConfig x)
+                            {
+                                return x.Uploader.ToString();
+                            }
+                            return nameof(Uploader.None);
+                        },
+                        SetSelection = s =>
+                        {
+                            if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                            x.WhenToShowStatusIcon = Enum.Parse<WhenToShowStatusIcon>(s);
+                            ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new(nameof(x.WhenToShowStatusIcon)));
+                        }
+                    },
+                ]
+            }
         };
     }
 
@@ -388,6 +410,14 @@ SilverAudioPlayer.DiscordRP
                     Url = ConstantCodeInfo.GitRepo
                 }];
             }
+
+          
+            var showSmallIcon = false;
+            if (ConfigObject.Value is DiscordPlayTrackerConfig config)
+            {
+               showSmallIcon = config.WhenToShowStatusIcon == WhenToShowStatusIcon.Always || 
+                               config.WhenToShowStatusIcon == WhenToShowStatusIcon.WhenPaused && smallimage == PausedSmallIcon;
+            }
             _currentPresence = new RichPresence
             {
                 Type = ActivityType.Listening,
@@ -397,8 +427,8 @@ SilverAudioPlayer.DiscordRP
                 {
                     LargeImageKey = largeimage,
                     LargeImageText = largeimagetext,
-                    SmallImageKey = smallimage,
-                    SmallImageText = smallimagetext
+                    SmallImageKey = showSmallIcon ? smallimage : null,
+                    SmallImageText = showSmallIcon ? smallimagetext : null
                 },
                 StatusDisplay = appName ? StatusDisplayType.Name : StatusDisplayType.Details,
                 Timestamps = x,
@@ -452,6 +482,7 @@ SilverAudioPlayer.DiscordRP
                 Uploader.None => null,
                 Uploader.Catbox => new RememberRichPresenceURLsUsingCatboxAndAJsonFile(_configPathProvider, _httpClient) { Uploadit = true },
                 Uploader.Imgur => new RememberRichPresenceUrLsUsingImgurAndAJsonFile(_configPathProvider,_httpClient) { Uploadit = true },
+                Uploader.CoverArchive => new RichPresenceUrlsThroughMBID(_configPathProvider,_httpClient),
                 _ => throw new ArgumentOutOfRangeException(nameof(x.Uploader), x.Uploader, "The uploader type is unknown to this plugin")
             };
         }

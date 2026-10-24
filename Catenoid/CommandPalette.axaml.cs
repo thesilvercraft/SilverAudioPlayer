@@ -18,10 +18,6 @@ public partial class CommandPalette : Window
         DataContext = dc;
         SearchBox.TextChanged += TextChanged;
         this.DoAfterInitTasksF();
-        if (OperatingSystem.IsLinux())
-        {
-            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
-        }
     }
     public void ElementDoubleTapped(object _, Avalonia.Input.TappedEventArgs args)
     {

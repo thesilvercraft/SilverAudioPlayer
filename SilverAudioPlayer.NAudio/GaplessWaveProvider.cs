@@ -10,6 +10,7 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
     private IWaveProvider _currentProvider;
     private long _positionBase;
     private long _length;
+    private bool _isDisposed;
 
     public GaplessWaveProvider(IWaveProvider initialProvider)
     {
@@ -25,13 +26,25 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
     {
         get
         {
-            var currentPosition = GetCurrentPosition(_currentProvider);
-            return currentPosition < 0 ? 0 : _positionBase + currentPosition;
+            lock (_lock)
+            {
+                var currentPosition = GetCurrentPosition(_currentProvider);
+                return currentPosition < 0 ? 0 : _positionBase + currentPosition;
+            }
         }
         set => throw new NotSupportedException();
     }
 
-    public long Length => _length;
+    public long Length
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _length;
+            }
+        }
+    }
 
     public int Read(byte[] buffer, int offset, int count)
     {
@@ -40,22 +53,51 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
             return 0;
         }
 
+        var hasProviderChanged = false;
         var totalRead = 0;
-        while (count > 0)
+
+        lock (_lock)
         {
-            var read = _currentProvider.Read(buffer, offset, count);
-            if (read > 0)
+            if (_isDisposed)
             {
-                totalRead += read;
-                offset += read;
-                count -= read;
-                continue;
+                return 0;
             }
 
-            if (!SwitchToNextProvider())
+            while (count > 0)
             {
-                break;
+                var read = 0;
+                try
+                {
+                    read = _currentProvider.Read(buffer, offset, count);
+                }
+                catch (Exception)
+                {
+                    read = 0;
+                }
+
+                if (read > 0)
+                {
+                    totalRead += read;
+                    offset += read;
+                    count -= read;
+                    continue;
+                }
+
+                if (!SwitchToNextProvider(out var changedThisIter))
+                {
+                    break;
+                }
+
+                if (changedThisIter)
+                {
+                    hasProviderChanged = true;
+                }
             }
+        }
+
+        if (hasProviderChanged)
+        {
+            CurrentProviderChanged?.Invoke(this, EventArgs.Empty);
         }
 
         return totalRead;
@@ -63,7 +105,16 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
 
     public event EventHandler? CurrentProviderChanged;
 
-    public IWaveProvider CurrentProvider => _currentProvider;
+    public IWaveProvider CurrentProvider
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _currentProvider;
+            }
+        }
+    }
 
     public bool Enqueue(IWaveProvider nextProvider)
     {
@@ -76,6 +127,8 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
 
         lock (_lock)
         {
+            if (_isDisposed) return false;
+
             _queuedProviders.Enqueue(nextProvider);
             var nextLength = GetLength(nextProvider);
             if (_length >= 0 && nextLength >= 0)
@@ -102,12 +155,21 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
 
         lock (_lock)
         {
+            if (_isDisposed) return false;
+
             while (_queuedProviders.Count > 0)
             {
                 var queued = _queuedProviders.Dequeue();
                 if (queued is IDisposable disposableQueued)
                 {
-                    disposableQueued.Dispose();
+                    try
+                    {
+                        disposableQueued.Dispose();
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
             }
 
@@ -127,32 +189,36 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
         return true;
     }
 
-    private bool SwitchToNextProvider()
+    private bool SwitchToNextProvider(out bool changed)
     {
-        lock (_lock)
+        changed = false;
+        if (_isDisposed || _queuedProviders.Count == 0)
         {
-            if (_queuedProviders.Count == 0)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            if (_currentProvider is IDisposable disposableCurrent)
+        if (_currentProvider is IDisposable disposableCurrent)
+        {
+            try
             {
                 disposableCurrent.Dispose();
             }
-
-            var currentLength = GetCurrentLength(_currentProvider);
-            if (currentLength >= 0)
+            catch
             {
-                _positionBase += currentLength;
+                // ignore
             }
-
-            _currentProvider = _queuedProviders.Dequeue();
-            CurrentProviderChanged?.Invoke(this, EventArgs.Empty);
-            return true;
         }
-    }
 
+        var currentLength = GetCurrentLength(_currentProvider);
+        if (currentLength >= 0)
+        {
+            _positionBase += currentLength;
+        }
+
+        _currentProvider = _queuedProviders.Dequeue();
+        changed = true;
+        return true;
+    }
     private static long GetLength(IWaveProvider provider)
     {
         return provider switch
@@ -187,9 +253,19 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
     {
         lock (_lock)
         {
+            if (_isDisposed) return;
+            _isDisposed = true;
+
             if (_currentProvider is IDisposable disposableCurrent)
             {
-                disposableCurrent.Dispose();
+                try
+                {
+                    disposableCurrent.Dispose();
+                }
+                catch
+                {
+                    // ignore
+                }
             }
 
             while (_queuedProviders.Count > 0)
@@ -197,7 +273,14 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
                 var provider = _queuedProviders.Dequeue();
                 if (provider is IDisposable disposableNext)
                 {
-                    disposableNext.Dispose();
+                    try
+                    {
+                        disposableNext.Dispose();
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using Serilog;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
@@ -16,7 +17,7 @@ public class WrappedFileStream : WrappedStream, IDisposable
     {
         URL = url ?? throw new ArgumentNullException(nameof(url));
         MimeType? mt;
-        using (var tempStream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (var tempStream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
         {
             mt = MagicByteCombos.Match(tempStream, 0)?.MimeType;
         }
@@ -27,8 +28,9 @@ public class WrappedFileStream : WrappedStream, IDisposable
     private Stream InternalGetStream()
     {
         ObjectDisposedException.ThrowIf(_disposedValue, this);
-        var stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
         _streams.Add(stream);
+        Log.Debug("Opened FileStream for {URL}, active stream count: {Count}", URL, _streams.Count);
         return stream;
     }
 
@@ -48,9 +50,18 @@ public class WrappedFileStream : WrappedStream, IDisposable
         if (_disposedValue) return;
         _disposedValue = true;
         if (!disposing) return;
+        Log.Debug("Disposing WrappedFileStream for {URL} ({Count} underlying streams)", URL, _streams.Count);
         while (_streams.TryTake(out var stream))
         {
-            stream.Dispose();
+            try
+            {
+                stream.Dispose();
+                Log.Debug("Disposed underlying FileStream for {URL}", URL);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error disposing FileStream for {URL}", URL);
+            }
         }
     }
 }

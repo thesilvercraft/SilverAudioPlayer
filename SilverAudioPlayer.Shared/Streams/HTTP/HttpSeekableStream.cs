@@ -16,10 +16,11 @@ public static class HttpSeekableStreamCounter
 public class HttpSeekableStream : Stream, IRefreshableStream
 {
     private const int BuffLength = 524288; // 512 KiB
-    private const int MaxChunksToBufferAhead = 6; // Prefetch up to 3MiB ahead
+    private const int MaxChunksToBufferAhead = 6;
 
     private readonly ConcurrentDictionary<long, Task<Memory<byte>>> _chunkCache;
     private readonly bool _rangeSupport;
+    private readonly bool _hasKnownLength;
     private long _currentPos;
     private bool _isDisposed;
 
@@ -37,6 +38,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         {
             Length = result.Item1;
             _rangeSupport = result.Item2;
+            _hasKnownLength = true;
         }
     }
 
@@ -50,6 +52,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         _chunkCache = parent._chunkCache;
         RequestMessage = parent.RequestMessage;
         _rangeSupport = parent._rangeSupport;
+        _hasKnownLength = parent._hasKnownLength;
         Length = parent.Length;
     }
 
@@ -65,6 +68,46 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     }
 
     public HttpRequestMessage RequestMessage { get; }
+
+    /// <summary>True when every byte of the known-length response is already present in the chunk cache.</summary>
+    public bool IsFullyDownloaded
+    {
+        get
+        {
+            if (!_hasKnownLength) return false;
+            if (Length == 0) return true;
+
+            var chunkCount = (Length + BuffLength - 1) / BuffLength;
+            for (long chunk = 0; chunk < chunkCount; chunk++)
+            {
+                if (!_chunkCache.TryGetValue(chunk, out var task) || !task.IsCompletedSuccessfully)
+                    return false;
+
+                var expectedLength = (int)Math.Min(BuffLength, Length - chunk * BuffLength);
+                if (task.Result.Length != expectedLength) return false;
+            }
+
+            return true;
+        }
+    }
+
+    /// <summary>Copies only already-downloaded bytes to a file; this never starts or waits for an HTTP request.</summary>
+    public async Task SaveFullyDownloadedAsync(string path, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+        if (!IsFullyDownloaded)
+            throw new InvalidOperationException("The HTTP stream has not been fully downloaded.");
+
+        await using var output = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None,
+            BuffLength, FileOptions.Asynchronous | FileOptions.SequentialScan);
+        var chunkCount = (Length + BuffLength - 1) / BuffLength;
+        for (long chunk = 0; chunk < chunkCount; chunk++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var data = await _chunkCache[chunk].ConfigureAwait(false);
+            await output.WriteAsync(data, cancellationToken).ConfigureAwait(false);
+        }
+    }
 
     public Stream GetStream() => new HttpSeekableStream(this);
 
@@ -148,10 +191,8 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         var downloadTask = _chunkCache.GetOrAdd(chunkNum, id => GetChunkAsync(id));
 
         TriggerPrefetch(chunkNum);
-
         return downloadTask.GetAwaiter().GetResult();
     }
-
     private void TriggerPrefetch(long currentChunkNum)
     {
         if (Length <= 0) return;
@@ -166,7 +207,6 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             _ = _chunkCache.GetOrAdd(nextChunk, id => GetChunkAsync(id));
         }
     }
-
     public override int Read(byte[] buffer, int offset, int count)
     {
         if (_rangeSupport)
@@ -196,7 +236,6 @@ public class HttpSeekableStream : Stream, IRefreshableStream
                 offset += bytesToRead;
                 count -= bytesToRead;
             }
-
             return totalRead;
         }
 
@@ -229,7 +268,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             _currentPos = _internalStream.Position;
             return _currentPos;
         }
-
+        //  Log.Debug("Seek in HTTPSeekableStream {Offset} {Origin}", offset, origin);
         switch (origin)
         {
             case SeekOrigin.Begin:

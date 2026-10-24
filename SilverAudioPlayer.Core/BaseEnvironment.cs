@@ -22,7 +22,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public BaseEnvironment(Logic<T> Logic, IConfigPathProvider configPathProvider)
     {
         this.Logic = Logic;
-        this._configPathProvider=configPathProvider;
+        _configPathProvider = configPathProvider;
         _timer = new Timer(TimerElapsed, null, Timeout.Infinite, Timeout.Infinite);
     }
    

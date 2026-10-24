@@ -74,7 +74,7 @@
 		<!--MPRIS DBUS STUFF - linux -->
 		<DefineConstants>$(DefineConstants)MPRIS</DefineConstants>
 		<!-- sync plugin  - alpha -->
-<!--    	<DefineConstants>$(DefineConstants)LSync</DefineConstants>-->
+  	    <DefineConstants>$(DefineConstants)LSync</DefineConstants>
 		<!-- linux platform - alpha -->
 		<DefineConstants>$(DefineConstants)LPlatform</DefineConstants>
 		<!-- managed midi - alpha -->

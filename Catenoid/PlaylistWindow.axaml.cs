@@ -27,10 +27,6 @@ public partial class PlaylistWindow : Window
 
         DataContext = dataContext;
         this.DoAfterInitTasksF();
-        if (OperatingSystem.IsLinux())
-        {
-            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
-        }
 
         if (!FolderWatcher) return;
         watcher = new FileSystemWatcher
@@ -104,7 +100,8 @@ public partial class PlaylistWindow : Window
             var playlist = dataContext.Selection.SelectedItems[0];
             if (File.Exists(playlist))
             {
-                var pl = mainWindow.Logic.TryReadPlaylist(new WrappedFileStream(playlist));
+                using var playlistStream = new WrappedFileStream(playlist);
+                var pl = mainWindow.Logic.TryReadPlaylist(playlistStream);
                 if (pl == null) return;
                 foreach (var song in pl.Tracks)
                 {
@@ -114,9 +111,7 @@ public partial class PlaylistWindow : Window
                         break;
                     }
                 }
-                /*if (pl.IndexOfActive == null || !(dc.Queue.Count > pl.IndexOfActive)) return;
-                Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value]);
-                Logic.SetPosition(pl.PositionOfActive ?? 1);*/
+                /*if (pl.IndexOfActive == null || !(dc.Queue.Count > pl.IndexOfActive)) return;\n                Logic.HandleSongChanging(dc.Queue[pl.IndexOfActive.Value]);\n                Logic.SetPosition(pl.PositionOfActive ?? 1);*/
             }
         }
     }

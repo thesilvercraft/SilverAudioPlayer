@@ -21,10 +21,6 @@ public partial class LyricsView : Window
         this.DoAfterInitTasksF();
 
         MainGrid = this.FindControl<Grid>("MainGrid");
-        if (OperatingSystem.IsLinux())
-        {
-            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
-        }
 
         sv = this.FindControl<ScrollViewer>("sv");
 

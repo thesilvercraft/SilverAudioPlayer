@@ -58,10 +58,6 @@ public partial class Settings : Window
     {
         InitializeComponent();
         MainGrid = this.FindControl<Grid>("MainGrid");
-        if (OperatingSystem.IsLinux())
-        {
-            MainGrid.RowDefinitions[0].Height = GridLength.Parse("0");
-        }
 
         this.DoAfterInitTasksF();
     }

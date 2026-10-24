@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -29,6 +30,7 @@ internal static class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        WindowsAppInitializer.InitializeAppId();
         using (Mutex mutex = new(false, @"Global\" + "Catenoid"))
         {
             var hasMutex = false;
@@ -93,5 +95,16 @@ internal static class Program
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace();
+    }
+}
+
+public static class WindowsAppInitializer
+{
+    [DllImport("shell32.dll", SetLastError = true)]
+    private static extern int SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+
+    public static void InitializeAppId()
+    {
+        SetCurrentProcessExplicitAppUserModelID("SilverCraft.Catenoid");
     }
 }

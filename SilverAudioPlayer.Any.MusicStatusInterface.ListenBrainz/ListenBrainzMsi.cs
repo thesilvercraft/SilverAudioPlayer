@@ -1,5 +1,4 @@
 ﻿using System.Composition;
-using MetaBrainz.ListenBrainz.Objects;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
@@ -20,7 +19,6 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
 
     public void Dispose()
     {
-        l?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -36,7 +34,7 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
     public Version? Version => typeof(ListenBrainzMsi).Assembly.GetName().Version;
     public string Licenses { get; }
     public List<Tuple<Uri, URLType>>? Links { get; }
-    MetaBrainz.ListenBrainz.ListenBrainz? l = null;
+    ListenBrainzClient? l = null;
     ILogger _logger;
 
     public void StartIPC(IMusicStatusInterfaceListener listener)
@@ -46,10 +44,9 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
             return;
         }
 
-        l = new(_client, false);
         try
         {
-            if ( l.ValidateTokenAsync(x.UserToken).GetAwaiter().GetResult().Valid != true) return;
+          //  if ( l.ValidateTokenAsync(x.UserToken).GetAwaiter().GetResult().Valid != true) return;
         }
         catch (Exception e)
         {
@@ -57,12 +54,11 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
             return;
         }
 
-        l.UserToken = x.UserToken;
+        l = new ListenBrainzClient(_client, x.UserToken);
         IsStarted = true;
         listener.TrackChangedNotification += TrackChanged;
         _listener = listener;
     }
-
     private IMusicStatusInterfaceListener _listener;
     private DateTime Started;
     private IMetadata m;
@@ -75,15 +71,7 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
         if (e.Metadata?.Duration == null) return;
         m = e.Metadata;
         if (string.IsNullOrEmpty(m.Title) || string.IsNullOrEmpty(m.Artist) || string.IsNullOrEmpty(m.Album)) return;
-        _ = Task.Run(async () => await l.SetNowPlayingAsync(new SubmittedListen()
-        {
-            Track = new SubmittedTrackInfo()
-            {
-                Artist = m.Artist,
-                Name = m.Title,
-                Release = m.Album
-            }
-        }));
+        _ = Task.Run(async () => await l.SetNowPlayingAsync(m.Artist, m.Title,m.Album));
         length = x.ListenPolicy switch
         {
             Policy.Percentage => (double)(e.Metadata.Duration / 1000 * (x.ListenPolicyValue / 100d)),
@@ -99,16 +87,6 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
         if (l == null) return false;
         if (string.IsNullOrWhiteSpace(m.Title) || string.IsNullOrWhiteSpace(m.Artist) || string.IsNullOrWhiteSpace(m.Album)) return false;
         var additionalInfo = new Dictionary<string, object?>();
-        var listen = new SubmittedListen()
-        {
-            Track = new SubmittedTrackInfo()
-            {
-                Artist = m.Artist,
-                Name = m.Title,
-                Release = m.Album,
-                AdditionalInfo = additionalInfo
-            }
-        };
         if (m.Entries != null && m.Entries.Count != 0)
         {
             if (m.Entries.TryGetValue("MUSICBRAINZ_TRACKID", out var trackGuid))
@@ -126,7 +104,7 @@ file class ListenBrainzMsi : IMusicStatusInterface, IAmConfigurable, IAmOnceAgai
                  }  */
         }
         // TODO: recheck if it stutters playback
-        Task.Run(async () => { await l.SubmitSingleListenAsync(listen); });
+        Task.Run(async () => { await l.SubmitListenAsync(m.Artist, m.Title, m.Album, DateTime.Now, additionalInfo); });
         return true;
     }
 

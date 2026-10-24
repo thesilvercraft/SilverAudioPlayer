@@ -17,8 +17,22 @@ public class DiscordPlayTrackerConfig : INotifyPropertyChanged, ICanBeToldThatAP
     public string CustomButtonLabel { get; set; } = "ListenBrainz";
     public string CustomButtonUrl { get; set; } = "https://listenbrainz.org/user/silverdiamond/";
     
-
+    public WhenToShowStatusIcon WhenToShowStatusIcon { get; set; } = WhenToShowStatusIcon.WhenPaused;
     [XmlIgnore] public bool AllowedToRead { get; set; } = true;
 
     public event PropertyChangedEventHandler? PropertyChanged;
+}
+public enum Uploader
+{
+    None = 0,
+    Catbox = 1,
+    Imgur = 2,
+    CoverArchive = 4,
+}
+
+public enum WhenToShowStatusIcon
+{
+    Never = 0,
+    WhenPaused = 1,
+    Always = 2
 }
