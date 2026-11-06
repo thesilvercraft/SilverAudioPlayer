@@ -48,7 +48,7 @@ public interface IMusicStatusInterfaceListener : IPlayerEnvironment, ISyncEnviro
     /// </summary>
     /// <returns>the Position of the current playing media in seconds as a double</returns>
     double GetPosition();
-    event EventHandler<Song> TrackChangedNotification;
+    event EventHandler<Song?> TrackChangedNotification;
     event EventHandler<PlaybackState> PlayerStateChanged;
     event EventHandler<TimeSpan> PositionChanged;
 

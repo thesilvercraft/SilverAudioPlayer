@@ -58,9 +58,9 @@
 		<!--NAudio-->
 		<DefineConstants>$(DefineConstants)NA</DefineConstants>
 		<!--Local library POC-->
-<!--        <DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
+		<!--<DefineConstants>$(DefineConstants)LLib</DefineConstants>-->
 		<!--Discord -->
-	<DefineConstants>$(DefineConstants)DISCRD</DefineConstants> 
+		<DefineConstants>$(DefineConstants)DISCRD</DefineConstants> 
 		<!--VLC (Alpha)-->
 		<!-- <DefineConstants>$(DefineConstants)VLC</DefineConstants> -->
 		<!--Windows only-->
@@ -80,9 +80,10 @@
 		<!-- managed midi - alpha -->
 		<DefineConstants>$(DefineConstants)MMIDI</DefineConstants>
 		<!-- silverjuke web interface-->
-	 <DefineConstants>$(DefineConstants)juke</DefineConstants>
+	 	<DefineConstants>$(DefineConstants)juke</DefineConstants>
 		<!-- music brainz - POC -->
-<!--	<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
+		<!--<DefineConstants>$(DefineConstants)MBRAINZ</DefineConstants>-->
+		<DefineConstants>$(DefineConstants)SLib</DefineConstants>
     <DefineConstants>$(DefineConstants)listenbrainz</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(DefineConstants.Contains('BuildFor'))">
@@ -104,7 +105,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider\SilverAudioPlayer.Any.MemoryProvider.SilverConfigMemoryProvider.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.File\SilverAudioPlayer.Any.MetadataSource.File.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.MusicBrainz\SilverAudioPlayer.Any.MetadataSource.MusicBrainz.csproj" Condition="$(DefineConstants.Contains('MBRAINZ'))" />
-		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.SLIbIndex\SilverAudioPlayer.Any.MetadataSource.SLIbIndex.csproj" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.MetadataSource.SLIbIndex\SilverAudioPlayer.Any.MetadataSource.SLIbIndex.csproj" Condition="$(DefineConstants.Contains('SLib'))"  />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer\SilverAudioPlayer.Any.MusicStatusInterface.LyricsSyncer.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.M3U\SilverAudioPlayer.Any.PlayListReader.M3U.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayListReader.SPL\SilverAudioPlayer.Any.PlayListReader.SPL.csproj" />
@@ -112,6 +113,7 @@
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.libVLC\SilverAudioPlayer.Any.PlayProvider.libVLC.csproj" Condition="$(DefineConstants.Contains('VLC'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayProvider.ManagedMidi\SilverAudioPlayer.Any.PlayProvider.ManagedMidi.csproj" Condition="$(DefineConstants.Contains('MMIDI'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary\SilverAudioPlayer.Any.PlayStreamProvider.LocalLibrary.csproj" Condition="$(DefineConstants.Contains('LLib'))" />
+		<ProjectReference Include="..\SilverAudioPlayer.Any.PlayStreamProvider.SLibIndex\SilverAudioPlayer.Any.PlayStreamProvider.SLibIndex.csproj" Condition="$(DefineConstants.Contains('SLib'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Core\SilverAudioPlayer.Core.csproj" />
 		<ProjectReference Include="..\SilverAudioPlayer.Linux.PlatformHelper.Linux\SilverAudioPlayer.Linux.PlatformHelper.Linux.csproj" Condition="$(DefineConstants.Contains('LPlatform'))" />
 		<ProjectReference Include="..\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz\SilverAudioPlayer.Any.MusicStatusInterface.ListenBrainz.csproj" Condition="$(DefineConstants.Contains('listenbrainz'))"/>

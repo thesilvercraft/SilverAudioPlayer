@@ -520,23 +520,23 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
         return BlacklistPortAudio=false;
     }
+
     public void InitBackEnd()
     {
-       // if (!OperatingSystem.IsWindows())
+        if (!OperatingSystem.IsWindows())
         {
-            /*if (PortAudioSoundOut.IsSupported() && CheckForBlocklist()!=true)
+            if (PortAudioSoundOut.IsSupported() && CheckForBlocklist() != true)
             {
                 Log.Information("initing backend CSCorePlayer PortAudioSoundOut");
                 outputDevice = new CSCorePlayer(new PortAudioSoundOut());
-            }*/
-           /* else*/ /*if (ALSoundOut.IsSupported)
+            }
+            else if (ALSoundOut.IsSupported)
             {
                 Log.Information("initing backend CSCorePlayer ALSoundOut");
                 outputDevice = new CSCorePlayer(new ALSoundOut(50));
-            }*/
+            }
         }
-      //  else
-    
+        else
         {
             Log.Information("initing backend naudio WaveOutEvent");
             outputDevice = new WavePlayerCompatibilityLayer(new WaveOutEvent());

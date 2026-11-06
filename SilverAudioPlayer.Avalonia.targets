@@ -6,13 +6,6 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
         <PackageReference Include="Avalonia.Wayland" Version="12.1.1" />
-        
-      <PackageReference Include="SilverCraft.AvaloniaUtils" Version="13.0.0" />
-        
+        <PackageReference Include="SilverCraft.AvaloniaUtils" Version="13.0.0" />
     </ItemGroup>
-<!--    <ItemGroup>-->
-<!--        <Reference Include="SilverCraft.AvaloniaUtils">-->
-<!--            <HintPath>..\..\..\Documents\source\repos\AvaloniaUtils\SilverCraft.AvaloniaUtils\bin\Debug\net8.0\SilverCraft.AvaloniaUtils.dll</HintPath>-->
-<!--        </Reference>-->
-<!--    </ItemGroup>-->
 </Project>

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Serilog;
+using SilverAudioPlayer.Core.MediatorHandlers;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverMagicBytes;

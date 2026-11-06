@@ -84,6 +84,7 @@ public class MainWindowContext : PlayerContext
         i.Show();
     }
 }
+
 public partial class MainWindow : Window, IWindowSuggestVisualChange
 {
     public readonly MainWindowContext dc;
@@ -94,6 +95,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     public Config config => App.mwconfig;
     public CommentXmlConfigReaderNotifyWhenChanged<Config> reader => App.mwconfreader;
     private string? CurrentAlbumArtHash = null;
+
     public MainWindow(IServiceProvider provider)
     {
         _seekBarTimer = new DispatcherTimer
@@ -131,6 +133,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 {
                     config.Volume = vol;
                 }
+
                 Player?.SetVolume(vol);
                 dc?.RaisePropertyChanged(nameof(dc.Volume));
             },
@@ -155,6 +158,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 {
                     _seekBarTimer.Start();
                 }
+
                 if (CurrentSong?.Metadata == null) return;
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -162,9 +166,11 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     {
                         Title = CurrentSong.TitleOrURL() + " - Catenoid";
                     }
+
                     if (CurrentSong?.Metadata?.SyncedLyrics?.Count is not null and not 0)
                     {
-                        if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
+                        if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant,
+                                out var result2) && result2 is IBrush brush)
                         {
                             LyricsButton.Foreground = brush;
                         }
@@ -175,7 +181,8 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     }
                     else
                     {
-                        if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant, out var result2) && result2 is IBrush brush)
+                        if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant,
+                                out var result2) && result2 is IBrush brush)
                         {
                             LyricsButton.Foreground = brush;
                         }
@@ -215,6 +222,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     var n = new AvaloniaList<Song>(q);
                     dc.queue = n;
                 }
+
                 dc.RaisePropertyChanged(nameof(dc.Queue));
             });
         };
@@ -262,7 +270,12 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 });
             },
         };
-        Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic,Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>());
+        Logic.DoQueueManipulationAction = action => Dispatcher.UIThread.Invoke(action);
+        Logic.QueueManager.GetQueueSnapshot = () => Dispatcher.UIThread.CheckAccess()
+            ? dc.queue.ToList()
+            : Dispatcher.UIThread.Invoke(() => dc.queue.ToList());
+        Logic.PlayerEnvironment = new SapAvaloniaPlayerEnviroment(Logic,
+            Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>());
         InitializeComponent();
 
         AddHandler(DragDrop.DropEvent, Drop);
@@ -294,128 +307,131 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         }, followOptionsOnCall: false);
     }
 
- private void HandleSongChangingImage()
-{
-    if (CurrentSong?.Metadata?.Pictures?.Any() == true)
+    private void HandleSongChangingImage()
     {
-        var newPicture = CurrentSong.Metadata.Pictures[0];
-        
-        var skip = Dispatcher.UIThread.Invoke(() =>
+        if (CurrentSong?.Metadata?.Pictures?.Any() == true)
         {
-            if (Image.Source != null && newPicture.Hash == CurrentAlbumArtHash && !AlbumArtTransparencyChanged)
-                return true;
-            AlbumArtTransparencyChanged = false;
-            CurrentAlbumArtHash = newPicture.Hash;
-            return false;
-        });
-        
-        if (skip) return;
-        
-        var imageData = newPicture.Data;
-        if (imageData == null) return;
+            var newPicture = CurrentSong.Metadata.Pictures[0];
 
-        try
-        {
-            using var imageDataStream = imageData.GetStream();
-            var rawImageStream = new MemoryStream();
-            imageDataStream.CopyTo(rawImageStream);
-            rawImageStream.Position = 0;
-
-            MemoryStream? blurredStream = null;
-
-            if (!config.DisableAlbumArtBlur)
+            var skip = Dispatcher.UIThread.Invoke(() =>
             {
-                blurredStream = new MemoryStream();
-                using var stream = imageData.GetStream();
-                using var writableBitmap = SKBitmap.Decode(stream);
-                var info = new SKImageInfo(writableBitmap.Info.Width, writableBitmap.Info.Height);
-                using var surface = SKSurface.Create(info);
-                
-                var canvas = surface.Canvas;
-                using var paint = new SKPaint();
-                paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                paint.ColorFilter = SKColorFilter.CreateColorMatrix(
-                [
-                    1, 0, 0, 0, 0,
-                    0, 1, 0, 0, 0,
-                    0, 0, 1, 0, 0,
-                    0, 0, 0, config.AlbumArtTransparency, 0
-                ]);
-                canvas.DrawBitmap(writableBitmap, SKPoint.Empty, paint: paint);
+                if (Image.Source != null && newPicture.Hash == CurrentAlbumArtHash && !AlbumArtTransparencyChanged)
+                    return true;
+                AlbumArtTransparencyChanged = false;
+                CurrentAlbumArtHash = newPicture.Hash;
+                return false;
+            });
 
-                using var snapshot = surface.Snapshot();
-                using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
-                using var imgStream = encoded.AsStream();
-                imgStream.CopyTo(blurredStream);
-                blurredStream.Position = 0;
-            }
+            if (skip) return;
 
-            Dispatcher.UIThread.InvokeAsync(() =>
+            var imageData = newPicture.Data;
+            if (imageData == null) return;
+
+            try
             {
-                using (rawImageStream)
+                using var imageDataStream = imageData.GetStream();
+                var rawImageStream = new MemoryStream();
+                imageDataStream.CopyTo(rawImageStream);
+                rawImageStream.Position = 0;
+
+                MemoryStream? blurredStream = null;
+
+                if (!config.DisableAlbumArtBlur)
                 {
-                    var newBmp = new Bitmap(rawImageStream);
-                    var oldSource = Image.Source;
-                    Image.Source = newBmp;
-                    
-                    if (oldSource is IDisposable disposableSource)
-                    {
-                        disposableSource.Dispose();
-                    }
+                    blurredStream = new MemoryStream();
+                    using var stream = imageData.GetStream();
+                    using var writableBitmap = SKBitmap.Decode(stream);
+                    var info = new SKImageInfo(writableBitmap.Info.Width, writableBitmap.Info.Height);
+                    using var surface = SKSurface.Create(info);
+
+                    var canvas = surface.Canvas;
+                    using var paint = new SKPaint();
+                    paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
+                    paint.ColorFilter = SKColorFilter.CreateColorMatrix(
+                    [
+                        1, 0, 0, 0, 0,
+                        0, 1, 0, 0, 0,
+                        0, 0, 1, 0, 0,
+                        0, 0, 0, config.AlbumArtTransparency, 0
+                    ]);
+                    canvas.DrawBitmap(writableBitmap, SKPoint.Empty, paint: paint);
+
+                    using var snapshot = surface.Snapshot();
+                    using var encoded = snapshot.Encode(SKEncodedImageFormat.Png, 76);
+                    using var imgStream = encoded.AsStream();
+                    imgStream.CopyTo(blurredStream);
+                    blurredStream.Position = 0;
                 }
 
-                if (config.DisableAlbumArtBlur || blurredStream == null) return;
-                using (blurredStream)
+                Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    var blurBmp = new Bitmap(blurredStream);
-                    var newBrush = new ImageBrush(blurBmp)
+                    using (rawImageStream)
                     {
-                        Stretch = Stretch.UniformToFill
-                    };
+                        var newBmp = new Bitmap(rawImageStream);
+                        var oldSource = Image.Source;
+                        Image.Source = newBmp;
 
-                    var oldBackground = Background;
-                    Background = newBrush;
-
-                    if (oldBackground is IDisposable disposableBackground)
-                    {
-                        disposableBackground.Dispose();
+                        if (oldSource is IDisposable disposableSource)
+                        {
+                            disposableSource.Dispose();
+                        }
                     }
+
+                    if (config.DisableAlbumArtBlur || blurredStream == null) return;
+                    using (blurredStream)
+                    {
+                        var blurBmp = new Bitmap(blurredStream);
+                        var newBrush = new ImageBrush(blurBmp)
+                        {
+                            Stretch = Stretch.UniformToFill
+                        };
+
+                        var oldBackground = Background;
+                        Background = newBrush;
+
+                        if (oldBackground is IDisposable disposableBackground)
+                        {
+                            disposableBackground.Dispose();
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error loading image into main window");
+            }
+        }
+        else
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Image.Source = null;
+                CurrentAlbumArtHash = null;
+
+                if (config.DisableAlbumArtBlur) return;
+
+                var oldBackground = Background;
+                Background = WindowExtensions.envBackend.GetString("SAPColor").ParseBackground();
+
+                if (oldBackground is IDisposable disposableBackground)
+                {
+                    disposableBackground.Dispose();
                 }
             });
         }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Error loading image into main window");
-        }
     }
-    else
-    {
-        Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            Image.Source = null;
-            CurrentAlbumArtHash = null;
-            
-            if (config.DisableAlbumArtBlur) return;
-            
-            var oldBackground = Background;
-            Background = WindowExtensions.envBackend.GetString("SAPColor").ParseBackground();
-            
-            if (oldBackground is IDisposable disposableBackground)
-            {
-                disposableBackground.Dispose();
-            }
-        });
-    }
-}
 
 
     private bool FirstThemeColrChange = true;
+
     public void SuggestVisualChange(StylingChangeData data, bool isColorSet)
     {
         if (isColorSet || !FirstThemeColrChange) return;
         if (data.Accent == null) return;
-        var transparency= WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true ? 1 : WindowExtensions.envBackend.GetDouble("BackgroundTransparency") ?? 0.75;
-        Background =new SolidColorBrush((Color)data.Accent, transparency);
+        var transparency = WindowExtensions.envBackend.GetBool("DisableSAPTransparency") == true
+            ? 1
+            : WindowExtensions.envBackend.GetDouble("BackgroundTransparency") ?? 0.75;
+        Background = new SolidColorBrush((Color)data.Accent, transparency);
         FirstThemeColrChange = false;
     }
 
@@ -428,15 +444,16 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         }
         catch (Exception ex)
         {
-            Log.Error(ex,"Exception trying to load previous tracks");
+            Log.Error(ex, "Exception trying to load previous tracks");
         }
-
     }
+
     void FindPrevShutdownAndLoad()
     {
         ChangeAutoSaveInterval(config.AutoSaveInterval);
         if (!config.AutoSave || dc.Queue.Count != 0) return;
-        var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath(AutoSavePlaylistPath);
+        var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>()
+            .GetPath(AutoSavePlaylistPath);
         if (!Directory.Exists(dirpath)) return;
         var filepath = Path.Combine(dirpath, AutoSavePlaylistName);
         if (!File.Exists(filepath)) return;
@@ -462,6 +479,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         CommandPalette p = new();
         p.Show();
     }
+
     private void Config_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender != reader) return;
@@ -482,7 +500,8 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         }
     }
 
-    private Timer? autoSaveTimer=null;
+    private Timer? autoSaveTimer = null;
+
     void ChangeAutoSaveInterval(double s)
     {
         if (s > 1)
@@ -495,11 +514,14 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             {
                 autoSaveTimer?.Change(TimeSpan.Zero, TimeSpan.FromSeconds(s));
             }
+
             return;
         }
+
         autoSaveTimer?.Dispose();
         autoSaveTimer = null;
     }
+
     private const string AutoSavePlaylistPath = "Playlists/Autosave/";
     private const string AutoSavePlaylistName = "AutoSave.spl.br";
     private readonly object _autoSaveLock = new();
@@ -511,11 +533,13 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             if (dc?.queue == null) return;
             Log.Information("Autosaving");
             var queue = Logic.GetQueueCopy();
-            var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>().GetPath(AutoSavePlaylistPath);
+            var dirpath = Logic.PlayerContext.ServiceProvider.GetRequiredService<IConfigPathProvider>()
+                .GetPath(AutoSavePlaylistPath);
             Directory.CreateDirectory(dirpath);
             lock (_autoSaveLock)
             {
-                using var s = new FileStream(Path.Combine(dirpath, AutoSavePlaylistName), FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+                using var s = new FileStream(Path.Combine(dirpath, AutoSavePlaylistName), FileMode.Create,
+                    FileAccess.Write, FileShare.ReadWrite);
                 SilverPlaylistHelper.SerialiseBrotli(SilverPlaylistHelper.FromQueueCopy(queue, Env), s);
             }
         }
@@ -524,7 +548,10 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             Log.Error(ex, "Error during autosave");
         }
     }
-    private readonly DataFormat<string> _queueReorderFormat = DataFormat.CreateStringApplicationFormat("SilverAudioPlayer.QueueReorder");
+
+    private readonly DataFormat<string> _queueReorderFormat =
+        DataFormat.CreateStringApplicationFormat("SilverAudioPlayer.QueueReorder");
+
     public Logic<MainWindowContext> Logic { get; set; }
 
     public IPlay? Player => Logic.Player;
@@ -579,9 +606,11 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
         config.PropertyChanged -= Config_PropertyChanged;
         if (config.AutoSave)
         {
-           AutoSave(null);
+            AutoSave(null);
         }
-        Parallel.ForEach([.. Logic.MusicStatusInterfaces], musicStatusInterface => Logic.RemoveMsi(musicStatusInterface, Env));
+
+        Parallel.ForEach([.. Logic.MusicStatusInterfaces],
+            musicStatusInterface => Logic.RemoveMsi(musicStatusInterface, Env));
         if (Player != null) Player.TrackEnd -= Logic.OutputDevice_PlaybackStopped;
         Logic.StopAutoLoading = true;
         Player?.Stop();
@@ -592,17 +621,24 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             config.State = WindowState;
             reader.Write(config, App._configPath);
         }
+
         Environment.Exit(0);
     }
 
     private void TreeView_DoubleTapped(object? sender, RoutedEventArgs e) => TreeViewPressed();
+
     private void TreeView_KeyPressed(object? sender, KeyEventArgs e)
     {
+        // Enter used to activate the selected track even when it was being
+        // used to choose an item from the queue's keyboard-opened context menu.
+        if (e.Handled || mainListBox.ContextMenu?.IsOpen == true) return;
+
         if (e.Key is Key.Enter or Key.Space)
         {
             TreeViewPressed();
         }
     }
+
     void TreeViewPressed()
     {
         if (mainListBox.SelectedItem is Song song)
@@ -610,6 +646,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             Logic.HandleSongChanging(song);
         }
     }
+
     private void StopButton_Click(object? sender, RoutedEventArgs e)
     {
         RemoveTrack();
@@ -643,6 +680,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             rawMetadataView.Show();
             return;
         }
+
         metadataView = new MetadataView();
         metadataView.LoadSong(CurrentSong);
         metadataView.Show();
@@ -663,6 +701,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     private void PlayButton_Click(object? x, RoutedEventArgs y) => Logic.Play();
 
     private const string TimestampFormat = @"hh\:mm\:ss\.ff";
+
     private void SeekBarUpdate(object? sender, EventArgs e)
     {
         try
@@ -680,6 +719,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     {
                         _seekBarTimer?.Stop();
                     }
+
                     break;
                 }
                 case PlaybackState.Paused or PlaybackState.Buffering:
@@ -701,7 +741,6 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     {
         Dispatcher.UIThread.InvokeAsync(() => Title = "Catenoid");
         Logic.RemoveTrack();
-
     }
 
     private int GetDropTargetIndex(DragEventArgs e)
@@ -740,7 +779,9 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
         if (e.Source is Control { Name: "MoveTarget" })
             e.DragEffects &= DragDropEffects.Move;
-        else if (e.DataTransfer.Formats.Any(x=>x == DataFormat.Text || x == DataFormat.File) || e.DataTransfer.Formats.Any(x=>x.Identifier is "UniformResourceLocatorW" or "text/x-moz-url" or "text/uri-list"))
+        else if (e.DataTransfer.Formats.Any(x => x == DataFormat.Text || x == DataFormat.File) ||
+                 e.DataTransfer.Formats.Any(x =>
+                     x.Identifier is "UniformResourceLocatorW" or "text/x-moz-url" or "text/uri-list"))
             e.DragEffects = DragDropEffects.Copy;
         else
             e.DragEffects = DragDropEffects.None;
@@ -765,16 +806,18 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             e.DragEffects &= DragDropEffects.Move;
         else
             e.DragEffects &= DragDropEffects.Copy;
-        if (e.DataTransfer.Formats.Any(x=>x == DataFormat.File))
+        if (e.DataTransfer.Formats.Any(x => x == DataFormat.File))
         {
             var files = e!.DataTransfer.TryGetFiles();
             if (files != null)
             {
-                Logic.ProcessFiles(files.Select(x => x.TryGetLocalPath()).Where(x => x != null).Cast<string>());
+                ProcessDroppedFiles(files.Select(x => x.TryGetLocalPath()).Where(x => x != null).Cast<string>());
             }
         }
 
-        if (e.DataTransfer.Formats.All(x => x.Identifier != "UniformResourceLocatorW" && x.Identifier is not "text/x-moz-url" and not "text/uri-list"))return;
+        if (e.DataTransfer.Formats.All(x =>
+                x.Identifier != "UniformResourceLocatorW" &&
+                x.Identifier is not "text/x-moz-url" and not "text/uri-list" and not "Text")) return;
         {
             var url = e!.DataTransfer!.TryGetText();
             if (url == null && e.DataTransfer.Formats.Any(x => x.Identifier == "text/x-moz-url"))
@@ -785,18 +828,35 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             {
                 url = e!.DataTransfer.TryGetValue(DataFormat.CreateStringPlatformFormat("text/uri-list"));
             }
+
             if (string.IsNullOrEmpty(url)) return;
             if (url.Contains('\n'))
             {
                 // actually multiple urls
                 var urls = url.Split('\n');
-                Logic.ProcessFiles(urls);
+                ProcessDroppedFiles(urls);
             }
             else
             {
-                Logic.ProcessFiles([url]);
+                ProcessDroppedFiles([url]);
             }
         }
+    }
+
+    private void ProcessDroppedFiles(IEnumerable<string> files)
+    {
+        var paths = files.ToArray();
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                Logic.ProcessFiles(paths);
+            }
+            catch (Exception ex)
+            {
+                Logic.Log?.Error(ex, "Failed to load dropped files");
+            }
+        });
     }
 
     public void ClearAll(object sender, RoutedEventArgs e) => Logic.ClearAll();
@@ -816,11 +876,20 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 { Patterns = ["*"], MimeTypes = ["application/octet-stream"] }
         };
 
-        fileDialogFilters.AddRange(Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).
-            Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
+        fileDialogFilters.AddRange(Logic.PlayableMimes.Where(x => x.FileExtensions.Length > 0).Select(mime =>
+            new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files")
+            {
+                MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(),
+                Patterns = mime.FileExtensions.Select(x => "*" + x).ToList()
+            }));
 
-        fileDialogFilters.AddRange(Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct().Where(x => x.FileExtensions.Length > 0).
-            Select(mime => new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files") { MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(), Patterns = mime.FileExtensions.Select(x => "*" + x).ToList() }));
+        fileDialogFilters.AddRange(Logic.PlaylistReaders.SelectMany(x => x.SupportedMimes).Distinct()
+            .Where(x => x.FileExtensions.Length > 0).Select(mime =>
+                new FilePickerFileType(mime.FileExtensions[0].ToUpper() + " Files")
+                {
+                    MimeTypes = mime.AlternativeTypes.Union(new List<string>() { mime.Common }).ToList(),
+                    Patterns = mime.FileExtensions.Select(x => "*" + x).ToList()
+                }));
 
         var u = config.DialogStartLoc;
         IStorageFolder? musicfolder = null;
@@ -850,6 +919,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     {
         Logic.RemoveSongs(dc.Selection.SelectedItems);
     }
+
     private void ShowInFolder(object? sender, RoutedEventArgs e)
     {
         foreach (var selected in dc.Selection.SelectedItems)
@@ -861,6 +931,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             }
         }
     }
+
     private async void SaveQueue(object? sender, RoutedEventArgs e)
     {
         var a = await StorageProvider.SaveFilePickerAsync(new()
@@ -870,7 +941,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             [
                 new FilePickerFileType("Brotli compressed SilverAudioPlayer playlist file (.spl.br)")
                 {
-                    MimeTypes = [ "application/silverplaylist+br" ],
+                    MimeTypes = ["application/silverplaylist+br"],
                     Patterns = ["*.spl.br"]
                 }
             ]

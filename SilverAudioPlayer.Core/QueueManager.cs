@@ -1,5 +1,3 @@
-using Avalonia.Collections;
-using Avalonia.Threading;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using Swordfish.NET.Collections;
@@ -13,7 +11,9 @@ public class QueueManager
     private readonly ILogger? _log;
 
     public Song? NextSong { get; set; }
-    public Action<Action> DoQueueManipulationAction { get; set; } = a => Task.Run(a);
+
+    public Action<Action> DoQueueManipulationAction { get; set; } = a => a();
+    public Func<List<Song>>? GetQueueSnapshot { get; set; }
 
     public event Action<Song?>? NextSongChanged;
     public event Action? QueueModified;
@@ -66,14 +66,23 @@ public class QueueManager
 
     public void AddSong(Song song, bool expectMore = false)
     {
-        Queue.Add(song);
-        QueueModified?.Invoke();
+        DoQueueManipulationAction(() =>
+        {
+            lock (Queue) Queue.Add(song);
+
+            QueueModified?.Invoke();
+        });
 
         if (expectMore) return;
         SuggestDoingSort();
     }
 
     public void ReorderQueue(int sourceIndex, int targetIndex, Action<Song?>? onNextSongChanged = null)
+    {
+        DoQueueManipulationAction(() => ReorderQueueCore(sourceIndex, targetIndex, onNextSongChanged));
+    }
+
+    private void ReorderQueueCore(int sourceIndex, int targetIndex, Action<Song?>? onNextSongChanged)
     {
         lock (Queue)
         {
@@ -87,6 +96,7 @@ public class QueueManager
             {
                 targetIndex--;
             }
+
             Queue.Insert(targetIndex, song);
 
             if (CurrentSong != null)
@@ -106,6 +116,11 @@ public class QueueManager
     public void RemoveSong(Song song, Action? onActiveTrackRemoved = null)
     {
         ArgumentNullException.ThrowIfNull(song, nameof(song));
+        DoQueueManipulationAction(() => RemoveSongCore(song, onActiveTrackRemoved));
+    }
+
+    private void RemoveSongCore(Song song, Action? onActiveTrackRemoved)
+    {
         var index = Queue.IndexOf(song);
         if (index == -1) return;
 
@@ -122,14 +137,15 @@ public class QueueManager
             _log?.Information("Removing the currently playing track. Halting engine audio pipeline first.");
             onActiveTrackRemoved?.Invoke();
             CurrentSong = null;
-            song.Dispose();
-        }
-        else
-        {
-            song.Dispose();
         }
 
-        Queue.RemoveAt(index);
+        song.Dispose();
+
+        lock (Queue)
+        {
+            Queue.RemoveAt(index);
+        }
+
         QueueModified?.Invoke();
     }
 
@@ -146,61 +162,36 @@ public class QueueManager
 
     public void ClearAll()
     {
-        lock (Queue)
+        DoQueueManipulationAction(() =>
         {
-            var tracksToRemove = Queue
-                .Where(track => !ReferenceEquals(CurrentSong, track))
-                .ToList();
-
-            DoQueueManipulationAction(() =>
+            lock (Queue)
             {
-                lock (Queue)
+                var tracksToRemove = Queue.Where(track => !ReferenceEquals(CurrentSong, track)).ToList();
+                foreach (var track in tracksToRemove)
                 {
-                    foreach (var track in tracksToRemove)
-                    {
-                        Queue.Remove(track);
-                        track.Dispose();
-                    }
+                    Queue.Remove(track);
+                    track.Dispose();
                 }
+            }
 
-                _log?.Information("Queue cleared. Preserved currently playing track.");
-                QueueModified?.Invoke();
-            });
-        }
+            _log?.Information("Queue cleared. Preserved currently playing track.");
+            QueueModified?.Invoke();
+        });
     }
 
     public List<Song> GetQueueCopy()
     {
-        List<Song> result = [];
-        if (Queue is AvaloniaList<Song>)
+        if (GetQueueSnapshot is { } snapshot) return snapshot();
+        lock (Queue)
         {
-            if (Dispatcher.UIThread.CheckAccess())
-            {
-                result = [.. Queue];
-            }
-            else
-            {
-                Dispatcher.UIThread.Invoke(() => result = [.. Queue]);
-            }
+            return Queue.ToList();
         }
-        else
-        {
-            result = new List<Song>(Queue);
-        }
-
-        return result;
     }
 
     public void SuggestDoingSort()
     {
         _queueSorter.SuggestDoingSort(
-            getQueueSnapshot: () =>
-            {
-                lock (Queue)
-                {
-                    return Queue.ToList();
-                }
-            },
+            getQueueSnapshot: GetQueueCopy,
             applySortedQueue: sortedSongs =>
             {
                 DoQueueManipulationAction(() =>
@@ -213,6 +204,7 @@ public class QueueManager
                             Queue.Add(song);
                         }
                     }
+
                     UpdateNextSongReference();
                     QueueModified?.Invoke();
                 });

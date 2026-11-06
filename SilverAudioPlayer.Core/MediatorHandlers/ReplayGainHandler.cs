@@ -2,7 +2,7 @@ using System.Globalization;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.StandardRequests;
 
-namespace SilverAudioPlayer.Core;
+namespace SilverAudioPlayer.Core.MediatorHandlers;
 
 public class ReplayGainHandler
 {
@@ -14,27 +14,6 @@ public class ReplayGainHandler
         if (currentSong is not { Metadata: { Entries.Count: > 0 } metadata }) return;
 
         var entries = metadata.Entries;
-
-        float? TryGetReplayGainPeak(bool isAlbum)
-        {
-            if (entries.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_PEAK", out var peakStr) &&
-                float.TryParse(peakStr, CultureInfo.InvariantCulture, out var peakVal))
-            {
-                return peakVal;
-            }
-            return null;
-        }
-
-        bool TryGetReplayGain(bool isAlbum, out float gain)
-        {
-            gain = 0;
-            if (entries.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_GAIN", out var gainStr))
-            {
-                var cleanVal = gainStr.Replace("dB", "", StringComparison.OrdinalIgnoreCase).Trim();
-                return float.TryParse(cleanVal, CultureInfo.InvariantCulture, out gain);
-            }
-            return false;
-        }
 
         var primaryIsAlbum = PreferAlbumReplayGain;
         var secondaryIsAlbum = !PreferAlbumReplayGain;
@@ -58,5 +37,24 @@ public class ReplayGainHandler
             Peak = peak,
             Success = rgSuccess
         };
+        return;
+
+        float? TryGetReplayGainPeak(bool isAlbum)
+        {
+            if (entries.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_PEAK", out var peakStr) &&
+                float.TryParse(peakStr, CultureInfo.InvariantCulture, out var peakVal))
+            {
+                return peakVal;
+            }
+            return null;
+        }
+
+        bool TryGetReplayGain(bool isAlbum, out float gain)
+        {
+            gain = 0;
+            if (!entries.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_GAIN", out var gainStr)) return false;
+            var cleanVal = gainStr.Replace("dB", "", StringComparison.OrdinalIgnoreCase).Trim();
+            return float.TryParse(cleanVal, CultureInfo.InvariantCulture, out gain);
+        }
     }
 }

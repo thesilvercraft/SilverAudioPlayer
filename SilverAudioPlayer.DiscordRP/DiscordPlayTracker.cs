@@ -169,6 +169,30 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
             }
         };
     }
+    private CancellationTokenSource? _idleTimerCts;
+    private readonly TimeSpan _pauseTimeout = TimeSpan.FromSeconds(30);
+
+    private void CancelIdleTimer()
+    {
+        _idleTimerCts?.Cancel();
+        _idleTimerCts?.Dispose();
+        _idleTimerCts = null;
+    }
+
+    private void StartIdleTimer(TimeSpan timeout)
+    {
+        CancelIdleTimer();
+        _idleTimerCts = new CancellationTokenSource();
+        var token = _idleTimerCts.Token;
+
+        Task.Delay(timeout, token).ContinueWith(task =>
+        {
+            if (task.IsCompletedSuccessfully && IsStarted)
+            {
+                _client?.ClearPresence();
+            }
+        }, TaskScheduler.Default);
+    }
 
     public IEnumerable<IConfigurableElement> GetElements()
     {
@@ -311,6 +335,8 @@ SilverAudioPlayer.DiscordRP
             SetStatus(Path.GetFileNameWithoutExtension(a.URI), PauseTextState, "sap", AppName, PausedSmallIcon,
                 PauseTextState);
         }
+
+        StartIdleTimer(_pauseTimeout);
     }
 
     public static void TimerCallback(object? state)
@@ -351,6 +377,8 @@ SilverAudioPlayer.DiscordRP
                 SetStatus(Path.GetFileNameWithoutExtension(a.URI), PlayTextState, "sap", AppName, PlayingSmallIcon,
                     PlayTextState);
             }
+
+            CancelIdleTimer();
         }
         else
         {
@@ -362,8 +390,9 @@ SilverAudioPlayer.DiscordRP
     private void SStop()
     {
         if (!IsStarted) return;
-
-        SetStatus(StoppedTextState, "Not playing anything", "sap", AppName, StoppedSmallIcon, StoppedTextState, appName:true);
+        CancelIdleTimer();
+       // SetStatus(StoppedTextState, "Not playing anything", "sap", AppName, StoppedSmallIcon, StoppedTextState, appName:true);
+        _client?.ClearPresence();
         
     }
 
@@ -496,6 +525,7 @@ SilverAudioPlayer.DiscordRP
         listener.PositionChanged -= Seeked;
         try
         {
+            CancelIdleTimer();
             _client.Deinitialize();
             _client.Dispose();
         }

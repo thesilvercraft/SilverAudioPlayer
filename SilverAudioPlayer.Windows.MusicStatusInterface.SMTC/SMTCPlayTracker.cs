@@ -15,20 +15,17 @@ public class SMTCPlayTracker : IMusicStatusInterface
 {
     private MediaPlayer? _mediaPlayer;
     private SystemMediaTransportControls? _systemMediaTransportControls;
-    private readonly bool DISABLE = false;
-    private bool disposedValue;
+    private readonly bool _disable = false;
+    private bool _disposedValue;
     private readonly List<string> _tempFiles = [];
     private System.Timers.Timer _timeLineTimer;
-    public bool IsStarted => _IsStarted;
-    private bool _IsStarted;
+    public bool IsStarted { get; private set; }
 
     public SMTCPlayTracker()
     {
-        if (Environment.OSVersion.Version.Major < 10 || Environment.OSVersion.Version.Build < 17763)
-        {
-            Debug.WriteLine("!!!!!!!!!! SMTC DISABLED !!!!!!!!!!");
-            DISABLE = true;
-        }
+        if (Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= 17763) return;
+        Debug.WriteLine("!!!!!!!!!! SMTC DISABLED !!!!!!!!!!");
+        _disable = true;
     }
 
     public Version? Version => typeof(SMTCPlayTracker).Assembly.GetName().Version;
@@ -41,36 +38,26 @@ public class SMTCPlayTracker : IMusicStatusInterface
             URLType.LibraryDocumentation)
     ];
 
-    public void PlayerStateChanged(object obj, PlaybackState newstate)
+    public void PlayerStateChanged(object obj, PlaybackState state)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         if (_systemMediaTransportControls != null)
-            switch (newstate)
+            _systemMediaTransportControls.PlaybackStatus = state switch
             {
-                case PlaybackState.Stopped:
-                    _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Stopped;
-                    break;
-
-                case PlaybackState.Playing:
-                    _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Playing;
-                    break;
-
-                case PlaybackState.Paused:
-                    _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Paused;
-                    break;
-
-                case PlaybackState.Buffering:
-                    _systemMediaTransportControls.PlaybackStatus = MediaPlaybackStatus.Changing;
-                    break;
-            }
+                PlaybackState.Stopped => MediaPlaybackStatus.Stopped,
+                PlaybackState.Playing => MediaPlaybackStatus.Playing,
+                PlaybackState.Paused => MediaPlaybackStatus.Paused,
+                PlaybackState.Buffering => MediaPlaybackStatus.Changing,
+                _ => _systemMediaTransportControls.PlaybackStatus
+            };
     }
 
 
 
 
-    public string Name => "SystemMediaTransportControls" + (DISABLE ? " (DISABLED)" : "");
+    public string Name => "SystemMediaTransportControls" + (_disable ? " (DISABLED)" : "");
 
     public string Description => "Windows 10 / ModernFlyouts integration, interfaces through SMTC";
 
@@ -79,10 +66,10 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     public string Licenses => "SilverAudioPlayer.SMTC\nThis program is free software: you can redistribute it and/or modify\r\n    it under the terms of the GNU General Public License as published by\r\n    the Free Software Foundation, either version 3 of the License, or\r\n    (at your option) any later version.\r\n\r\n    This program is distributed in the hope that it will be useful,\r\n    but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n    GNU General Public License for more details.\r\n\r\n    You should have received a copy of the GNU General Public License\r\n    along with this program.  If not, see <https://www.gnu.org/licenses/>";
 
-    public async void TrackChangedNotification(object obj, Song newtrack)
+    public async void TrackChangedNotification(object obj, Song? newtrack)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         if (_systemMediaTransportControls != null && newtrack != null)
         {
@@ -131,10 +118,10 @@ public class SMTCPlayTracker : IMusicStatusInterface
     }
 
 
-    private void UpdateTimeline(PlaybackState state, Song track, double pos)
+    private void UpdateTimeline(PlaybackState state, Song? track, double pos)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         var timelineProperties = new SystemMediaTransportControlsTimelineProperties();
         if (track != null)
@@ -153,8 +140,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private void SystemControls_PlaybackPositionChangeRequested(SystemMediaTransportControls sender,
         PlaybackPositionChangeRequestedEventArgs args)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         Env.SetPosition((ulong)args.RequestedPlaybackPosition.TotalSeconds);
 
@@ -163,8 +150,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private void SystemControls_AutoRepeatModeChangeRequested(SystemMediaTransportControls sender,
         AutoRepeatModeChangeRequestedEventArgs args)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         var a = args.RequestedAutoRepeatMode switch
         {
@@ -180,8 +167,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
     private void SystemControls_ShuffleEnabledChangeRequested(SystemMediaTransportControls sender,
         ShuffleEnabledChangeRequestedEventArgs args)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         Env.SetShuffle(args.RequestedShuffleEnabled);
 
@@ -189,35 +176,21 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     private void PlayOrResume()
     {
-        switch (Env.GetState())
-        {
-            case PlaybackState.Stopped:
-            case PlaybackState.Paused:
-                Env.Play();
-
-                break;
-        }
+        if (Env.GetState() is PlaybackState.Stopped or PlaybackState.Paused) Env.Play();
     }
 
     private void PauseOrResume()
     {
-        switch (Env.GetState())
-        {
-            case PlaybackState.Playing:
-                Env.Pause();
-                break;
-            case PlaybackState.Stopped:
-            case PlaybackState.Paused:
-                Env.Play();
-                break;
-        }
+        if (Env.GetState() == PlaybackState.Playing)
+            Env.Pause();
+        else if (Env.GetState() is PlaybackState.Stopped or PlaybackState.Paused) Env.Play();
     }
 
     private void SystemControls_ButtonPressed(SystemMediaTransportControls sender,
         SystemMediaTransportControlsButtonPressedEventArgs args)
     {
-        if (DISABLE) return;
-        if (!_IsStarted) return;
+        if (_disable) return;
+        if (!IsStarted) return;
 
         switch (args.Button)
         {
@@ -240,6 +213,14 @@ public class SMTCPlayTracker : IMusicStatusInterface
             case SystemMediaTransportControlsButton.Previous:
                 Env.Previous();
                 break;
+            case SystemMediaTransportControlsButton.Record:
+            case SystemMediaTransportControlsButton.FastForward:
+            case SystemMediaTransportControlsButton.Rewind:
+            case SystemMediaTransportControlsButton.ChannelUp:
+            case SystemMediaTransportControlsButton.ChannelDown:
+            default:
+                // We don't implement fastforward or record etc.
+                break;
         }
     }
 
@@ -254,23 +235,21 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
-        {
-            if (disposing) _mediaPlayer?.Dispose();
-            _systemMediaTransportControls = null;
+        if (_disposedValue) return;
+        if (disposing) _mediaPlayer?.Dispose();
+        _systemMediaTransportControls = null;
 
-            disposedValue = true;
-        }
+        _disposedValue = true;
     }
     IMusicStatusInterfaceListener Env;
 
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
-        _IsStarted=true;
+        IsStarted=true;
         Env.TrackChangedNotification += TrackChangedNotification;
         Env.PlayerStateChanged += PlayerStateChanged;
-        if (DISABLE) return;
+        if (_disable) return;
         IntPtr hwnd = NativeWindowHelper.GetMainWindowHandle();
         _systemMediaTransportControls = SystemMediaTransportControlsInterop.GetForWindow(hwnd);
         _systemMediaTransportControls.IsEnabled = true;
@@ -301,8 +280,8 @@ public class SMTCPlayTracker : IMusicStatusInterface
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
-        if (DISABLE) return;
-        _IsStarted = false;
+        if (_disable) return;
+        IsStarted = false;
 
         _timeLineTimer.Stop();
         Env.TrackChangedNotification -= TrackChangedNotification;

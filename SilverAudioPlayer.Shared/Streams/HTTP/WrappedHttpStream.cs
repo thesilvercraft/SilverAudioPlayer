@@ -19,7 +19,7 @@ public class WrappedHttpStream : WrappedStream, IDisposable
         switch (stype)
         {
             case { Item2: true }:
-                inside = new HttpSeekableStream(requestMessage, client) { IsParent = true };
+                inside = new HttpSeekableStream(requestMessage, client, stype) { IsParent = true };
                 Seekable = true;
                 break;
             case null:

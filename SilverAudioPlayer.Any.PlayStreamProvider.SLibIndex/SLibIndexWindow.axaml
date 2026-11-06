@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:SilverAudioPlayer.Any.PlayStreamProvider.SLibIndex"
+        x:Class="SilverAudioPlayer.Any.PlayStreamProvider.SLibIndex.SLibIndexWindow"
+        Title="SLibIndex music library"
+        Width="1000" Height="700"
+        MinWidth="650" MinHeight="420">
+    <Grid Margin="12" RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="2*,3*">
+        <Grid Grid.ColumnSpan="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBox Name="ServerUrlBox" Grid.Column="0"
+                     PlaceholderText="Server URL (for example http://192.168.1.173:32542/api)" />
+            <Button Name="ConnectButton" Grid.Column="1" Content="Load library" MinWidth="110" />
+        </Grid>
+        <TextBox Name="SearchBox" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,8"
+                 PlaceholderText="Filter tracks by title, artist, album, or filename" />
+        <ListBox Name="TrackList" Grid.Row="2" Grid.Column="0" Margin="0,0,10,0">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="local:SLibIndexLiteTrack">
+                    <StackPanel Margin="4,6" Spacing="2">
+                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Artist}" Opacity="0.8" />
+                        <TextBlock Text="{Binding Album}" Opacity="0.65" FontSize="12" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Row="2" Grid.Column="1" Spacing="10">
+            <Image Name="CoverImage" Height="300" Stretch="Uniform" />
+            <TextBlock Name="SelectedTrackText" Text="Select a track to see its artwork." TextWrapping="Wrap" />
+            <Button Name="PlayButton" Content="Play selected track" HorizontalAlignment="Left" />
+            <TextBlock Text="Double-click a track to play it." Opacity="0.7" />
+        </StackPanel>
+        <TextBlock Name="StatusText" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0"
+                   Text="Enter a server URL and load the lightweight track list." TextWrapping="Wrap" />
+    </Grid>
+</Window>
