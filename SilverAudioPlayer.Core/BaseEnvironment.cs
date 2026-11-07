@@ -1,43 +1,48 @@
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.StandardRequests;
 using SilverAudioPlayer.Shared.Metadata;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Core;
 
-
-public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, IFullPlayerEnvironment where T : PlayerContext
+public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, IFullPlayerEnvironment
+    where T : PlayerContext
 {
-
     public event EventHandler<Song>? TrackChangedNotification;
     public event EventHandler<PlaybackState> PlayerStateChanged;
     public event EventHandler<TimeSpan>? PositionChanged;
     private SortedSet<TimedEvent> _timedEvents = new();
-    private readonly object _timeEventsLock =new ();
+    private readonly object _timeEventsLock = new();
     Logic<T> Logic;
     private bool _timerEnabled = false;
     private bool _isDisposed = false;
-    private Timer? _timer=null; // TODO: DISPOSE
+    private Timer? _timer = null; // TODO: DISPOSE
     protected internal IConfigPathProvider _configPathProvider;
+
     public BaseEnvironment(Logic<T> Logic, IConfigPathProvider configPathProvider)
     {
         this.Logic = Logic;
         _configPathProvider = configPathProvider;
         _timer = new Timer(TimerElapsed, null, Timeout.Infinite, Timeout.Infinite);
     }
-   
-    public void LoadSong(WrappedStream s) => Task.Run(() => Logic.LoadSong(s));
 
-    public void LoadSong(WrappedStream s, IMetadata additionalMetadata) => Task.Run(() => Logic.LoadSong(s,additionalMetadata));
+    public void LoadSong(WrappedStream s) => Logic.Mediator.SendCommand(new LoadSongMessage(s));
 
-    public void ProcessFiles(IEnumerable<string> files) => Logic.ProcessFiles(files);
+    public void LoadSong(WrappedStream s, IMetadata additionalMetadata) =>
+        Logic.Mediator.SendCommand(new LoadSongMessage(s, additionalMetadata));
 
-    public void LoadSongs(IEnumerable<WrappedStream> streams) => Logic.LoadSongs(streams);
-    public void LoadSongs(IEnumerable<Tuple<WrappedStream, IMetadata?>> streams) => Logic.LoadSongs(streams);
+    public void ProcessFiles(IEnumerable<string> files) => Logic.Mediator.SendCommand(new ProcessFilesMessage(files));
+
+    public void LoadSongs(IEnumerable<WrappedStream> streams) =>
+        Logic.Mediator.SendCommand(new LoadSongsMessage(streams));
+
+    public void LoadSongs(IEnumerable<Tuple<WrappedStream, IMetadata?>> streams) =>
+        Logic.Mediator.SendCommand(new LoadSongsWithMetadataMessage(streams));
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
     {
-        return Logic.FilterFiles(files);
+        return Logic.Mediator.RequestQuery<IEnumerable<string>>(new FilterFilesQuery(files)) ?? [];
     }
 
     public virtual string Name => "SilverAudioPlayer Base Implementation";
@@ -47,7 +52,8 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public virtual WrappedStream? Icon => null;
 
     public virtual Version? Version { get; } = typeof(WrappedStream).Assembly.GetName().Version;
-    public virtual List<Tuple<Uri, URLType>>? Links   =>
+
+    public virtual List<Tuple<Uri, URLType>>? Links =>
     [
         new Tuple<Uri, URLType>(new Uri(ConstantCodeInfo.GitRepo), URLType.Code),
     ];
@@ -60,15 +66,16 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public virtual async Task<List<Song>?> GetQueue()
     {
         //TODO ASK USER BEFORE GIVING OVER QUEUE
-        return Logic.GetQueueCopy();
+        return Logic.Mediator.RequestQuery<List<Song>>(new GetQueueQuery());
     }
 
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
     {
-        if(pictures is null || pictures.Count==0)
+        if (pictures is null || pictures.Count == 0)
         {
             return null;
         }
+
         var res = pictures?.Where(x => x.PicType == type);
         return res?.Any() == true ? res?.First() : pictures[0];
     }
@@ -93,6 +100,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     {
         return Logic.PlayerContext.CurrentSong;
     }
+
     public IDictionary<string, string>? GetEntriesForCurrentTrack()
     {
         return Logic.PlayerContext?.CurrentSong?.Metadata?.Entries;
@@ -146,7 +154,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         ClearTimedEvents();
         Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
     }
-    
+
     void ClearTimedEvents()
     {
         lock (_timeEventsLock)
@@ -155,10 +163,13 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
             {
                 e.RemoveFromParent();
             }
+
             _timedEvents.Clear();
         }
+
         StopTimer();
     }
+
     public void FirePositionChanged(TimeSpan position)
     {
         Task.Run(() => { PositionChanged?.Invoke(this, position); });
@@ -185,12 +196,14 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         return null;
     }
 
-    public Task<IReadOnlyList<MimeType>> SupportedMimeTypes() => Task.FromResult<IReadOnlyList<MimeType>>(Logic.PlayableMimes);
+    public Task<IReadOnlyList<MimeType>> SupportedMimeTypes() =>
+        Task.FromResult<IReadOnlyList<MimeType>>(Logic.PlayableMimes);
 
     void TimerLogicOnPositionChanged(double positionTotalSeconds)
     {
         TimerLogicOnStateChanged(GetState());
     }
+
     void TimerLogicOnStateChanged(PlaybackState state)
     {
         switch (state)
@@ -208,6 +221,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
                 throw new ArgumentOutOfRangeException(nameof(state), state, null);
         }
     }
+
     private void StopTimer()
     {
         lock (_timeEventsLock)
@@ -230,11 +244,11 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
             var currentPos = GetPosition();
             var next = _timedEvents.FirstOrDefault(x => x.Time > currentPos);
-            
+
             if (next != null)
             {
                 _timerEnabled = true;
-                var delay = Math.Max(next.Time - currentPos - 0.01, 0.0); 
+                var delay = Math.Max(next.Time - currentPos - 0.01, 0.0);
                 _timer?.Change(TimeSpan.FromSeconds(delay), Timeout.InfiniteTimeSpan);
             }
             else
@@ -244,6 +258,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
             }
         }
     }
+
     public void AddTimedEvent(TimedEvent timedEvent)
     {
         lock (_timeEventsLock)
@@ -257,6 +272,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
             }
         }
     }
+
     public void TimerElapsed(object? state)
     {
         if (_isDisposed) return;
@@ -276,12 +292,13 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
                 e.Invoke(track, position);
             }
         }
+
         SetTimerToNextEvent();
     }
-    
+
 
     public void RemoveTimedEvent(TimedEvent timedEvent)
-    { 
+    {
         lock (_timeEventsLock)
         {
             if (_timedEvents.Remove(timedEvent))

@@ -9,6 +9,7 @@ using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
+using SilverAudioPlayer.Shared.StandardRequests;
 using SilverCraft.AvaloniaUtils;
 using System;
 using System.Collections.Generic;
@@ -137,76 +138,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 Player?.SetVolume(vol);
                 dc?.RaisePropertyChanged(nameof(dc.Volume));
             },
-            GetVolume = () => config.Volume,
-            ResetUIScrollBar = () =>
-            {
-                Dispatcher.UIThread.InvokeAsync(() => PB.Value = 0);
-                Dispatcher.UIThread.InvokeAsync(() => LT.Text = TimeSpan.Zero.ToString());
-                _seekBarTimer.Start();
-            },
-            SetScrollBarTextTo = scrl =>
-            {
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    PB.Maximum = scrl.TotalMilliseconds;
-                    RT.Text = scrl.ToString(TimestampFormat);
-                });
-            },
-            HandleLateStageMetadataAndScrollBar = () =>
-            {
-                if (!_seekBarTimer.IsEnabled)
-                {
-                    _seekBarTimer.Start();
-                }
-
-                if (CurrentSong?.Metadata == null) return;
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    if (CurrentSong.Metadata.Title != null)
-                    {
-                        Title = CurrentSong.TitleOrURL() + " - Catenoid";
-                    }
-
-                    if (CurrentSong?.Metadata?.SyncedLyrics?.Count is not null and not 0)
-                    {
-                        if (this.TryFindResource("SystemControlForegroundAccentBrush", ActualThemeVariant,
-                                out var result2) && result2 is IBrush brush)
-                        {
-                            LyricsButton.Foreground = brush;
-                        }
-                        else
-                        {
-                            Log.Error("Failed to find SystemControlForegroundAccentBrush?");
-                        }
-                    }
-                    else
-                    {
-                        if (this.TryFindResource("SystemControlForegroundBaseHighBrush", ActualThemeVariant,
-                                out var result2) && result2 is IBrush brush)
-                        {
-                            LyricsButton.Foreground = brush;
-                        }
-                        else
-                        {
-                            Log.Error("Failed to find SystemControlForegroundBaseHighBrush?");
-                        }
-                    }
-                });
-                HandleSongChangingImage();
-            },
-            ShowMessageBox = (s, s1) =>
-            {
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    var window = new MessageBox(s, s1)
-                    {
-                        Title = "Error",
-                        Icon = Icon
-                    };
-                    window.DoAfterInitTasksF();
-                    window.ShowDialog(this);
-                });
-            }
+            GetVolume = () => config.Volume
         };
         dc.GetQueue = () => dc.queue;
         dc.SetQueue = q =>
@@ -270,6 +202,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 });
             },
         };
+        Logic.Mediator.OnMessageReceived += HandleMediatorMessage;
         Logic.DoQueueManipulationAction = action => Dispatcher.UIThread.Invoke(action);
         Logic.QueueManager.GetQueueSnapshot = () => Dispatcher.UIThread.CheckAccess()
             ? dc.queue.ToList()
@@ -305,6 +238,63 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             SetTransparency = true,
             SetFontFamily = true,
         }, followOptionsOnCall: false);
+    }
+
+    private void HandleMediatorMessage(object? sender, IMessage message)
+    {
+        switch (message)
+        {
+            case ResetUiScrollBarMessage:
+                Dispatcher.UIThread.Post(() =>
+                {
+                    PB.Value = 0;
+                    LT.Text = TimeSpan.Zero.ToString();
+                    _seekBarTimer?.Start();
+                });
+                break;
+            case SetScrollBarTextMessage m:
+                Dispatcher.UIThread.Post(() =>
+                {
+                    PB.Maximum = m.Duration.TotalMilliseconds;
+                    RT.Text = m.Duration.ToString(TimestampFormat);
+                });
+                break;
+            case RefreshMetadataAndScrollBarMessage:
+                Dispatcher.UIThread.Post(RefreshMetadataAndScrollBar);
+                break;
+            case ShowPlayerMessageBoxMessage m:
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var window = new MessageBox(m.Title, m.Message) { Title = m.Title, Icon = Icon };
+                    window.DoAfterInitTasksF();
+                    window.ShowDialog(this);
+                });
+                break;
+            case PostToUiMessage m:
+                Dispatcher.UIThread.Post(m.Action);
+                break;
+        }
+    }
+
+    private void RefreshMetadataAndScrollBar()
+    {
+        if (!_seekBarTimer.IsEnabled) _seekBarTimer.Start();
+        if (CurrentSong?.Metadata == null) return;
+
+        if (CurrentSong.Metadata.Title != null) Title = CurrentSong.TitleOrURL() + " - Catenoid";
+        var resourceName = CurrentSong.Metadata.SyncedLyrics?.Count is not null and not 0
+            ? "SystemControlForegroundAccentBrush"
+            : "SystemControlForegroundBaseHighBrush";
+        if (this.TryFindResource(resourceName, ActualThemeVariant, out var result) && result is IBrush brush)
+        {
+            LyricsButton.Foreground = brush;
+        }
+        else
+        {
+            Log.Error("Failed to find {ResourceName}", resourceName);
+        }
+
+        HandleSongChangingImage();
     }
 
     private void HandleSongChangingImage()

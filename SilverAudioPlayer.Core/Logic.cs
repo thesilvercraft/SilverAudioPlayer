@@ -5,6 +5,7 @@ using Serilog;
 using SilverAudioPlayer.Core.MediatorHandlers;
 using SilverAudioPlayer.Shared;
 using SilverAudioPlayer.Shared.Metadata;
+using SilverAudioPlayer.Shared.StandardRequests;
 using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Core;
@@ -45,6 +46,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     public ReplayGainHandler ReplayGain { get; }
     public MusicBrainzHandler MusicBrainz { get; }
     public IPlayerUiBridge UiBridge { get; set; }
+    public IMediator Mediator { get; }
 
     public List<IMusicStatusInterface> LoadedMusicStatusInterfaces => MusicStatus.LoadedMusicStatusInterfaces;
 
@@ -167,12 +169,13 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     public Logic(T playercontext, IPlayerUiBridge? uiBridge = null)
     {
         PlayerContext = playercontext ?? throw new ArgumentNullException(nameof(playercontext));
-        UiBridge = uiBridge ?? new PlayerContextUiBridge(playercontext);
+        Mediator = playercontext.ServiceProvider.GetRequiredService<IMediator>();
+        UiBridge = uiBridge ?? new PlayerContextUiBridge(Mediator);
 
         Plugins = new PluginRegistry();
         QueueSorter = new QueueSorter();
         QueueManager = new QueueManager(PlayerContext, QueueSorter, Log);
-        MusicStatus = new MusicStatusCoordinator();
+        MusicStatus = new MusicStatusCoordinator(Mediator);
         ReplayGain = new ReplayGainHandler();
         MusicBrainz = new MusicBrainzHandler();
 
@@ -206,9 +209,46 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             PlaybackEngine.SetLoopMode(lt);
         };
 
-        var mediator = PlayerContext.ServiceProvider.GetRequiredService<IMediator>();
-        mediator.OnQueryReceived += query => ReplayGain.HandleMediatorQuery(query, PlayerContext.CurrentSong);
-        mediator.OnQueryReceived += query => MusicBrainz.HandleMediatorQuery(query, PlayerContext.CurrentSong);
+        Mediator.OnQueryReceived += query => ReplayGain.HandleMediatorQuery(query, PlayerContext.CurrentSong);
+        Mediator.OnQueryReceived += query => MusicBrainz.HandleMediatorQuery(query, PlayerContext.CurrentSong);
+        Mediator.OnQueryReceived += HandleEnvironmentQuery;
+        Mediator.OnMessageReceived += (_, message) =>
+        {
+            MusicStatus.HandleMessage(message);
+            HandleEnvironmentMessage(message);
+        };
+    }
+
+    private void HandleEnvironmentMessage(IMessage message)
+    {
+        switch (message)
+        {
+            case LoadSongMessage m:
+                _ = Task.Run(() =>
+                {
+                    if (m.AdditionalMetadata == null) LoadSong(m.Stream);
+                    else LoadSong(m.Stream, m.AdditionalMetadata);
+                });
+                break;
+            case LoadSongsMessage m: LoadSongs(m.Streams); break;
+            case LoadSongsWithMetadataMessage m: LoadSongs(m.Streams); break;
+            case ProcessFilesMessage m: ProcessFiles(m.Files); break;
+        }
+    }
+
+    private void HandleEnvironmentQuery(QueryEventArgs query)
+    {
+        switch (query.Query)
+        {
+            case FilterFilesQuery m:
+                query.Result = FilterFiles(m.Files);
+                query.Handled = true;
+                break;
+            case GetQueueQuery:
+                query.Result = GetQueueCopy();
+                query.Handled = true;
+                break;
+        }
     }
 
     public void AddMSI(IMusicStatusInterface statusInterface,
@@ -259,7 +299,8 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin musicStatusInterface)
     {
-        MusicStatus.MainWindow_Opened(musicStatusInterface, Plugins.MusicStatusInterfaces, Plugins.CheckIfPluginAllowed);
+        MusicStatus.MainWindow_Opened(musicStatusInterface, Plugins.MusicStatusInterfaces,
+            Plugins.CheckIfPluginAllowed);
     }
 
     public void Play()
@@ -387,6 +428,7 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
                             QueueManager.Queue.Add(song);
                         }
                     }
+
                     QueueManager.UpdateNextSongReference();
                 });
             },
