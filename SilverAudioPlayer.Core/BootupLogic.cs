@@ -6,6 +6,7 @@ using SilverAudioPlayer.Core;
 using SilverAudioPlayer.Shared;
 using SilverCraft.Ekorensis;
 using Microsoft.Extensions.DependencyInjection;
+
 public class ConfigPathProvider(string basePath) : IConfigPathProvider
 {
     public string BasePath { get; set; } = basePath;
@@ -14,8 +15,8 @@ public class ConfigPathProvider(string basePath) : IConfigPathProvider
     {
         return Path.Combine(BasePath, subpath);
     }
-   
 }
+
 public class BootupLogic
 {
     public IServiceProvider BuildServices()
@@ -28,11 +29,14 @@ public class BootupLogic
             .Build();
         services.AddSingleton(_configuration);
         services.AddSingleton<IConfigPathProvider>(new ConfigPathProvider(GetConfigPath()));
-        services.AddHttpClient(_configuration["HttpClientName"] ?? "SilverAudioPlayer", 
-            x=>x.DefaultRequestHeaders.UserAgent.ParseAdd(_configuration["HttpClientDetails"] ??
-            "SilverAudioPlayer/8.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)"));
+        var userAgent = _configuration["HttpClientDetails"] ??
+                        "SilverAudioPlayer/8.0 (+https://gitlab.com/silvercraft/SilverAudioPlayer)";
+        services.AddHttpClient(_configuration["HttpClientName"] ?? "SilverAudioPlayer",
+            x => x.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent));
+        services.AddHttpClient("",
+            x => x.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent));
         services.AddSingleton(typeof(ISharedPool<>), typeof(SharedPool<>));
-        Log.Logger  = new LoggerConfiguration()
+        Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(_configuration)
             .WriteTo.Console()
             .CreateLogger();
@@ -41,9 +45,10 @@ public class BootupLogic
         services.AddLogging(builder => builder.AddSerilog());
         return services.BuildServiceProvider();
     }
+
     string GetConfigPath()
     {
-         var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
+        var confdir = Path.Combine(AppContext.BaseDirectory, "Configs");
         if (!File.Exists(Path.Combine(AppContext.BaseDirectory, ".portable")))
         {
             if (OperatingSystem.IsLinux())
@@ -63,20 +68,22 @@ public class BootupLogic
         {
             Directory.CreateDirectory(confdir);
         }
+
         return confdir;
     }
 
-  
+
     public void SetupCrashFallNets(Action<Exception> onFatalError)
     {
         AppDomain.CurrentDomain.UnhandledException += (x, y) =>
         {
-            var ex = y.ExceptionObject as Exception ?? new Exception($"Unknown CLR Exception object: {y.ExceptionObject}");
+            var ex = y.ExceptionObject as Exception ??
+                     new Exception($"Unknown CLR Exception object: {y.ExceptionObject}");
             if (y.IsTerminating)
             {
                 Log.Fatal(ex,
                     "Unhandled exception caught by AppDomain.CurrentDomain.UnhandledException, Terminating!!!");
-                onFatalError((Exception)y.ExceptionObject);
+                onFatalError(ex);
             }
             else
             {
@@ -94,43 +101,37 @@ public class BootupLogic
         RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
     }
 
-    void HandleCommandPalette<T>(CommandPalette commandPalette, ICodeInformation item, Logic<T> logic, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
+    void HandleCommandPalette<T>(CommandPalette commandPalette, ICodeInformation item, Logic<T> logic,
+        Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs>
+            browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
     {
         switch (item)
         {
             case IAmConfigurable configurable:
-                commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
-                {
-                    showEkorensisWindow.Invoke(configurable);
-                }));
+                commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name,
+                    "configure " + item.GetType().Name, (x) => { showEkorensisWindow.Invoke(configurable); }));
                 break;
             case IConfigurableUiPlugin configurableUiPlugin:
-                commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name, "configure " + item.GetType().Name, (x) =>
-                {
-                    configurableUiPlugin.ConfigureUi((IConfigurableListener)x);
-                }));
+                commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name,
+                    "configure " + item.GetType().Name,
+                    (x) => { configurableUiPlugin.ConfigureUi((IConfigurableListener)x); }));
                 break;
             case IPlayStreamProvider streamProvider:
-                commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
-                {
-                    streamProvider.Use((IPlayStreamProviderListener)x);
-                }));
+                commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name,
+                    (x) => { streamProvider.Use((IPlayStreamProviderListener)x); }));
                 break;
             case ISyncPlugin syncPlugin:
-                commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name, (x) =>
-                {
-                    syncPlugin.Use((ISyncEnvironmentListener)x);
-                }));
+                commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name,
+                    (x) => { syncPlugin.Use((ISyncEnvironmentListener)x); }));
                 break;
         }
-        if(item is IExportCommands exporter)
+
+        if (item is IExportCommands exporter)
         {
-            foreach(var cmd in exporter.GetCommands())
+            foreach (var cmd in exporter.GetCommands())
             {
-                commandPalette.AddItem(new CommandPaletteItem(cmd.Name, cmd.Id, (x) =>
-                {
-                    exporter.RaiseCommand(cmd);
-                }));
+                commandPalette.AddItem(new CommandPaletteItem(cmd.Name, cmd.Id,
+                    (x) => { exporter.RaiseCommand(cmd); }));
             }
         }
 
@@ -148,17 +149,19 @@ public class BootupLogic
                 }
             }));
         }
-        if (item is IAmOnceAgainAskingYouForYourMemory memoryAsker && logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
+
+        if (item is IAmOnceAgainAskingYouForYourMemory memoryAsker &&
+            logic.MemoryProvider is IWillTellYouWhereIStoreTheConfigs l)
         {
-            commandPalette.AddItem(new CommandPaletteItem("Open config file for " + item.Name, "config file " + item.GetType().Name, (x) =>
-            {
-                browseConfigLocations.Invoke(item, memoryAsker, l);
-            }));
+            commandPalette.AddItem(new CommandPaletteItem("Open config file for " + item.Name,
+                "config file " + item.GetType().Name, (x) => { browseConfigLocations.Invoke(item, memoryAsker, l); }));
         }
     }
-    public void SetupCommandPalette<T>(Logic<T> logic, CommandPalette commandPalette, Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs> browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
-    {
 
+    public void SetupCommandPalette<T>(Logic<T> logic, CommandPalette commandPalette,
+        Action<ICodeInformation, IAmOnceAgainAskingYouForYourMemory, IWillTellYouWhereIStoreTheConfigs>
+            browseConfigLocations, Action<IAmConfigurable> showEkorensisWindow) where T : PlayerContext
+    {
         foreach (var item in ((ILogicImportable)logic).PluginCodeInformation)
         {
             HandleCommandPalette(commandPalette, item, logic, browseConfigLocations, showEkorensisWindow);
@@ -178,13 +181,13 @@ public class BootupLogic
         {
             if (logic.Player is not ISelector s) return;
             var c = s.CurrentPattern;
-            if (c - 1 > 0) // TODO: CHECK IF PATTERN 0 EXISTS
+            if (c - 1 >= 0)
             {
                 s.SetPattern(c - 1);
             }
         }));
-
     }
+
     static void HandleMemoryLogic(IEnumerable objectsOwnedByLogic, IWillProvideMemory memoryProvider)
     {
         foreach (var o in objectsOwnedByLogic)
@@ -195,6 +198,7 @@ public class BootupLogic
             }
         }
     }
+
     public void SetupMemoryLogic<T>(Logic<T> logic) where T : PlayerContext
     {
         if (logic.MemoryProvider is not null)
@@ -203,7 +207,6 @@ public class BootupLogic
         }
     }
 }
-
 
 
 public class RxObservableExceptionHandler : IObserver<Exception>
@@ -222,6 +225,5 @@ public class RxObservableExceptionHandler : IObserver<Exception>
 
     public void OnCompleted()
     {
-
     }
 }

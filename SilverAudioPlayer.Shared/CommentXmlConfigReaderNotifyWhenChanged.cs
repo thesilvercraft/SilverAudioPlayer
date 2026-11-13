@@ -1,4 +1,4 @@
-﻿using SilverConfig;
+using SilverConfig;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,11 +8,12 @@ namespace SilverAudioPlayer.Shared;
 public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable
     where T : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
-    private readonly List<FileSystemWatcher> _fileSystemWatchers = new();
+    private readonly ConcurrentDictionary<string, FileSystemWatcher> _fileSystemWatchers =
+        new(StringComparer.OrdinalIgnoreCase);
 
     public void Dispose()
     {
-        foreach (var fsw in _fileSystemWatchers) fsw.Dispose();
+        foreach (var fsw in _fileSystemWatchers.Values) fsw.Dispose();
         _fileSystemWatchers.Clear();
         GC.SuppressFinalize(this);
     }
@@ -42,11 +43,13 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                     {
                         base.Write(config, fullPath);
                     }
+
                     return;
                 }
                 catch (IOException ex) when (attempt < maxRetries)
                 {
-                    Debug.WriteLine($"[CommentXmlConfigReader] Write contention on attempt {attempt}/{maxRetries} for {fullPath}: {ex.Message}");
+                    Debug.WriteLine(
+                        $"[CommentXmlConfigReader] Write contention on attempt {attempt}/{maxRetries} for {fullPath}: {ex.Message}");
                     Thread.Sleep(baseDelayMs * attempt);
                 }
             }
@@ -87,11 +90,13 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                 {
                     c = base.Read(fullPath);
                 }
+
                 break;
             }
             catch (IOException ex) when (attempt < maxRetries)
             {
-                Debug.WriteLine($"[CommentXmlConfigReader] Read contention on attempt {attempt}/{maxRetries} for {fullPath}: {ex.Message}");
+                Debug.WriteLine(
+                    $"[CommentXmlConfigReader] Read contention on attempt {attempt}/{maxRetries} for {fullPath}: {ex.Message}");
                 Thread.Sleep(baseDelayMs * attempt);
             }
         }
@@ -101,7 +106,7 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
         var fpDir = Path.GetDirectoryName(fullPath) ?? "";
         var fpNm = Path.GetFileName(fullPath);
 
-        if (Directory.Exists(fpDir))
+        if (Directory.Exists(fpDir) && !_fileSystemWatchers.ContainsKey(fullPath))
         {
             FileSystemWatcher j = new()
             {
@@ -117,7 +122,8 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
             j.Changed += (x, y) =>
             {
                 if (y.ChangeType != WatcherChangeTypes.Changed) return;
-                if (!string.Equals(y.FullPath, fullPath, StringComparison.OrdinalIgnoreCase) || !c.AllowedToRead) return;
+                if (!string.Equals(y.FullPath, fullPath, StringComparison.OrdinalIgnoreCase) ||
+                    !c.AllowedToRead) return;
 
                 try
                 {
@@ -130,6 +136,7 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                             {
                                 c2 = base.Read(fullPath);
                             }
+
                             break;
                         }
                         catch (IOException) when (attempt < 5)
@@ -143,12 +150,13 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                     var t = typeof(T);
                     foreach (var a in t.GetProperties())
                     {
-                        if (a.Name != "AllowedToRead" && a.CanRead && a.GetValue(c)?.Equals(a.GetValue(c2)) != true)
+                        if (a.Name != "AllowedToRead" && a.CanRead && !Equals(a.GetValue(c), a.GetValue(c2)))
                         {
                             if (a.CanWrite)
                                 a.SetValue(c, a.GetValue(c2));
                             else
-                                Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." + a.Name);
+                                Debug.WriteLine("CommentXmlConfigReaderNotifyWhenChanged had an issue setting c." +
+                                                a.Name);
 
                             c.PropertyChanged(this, new PropertyChangedEventArgsFromFile(a.Name));
                         }
@@ -160,12 +168,16 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                 }
             };
 
-            _fileSystemWatchers.Add(j);
+            if (!_fileSystemWatchers.TryAdd(fullPath, j))
+            {
+                j.Dispose();
+            }
         }
 
         return c;
     }
 }
+
 public class PropertyChangedEventArgsFromFile(string? propertyName) : PropertyChangedEventArgs(propertyName)
 {
 }

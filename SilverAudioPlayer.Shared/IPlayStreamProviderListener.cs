@@ -9,12 +9,12 @@ public interface IPlayStreamProviderListenerBare
     /// </summary>
     /// <param name="s">wrappedstream to load</param>
     void LoadSong(WrappedStream s);
+
     /// <summary>
     /// Loads a wrappedstream into the queue and provide additional metadata
     /// </summary>
     /// <param name="s">wrappedstream to load</param>
     /// <param name="additionalMetadata">additional metadata</param>
-
     void LoadSong(WrappedStream s, IMetadata additionalMetadata);
 
     /// <summary>
@@ -28,6 +28,7 @@ public interface IPlayStreamProviderListenerBare
     /// </summary>
     /// <param name="streams">Streams to load</param>
     void LoadSongs(IEnumerable<WrappedStream> streams);
+
     /// <summary>
     /// Load <see cref="WrappedStream"/>s with additional metadata
     /// </summary>
@@ -35,5 +36,16 @@ public interface IPlayStreamProviderListenerBare
     void LoadSongs(IEnumerable<Tuple<WrappedStream, IMetadata?>> streams);
 
     IEnumerable<string> FilterFiles(IEnumerable<string> files);
+
+    /// <summary>
+    /// Gets or sets whether automatic queue sorting is enabled.
+    /// When disabled, newly added tracks are appended in exact order without album regrouping.
+    /// </summary>
+    bool AutoSortEnabled
+    {
+        get => true;
+        set { }
+    }
 }
+
 public interface IPlayStreamProviderListener : IPlayerEnvironment, IPlayStreamProviderListenerBare;

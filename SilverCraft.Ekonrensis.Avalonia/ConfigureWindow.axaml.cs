@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Threading;
@@ -22,76 +23,127 @@ public partial class EkonrensisWindow : Window, IConfigurableWindow
         switch (element)
         {
             case IConfigurableCheckBox checkBox:
+            {
+                CheckBox cb = new()
                 {
-                    CheckBox cb = new()
-                    {
-                        Content = checkBox.Content,
-                        IsChecked = checkBox.Toggled
-                    };
-                    cb.IsCheckedChanged += (_, _) => checkBox.Toggled = (bool)cb.IsChecked;
-                    return cb;
-                }
+                    Content = checkBox.Content,
+                    IsChecked = checkBox.Toggled,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                cb.IsCheckedChanged += (_, _) => checkBox.Toggled = (bool)(cb.IsChecked ?? false);
+                return cb;
+            }
             case IConfigurableTextBox textBox:
+            {
+                TextBox tb = new()
                 {
-                    TextBox tb = new()
-                    {
-                        Text = textBox.Content,
-                        PlaceholderText = textBox.Placeholder
-                    };
-                    tb.TextChanged += (_, _) =>
-                    {
-                        textBox.Content = tb.Text;
-                    };
-                    return tb;
-                }
+                    Text = textBox.Content,
+                    PlaceholderText = textBox.Placeholder,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                tb.TextChanged += (_, _) => { textBox.Content = tb.Text ?? string.Empty; };
+                return tb;
+            }
             case IConfigurableLabel label:
+            {
+                Label tb = new()
                 {
-                    Label tb = new()
-                    {
-                        Content = label.Content,
-                    };
-                    return tb;
-                }
+                    Content = label.Content,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                return tb;
+            }
             case IConfigurableDropDown dropDown:
+            {
+                ComboBox cb = new()
                 {
-                    ComboBox cb = new()
-                    {
-                        ItemsSource = dropDown.Options,
-                        SelectedItem = dropDown.Selection
-                    };
-                    cb.SelectionChanged += (_, _) => dropDown.Selection =  (string)cb.SelectedItem;
-                    cb.PlaceholderText = dropDown.Placeholder;
-                    return cb;
-                }
-            case IConfigurableButton button:
+                    ItemsSource = dropDown.Options,
+                    SelectedItem = dropDown.Selection,
+                    PlaceholderText = dropDown.Placeholder,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                cb.SelectionChanged += (_, _) =>
                 {
-                    Button cb = new()
+                    if (cb.SelectedItem != null)
                     {
-                        Content = button.Content
-                    };
-                    cb.Click += (_, _) => button.Click();
-                    return cb;
-                }
-            case IConfigurableRow row:
-                {
-                    StackPanel wrapPanel = new()
-                    {
-                        Orientation = Orientation.Horizontal
-                    };
-                    foreach (var childElement in row.Content)
-                    {
-                        wrapPanel.Children.Add(GetControl(childElement));
+                        dropDown.Selection = cb.SelectedItem.ToString() ?? string.Empty;
                     }
-                    return wrapPanel;
+                };
+                return cb;
+            }
+            case IConfigurableNumericUpDown numericUpDown:
+            {
+                NumericUpDown nud = new()
+                {
+                    Minimum = numericUpDown.Minimum,
+                    Maximum = numericUpDown.Maximum,
+                    Increment = numericUpDown.Increment,
+                    Value = numericUpDown.Value,
+                    FormatString = numericUpDown.DecimalPlaces > 0
+                        ? $"0.{new string('0', numericUpDown.DecimalPlaces)}"
+                        : "0",
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                nud.ValueChanged += (_, _) =>
+                {
+                    if (nud.Value.HasValue)
+                    {
+                        numericUpDown.Value = nud.Value.Value;
+                    }
+                };
+                return nud;
+            }
+            case IConfigurableButton button:
+            {
+                Button cb = new()
+                {
+                    Content = button.Content,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                cb.Click += (_, _) => button.Click();
+                return cb;
+            }
+            case IConfigurableRow row:
+            {
+                StackPanel wrapPanel = new()
+                {
+                    Orientation = Orientation.Horizontal,
+                    Spacing = 8,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                foreach (var childElement in row.Content)
+                {
+                    wrapPanel.Children.Add(GetControl(childElement));
                 }
+
+                return wrapPanel;
+            }
+            case IConfigurableGallery gallery:
+            {
+                ListBox lb = new()
+                {
+                    ItemsSource = gallery.Items
+                };
+                lb.DoubleTapped += (_, _) =>
+                {
+                    if (lb.SelectedItem is IGalleryItem item)
+                    {
+                        gallery.DoubleTapped(item);
+                    }
+                };
+                return lb;
+            }
             default:
-                throw new NotSupportedException("Unknown config type");
+                throw new NotSupportedException($"Unknown config element type: {element.GetType().FullName}");
         }
     }
+
     public void HandleConfiguration(IEnumerable<IConfigurableElement> elements)
     {
-        foreach (var element in elements) MainGrid.Children.Add(GetControl(element));
+        if (MainGrid == null) return;
+        foreach (var element in elements) MainGrid.Children.Add( GetControl(element));
     }
+
     public void HandleConfiguration(IAmConfigurable configurable)
     {
         HandleConfiguration(configurable.GetElements());

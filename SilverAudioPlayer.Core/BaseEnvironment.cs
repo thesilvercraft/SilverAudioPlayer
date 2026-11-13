@@ -6,7 +6,7 @@ using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Core;
 
-public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, IFullPlayerEnvironment
+public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, IFullPlayerEnvironment, IDisposable
     where T : PlayerContext
 {
     public event EventHandler<Song>? TrackChangedNotification;
@@ -146,7 +146,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public string GetLyrics()
     {
-        return Logic.PlayerContext.CurrentSong?.Metadata?.Lyrics;
+        return Logic.PlayerContext.CurrentSong?.Metadata?.Lyrics ?? string.Empty;
     }
 
     public void FireTrackChangedNotification(Song? currentSong)
@@ -306,5 +306,19 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
                 timedEvent.RemoveFromParent();
             }
         }
+    }
+
+    public virtual void Dispose()
+    {
+        if (_isDisposed) return;
+        _isDisposed = true;
+        ClearTimedEvents();
+        lock (_timeEventsLock)
+        {
+            _timer?.Dispose();
+            _timer = null;
+        }
+
+        GC.SuppressFinalize(this);
     }
 }

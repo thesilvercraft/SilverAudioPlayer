@@ -13,6 +13,13 @@ public class QueueManager
     public Song? NextSong { get; set; }
 
     public Action<Action> DoQueueManipulationAction { get; set; } = a => a();
+
+    public bool AutoSortEnabled
+    {
+        get => !_queueSorter.IsDisabled;
+        set => _queueSorter.IsDisabled = !value;
+    }
+
     public Func<List<Song>>? GetQueueSnapshot { get; set; }
 
     public event Action<Song?>? NextSongChanged;
@@ -42,8 +49,18 @@ public class QueueManager
         lock (Queue)
         {
             var index = Queue.IndexOf(CurrentSong);
-            if (index < 0 || index + 1 >= Queue.Count) return null;
-            return Queue[index + 1];
+            if (index < 0) return null;
+            if (index + 1 < Queue.Count)
+            {
+                return Queue[index + 1];
+            }
+
+            if (_playerContext.LoopType == RepeatState.Queue && Queue.Count > 0)
+            {
+                return Queue[0];
+            }
+
+            return null;
         }
     }
 
@@ -59,7 +76,26 @@ public class QueueManager
         lock (Queue)
         {
             var index = Queue.IndexOf(CurrentSong);
-            NextSong = index >= 0 && index + 1 < Queue.Count ? Queue[index + 1] : null;
+            if (index >= 0)
+            {
+                if (index + 1 < Queue.Count)
+                {
+                    NextSong = Queue[index + 1];
+                }
+                else if (_playerContext.LoopType == RepeatState.Queue && Queue.Count > 0)
+                {
+                    NextSong = Queue[0];
+                }
+                else
+                {
+                    NextSong = null;
+                }
+            }
+            else
+            {
+                NextSong = null;
+            }
+
             NextSongChanged?.Invoke(NextSong);
         }
     }
@@ -121,31 +157,25 @@ public class QueueManager
 
     private void RemoveSongCore(Song song, Action? onActiveTrackRemoved)
     {
-        var index = Queue.IndexOf(song);
-        if (index == -1) return;
-
-        // 1. Handle NextSong reference shifting
-        if (song.Equals(NextSong))
-        {
-            NextSong = (index + 1 < Queue.Count) ? Queue[index + 1] : null;
-            NextSongChanged?.Invoke(NextSong);
-        }
-
-        // 2. Safely teardown if it's the active track
-        if (CurrentSong?.Equals(song) == true)
+        var isCurrent = ReferenceEquals(CurrentSong, song);
+        if (isCurrent)
         {
             _log?.Information("Removing the currently playing track. Halting engine audio pipeline first.");
             onActiveTrackRemoved?.Invoke();
             CurrentSong = null;
         }
 
-        song.Dispose();
-
         lock (Queue)
         {
+            var index = Queue.IndexOf(song);
+            if (index == -1) return;
+
             Queue.RemoveAt(index);
         }
 
+        song.Dispose();
+
+        UpdateNextSongReference();
         QueueModified?.Invoke();
     }
 
@@ -174,6 +204,7 @@ public class QueueManager
                 }
             }
 
+            UpdateNextSongReference();
             _log?.Information("Queue cleared. Preserved currently playing track.");
             QueueModified?.Invoke();
         });

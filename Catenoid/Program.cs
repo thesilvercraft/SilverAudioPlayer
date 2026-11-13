@@ -105,6 +105,9 @@ public static class WindowsAppInitializer
 
     public static void InitializeAppId()
     {
-        SetCurrentProcessExplicitAppUserModelID("SilverCraft.Catenoid");
+        if (OperatingSystem.IsWindows())
+        {
+            SetCurrentProcessExplicitAppUserModelID("SilverCraft.Catenoid");
+        }
     }
 }

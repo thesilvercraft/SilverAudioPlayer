@@ -12,8 +12,6 @@ namespace SilverAudioPlayer.Any.MusicStatusInterface.DiscordRP;
 
 public class SerilogLogger : ILogger
 {
-  
-
     public void Trace(string message, params object[] args)
     {
         Log.Verbose(message, args);
@@ -24,12 +22,10 @@ public class SerilogLogger : ILogger
         Log.Information(message, args);
     }
 
-
     public void Warning(string message, params object[] args)
     {
         Log.Warning(message, args);
     }
-
 
     public void Error(string message, params object[] args)
     {
@@ -38,7 +34,6 @@ public class SerilogLogger : ILogger
 
     public LogLevel Level { get; set; }
 }
-
 
 [Export(typeof(IMusicStatusInterface))]
 public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnceAgainAskingYouForYourMemory
@@ -63,112 +58,137 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
 
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new[] { ConfigObject };
 
-
     private const string id = "926595775574712370";
 
     private readonly IConfigPathProvider _configPathProvider;
     private readonly HttpClient _httpClient;
+    private IMusicStatusInterfaceListener? Env;
+
     public DiscordPlayTracker(IConfigPathProvider configPathProvider, HttpClient httpClient)
     {
         _configPathProvider = configPathProvider;
         _httpClient = httpClient;
         ConfigurableElements = new List<IConfigurableElement>
         {
-            new SimpleDropDown()
-            {
-                GetOptions = Enum.GetNames<Uploader>,
-                GetPlaceholder = () => "None",
-                GetSelection = () =>
+            new SimpleRow(
+                new SimpleLabel("Cover art uploader:"),
+                new SimpleDropDown
                 {
-                    if (ConfigObject.Value is DiscordPlayTrackerConfig x)
+                    GetOptions = Enum.GetNames<Uploader>,
+                    GetPlaceholder = () => "None",
+                    GetSelection = () =>
                     {
-                        return x.Uploader.ToString();
-                    }
-                    return nameof(Uploader.None);
-                },
-                SetSelection = s =>
-                {
-                    if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
-                    x.Uploader = Enum.Parse<Uploader>(s);
-                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("Uploader"));
-                    ChangeImageUploader();
-                }
-            },
-           new SimpleRow
-            {
-
-                Content =
-               [
-                   new SimpleLabel
-                   {
-                       GetContent = ()=>"Enable custom button",
-                   },
-                   new SimpleCheckBox
-                   {
-                       Checked = b =>  {
-                           if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
-                           x.CustomButtonEnabled = b;
-                           ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new PropertyChangedEventArgs(nameof(x.CustomButtonEnabled)));
-                       },
-                       GetContent = ()=>"",
-                       Toggled = ConfigObject.Value is DiscordPlayTrackerConfig { CustomButtonEnabled: true },
-                       GetChecked = () => ConfigObject.Value is DiscordPlayTrackerConfig { CustomButtonEnabled: true }
-                   }
-               ]
-            },
-            new SimpleTextBox
-            { 
-                GetContent = () => ((DiscordPlayTrackerConfig)ConfigObject.Value).CustomButtonLabel,
-                GetPlaceholder= () => "Button label",
-                SetContent = c =>
-                {
-                    if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
-                    x.CustomButtonLabel = c;
-                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("CustomButtonLabel"));
-                },
-            },
-            new SimpleTextBox
-            { 
-                GetContent = () => ((DiscordPlayTrackerConfig)ConfigObject.Value).CustomButtonUrl,
-                GetPlaceholder= () => "Button url",
-                SetContent = c =>
-                {
-                    if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
-                    x.CustomButtonUrl = c;
-                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("CustomButtonUrl"));
-                },
-            },
-            new SimpleRow
-            {
-                Content =
-                [
-                    new SimpleLabel
-                    {
-                        GetContent = () => "Show playback state icon (play/pause)"
-                    },
-                    new SimpleDropDown()
-                    {
-                        GetOptions = Enum.GetNames<WhenToShowStatusIcon>,
-                        GetPlaceholder = () => "None",
-                        GetSelection = () =>
+                        if (ConfigObject.Value is DiscordPlayTrackerConfig x)
                         {
-                            if (ConfigObject.Value is DiscordPlayTrackerConfig x)
-                            {
-                                return x.Uploader.ToString();
-                            }
-                            return nameof(Uploader.None);
-                        },
-                        SetSelection = s =>
-                        {
-                            if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
-                            x.WhenToShowStatusIcon = Enum.Parse<WhenToShowStatusIcon>(s);
-                            ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new(nameof(x.WhenToShowStatusIcon)));
+                            return x.Uploader.ToString();
                         }
+
+                        return nameof(Uploader.None);
                     },
-                ]
-            }
+                    SetSelection = s =>
+                    {
+                        if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                        x.Uploader = Enum.Parse<Uploader>(s);
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("Uploader"));
+                        ChangeImageUploader();
+                        RefreshCurrentPresence();
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Enable custom button:"),
+                new SimpleCheckBox
+                {
+                    Checked = b =>
+                    {
+                        if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                        x.CustomButtonEnabled = b;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,
+                            new PropertyChangedEventArgs(nameof(x.CustomButtonEnabled)));
+                        RefreshCurrentPresence();
+                    },
+                    GetChecked = () => ConfigObject.Value is DiscordPlayTrackerConfig { CustomButtonEnabled: true }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Button label:"),
+                new SimpleTextBox
+                {
+                    GetContent = () => ((DiscordPlayTrackerConfig)ConfigObject.Value).CustomButtonLabel,
+                    GetPlaceholder = () => "Button label",
+                    SetContent = c =>
+                    {
+                        if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                        x.CustomButtonLabel = c;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("CustomButtonLabel"));
+                        RefreshCurrentPresence();
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Button URL:"),
+                new SimpleTextBox
+                {
+                    GetContent = () => ((DiscordPlayTrackerConfig)ConfigObject.Value).CustomButtonUrl,
+                    GetPlaceholder = () => "Button url",
+                    SetContent = c =>
+                    {
+                        if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                        x.CustomButtonUrl = c;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("CustomButtonUrl"));
+                        RefreshCurrentPresence();
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Show playback state icon (play/pause):"),
+                new SimpleDropDown
+                {
+                    GetOptions = Enum.GetNames<WhenToShowStatusIcon>,
+                    GetPlaceholder = () => "None",
+                    GetSelection = () =>
+                    {
+                        if (ConfigObject.Value is DiscordPlayTrackerConfig x)
+                        {
+                            return x.WhenToShowStatusIcon.ToString();
+                        }
+
+                        return nameof(WhenToShowStatusIcon.Never);
+                    },
+                    SetSelection = s =>
+                    {
+                        if (ConfigObject.Value is not DiscordPlayTrackerConfig x) return;
+                        x.WhenToShowStatusIcon = Enum.Parse<WhenToShowStatusIcon>(s);
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new(nameof(x.WhenToShowStatusIcon)));
+                        RefreshCurrentPresence();
+                    }
+                }
+            )
         };
     }
+
+    private void RefreshCurrentPresence()
+    {
+        if (!IsStarted || _client == null || Env == null) return;
+        try
+        {
+            var currentTrack = Env.GetCurrentTrack();
+            var state = Env.GetState();
+            if (state == PlaybackState.Playing)
+            {
+                SPlay(currentTrack);
+            }
+            else if (state == PlaybackState.Paused)
+            {
+                SPause(currentTrack);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+        }
+    }
+
     private CancellationTokenSource? _idleTimerCts;
     private readonly TimeSpan _pauseTimeout = TimeSpan.FromSeconds(30);
 
@@ -199,7 +219,6 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
         return ConfigurableElements;
     }
 
-
     public void Dispose()
     {
         _client?.Dispose();
@@ -215,26 +234,27 @@ public class DiscordPlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOnc
                 break;
 
             case PlaybackState.Playing:
-                if (Env.GetCurrentTrack != null)
+                if (Env != null)
                 {
                     var ct = Env.GetCurrentTrack();
                     SPlay(ct);
                 }
+
                 break;
 
             case PlaybackState.Paused:
-                if (Env.GetCurrentTrack != null)
+                if (Env != null)
                 {
                     var ct = Env.GetCurrentTrack();
                     SPause(ct);
                 }
+
                 break;
             case PlaybackState.Buffering:
             default:
                 break;
         }
     }
-
 
     private void SongChanged(object? e, Song? song)
     {
@@ -301,7 +321,6 @@ SilverAudioPlayer.DiscordRP
 
     public bool IsStarted { get; private set; }
 
-
     private static string StatusOrNotToStatus(string message, string status)
     {
         return message.Length switch
@@ -314,7 +333,7 @@ SilverAudioPlayer.DiscordRP
 
     private string? GetAlbumArt(Song? a)
     {
-        if (richPresenceURLs == null) return null;
+        if (richPresenceURLs == null || Env == null) return null;
         var url = richPresenceURLs.GetURL(a, Env);
         return !string.IsNullOrEmpty(url) ? url : null;
     }
@@ -345,22 +364,23 @@ SilverAudioPlayer.DiscordRP
         {
             dpt.UpdateTime();
         }
-    } 
+    }
+
     void UpdateTime()
     {
-        if(Env.GetState()!=PlaybackState.Playing) return;
-        _currentPresence.Timestamps =  new Timestamps
+        if (Env == null || Env.GetState() != PlaybackState.Playing) return;
+        _currentPresence.Timestamps = new Timestamps
         {
             Start = DateTime.Now.AddSeconds(-Env.GetPosition()).ToUniversalTime(),
-            End = DateTime.Now.AddSeconds(Env.GetDuration()-Env.GetPosition()).ToUniversalTime()
+            End = DateTime.Now.AddSeconds(Env.GetDuration() - Env.GetPosition()).ToUniversalTime()
         };
-        _client.SetPresence(_currentPresence);
+        _client?.SetPresence(_currentPresence);
     }
 
     private void SPlay(Song? a)
     {
-        if (!IsStarted) return;
-        
+        if (!IsStarted || Env == null) return;
+
         if (a != null)
         {
             if (a.Metadata != null)
@@ -370,7 +390,7 @@ SilverAudioPlayer.DiscordRP
                     StatusOrNotToStatus(a.Metadata?.Artist ?? "unknown", "by"), bigimage ?? "sap",
                     bigimage == null ? AppName : a.Metadata?.Album ?? AppName, PlayingSmallIcon, PlayTextState,
                     DateTime.Now.AddSeconds(-Env.GetPosition()).ToUniversalTime(),
-                    DateTime.Now.AddSeconds(Env.GetDuration()-Env.GetPosition()).ToUniversalTime());
+                    DateTime.Now.AddSeconds(Env.GetDuration() - Env.GetPosition()).ToUniversalTime());
             }
             else
             {
@@ -384,16 +404,13 @@ SilverAudioPlayer.DiscordRP
         {
             SStop();
         }
-
     }
 
     private void SStop()
     {
         if (!IsStarted) return;
         CancelIdleTimer();
-       // SetStatus(StoppedTextState, "Not playing anything", "sap", AppName, StoppedSmallIcon, StoppedTextState, appName:true);
         _client?.ClearPresence();
-        
     }
 
     private RichPresence _currentPresence = new();
@@ -401,12 +418,12 @@ SilverAudioPlayer.DiscordRP
     private void SetStatus(string details, string state, string largeimage, string largeimagetext, string smallimage,
         string smallimagetext, DateTime? start = null, DateTime? end = null, bool appName = false)
     {
-        if (!IsStarted) return;
+        if (!IsStarted || _client == null) return;
 
         try
         {
             Timestamps? x = null;
-            if (start != null || end!=null)
+            if (start != null || end != null)
             {
                 x = new Timestamps
                 {
@@ -414,39 +431,50 @@ SilverAudioPlayer.DiscordRP
                     End = end
                 };
             }
-            Button[] buttons=[];
+
+            Button[] buttons = [];
             if (ConfigObject.Value is DiscordPlayTrackerConfig { CustomButtonEnabled: true } conf)
             {
-                buttons = [ new Button()
-                {
-                    Label =conf.CustomButtonLabel,
-                    Url = conf.CustomButtonUrl,
-                }];
+                buttons =
+                [
+                    new Button()
+                    {
+                        Label = conf.CustomButtonLabel,
+                        Url = conf.CustomButtonUrl,
+                    }
+                ];
                 if (appName)
                 {
-                    buttons = [..buttons, new Button()
-                    {
-                        Label = "SilverAudioPlayer",
-                        Url = ConstantCodeInfo.GitRepo
-                    }];
+                    buttons =
+                    [
+                        .. buttons, new Button()
+                        {
+                            Label = "SilverAudioPlayer",
+                            Url = ConstantCodeInfo.GitRepo
+                        }
+                    ];
                 }
             }
             else if (appName)
             {
-                buttons = [new Button()
-                {
-                    Label = "SilverAudioPlayer",
-                    Url = ConstantCodeInfo.GitRepo
-                }];
+                buttons =
+                [
+                    new Button()
+                    {
+                        Label = "SilverAudioPlayer",
+                        Url = ConstantCodeInfo.GitRepo
+                    }
+                ];
             }
 
-          
             var showSmallIcon = false;
             if (ConfigObject.Value is DiscordPlayTrackerConfig config)
             {
-               showSmallIcon = config.WhenToShowStatusIcon == WhenToShowStatusIcon.Always || 
-                               config.WhenToShowStatusIcon == WhenToShowStatusIcon.WhenPaused && smallimage == PausedSmallIcon;
+                showSmallIcon = config.WhenToShowStatusIcon == WhenToShowStatusIcon.Always ||
+                                config.WhenToShowStatusIcon == WhenToShowStatusIcon.WhenPaused &&
+                                smallimage == PausedSmallIcon;
             }
+
             _currentPresence = new RichPresence
             {
                 Type = ActivityType.Listening,
@@ -471,8 +499,6 @@ SilverAudioPlayer.DiscordRP
         }
     }
 
-    IMusicStatusInterfaceListener Env;
-
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         Env = listener;
@@ -487,6 +513,7 @@ SilverAudioPlayer.DiscordRP
             StopIPC(listener);
             return;
         }
+
         listener.PlayerStateChanged += PlayerStateChanged;
         listener.TrackChangedNotification += SongChanged;
         listener.PositionChanged += Seeked;
@@ -494,12 +521,10 @@ SilverAudioPlayer.DiscordRP
         ChangeImageUploader();
     }
 
-   
     private void Seeked(object? sender, TimeSpan e)
     {
         if (!IsStarted) return;
         UpdateTime();
-
     }
 
     private void ChangeImageUploader()
@@ -509,10 +534,13 @@ SilverAudioPlayer.DiscordRP
             richPresenceURLs = x.Uploader switch
             {
                 Uploader.None => null,
-                Uploader.Catbox => new RememberRichPresenceURLsUsingCatboxAndAJsonFile(_configPathProvider, _httpClient) { Uploadit = true },
-                Uploader.Imgur => new RememberRichPresenceUrLsUsingImgurAndAJsonFile(_configPathProvider,_httpClient) { Uploadit = true },
-                Uploader.CoverArchive => new RichPresenceUrlsThroughMBID(_configPathProvider,_httpClient),
-                _ => throw new ArgumentOutOfRangeException(nameof(x.Uploader), x.Uploader, "The uploader type is unknown to this plugin")
+                Uploader.Catbox => new RememberRichPresenceURLsUsingCatboxAndAJsonFile(_configPathProvider, _httpClient)
+                    { Uploadit = true },
+                Uploader.Imgur => new RememberRichPresenceUrLsUsingImgurAndAJsonFile(_configPathProvider, _httpClient)
+                    { Uploadit = true },
+                Uploader.CoverArchive => new RichPresenceUrlsThroughMBID(_configPathProvider, _httpClient),
+                _ => throw new ArgumentOutOfRangeException(nameof(x.Uploader), x.Uploader,
+                    "The uploader type is unknown to this plugin")
             };
         }
     }
@@ -526,12 +554,12 @@ SilverAudioPlayer.DiscordRP
         try
         {
             CancelIdleTimer();
-            _client.Deinitialize();
-            _client.Dispose();
+            _client?.Deinitialize();
+            _client?.Dispose();
         }
         catch (Exception e)
         {
-            Log.Error(e,$"Error during StopIPC on {nameof(DiscordPlayTracker)}");
+            Log.Error(e, $"Error during StopIPC on {nameof(DiscordPlayTracker)}");
         }
     }
 }

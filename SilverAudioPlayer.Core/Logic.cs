@@ -1,4 +1,4 @@
-﻿using System.Composition;
+using System.Composition;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Serilog;
@@ -40,6 +40,13 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
     public PluginRegistry Plugins { get; }
     public QueueManager QueueManager { get; }
     public QueueSorter QueueSorter { get; }
+
+    public bool AutoSortEnabled
+    {
+        get => QueueManager.AutoSortEnabled;
+        set => QueueManager.AutoSortEnabled = value;
+    }
+
     public TrackIngestionService TrackIngestion { get; }
     public PlaybackEngine PlaybackEngine { get; }
     public MusicStatusCoordinator MusicStatus { get; }

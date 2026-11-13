@@ -19,16 +19,22 @@ namespace SilverAudioPlayer.NAudio;
 public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPlayerLoop, IPlayLancer
 {
     public IWaveProvider? audioFile;
+
     public WaveConfig Config;
+
     public IWavePlayer? outputDevice;
+
     public IPlayerEnvironment? playerEnvironment;
+
     private float ReplayGainMultiplier = 1;
+
     private bool SearchForReplayGain = true;
+
     private IMediator _mediator;
 
     private GaplessWaveProvider? _gaplessWaveProvider;
-    private IWaveProvider? _currentWaveProvider;
 
+    private IWaveProvider? _currentWaveProvider;
 
     public WaveFilePlayer(IMediator m)
     {
@@ -37,8 +43,11 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     }
 
     public byte Volume { get; set; } = 70;
+
     public string? Decoder { get; private set; }
+
     public WrappedStream? LoadedWrappedStream { get; set; }
+
     public Stream? LoadedStream { get; set; }
 
     public void Dispose()
@@ -52,6 +61,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             _gaplessWaveProvider.Dispose();
             _gaplessWaveProvider = null;
         }
+
         _currentWaveProvider = null;
         LoadedWrappedStream = null;
 
@@ -65,8 +75,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             disposableaudioFile.Dispose();
         }
+
         audioFile = null;
-        
         if (LoadedStream is { CanRead: true }) LoadedStream.Dispose();
         LoadedStream = null;
     }
@@ -79,14 +89,18 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             mselector.EnableLoop();
         }
+
         else if (audioFile is CSCoreReader cSCoreReader)
         {
             switch (cSCoreReader._reader)
             {
                 case ILoop cselector:
+
                     cselector.EnableLoop();
                     break;
+
                 case SampleToWaveBase { Source: ILoop selector }:
+
                     selector.EnableLoop();
                     break;
             }
@@ -99,14 +113,18 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             mselector.DisableLoop();
         }
+
         else if (audioFile is CSCoreReader cSCoreReader)
         {
             switch (cSCoreReader._reader)
             {
                 case ILoop cselector:
+
                     cselector.DisableLoop();
                     break;
+
                 case SampleToWaveBase { Source: ILoop selector }:
+
                     selector.DisableLoop();
                     break;
             }
@@ -114,7 +132,9 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     }
 
     public event EventHandler<TimeSpan>? PositionChanged;
+
     public event EventHandler? NextStreamStarted;
+
     public bool IsTrackLoaded => audioFile != null;
 
     public void Play()
@@ -134,6 +154,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
             _gaplessWaveProvider.Dispose();
             _gaplessWaveProvider = null;
         }
+
         _currentWaveProvider = null;
         LoadedWrappedStream = null;
 
@@ -141,6 +162,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             disposableaudioFile.Dispose();
         }
+
         audioFile = null;
         if (LoadedStream is { CanRead: true }) LoadedStream.Dispose();
         LoadedStream = null;
@@ -159,22 +181,24 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         outputDevice?.Play();
     }
 
-    public void SetVolume(byte volume)
+    public void RecalculateReplayGain()
     {
-        Volume = volume;
+        if (Config == null) return;
 
-        if (SearchForReplayGain)
+        if (!Config.EnableReplayGain)
         {
-            Log.Information("Searching for ReplayGain...");
+            ReplayGainMultiplier = 1;
             SearchForReplayGain = false;
+        }
 
+        else
+        {
             var result = _mediator.RequestQuery(RequestReplayGainInfo.Instance);
 
             if (result is { Success: true, Gain: { } gainValue })
             {
                 float targetGainMultiplier = dBToRatio(gainValue);
                 float preampMultiplier = dBToRatio(Config.PreampReplayGain);
-
                 float calculatedMultiplier = targetGainMultiplier * preampMultiplier;
 
                 if (Config.TrySafeReplayGain && result.Peak is { } peakVal && peakVal > 0)
@@ -189,10 +213,29 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
                 ReplayGainMultiplier = calculatedMultiplier;
             }
+
             else
             {
                 ReplayGainMultiplier = dBToRatio(Config.PreampNoReplayGain);
             }
+        }
+
+        if (outputDevice != null)
+        {
+            outputDevice.Volume = Math.Min(ReplayGainMultiplier * (Volume / 100f), 1.0f);
+        }
+    }
+
+    public void SetVolume(byte volume)
+    {
+        Volume = volume;
+
+        if (SearchForReplayGain)
+        {
+            Log.Information("Searching for ReplayGain...");
+            SearchForReplayGain = false;
+            RecalculateReplayGain();
+            return;
         }
 
         if (outputDevice != null)
@@ -206,6 +249,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         if (outputDevice != null)
         {
             var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
+
             return currentProvider switch
             {
                 WaveStream ws => ws.CurrentTime,
@@ -213,6 +257,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 _ => TimeSpan.Zero
             };
         }
+
         return TimeSpan.Zero;
     }
 
@@ -220,17 +265,24 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         if (outputDevice == null) return;
         var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
+
         switch (currentProvider)
         {
             case WaveStream ws:
+
                 ws.SetPosition(position);
                 break;
+
             case IWaveStream iws:
+
                 iws.SetPosition(position);
                 break;
+
             default:
+
                 return;
         }
+
         PositionChanged?.Invoke(this, position);
     }
 
@@ -248,6 +300,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public TimeSpan? Length()
     {
         var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
+
         if (currentProvider != null)
         {
             return currentProvider switch
@@ -257,13 +310,13 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 _ => TimeSpan.Zero
             };
         }
+
         return TimeSpan.Zero;
     }
 
     public uint? ChannelCount()
     {
         if (audioFile != null) return (uint?)audioFile.WaveFormat.Channels;
-
         return null;
     }
 
@@ -275,7 +328,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public uint? GetBitsPerSample()
     {
         if (audioFile != null) return (uint?)audioFile.WaveFormat.BitsPerSample;
-
         return null;
     }
 
@@ -286,17 +338,23 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     public void LoadStream(WrappedStream stream)
     {
         ArgumentNullException.ThrowIfNull(stream);
-        Log.Debug("WaveFilePlayer.LoadStream() called for {StreamType} ({Mime})", stream.GetType().Name, stream.MimeType);
+
+        Log.Debug("WaveFilePlayer.LoadStream() called for {StreamType} ({Mime})", stream.GetType().Name,
+            stream.MimeType);
         var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream);
+
         if (audioFile is IDisposable disposable)
         {
             outputDevice?.Stop();
             disposable.Dispose();
         }
+
         var naudioWaveStreamWrappers = wrappers.ToList();
+
         if (naudioWaveStreamWrappers.Count != 0)
         {
             foreach (var wrapper in naudioWaveStreamWrappers)
+
                 try
                 {
                     Decoder = wrapper.GetType().FullName + " (" + stream.MimeType + ")";
@@ -304,11 +362,13 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                     audioFile = wrapper.GetStream(LoadedStream);
                     break;
                 }
+
                 catch (Exception e)
                 {
                     Log.Error(e, "Failed to use {WrapperType}", wrapper.GetType());
                 }
         }
+
         else if (stream is WrappedFileStream wf)
         {
             Decoder = "NAudio.Wave.AudioFileReader";
@@ -319,25 +379,31 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             throw new NotSupportedException();
         }
+
         Log.Information("Using {Decoder}", Decoder);
         var entries = playerEnvironment?.GetEntriesForCurrentTrack();
+
         if (entries != null)
         {
-            if (audioFile is not ILoop and not CSCoreReader { _reader: SampleToWaveBase { Source: ILoop  } } and not CSCoreReader { _reader: ILoop}
+            if (audioFile is not ILoop and not CSCoreReader { _reader: SampleToWaveBase { Source: ILoop } }
+                    and not CSCoreReader { _reader: ILoop }
                 && entries.TryGetValue("LOOPSTART", out var loopStart))
             {
                 long loopStartl;
+
                 if (long.TryParse(loopStart, out loopStartl))
                 {
                     long loopEndl = 0;
                     var success = false;
+
                     if (entries.TryGetValue("LOOPEND", out var loopEnd))
                     {
-                        success=long.TryParse(loopEnd, out loopEndl);
+                        success = long.TryParse(loopEnd, out loopEndl);
                     }
-                    else if(entries.TryGetValue("LOOPLENGTH", out var loopLength))
+
+                    else if (entries.TryGetValue("LOOPLENGTH", out var loopLength))
                     {
-                        success=  long.TryParse(loopLength, out loopEndl);
+                        success = long.TryParse(loopLength, out loopEndl);
                         loopEndl += loopStartl;
                     }
 
@@ -357,11 +423,13 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         if (outputDevice == null)
         {
             InitBackEnd();
-            if(outputDevice!=null)
+
+            if (outputDevice != null)
             {
                 outputDevice.PlaybackStopped += OutputDeviceOnPlaybackStopped;
             }
         }
+
         else
         {
             outputDevice.PlaybackStopped -= OutputDeviceOnPlaybackStopped;
@@ -370,14 +438,15 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         }
 
         _currentWaveProvider = audioFile;
+
         if (_gaplessWaveProvider != null)
         {
             _gaplessWaveProvider.CurrentProviderChanged -= GaplessWaveProvider_CurrentProviderChanged;
             _gaplessWaveProvider.Dispose();
         }
+
         _gaplessWaveProvider = new GaplessWaveProvider(_currentWaveProvider);
         _gaplessWaveProvider.CurrentProviderChanged += GaplessWaveProvider_CurrentProviderChanged;
-
         ReplayGainMultiplier = 1;
         SearchForReplayGain = Config?.EnableReplayGain ?? false;
         SetVolume(Volume);
@@ -389,8 +458,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         ArgumentNullException.ThrowIfNull(stream);
         if (_gaplessWaveProvider == null || _currentWaveProvider == null) return false;
-
         var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream).ToList();
+
         if (wrappers.Count != 0)
         {
             foreach (var wrapper in wrappers)
@@ -401,12 +470,14 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                     var nextWaveProvider = wrapper.GetStream(nextLoadedStream);
                     return _gaplessWaveProvider.Enqueue(nextWaveProvider);
                 }
+
                 catch (Exception e)
                 {
                     Log.Error(e, "Failed to enqueue next stream using {WrapperType}", wrapper.GetType());
                 }
             }
         }
+
         else if (stream is WrappedFileStream wf)
         {
             try
@@ -414,6 +485,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 var nextWaveProvider = new AudioFileReader(wf.URL);
                 return _gaplessWaveProvider.Enqueue(nextWaveProvider);
             }
+
             catch (Exception e)
             {
                 Log.Error(e, "Failed to enqueue next file stream");
@@ -427,8 +499,8 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         ArgumentNullException.ThrowIfNull(stream);
         if (_gaplessWaveProvider == null || _currentWaveProvider == null) return false;
-
         var wrappers = NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers(stream).ToList();
+
         if (wrappers.Count != 0)
         {
             foreach (var wrapper in wrappers)
@@ -439,12 +511,14 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                     var nextWaveProvider = wrapper.GetStream(nextLoadedStream);
                     return _gaplessWaveProvider.ReplaceNextProvider(nextWaveProvider);
                 }
+
                 catch (Exception e)
                 {
                     Log.Error(e, "Failed to replace next stream using {WrapperType}", wrapper.GetType());
                 }
             }
         }
+
         else if (stream is WrappedFileStream wf)
         {
             try
@@ -452,6 +526,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 var nextWaveProvider = new AudioFileReader(wf.URL);
                 return _gaplessWaveProvider.ReplaceNextProvider(nextWaveProvider);
             }
+
             catch (Exception e)
             {
                 Log.Error(e, "Failed to replace next file stream");
@@ -464,6 +539,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     private void GaplessWaveProvider_CurrentProviderChanged(object? sender, EventArgs e)
     {
         Log.Information("WaveFilePlayer.GaplessWaveProvider_CurrentProviderChanged fired! Swapping audioFile provider");
+
         if (_gaplessWaveProvider != null)
         {
             audioFile = _gaplessWaveProvider.CurrentProvider;
@@ -474,7 +550,6 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
         .SelectMany(x => x.SupportedMimeTypes).ToList();
-
     public int CurrentPattern => GetCurrentPattern();
 
     public int NumberOfPatterns => GetNumPattern();
@@ -484,19 +559,25 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         switch (audioFile)
         {
             case ISelector mselector:
+
                 mselector.SetPattern(pattern);
                 break;
+
             case CSCoreReader cSCoreReader:
             {
                 switch (cSCoreReader._reader)
                 {
                     case ISelector cselector:
+
                         cselector.SetPattern(pattern);
                         break;
+
                     case SampleToWaveBase { Source: ISelector selector }:
+
                         selector.SetPattern(pattern);
                         break;
                 }
+
                 break;
             }
         }
@@ -507,18 +588,21 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         return OperatingSystem.IsWindows() || PortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
     }
 
-    bool? BlacklistPortAudio =null;
+    bool? BlacklistPortAudio = null;
+
     bool? CheckForBlocklist()
     {
-        if(BlacklistPortAudio!= null)
+        if (BlacklistPortAudio != null)
         {
             return BlacklistPortAudio;
-        } 
-        if(Environment.GetEnvironmentVariable("SAPBLOCKPORTAUDIO")!=null)
-        {
-             return BlacklistPortAudio=true;
         }
-        return BlacklistPortAudio=false;
+
+        if (Environment.GetEnvironmentVariable("SAPBLOCKPORTAUDIO") != null)
+        {
+            return BlacklistPortAudio = true;
+        }
+
+        return BlacklistPortAudio = false;
     }
 
     public void InitBackEnd()
@@ -530,12 +614,14 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                 Log.Information("initing backend CSCorePlayer PortAudioSoundOut");
                 outputDevice = new CSCorePlayer(new PortAudioSoundOut());
             }
+
             else if (ALSoundOut.IsSupported)
             {
                 Log.Information("initing backend CSCorePlayer ALSoundOut");
                 outputDevice = new CSCorePlayer(new ALSoundOut(50));
             }
         }
+
         else
         {
             Log.Information("initing backend naudio WaveOutEvent");
@@ -550,7 +636,9 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     private void OutputDeviceOnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
-        Log.Information("WaveFilePlayer.OutputDeviceOnPlaybackStopped received from output device (Exception: {Exception})", e.Exception?.Message);
+        Log.Information(
+            "WaveFilePlayer.OutputDeviceOnPlaybackStopped received from output device (Exception: {Exception})",
+            e.Exception?.Message);
         TrackEnd?.Invoke(sender, e);
     }
 

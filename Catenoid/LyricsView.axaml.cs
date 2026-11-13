@@ -13,35 +13,104 @@ namespace Catenoid;
 public partial class LyricsView : Window
 {
     private MainWindow mainWindow;
-    public LyricsView(MainWindow mainWindow) 
+
+    private static readonly List<LyricsView> _openInstances = [];
+
+    private IBrush _highlightBrush;
+
+    private Dictionary<double, List<Run>> _lyricRuns = new();
+
+    public static void NotifyColorChanged(IBrush? brush = null)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            foreach (var instance in _openInstances.ToArray())
+            {
+                instance.UpdateHighlightBrush(brush);
+            }
+        });
+    }
+
+    public void UpdateHighlightBrush(IBrush? brush = null)
+    {
+        if (brush != null)
+        {
+            _highlightBrush = brush;
+        }
+
+        else
+        {
+            var b = WindowExtensions.envBackend.GetString("SAPLRCColor")
+                .ParseBackground(new SolidColorBrush(Color.FromRgb(230, 255, 0)));
+
+            if (b is SolidColorBrush scb)
+            {
+                scb.Opacity = 1;
+            }
+
+            _highlightBrush = b;
+        }
+
+        var pos = mainWindow?.Player?.GetPosition().TotalMilliseconds ?? 0;
+
+        foreach (var (timestamp, runs) in _lyricRuns)
+        {
+            if (timestamp <= pos)
+            {
+                foreach (var run in runs)
+                {
+                    run.Foreground = _highlightBrush;
+                }
+            }
+        }
+    }
+
+    public LyricsView(MainWindow mainWindow)
     {
         this.mainWindow = mainWindow;
         DataContext = mainWindow.config;
         InitializeComponent();
         this.DoAfterInitTasksF();
-
         MainGrid = this.FindControl<Grid>("MainGrid");
-
         sv = this.FindControl<ScrollViewer>("sv");
-
-        var red = WindowExtensions.envBackend.GetString("SAPLRCColor")
-            .ParseBackground(new SolidColorBrush(Color.FromRgb(230, 255, 0)));
-        if (red is SolidColorBrush scb)
-        {
-            scb.Opacity = 1;
-        }
+        UpdateHighlightBrush();
         var white = new SolidColorBrush(KnownColor.White.ToColor());
-
         Guid? songGuid = null;
         var close = false;
-        Closed += (_, _) => close = true;
 
         SelectableTextBlock masterTextBlock = new()
         {
             TextWrapping = TextWrapping.Wrap,
-            Inlines = new InlineCollection()
+            Inlines = new InlineCollection(),
+            FontSize = mainWindow.config.LyricsFontSize
+        };
+        System.ComponentModel.PropertyChangedEventHandler configHandler = (s, e) =>
+        {
+            if (e.PropertyName == nameof(Config.LyricsFontSize))
+            {
+                Dispatcher.UIThread.Post(() => { masterTextBlock.FontSize = mainWindow.config.LyricsFontSize; });
+            }
+        };
+        mainWindow.config.PropertyChanged += configHandler;
+        _openInstances.Add(this);
+
+        Closed += (_, _) =>
+        {
+            close = true;
+            _openInstances.Remove(this);
+            mainWindow.config.PropertyChanged -= configHandler;
         };
 
+        AddHandler(PointerWheelChangedEvent, (sender, e) =>
+        {
+            if (e.KeyModifiers.HasFlag(Avalonia.Input.KeyModifiers.Control))
+            {
+                var delta = e.Delta.Y > 0 ? 2 : -2;
+                var newSize = Math.Clamp(mainWindow.config.LyricsFontSize + delta, 8, 200);
+                mainWindow.config.LyricsFontSize = newSize;
+                e.Handled = true;
+            }
+        }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
         Dictionary<double, List<Run>> lyricRuns = new();
         Dictionary<Run, double> inverseLyricRuns = new();
 
@@ -55,9 +124,8 @@ public partial class LyricsView : Window
                 inverseLyricRuns.Clear();
                 masterTextBlock.Inlines.Clear();
                 songGuid = mainWindow?.CurrentSong?.Guid;
-
                 sv.Content = masterTextBlock;
-
+                _lyricRuns = lyricRuns;
                 var lyrics = mainWindow?.CurrentSong?.Metadata?.SyncedLyrics ?? [];
 
                 for (var lyricIdx = 0; lyricIdx < lyrics.Count; lyricIdx++)
@@ -65,7 +133,6 @@ public partial class LyricsView : Window
                     var lyric = lyrics[lyricIdx];
                     if (string.IsNullOrEmpty(lyric.Content))
                         continue;
-
                     var trimmedContent = lyric.Content.TrimEnd('\r', '\n');
                     var lines = trimmedContent.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
 
@@ -80,7 +147,6 @@ public partial class LyricsView : Window
                             Text = line,
                             Foreground = white
                         };
-
                         masterTextBlock.Inlines.Add(run);
 
                         if (lyricRuns.TryGetValue(lyric.TimeStampInMilliSeconds, out var runs))
@@ -115,7 +181,7 @@ public partial class LyricsView : Window
                 {
                     foreach (var run in runs)
                     {
-                        run.Foreground = red;
+                        run.Foreground = _highlightBrush;
                     }
                     lastActiveTs = timestamp;
                 }
@@ -128,18 +194,19 @@ public partial class LyricsView : Window
                 }
             }
 
-            if (mainWindow != null && mainWindow.config.LyricsAdvance != -1 && lastActiveTs is { } activeTs) 
+            if (mainWindow != null && mainWindow.config.LyricsAdvance != -1 && lastActiveTs is { } activeTs)
             {
-                if (lyricRuns.TryGetValue(activeTs, out var activeRuns) && activeRuns.Count > 0 && masterTextBlock.TextLayout != null)
+                if (lyricRuns.TryGetValue(activeTs, out var activeRuns) && activeRuns.Count > 0 &&
+                    masterTextBlock.TextLayout != null)
                 {
                     var firstRun = activeRuns[0];
                     int charOffset = GetCharacterOffsetForRun(masterTextBlock, firstRun);
-                    
+
                     if (charOffset >= 0)
                     {
                         var rects = masterTextBlock.TextLayout.HitTestTextRange(charOffset, firstRun.Text?.Length ?? 1);
                         var firstRect = rects.FirstOrDefault();
-                        
+
                         if (firstRect != default)
                         {
                             // Center active line in ScrollViewer viewport
@@ -155,9 +222,8 @@ public partial class LyricsView : Window
 
         masterTextBlock.DoubleTapped += (sender, e) =>
         {
-            if (lyricRuns.Count == 0) 
+            if (lyricRuns.Count == 0)
                 return;
-
             int totalTextLength = 0;
             foreach (var inline in masterTextBlock.Inlines)
             {

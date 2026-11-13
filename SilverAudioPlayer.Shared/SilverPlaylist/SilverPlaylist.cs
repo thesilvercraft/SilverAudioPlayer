@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.IO.Compression;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace SilverAudioPlayer.Shared.SilverPlaylist;
@@ -71,6 +72,7 @@ public class SilverPlayList
 {
     [XmlElement(ElementName = "SharedMetadata")]
     public SharedMetadata? SharedMetadata { get; set; }
+
     [XmlElement(ElementName = "Song")] public List<SerializedSong> Song { get; set; }
 
     [XmlAttribute(AttributeName = "Version")]
@@ -85,22 +87,23 @@ public class SilverPlayList
     public string? CurrentIndexPosition { get; set; }
 }
 
-
-
 public static class SilverPlaylistHelper
 {
     public static readonly byte[] MagicBytes = "Spl"u8.ToArray();
     static XmlSerializer serializer = new(typeof(SilverPlayList));
 
-    public static void SerialiseBrotli(SilverPlayList playList, Stream streamToWriteTo)
+    public static void SerialiseBrotli(SilverPlayList playList, Stream streamToWriteTo, bool leaveOpen = true)
     {
         streamToWriteTo.Write(MagicBytes);
-        using BrotliStream stream = new(streamToWriteTo, CompressionLevel.SmallestSize);
-        using StreamWriter stringWriter = new(stream);
-        serializer.Serialize(stringWriter, playList);
+        using (BrotliStream stream = new(streamToWriteTo, CompressionLevel.SmallestSize, leaveOpen))
+        using (StreamWriter stringWriter = new(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true))
+        {
+            serializer.Serialize(stringWriter, playList);
+            stringWriter.Flush();
+        }
     }
 
-    public static SilverPlayList DeserializeBrotli(Stream streamToReadFrom)
+    public static SilverPlayList DeserializeBrotli(Stream streamToReadFrom, bool leaveOpen = false)
     {
         var check = new byte[3];
         if (streamToReadFrom.Read(check, 0, 3) != 3 || check[0] != MagicBytes[0] || check[1] != MagicBytes[1] ||
@@ -109,7 +112,7 @@ public static class SilverPlaylistHelper
             throw new InvalidOperationException("This is not a valid silver playlist file");
         }
 
-        using BrotliStream stream = new(streamToReadFrom, CompressionMode.Decompress);
+        using BrotliStream stream = new(streamToReadFrom, CompressionMode.Decompress, leaveOpen);
         return serializer.Deserialize(stream) as SilverPlayList ??
                throw new InvalidCastException(
                    "The XML decoder returned an object that could not be cast to a SilverPlaylist");
@@ -117,7 +120,8 @@ public static class SilverPlaylistHelper
 
     public const string CurrentPlaylistVersion = "elephant";
 
-    public static SilverPlayList FromQueueCopy(IEnumerable<Song> songs, IMusicStatusInterfaceListener? msiInterface = null)
+    public static SilverPlayList FromQueueCopy(IEnumerable<Song> songs,
+        IMusicStatusInterfaceListener? msiInterface = null)
     {
         SilverPlayList playList = new()
         {
@@ -153,6 +157,7 @@ public static class SilverPlaylistHelper
             };
             playList.Song.Add(s);
         }
+
         if (msiInterface != null && msiInterface.GetState() != PlaybackState.Stopped)
         {
             var currentSong = msiInterface.GetCurrentTrack();

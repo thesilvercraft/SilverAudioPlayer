@@ -12,7 +12,8 @@ namespace SilverAudioPlayer.Any.MetadataSource.Z440AtlCore;
 
 [Export(typeof(IMetadataProvider))]
 public class AtlCoreFileMetadataProvider : IMetadataProvider,
-    IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin, IMetadataPictureOptOut
+    IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin, IMetadataPictureOptOut, IAmConfigurable
+
 {
     public AtlCoreFileMetadataProvider(ILogger<AtlCoreFileMetadataProvider> logger)
     {
@@ -104,13 +105,14 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
         return Task.FromResult((IMetadata?)new AtlCoreMetadata(stream, stopLoadingPictures));
     }
 
-    public void ConfigureUi(IConfigurableListener env)
+    public IEnumerable<IConfigurableElement> GetElements()
     {
-        var window = env.TryGetWindow(
+        return
         [
             new SimpleCheckBox
             {
-                GetContent = () => "Allow MIDI reading", Checked = c =>
+                GetContent = () => "Allow MIDI reading",
+                Checked = c =>
                 {
                     if (ConfigObject.Value is not ZAtlCoreConfig x) return;
                     x.ReadMidiMetadata = c;
@@ -118,7 +120,12 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
                 },
                 GetChecked = GetAllowedMidi
             }
-        ]);
+        ];
+    }
+
+    public void ConfigureUi(IConfigurableListener env)
+    {
+        var window = env.TryGetWindow(GetElements());
         window?.SetTitle($"Configuring {Name}");
         window?.Show();
     }

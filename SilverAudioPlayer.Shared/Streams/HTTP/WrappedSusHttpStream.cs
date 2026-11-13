@@ -11,7 +11,8 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
     {
         RequestMessage = requestMessage;
 
-        using var response = client.Send(requestMessage, HttpCompletionOption.ResponseContentRead);
+        using var clone = HttpSeekableStream.CloneMessage(requestMessage);
+        using var response = client.Send(clone, HttpCompletionOption.ResponseContentRead);
         response.EnsureSuccessStatusCode();
 
         using var responseStream = response.Content.ReadAsStream();
@@ -45,6 +46,7 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
             RequestMessage.Dispose();
             _isDisposed = true;
         }
+
         GC.SuppressFinalize(this);
     }
 }

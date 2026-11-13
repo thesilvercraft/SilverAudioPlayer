@@ -1,4 +1,4 @@
-﻿namespace SilverAudioPlayer.Shared
+namespace SilverAudioPlayer.Shared
 {
     public interface ISharedPool<T> where T : IDisposable
     {
@@ -9,15 +9,18 @@
         public Shared<T>? GetWithHash(string hash);
         public Shared<T> AddT(T ws, string hash);
     }
+
     public static class SharedMemoryTPoolInstance<T> where T : IDisposable
     {
         public static ISharedPool<T> Instance = new SharedPool<T>();
     }
+
     public class Shared<T>(T obj, string sharedId) where T : IDisposable
     {
         public string SharedId { get; internal set; } = sharedId;
         public T Object { get; internal set; } = obj;
     }
+
     public class SharedPool<T> : ISharedPool<T> where T : IDisposable
     {
         private readonly Dictionary<string, List<RelianceOnShared<T>>> _reliances = [];
@@ -27,7 +30,6 @@
 
         public void AddReliance(RelianceOnShared<T> reliance)
         {
-
             lock (_reliancesLock)
             {
                 if (!Reliances.TryGetValue(reliance.SharedId, out List<RelianceOnShared<T>>? value))
@@ -39,6 +41,7 @@
                 value.Add(reliance);
             }
         }
+
         public void RemoveReliance(RelianceOnShared<T> reliance)
         {
             lock (_reliancesLock)
@@ -49,50 +52,65 @@
                 Reliances.Remove(reliance.SharedId);
                 if (Shared.FirstOrDefault(x => x.SharedId == reliance.SharedId) is not
                     { } sharedStream) return;
+                Shared.Remove(sharedStream);
                 sharedStream.Object.Dispose();
             }
         }
+
         public bool ContainsHash(string hash)
         {
-            return Shared.Any(x => x.SharedId == hash);
+            lock (_reliancesLock)
+            {
+                return Shared.Any(x => x.SharedId == hash);
+            }
         }
+
         public Shared<T> AddT(T ws, string hash)
         {
-            if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
+            lock (_reliancesLock)
             {
-                return s;
-            }
+                if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
+                {
+                    return s;
+                }
 
-            Shared<T> shared = new(ws, hash);
-            Shared.Add(shared); return shared;
+                Shared<T> shared = new(ws, hash);
+                Shared.Add(shared);
+                return shared;
+            }
         }
+
         public Shared<T>? GetWithHash(string hash)
         {
-            if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
+            lock (_reliancesLock)
             {
-                return s;
+                if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
+                {
+                    return s;
+                }
+
+                return null;
             }
-            return null;
         }
-
-
     }
+
     public class RelianceOnShared<T> : IDisposable where T : IDisposable
     {
-        public RelianceOnShared(Shared<T> shared)
+        public ISharedPool<T> Pool { get; }
+
+        public RelianceOnShared(Shared<T> shared, ISharedPool<T>? pool = null)
         {
             SharedId = shared.SharedId;
-            SharedMemoryTPoolInstance<T>.Instance.AddReliance(this);
+            Pool = pool ?? SharedMemoryTPoolInstance<T>.Instance;
+            Pool.AddReliance(this);
         }
 
         public string SharedId { get; set; }
 
         public void Dispose()
         {
-            SharedMemoryTPoolInstance<T>.Instance.RemoveReliance(this);
+            Pool.RemoveReliance(this);
             GC.SuppressFinalize(this);
         }
     }
-
-
 }

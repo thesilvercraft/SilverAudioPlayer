@@ -5,10 +5,9 @@
         xmlns:catenoid="clr-namespace:Catenoid"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Catenoid.MetadataView"
-        Title="Metadata" Icon="/icon.ico"
-      >
+        Title="Metadata" Icon="/icon.ico">
     <Design.DataContext>
-        <catenoid:MetadataViewDataContext/>
+        <catenoid:MetadataViewDataContext />
     </Design.DataContext>
     <Window.Styles>
         <Style Selector="TextBlock">
@@ -17,19 +16,25 @@
         </Style>
     </Window.Styles>
     <Grid Margin="5 30 5 5">
-        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
+        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <Grid ColumnDefinitions="*,256">
-                <TreeView Name="mainTreeView" ItemsSource="{Binding ValuePairs}">
+                <TreeView Name="mainTreeView" ItemsSource="{Binding ValuePairs}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate ItemsSource="{Binding SubFields}">
-                            <Grid ColumnDefinitions="*,*">
-                                <TextBlock Grid.Column="0" Text="{Binding FieldName}" />
-                                <TextBox Grid.Column="1" Text="{Binding FieldValue}" IsReadOnly="True" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0" Text="{Binding FieldName}"
+                                           MaxWidth="300" TextTrimming="CharacterEllipsis"
+                                           ToolTip.Tip="{Binding FieldName}" />
+                                <TextBox Grid.Column="1" Text="{Binding FieldValue}"
+                                         IsReadOnly="True" Margin="5,0,0,0" />
                             </Grid>
                         </TreeDataTemplate>
                     </TreeView.ItemTemplate>
                 </TreeView>
-                <Image Grid.Column="1" Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top" Source="{Binding Bitmaps[0]}"
+                <Image Grid.Column="1" Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top"
+                       Source="{Binding Bitmaps[0]}"
                        Width="256" Height="256" Tapped="IMG_DoubleTapped" />
             </Grid>
         </ScrollViewer>

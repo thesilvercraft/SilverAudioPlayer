@@ -29,19 +29,20 @@ using SvgImage = Avalonia.Svg.Skia.SvgImage;
 namespace Catenoid;
 
 public record InfoPRecord(
-    string Name, 
-    string Description, 
-    Version? Version, 
-    IImage? Icon, 
+    string Name,
+    string Description,
+    Version? Version,
+    IImage? Icon,
     string Licenses,
-    ICodeInformation Item, 
-    bool Configurable, 
-    bool IsPlayStreamProvider, 
-    bool IsAskingMemoryProvider, 
+    ICodeInformation Item,
+    bool Configurable,
+    bool IsPlayStreamProvider,
+    bool IsAskingMemoryProvider,
     bool IsSyncPlugin,
     bool IsMusicStatusInterface,
     object? RawIcon = null
 );
+
 public static class ConstStrings
 {
     public const string Lrc = "SAPLRCColor";
@@ -49,16 +50,16 @@ public static class ConstStrings
     public const string PB = "SAPPBColor";
     public const string DisableTransparency = "DisableSAPTransparency";
     public const string TransparencyC = "SAPTransparency";
-
 }
+
 public partial class Settings : Window
 {
     internal MainWindow mainWindow;
+
     public Settings()
     {
         InitializeComponent();
         MainGrid = this.FindControl<Grid>("MainGrid");
-
         this.DoAfterInitTasksF();
     }
 
@@ -67,19 +68,19 @@ public partial class Settings : Window
         ColorBox = this.FindControl<AutoCompleteBox>("ColorBox");
         ColorBoxPB = this.FindControl<AutoCompleteBox>("ColorBoxPB");
         ColorBoxLRC = this.FindControl<AutoCompleteBox>("ColorBoxLRC");
-
         TransparencyText = this.FindControl<TextBox>("TransparencyText");
         CapBox = this.FindControl<ListBox>("CapBox");
         ProductIconButton = this.FindControl<Button>("ProductIconButton");
         AutoSaveCheckBox = this.FindControl<CheckBox>("AutoSaveCheckBox");
+
         ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
             RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
         TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
-
         TransparencyText.TextChanged += TransparencyTextChanged;
 
         List<ICodeInformation> info =
+
         [
             mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).PluginCodeInformation
         ];
@@ -90,26 +91,24 @@ public partial class Settings : Window
             ProductDescription = mainWindow.Env.Description,
             Config = mainWindow.config
         };
-
         DataContext = _settingsDc;
-
         _ = LoadSettingsDataAsync(info);
     }
 
     private async Task LoadSettingsDataAsync(List<ICodeInformation> info)
     {
         var (rawRecords, legalese) = await GetInfoRecordsAsync(info);
+
         Dispatcher.UIThread.Post(() =>
         {
             foreach (var record in rawRecords)
             {
-               var uiIcon = record.RawIcon switch
+                var uiIcon = record.RawIcon switch
                 {
                     SvgSource svgSource => new SvgImage { Source = svgSource },
                     IImage img => img,
                     _ => null
                 };
-
                 _settingsDc.Items.Add(record with { Icon = uiIcon });
             }
 
@@ -121,17 +120,17 @@ public partial class Settings : Window
     private void TransparencyTextChanged(object? sender, TextChangedEventArgs e)
     {
         var text = TransparencyText.Text;
+
         Task.Run(() => WindowExtensions.envBackend.SetString(ConstStrings.TransparencyC,
             text ??
-           WindowTransparencyLevel.AcrylicBlur.ToString()));
+            WindowTransparencyLevel.AcrylicBlur.ToString()));
+
         if (text is not null)
         {
             WindowExtensions.OnStyleChange.Invoke(this,
-                        new(null, WindowExtensions.GetTransparencyLevelsFromString(text), null, null,null));
+                new(null, WindowExtensions.GetTransparencyLevelsFromString(text), null, null, null));
         }
     }
-
-  
 
     private SettingsDC _settingsDc;
 
@@ -141,24 +140,30 @@ public partial class Settings : Window
         if (y is not { IsFocused: true }) return;
         if (y is not { DataContext: IMusicStatusInterface msi }) return;
         if (y.IsChecked == msi.IsStarted) return;
+
         if (y.IsChecked == true)
         {
             mainWindow.config.BlockedPlugins.Remove(msi.GetType().FullName);
-            ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config, new PropertyChangedEventArgs("BlockedPlugins"));
+
+            ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config,
+                new PropertyChangedEventArgs("BlockedPlugins"));
             msi.StartIPC(mainWindow.Env);
         }
+
         else
         {
             mainWindow.config.BlockedPlugins.Add(msi.GetType().FullName);
-            ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config, new PropertyChangedEventArgs("BlockedPlugins"));
+
+            ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config,
+                new PropertyChangedEventArgs("BlockedPlugins"));
             msi.StopIPC(mainWindow.Env);
         }
-
     }
 
     string Legalese;
 
-    public static async Task<(List<InfoPRecord> Records, string Legalese)> GetInfoRecordsAsync(List<ICodeInformation> info)
+    public static async Task<(List<InfoPRecord> Records, string Legalese)> GetInfoRecordsAsync(
+        List<ICodeInformation> info)
     {
         var recordsTasks = info.Select(item => Task.Run(() =>
         {
@@ -179,10 +184,9 @@ public partial class Settings : Window
                 icon
             );
         }));
-
         var records = (await Task.WhenAll(recordsTasks)).ToList();
-
         var licenses = new StringBuilder();
+
         foreach (var item in info)
         {
             licenses.AppendLine(item.Licenses);
@@ -195,14 +199,17 @@ public partial class Settings : Window
     {
         if (stream == null) return null;
         stream.Use((_) => { });
+
         if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
         {
             return Bitmap.DecodeToWidth(stream.GetStream(), width);
         }
+
         if (stream.MimeType == KnownMimes.SVGMime)
         {
-            return  SvgSource.LoadFromStream(stream.GetStream());
+            return SvgSource.LoadFromStream(stream.GetStream());
         }
+
         return null;
     }
 
@@ -216,27 +223,38 @@ public partial class Settings : Window
     {
         var y = (Button?)button;
         if (y is not { DataContext: InfoPRecord { Configurable: true } record }) return;
+
         switch (record.Item)
         {
             case IConfigurableUiPlugin configurableUiPlugin:
+
                 configurableUiPlugin.ConfigureUi(mainWindow.Env);
                 break;
+
             case IAmConfigurable configurable:
-                {
-                    EkorensisUtils.LaunchConfigurableWindow(configurable);
-                    break;
-                }
+            {
+                EkorensisUtils.LaunchConfigurableWindow(configurable);
+                break;
+            }
         }
     }
 
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
-        if (y is { DataContext: InfoPRecord { IsAskingMemoryProvider: true, Item: IHaveConfigFilesWithKnownLocations knownLocations } })
+
+        if (y is
+            {
+                DataContext: InfoPRecord
+                {
+                    IsAskingMemoryProvider: true, Item: IHaveConfigFilesWithKnownLocations knownLocations
+                }
+            })
         {
             ShowLaunchActionsFiles(knownLocations.KnownConfigFileLocations);
             return;
         }
+
         if (y is not
             {
                 DataContext: InfoPRecord
@@ -246,8 +264,8 @@ public partial class Settings : Window
             } ||
             mainWindow.Logic.MemoryProvider is not IWillTellYouWhereIStoreTheConfigs l) return;
         ShowLaunchActionsFiles(configurable.ObjectsToRememberForMe.Select(ob => l.GetConfig(ob.Id)));
-
     }
+
     void ShowLaunchActionsFiles(IEnumerable<string> files, bool folder = true)
     {
         ShowLaunchActionsWindow(files.Select(m =>
@@ -260,6 +278,7 @@ public partial class Settings : Window
                         {
                             EnvironmentExtensions.OpenFolder(m);
                         }
+
                         else
                         {
                             EnvironmentExtensions.OpenBrowser(m);
@@ -268,25 +287,32 @@ public partial class Settings : Window
                 })
             .ToList());
     }
+
     static void ShowLaunchActionsWindow(List<SAction> actions)
     {
         Dispatcher.UIThread.Post(() =>
-      {
-          LaunchActionsWindow launchActionsWindow = new(actions);
-          launchActionsWindow.Show();
-      }, DispatcherPriority.Normal);
+        {
+            LaunchActionsWindow launchActionsWindow = new(actions);
+            launchActionsWindow.Show();
+        }, DispatcherPriority.Normal);
     }
+
     public void PlayProviderClick(object button, RoutedEventArgs args)
     {
         var y = (Button?)button;
+
         if (y is not { DataContext: InfoPRecord record } ||
             record is { IsPlayStreamProvider: false, IsSyncPlugin: false }) return;
+
         switch (record.Item)
         {
             case IPlayStreamProvider streamProvider:
+
                 streamProvider.Use(mainWindow.Env);
                 break;
+
             case ISyncPlugin syncPlugin:
+
                 syncPlugin.Use(mainWindow.Env);
                 break;
         }
@@ -309,6 +335,7 @@ public partial class Settings : Window
     public static string GetHumanerName(URLType type)
     {
         var name = GetHumanName(type);
+
         if (!string.IsNullOrEmpty(name))
         {
             return " (" + name + ")";
@@ -329,33 +356,38 @@ public partial class Settings : Window
             ActionName = "Open " + z.Item1 + GetHumanerName(z.Item2),
             ActionToInvoke = () => EnvironmentExtensions.OpenBrowser(z.Item1.ToString())
         }).ToList();
+
         switch (element.Item)
         {
             case IConfigurableUiPlugin guiConfig:
+
                 actions.Add(new SAction
                 {
                     ActionName = "🔧Configure",
                     ActionToInvoke = () => { guiConfig.ConfigureUi(mainWindow.Env); }
                 });
                 break;
+
             case IAmConfigurable configurable:
+
                 actions.Add(new SAction
                 {
                     ActionName = "🔧Configure",
-                    ActionToInvoke = () =>
-                    {
-                        EkorensisUtils.LaunchConfigurableWindow(configurable);
-                    }
+                    ActionToInvoke = () => { EkorensisUtils.LaunchConfigurableWindow(configurable); }
                 });
                 break;
+
             case IPlayStreamProvider streamProvider:
+
                 actions.Add(new SAction
                 {
                     ActionName = "🔨Use",
                     ActionToInvoke = () => { streamProvider.Use(mainWindow.Env); }
                 });
                 break;
+
             case ISyncPlugin syncPlugin:
+
                 actions.Add(new SAction
                 {
                     ActionName = "🔁Sync",
@@ -363,6 +395,7 @@ public partial class Settings : Window
                 });
                 break;
         }
+
         if (element.Item is IExportCommands commands)
         {
             foreach (var command in commands.GetCommands())
@@ -374,10 +407,9 @@ public partial class Settings : Window
                 });
             }
         }
+
         ShowLaunchActionsWindow(actions);
     }
-
-
 
     private void RegisterClick(object? sender, RoutedEventArgs e)
     {
@@ -385,6 +417,7 @@ public partial class Settings : Window
         {
             RegistryRegistration.UnRegisterUrlScheme(mainWindow);
         }
+
         else
         {
             RegistryRegistration.RegisterUrlScheme(mainWindow);
@@ -394,6 +427,7 @@ public partial class Settings : Window
     private void LicenseInfo(object? sender, RoutedEventArgs e)
     {
         var w = new Window();
+
         TextBox tb = new()
         {
             IsReadOnly = true,
@@ -411,19 +445,17 @@ public partial class Settings : Window
         Dispatcher.UIThread.Post(() =>
         {
             var SapTransparency = WindowExtensions.envBackend.GetBool(ConstStrings.DisableTransparency) != true;
-            WindowExtensions.OnStyleChange(this, new(null, null, null,null,null));
+            WindowExtensions.OnStyleChange(this, new(null, null, null, null, null));
             WindowExtensions.envBackend.SetBool(ConstStrings.DisableTransparency, SapTransparency);
         }, DispatcherPriority.Normal);
     }
 
     public static readonly GradientStops defPBStops =
+
     [
         new(KnownColor.Coral.ToColor(), 0),
         new(KnownColor.SilverCraftBlue.ToColor(), 1)
     ];
-
-
-
 
     private void InitializeComponent()
     {
@@ -438,6 +470,7 @@ public partial class Settings : Window
         {
             var instance = mainWindow.Env.Icon;
             instance?.Use(x => { });
+
             if (instance?.MimeType is not SVGMime)
             {
                 Log.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",
@@ -446,13 +479,13 @@ public partial class Settings : Window
             }
         }
 
-
         if (IconTemplate == null)
         {
             mainWindow.Env.Icon?.Use(s =>
             {
                 using var textreader = new StreamReader(s);
                 IconTemplate = textreader.ReadToEnd();
+
                 IconTemplate = IconTemplate.Replace("stop-color=\"#6969ff\"", "stop-color=\"{0}\"")
                     .Replace("stop-color=\"#696969\"", "stop-color=\"{1}\"")
                     .Replace("fill=\"#F90\"", "fill=\"{2}\"")
@@ -468,9 +501,10 @@ public partial class Settings : Window
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString(), EnvironmentExtensions.NewHexString(),
                 EnvironmentExtensions.NewHexString());
+
             _settingsDc.ProductIcon = new SvgImage()
             {
-                Source =  SvgSource.LoadFromSvg(realisedTemplate)
+                Source = SvgSource.LoadFromSvg(realisedTemplate)
             };
             CurrentSource = realisedTemplate;
         }
@@ -493,46 +527,53 @@ public partial class Settings : Window
     }
 }
 
-
 public class SettingsDC(Settings settings) : ReactiveObject
 {
     public WindowTransparencyLevel[] TransparencyTypes { get; set; } =
+
     [
         WindowTransparencyLevel.None, WindowTransparencyLevel.Transparent, WindowTransparencyLevel.Blur,
         WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.Mica
     ];
 
     public string _backgroundColour = WindowExtensions.envBackend.GetString(ConstStrings.BG) ?? "";
+
     public string BackgroundColour
     {
-        get =>_backgroundColour;
+        get => _backgroundColour;
+
         set
         {
             if (value.Contains('@'))
             {
-                throw new ArgumentException("Not a valid colour",nameof(BackgroundColour));
+                throw new ArgumentException("Not a valid colour", nameof(BackgroundColour));
             }
-            this.RaiseAndSetIfChanged(ref _backgroundColour, value); 
+
+            this.RaiseAndSetIfChanged(ref _backgroundColour, value);
             WindowExtensions.envBackend.SetString(ConstStrings.BG, _backgroundColour);
-            Dispatcher.UIThread.Post(() =>
-            {
-                WindowExtensions.OnStyleChange?.Invoke(this, new(_backgroundColour, null, null,null,null));
-            }, DispatcherPriority.Normal);
+
+            Dispatcher.UIThread.Post(
+                () => { WindowExtensions.OnStyleChange?.Invoke(this, new(_backgroundColour, null, null, null, null)); },
+                DispatcherPriority.Normal);
         }
     }
-    
+
     public string _progressBarColour = WindowExtensions.envBackend.GetString(ConstStrings.PB) ?? "";
+
     public string ProgressBarColour
     {
-        get =>_progressBarColour;
+        get => _progressBarColour;
+
         set
         {
             if (value.Contains('@'))
             {
-                throw new ArgumentException("Not a valid colour",nameof(ProgressBarColour));
+                throw new ArgumentException("Not a valid colour", nameof(ProgressBarColour));
             }
-            this.RaiseAndSetIfChanged(ref _progressBarColour, value); 
+
+            this.RaiseAndSetIfChanged(ref _progressBarColour, value);
             WindowExtensions.envBackend.SetEnv(ConstStrings.PB, _progressBarColour);
+
             Dispatcher.UIThread.Post(() =>
             {
                 settings.mainWindow.SetProgressBarColour(_progressBarColour.ParseBackground(new LinearGradientBrush()
@@ -540,23 +581,39 @@ public class SettingsDC(Settings settings) : ReactiveObject
             }, DispatcherPriority.Normal);
         }
     }
+
     public string _lyricsColour = WindowExtensions.envBackend.GetString(ConstStrings.Lrc) ?? "";
+
     public string LyricsColour
     {
-        get =>_lyricsColour;
+        get => _lyricsColour;
+
         set
         {
             if (value.Contains('@'))
             {
-                throw new ArgumentException("Not a valid colour",nameof(LyricsColour));
+                throw new ArgumentException("Not a valid colour", nameof(LyricsColour));
             }
-            this.RaiseAndSetIfChanged(ref _lyricsColour, value); 
+
+            this.RaiseAndSetIfChanged(ref _lyricsColour, value);
             WindowExtensions.envBackend.SetEnv(ConstStrings.Lrc, _lyricsColour);
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                var brush = _lyricsColour.ParseBackground(new SolidColorBrush(Color.FromRgb(230, 255, 0)));
+
+                if (brush is SolidColorBrush scb)
+                {
+                    scb.Opacity = 1;
+                }
+
+                LyricsView.NotifyColorChanged(brush);
+            }, DispatcherPriority.Normal);
         }
     }
 
-   
     public KnownColor[] AutoSuggestColours { get; set; } =
+
     [
         KnownColor.None, KnownColor.Transparent, KnownColor.Black, KnownColor.Navy, KnownColor.DarkBlue,
         KnownColor.MediumBlue, KnownColor.Blue, KnownColor.DarkGreen, KnownColor.Green, KnownColor.Teal,
@@ -593,11 +650,15 @@ public class SettingsDC(Settings settings) : ReactiveObject
     ];
 
     public ObservableCollection<InfoPRecord> Items { get; set; } = [];
+
     public string ProductName { get; internal set; }
+
     public string ProductDescription { get; internal set; }
+
     public Config Config { get; set; }
 
     private IImage? _productIcon;
+
     public IImage? ProductIcon
     {
         get => _productIcon;

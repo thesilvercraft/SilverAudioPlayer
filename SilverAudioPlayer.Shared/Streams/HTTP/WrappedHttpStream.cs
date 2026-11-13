@@ -1,4 +1,4 @@
-﻿using SilverMagicBytes;
+using SilverMagicBytes;
 
 namespace SilverAudioPlayer.Shared;
 
@@ -15,18 +15,21 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 
     public WrappedHttpStream(HttpRequestMessage requestMessage, HttpClient client)
     {
-        var stype = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage, client);
-        switch (stype)
+        var probe = HttpSeekableStream.GetLengthAndRangeSupport(requestMessage, client);
+        switch (probe)
         {
-            case { Item2: true }:
-                inside = new HttpSeekableStream(requestMessage, client, stype) { IsParent = true };
+            case { SupportsRange: true }:
+                inside = new HttpSeekableStream(requestMessage, client, probe) { IsParent = true };
                 Seekable = true;
                 break;
             case null:
                 inside = new NoEndHttpStream(requestMessage, client);
+                Seekable = false;
+                CanCreateMultipleStreams = false;
                 break;
             default:
                 inside = new WrappedSusHttpStream(requestMessage, client);
+                Seekable = true;
                 break;
         }
 
@@ -36,6 +39,7 @@ public class WrappedHttpStream : WrappedStream, IDisposable
 
     public bool Seekable { get; }
     public override bool IsSeekable => Seekable;
+    public override bool CanCreateMultipleStreams { get; } = true;
     public override MimeType MimeType => _MimeType;
     private MimeType _MimeType { get; }
 

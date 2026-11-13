@@ -15,16 +15,19 @@ public static class HttpSeekableStreamCounter
 
 public class HttpSeekableStream : Stream, IRefreshableStream
 {
-    // Keep the first blocking read small. Decoder and metadata readers often only
-    // need a few kilobytes before they can identify the file or start decoding.
-    private const int BuffLength = 65536; // 64 KiB
-    private const int MaxChunksToBufferAhead = 1;
+    // Modest chunk size (64 KiB) for fast startup and low seek latency.
+    public const int BuffLength = 65536; // 64 KiB
+
+    // Multi-chunk prefetch depth to avoid network latency underruns.
+    public const int MaxChunksToBufferAhead = 8;
 
     private readonly ConcurrentDictionary<long, Task<Memory<byte>>> _chunkCache;
     private readonly bool _rangeSupport;
     private readonly bool _hasKnownLength;
     private long _currentPos;
     private bool _isDisposed;
+    private readonly CancellationTokenSource _cts;
+    private readonly bool _ownsCts;
 
     private HttpResponseMessage? _iMessage;
     private Stream? _internalStream;
@@ -36,17 +39,29 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     {
     }
 
-    internal HttpSeekableStream(HttpRequestMessage requestMessage, HttpClient client, Tuple<long, bool>? probeResult)
+    public HttpSeekableStream(HttpRequestMessage requestMessage, HttpClient client, Tuple<long, bool>? probeResult)
+        : this(requestMessage, client,
+            probeResult != null ? new ProbeResult(probeResult.Item1, probeResult.Item2) : null)
+    {
+    }
+
+    public HttpSeekableStream(HttpRequestMessage requestMessage, HttpClient client, ProbeResult? probeResult)
     {
         RequestMessage = requestMessage;
         _client = client;
+        _cts = new CancellationTokenSource();
+        _ownsCts = true;
         _chunkCache = new ConcurrentDictionary<long, Task<Memory<byte>>>();
-        var result = probeResult;
-        if (result != null)
+        if (probeResult != null)
         {
-            Length = result.Item1;
-            _rangeSupport = result.Item2;
+            Length = probeResult.Length;
+            _rangeSupport = probeResult.SupportsRange;
             _hasKnownLength = true;
+
+            if (probeResult.InitialChunk.HasValue)
+            {
+                _chunkCache[0] = Task.FromResult(probeResult.InitialChunk.Value);
+            }
         }
     }
 
@@ -59,6 +74,8 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     {
         _client = parent._client;
         _chunkCache = parent._chunkCache;
+        _cts = parent._cts;
+        _ownsCts = false;
         RequestMessage = parent.RequestMessage;
         _rangeSupport = parent._rangeSupport;
         _hasKnownLength = parent._hasKnownLength;
@@ -120,7 +137,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     public Stream GetStream() => new HttpSeekableStream(this);
 
-    private static HttpRequestMessage CloneMessage(HttpRequestMessage req)
+    public static HttpRequestMessage CloneMessage(HttpRequestMessage req)
     {
         var clone = new HttpRequestMessage(req.Method, req.RequestUri)
         {
@@ -149,25 +166,31 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         return clone;
     }
 
-    public static Tuple<long, bool>? GetLengthAndRangeSupport(HttpRequestMessage requestMessage, HttpClient client)
+    public static ProbeResult? GetLengthAndRangeSupport(HttpRequestMessage requestMessage, HttpClient client)
     {
         using var clone = CloneMessage(requestMessage);
-        // Accept-Ranges is advisory. Probe an actual range so servers that advertise
-        // support but ignore Range do not get treated as seekable.
-        clone.Headers.Range = new RangeHeaderValue(0, 0);
+        // Probe initial chunk (0 to BuffLength - 1) to both verify range support, get total length,
+        // and optionally seed chunk 0, eliminating an entire RTT.
+        clone.Headers.Range = new RangeHeaderValue(0, BuffLength - 1);
         using var r = client.SendAsync(clone, HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
         if (r.IsSuccessStatusCode)
         {
-            return r.StatusCode switch
+            if (r.StatusCode == System.Net.HttpStatusCode.PartialContent &&
+                r.Content.Headers.ContentRange is { Unit: "bytes", From: 0, Length: { } totalLength } cr)
             {
-                System.Net.HttpStatusCode.PartialContent when r.Content.Headers.ContentRange is
-                {
-                    Unit: "bytes", From: 0, To: 0, Length: { } totalLength
-                } => new Tuple<long, bool>(totalLength, true),
-                System.Net.HttpStatusCode.OK when r.Content.Headers.ContentLength is { } length =>
-                    new Tuple<long, bool>(length, false),
-                _ => null
-            };
+                var to = cr.To ?? (BuffLength - 1);
+                var expectedLen = (int)Math.Min(totalLength, to - 0 + 1);
+                var initialBytes = r.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                var chunk0 = new Memory<byte>(initialBytes, 0, Math.Min(initialBytes.Length, expectedLen));
+                return new ProbeResult(totalLength, true, chunk0);
+            }
+
+            if (r.StatusCode == System.Net.HttpStatusCode.OK && r.Content.Headers.ContentLength is { } length)
+            {
+                return new ProbeResult(length, false);
+            }
+
+            return null;
         }
 
         throw new Exception($"HTTP Status code {r.StatusCode}");
@@ -230,29 +253,59 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     private Memory<byte> GetOrDownloadChunk(long chunkNum)
     {
-        var downloadTask = _chunkCache.GetOrAdd(chunkNum, id => GetChunkAsync(id));
+        var token = _cts.Token;
+        var downloadTask = _chunkCache.GetOrAdd(chunkNum, id => CreateMonitoredChunkTask(id, token));
 
         TriggerPrefetch(chunkNum);
-        return downloadTask.GetAwaiter().GetResult();
+
+        try
+        {
+            return downloadTask.GetAwaiter().GetResult();
+        }
+        catch
+        {
+            // Evict faulted task to avoid cache poisoning on transient errors
+            _chunkCache.TryRemove(new KeyValuePair<long, Task<Memory<byte>>>(chunkNum, downloadTask));
+            throw;
+        }
+    }
+
+    private Task<Memory<byte>> CreateMonitoredChunkTask(long chunkNum, CancellationToken token)
+    {
+        var task = GetChunkAsync(chunkNum, token);
+        task.ContinueWith(t =>
+        {
+            if (t.IsFaulted || t.IsCanceled)
+            {
+                _chunkCache.TryRemove(new KeyValuePair<long, Task<Memory<byte>>>(chunkNum, task));
+            }
+        }, TaskContinuationOptions.NotOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
+        return task;
     }
 
     private void TriggerPrefetch(long currentChunkNum)
     {
         if (Length <= 0) return;
         var maxChunk = (Length + BuffLength - 1) / BuffLength;
+        var token = _cts.Token;
 
         for (var i = 1; i <= MaxChunksToBufferAhead; i++)
         {
             var nextChunk = currentChunkNum + i;
             if (nextChunk >= maxChunk) break;
 
-            // Fire and forget downloading task into the Cache cleanly without locks
-            _ = _chunkCache.GetOrAdd(nextChunk, id => GetChunkAsync(id));
+            _ = _chunkCache.GetOrAdd(nextChunk, id => CreateMonitoredChunkTask(id, token));
         }
     }
 
     public override int Read(byte[] buffer, int offset, int count)
     {
+        ArgumentNullException.ThrowIfNull(buffer);
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        if (buffer.Length - offset < count)
+            throw new ArgumentException("Offset and length were out of bounds for the array.");
+
         if (_rangeSupport)
         {
             if (_currentPos >= Length)
@@ -293,7 +346,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         }
 
         var bytesRead = _internalStream.Read(buffer, offset, count);
-        _currentPos = _internalStream.Position;
+        _currentPos += bytesRead;
         return bytesRead;
     }
 
@@ -301,35 +354,25 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     {
         if (!_rangeSupport)
         {
-            if (_internalStream == null)
-            {
-                using var clone = CloneMessage(RequestMessage);
-                var r = _client.Send(clone, HttpCompletionOption.ResponseContentRead);
-                _iMessage = r;
-                _internalStream = r.Content.ReadAsStream();
-            }
-
-            _internalStream.Seek(offset, origin);
-            _currentPos = _internalStream.Position;
-            return _currentPos;
+            throw new NotSupportedException(
+                "Seeking is not supported on this HTTP stream because the server does not support byte ranges.");
         }
 
-        //  Log.Debug("Seek in HTTPSeekableStream {Offset} {Origin}", offset, origin);
-        switch (origin)
+        long targetPos = origin switch
         {
-            case SeekOrigin.Begin:
-                _currentPos = offset;
-                break;
-            case SeekOrigin.Current:
-                _currentPos += offset;
-                break;
-            case SeekOrigin.End:
-                _currentPos = Length - Math.Abs(offset);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(origin), origin, null);
+            SeekOrigin.Begin => offset,
+            SeekOrigin.Current => _currentPos + offset,
+            SeekOrigin.End => Length + offset,
+            _ => throw new ArgumentOutOfRangeException(nameof(origin), origin, null)
+        };
+
+        if (targetPos < 0)
+        {
+            throw new IOException(
+                $"An attempt was made to move the position before the beginning of the stream. Target position: {targetPos}");
         }
 
+        _currentPos = targetPos;
         return _currentPos;
     }
 
@@ -338,6 +381,19 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         Debug.WriteLine("Disposing HTTP stream");
         if (!_isDisposed && disposing)
         {
+            if (_ownsCts || IsParent)
+            {
+                try
+                {
+                    _cts.Cancel();
+                    _cts.Dispose();
+                }
+                catch
+                {
+                    // Ignore cancel exceptions during dispose
+                }
+            }
+
             if (IsParent)
             {
                 Debug.WriteLine("Disposing Parent http stream");

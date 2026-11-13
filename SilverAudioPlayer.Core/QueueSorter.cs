@@ -9,8 +9,12 @@ public class QueueSorter
     private readonly object _sortLock = new();
     private CancellationTokenSource? _sortCancellationTokenSource;
 
-    public void SuggestDoingSort(Func<List<Song>> getQueueSnapshot, Action<List<Song>> applySortedQueue, ILogger? log = null)
+    public bool IsDisabled { get; set; }
+
+    public void SuggestDoingSort(Func<List<Song>> getQueueSnapshot, Action<List<Song>> applySortedQueue,
+        ILogger? log = null)
     {
+        if (IsDisabled) return;
         lock (_sortLock)
         {
             _sortCancellationTokenSource?.Cancel();
@@ -24,10 +28,11 @@ public class QueueSorter
     public async Task DoSortAsync(Func<List<Song>> getQueueSnapshot, Action<List<Song>> applySortedQueue,
         CancellationToken cancellationToken, ILogger? log = null)
     {
+        if (IsDisabled) return;
         try
         {
             await Task.Delay(150, cancellationToken);
-            if (cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested || IsDisabled) return;
 
             var elementsCopy = getQueueSnapshot();
             var albums = elementsCopy.GroupBy(a => a.Metadata?.Album);
@@ -35,7 +40,7 @@ public class QueueSorter
 
             foreach (var album in albums)
             {
-                if (cancellationToken.IsCancellationRequested) return;
+                if (cancellationToken.IsCancellationRequested || IsDisabled) return;
 
                 var matchedGroup = fuzzedAlbums.Find(x => Fuzz.Ratio(x.Item1 ?? "", album.Key ?? "") > 80);
                 if (matchedGroup != null)
@@ -52,11 +57,11 @@ public class QueueSorter
             foreach (var disc in fuzzedAlbums.Select(album => album.Item2.GroupBy(a => a?.Metadata?.DiscNumber ?? 0))
                          .SelectMany(discs => discs.OrderBy(a => a.Key)))
             {
-                if (cancellationToken.IsCancellationRequested) return;
+                if (cancellationToken.IsCancellationRequested || IsDisabled) return;
                 sortedSongs.AddRange(disc.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
             }
 
-            if (cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested || IsDisabled) return;
 
             applySortedQueue(sortedSongs);
             log?.Information("Sorted through {Count} songs dynamically.", sortedSongs.Count);

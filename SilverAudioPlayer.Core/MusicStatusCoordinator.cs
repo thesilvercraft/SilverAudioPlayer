@@ -7,6 +7,7 @@ namespace SilverAudioPlayer.Core;
 public class MusicStatusCoordinator
 {
     private readonly IMediator _mediator;
+    private readonly object _lock = new();
     public readonly List<IMusicStatusInterface> LoadedMusicStatusInterfaces = [];
     private IMusicStatusInterfaceListenerAdmin? _musicStatusInterface;
 
@@ -37,8 +38,12 @@ public class MusicStatusCoordinator
     private void AddMsiCore(IMusicStatusInterface statusInterface,
         IMusicStatusInterfaceListenerAdmin logicMusicInterfaceListener)
     {
-        LoadedMusicStatusInterfaces.Add(statusInterface);
-        _musicStatusInterface = logicMusicInterfaceListener;
+        lock (_lock)
+        {
+            LoadedMusicStatusInterfaces.Add(statusInterface);
+            _musicStatusInterface = logicMusicInterfaceListener;
+        }
+
         statusInterface.StartIPC(logicMusicInterfaceListener);
     }
 
@@ -51,7 +56,10 @@ public class MusicStatusCoordinator
     {
         statusInterface.StopIPC(logicMusicInterfaceListener);
         statusInterface.Dispose();
-        LoadedMusicStatusInterfaces.Remove(statusInterface);
+        lock (_lock)
+        {
+            LoadedMusicStatusInterfaces.Remove(statusInterface);
+        }
     }
 
     public void TrackChangedNotification(Song? currentSong)
@@ -61,7 +69,9 @@ public class MusicStatusCoordinator
     {
         if (currentSong != null)
         {
-            _musicStatusInterface?.FireTrackChangedNotification(currentSong);
+            IMusicStatusInterfaceListenerAdmin? listener;
+            lock (_lock) listener = _musicStatusInterface;
+            listener?.FireTrackChangedNotification(currentSong);
         }
     }
 
@@ -83,7 +93,9 @@ public class MusicStatusCoordinator
 
     private void HandlePlaybackStateChanged(PlaybackState s)
     {
-        _musicStatusInterface?.FirePlayerStateChanged(s);
+        IMusicStatusInterfaceListenerAdmin? listener;
+        lock (_lock) listener = _musicStatusInterface;
+        listener?.FirePlayerStateChanged(s);
     }
 
     public void FirePositionChanged(TimeSpan pos)
@@ -91,7 +103,9 @@ public class MusicStatusCoordinator
 
     private void HandlePositionChanged(TimeSpan pos)
     {
-        _musicStatusInterface?.FirePositionChanged(pos);
+        IMusicStatusInterfaceListenerAdmin? listener;
+        lock (_lock) listener = _musicStatusInterface;
+        listener?.FirePositionChanged(pos);
     }
 
     public void MainWindow_Opened(IMusicStatusInterfaceListenerAdmin musicStatusInterface,

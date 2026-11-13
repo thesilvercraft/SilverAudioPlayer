@@ -57,7 +57,20 @@ public class Config :INotifyPropertyChanged,ICanBeToldThatAPartOfMeIsChanged
     #region LyricWindow
     [Comment("How many lyrics should be shown from the current lyric, -1 to disable autoscroll, -2 for auto")]
     public int LyricsAdvance { get; set; } = -2;
-    public double LyricsFontSize { get; set; } = 40;
+
+    [Comment("Lyrics font size in points/pixels")]
+    public double LyricsFontSize
+    {
+        get => _lyricsFontSize;
+        set
+        {
+            if (Math.Abs(_lyricsFontSize - value) < 0.001) return;
+            _lyricsFontSize = value;
+            ((ICanBeToldThatAPartOfMeIsChanged)this).PropertyChanged(this,
+                new PropertyChangedEventArgs(nameof(LyricsFontSize)));
+        }
+    }
+    private double _lyricsFontSize = 40;
     #endregion
 
     [XmlIgnore] public bool AllowedToRead{get;set;}=true;

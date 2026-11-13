@@ -44,29 +44,44 @@ public class PluginRegistry : ILogicImportable
         return chosen?.GetPlayer(stream, environment);
     }
 
-    public Task<IMetadata?> GetMetadataFromStreamAsync(WrappedStream stream,
+    public async Task<IMetadata?> GetMetadataFromStreamAsync(WrappedStream stream,
         IEnumerable<IMetadata?>? additionalMetadata = null, ILogger? log = null)
     {
         try
         {
-            var listOfMetadatas = MetadataProviders
-                .Where(x => x.CanGetMetadata(stream))
-                .Select(async x => await x.GetMetadata(stream))
-                .Select(t => t.Result)
-                .Where(i => i != null)
-                .ToList();
+            var listOfMetadatas = new List<IMetadata>();
+            foreach (var provider in MetadataProviders.Where(x => x.CanGetMetadata(stream)))
+            {
+                try
+                {
+                    var meta = await provider.GetMetadata(stream);
+                    if (meta != null)
+                    {
+                        listOfMetadatas.Add(meta);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log?.Error(ex, "Provider {Provider} failed extracting metadata", provider.GetType().Name);
+                }
+            }
 
             if (additionalMetadata != null)
             {
-                listOfMetadatas.AddRange(additionalMetadata.Where(x => x is not null));
+                listOfMetadatas.AddRange(additionalMetadata.Where(x => x is not null)!);
             }
 
-            return Task.FromResult<IMetadata?>(new MetadataCombo(listOfMetadatas, MetadataGatherers));
+            if (listOfMetadatas.Count == 0 && !MetadataGatherers.Any())
+            {
+                return null;
+            }
+
+            return new MetadataCombo(listOfMetadatas, MetadataGatherers);
         }
         catch (Exception e)
         {
             log?.Error(e, "Error loading metadata from stream");
-            return Task.FromResult<IMetadata?>(null);
+            return null;
         }
     }
 
@@ -96,6 +111,6 @@ public class PluginRegistry : ILogicImportable
         var (c, d) = SupportedPlaylistMimes();
         a.AddRange(c);
         b.AddRange(d);
-        return new(a, b);
+        return new(a.Distinct().ToList(), b.Distinct().ToList());
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
@@ -10,6 +10,7 @@ namespace SilverAudioPlayer.Shared;
 public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, IDisposable
 {
     private IMetadata? _Metadata;
+
     public Song(WrappedStream data, string name, IMetadata? metadata = null, ILogic? logic = null)
     {
         ArgumentNullException.ThrowIfNull(data);
@@ -26,7 +27,8 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         {
             try
             {
-                var fetchedMetadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream, [metadata])!).GetAwaiter().GetResult();
+                var fetchedMetadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream, [metadata])!)
+                    .GetAwaiter().GetResult();
                 if (fetchedMetadata is not null)
                 {
                     Metadata = fetchedMetadata;
@@ -37,6 +39,7 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
                 Log.Error(e, "Error loading metadata from stream in Song");
             }
         }
+
         Guid = GetIdFromMetadata(Metadata, URI);
     }
 
@@ -44,20 +47,28 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
     {
         return CurrentGuidHashingAlgorithm.GetIdFromMetadata(metadata, uri);
     }
+
     public WrappedStream Stream { get; set; }
     public string? URI { get; set; }
     public string Name { get; set; }
+
     /// <summary>
     /// A Guid assigned to this song by the constructor of the Song object
     /// </summary>
     public Guid Guid { get; set; }
+
     /// <summary>
     /// The song's metadata, it can be also a <see cref="IMetadataCombo"/>
     /// </summary>
     public IMetadata? Metadata
     {
         get => _Metadata;
-        set => this.RaiseAndSetIfChanged(ref _Metadata, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _Metadata, value);
+            this.RaisePropertyChanged(nameof(TrackNoF));
+            this.RaisePropertyChanged(nameof(TitleOrURLF));
+        }
     }
 
     public string TrackNoF => TrackNo();
@@ -92,7 +103,9 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
 
     public string TitleOrURL()
     {
-        return string.IsNullOrEmpty(Metadata?.Title) ? URI : Metadata.Title;
+        if (!string.IsNullOrEmpty(Metadata?.Title)) return Metadata.Title;
+        if (!string.IsNullOrEmpty(URI)) return URI;
+        return Name ?? "";
     }
 
     public string ArtistAlbumOptional(bool thingyatstart = false, bool thingyatend = false)
@@ -101,7 +114,9 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
             return $"{(thingyatstart ? "-" : "")} {Metadata.Artist} - {Metadata.Album} {(thingyatend ? "-" : "")}";
         if (Metadata?.Artist != null)
             return $"{(thingyatstart ? "-" : "")} {Metadata.Artist} {(thingyatend ? "-" : "")}";
-        return Metadata?.Album != null ? $"{(thingyatstart ? "-" : "")} {Metadata.Album} {(thingyatend ? "-" : "")}" : "";
+        return Metadata?.Album != null
+            ? $"{(thingyatstart ? "-" : "")} {Metadata.Album} {(thingyatend ? "-" : "")}"
+            : "";
     }
 
     public override string ToString()
@@ -125,6 +140,6 @@ public static class MimeTypeExtensions
 {
     public static string RealMimeTypeToFakeMimeType(this MimeType realmime)
     {
-        return realmime.FileExtensions[0];
+        return realmime.FileExtensions is { Length: > 0 } ? realmime.FileExtensions[0] : "";
     }
 }

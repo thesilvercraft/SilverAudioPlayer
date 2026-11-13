@@ -40,12 +40,13 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
         lock (_reliancesLock)
         {
             var hash = HashHelper.Hash(ws);
-            var sharedStream2 = new SharedStream(ws, hash);
             if (SharedStreams.FirstOrDefault(x => x.Hash == hash) is { } sharedStream)
             {
+                ws.Dispose();
                 return sharedStream;
             }
 
+            var sharedStream2 = new SharedStream(ws, hash);
             SharedStreams.Add(sharedStream2);
             return sharedStream2;
         }
@@ -77,6 +78,7 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
             Reliances.Remove(reliance.SharedStreamId);
             if (SharedStreams.FirstOrDefault(x => x.SharedStreamId == reliance.SharedStreamId) is not
                 { } sharedStream) return;
+            SharedStreams.Remove(sharedStream);
             sharedStream.Stream.Dispose();
         }
     }
@@ -100,6 +102,7 @@ public class SharedStream
     public string Hash { get; internal set; }
     public WrappedStream Stream { get; internal set; }
 }
+
 /// <summary>
 /// THIS IS NOT A SECURE HASH, DO NOT USE IT FOR SECURITY
 /// </summary>
@@ -114,6 +117,7 @@ public static class HashHelper
         var checksum = sha.ComputeHash(bytes);
         return BitConverter.ToString(checksum).Replace("-", string.Empty);
     }
+
     /// <summary>
     /// THIS IS NOT A SECURE HASH, DO NOT USE IT FOR SECURITY
     /// </summary>
@@ -128,16 +132,25 @@ public static class HashHelper
 
 public class RelianceOnSharedStream : IDisposable
 {
-    public RelianceOnSharedStream(SharedStream stream)
+    public Guid SharedStreamId { get; set; }
+    public ISharedMemoryStreamPool Pool { get; set; }
+
+    public RelianceOnSharedStream(SharedStream stream, ISharedMemoryStreamPool? pool = null)
     {
         SharedStreamId = stream.SharedStreamId;
-        SharedMemoryStreamPoolInstance.Instance.AddReliance(this);
+        Pool = pool ?? SharedMemoryStreamPoolInstance.Instance;
+        Pool.AddReliance(this);
     }
 
-    public Guid SharedStreamId { get; set; }
+    public RelianceOnSharedStream(Guid sharedStreamId, ISharedMemoryStreamPool? pool = null)
+    {
+        SharedStreamId = sharedStreamId;
+        Pool = pool ?? SharedMemoryStreamPoolInstance.Instance;
+        Pool.AddReliance(this);
+    }
 
     public void Dispose()
     {
-        SharedMemoryStreamPoolInstance.Instance.RemoveReliance(this);
+        Pool.RemoveReliance(this);
     }
 }

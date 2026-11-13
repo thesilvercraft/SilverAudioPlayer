@@ -1,6 +1,6 @@
-﻿using SilverAudioPlayer.Shared;
 using System.Composition;
 using System.Diagnostics;
+using SilverAudioPlayer.Shared;
 using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio;
@@ -33,111 +33,151 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
     private readonly List<IConfigurableElement> ConfigurableElements;
     public bool IsStarted => _IsStarted;
     private bool _IsStarted;
+    private bool _isInVehicle;
 
     public FortnitePlayTracker()
     {
         ConfigurableElements =
         [
-            new SimpleTextBox
-                { 
-                    GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolDef.ToString(),
-                    GetPlaceholder= () => "L",
-                    SetContent = c => 
+            new SimpleRow(
+                new SimpleLabel("Default volume (%):"),
+                new SimpleNumericUpDown
+                {
+                    Minimum = 0,
+                    Maximum = 100,
+                    Increment = 1,
+                    DecimalPlaces = 0,
+                    GetValue = () =>
                     {
-                        if(ConfigObject.Value is FortniteCarRadioConfig x)
+                        if (ConfigObject.Value is FortniteCarRadioConfig x)
                         {
-                           x.VolDef = byte.Parse(c);
+                            return x.VolDef;
                         }
+
+                        return 100;
                     },
-                },
-             new SimpleTextBox
-                { 
-                    GetContent = () => ((FortniteCarRadioConfig)ConfigObject.Value).VolVeh.ToString(),
-                    GetPlaceholder= () => "L", 
-                    SetContent = c => 
-                    {
-                        if(ConfigObject.Value is FortniteCarRadioConfig x)
-                        {
-                            x.VolVeh = byte.Parse(c);
-                        }
-                    },
-                },
-               new SimpleButton
-                { 
-                    GetContent= () => "save",
-                    Clicked= () =>
+                    ValueChanged = val =>
                     {
                         if (ConfigObject.Value is not FortniteCarRadioConfig x) return;
-                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolDef"));
-                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x,new("VolVeh"));
+                        x.VolDef = (byte)val;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("VolDef"));
+                        if (_IsStarted && Env != null && !_isInVehicle)
+                        {
+                            Env.SetVolume(x.VolDef);
+                        }
                     }
                 }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Vehicle volume (%):"),
+                new SimpleNumericUpDown
+                {
+                    Minimum = 0,
+                    Maximum = 100,
+                    Increment = 1,
+                    DecimalPlaces = 0,
+                    GetValue = () =>
+                    {
+                        if (ConfigObject.Value is FortniteCarRadioConfig x)
+                        {
+                            return x.VolVeh;
+                        }
+
+                        return 30;
+                    },
+                    ValueChanged = val =>
+                    {
+                        if (ConfigObject.Value is not FortniteCarRadioConfig x) return;
+                        x.VolVeh = (byte)val;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("VolVeh"));
+                        if (_IsStarted && Env != null && _isInVehicle)
+                        {
+                            Env.SetVolume(x.VolVeh);
+                        }
+                    }
+                }
+            )
         ];
     }
+
     public IEnumerable<IConfigurableElement> GetElements()
     {
         return ConfigurableElements;
     }
 
-    public ObjectToRemember ConfigObject = new(Guid.Parse("d11919d0-281a-4fd0-9694-98c9d648dec1"), new FortniteCarRadioConfig());
+    public ObjectToRemember ConfigObject =
+        new(Guid.Parse("d11919d0-281a-4fd0-9694-98c9d648dec1"), new FortniteCarRadioConfig());
+
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => new ObjectToRemember[] { ConfigObject };
     public string Name => "fORTNITE";
 
     public string Description => "awful plugin do not use";
 
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(FortnitePlayTracker).Assembly,
-             "SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.defnotfrtnt.svg");
+        "SilverAudioPlayer.Windows.MusicStatusInterface.FortniteCarRadio.defnotfrtnt.svg");
 
     public Version? Version => typeof(FortnitePlayTracker).Assembly.GetName().Version;
 
-    public string Licenses => "The awful FortnitePlayTracker is licensed under the MIT license (called the expat license because MIT actually uses many licenses)";
+    public string Licenses =>
+        "The awful FortnitePlayTracker is licensed under the MIT license (called the expat license because MIT actually uses many licenses)";
 
-    public List<Tuple<Uri, URLType>>? Links { get;  }= [new Tuple<Uri, URLType>(new Uri(ConstantCodeInfo.GetCurrentUrl()), URLType.Code)];
-    IMusicStatusInterfaceListener Env;
+    public List<Tuple<Uri, URLType>>? Links { get; } =
+        [new Tuple<Uri, URLType>(new Uri(ConstantCodeInfo.GetCurrentUrl()), URLType.Code)];
 
-    FileSystemWatcher Watcher;
-    static string FortniteLogDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\FortniteGame\Saved\Logs";
-    static string FortniteLog = Path.Combine(FortniteLogDir , "FortniteGame.log");
-  
-    StreamReader? StreamReader;
+    private IMusicStatusInterfaceListener? Env;
+
+    private FileSystemWatcher? Watcher;
+
+    static readonly string FortniteLogDir =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FortniteGame", "Saved",
+            "Logs");
+
+    static readonly string FortniteLog = Path.Combine(FortniteLogDir, "FortniteGame.log");
+
+    private StreamReader? StreamReader;
+
     private void NewWrite(object sender, FileSystemEventArgs e)
     {
-        if (!_IsStarted) return;
+        if (!_IsStarted || Env == null) return;
 
-        if (Process.GetProcessesByName("FortniteClient-Win64-Shipping").Length ==0)
+        if (Process.GetProcessesByName("FortniteClient-Win64-Shipping").Length == 0)
         {
             return;
         }
+
         if (StreamReader == null && File.Exists(FortniteLog))
         {
             FileStream fileStream = File.Open(FortniteLog, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             StreamReader = new StreamReader(fileStream);
         }
-        if(StreamReader == null)
+
+        if (StreamReader == null)
         {
-            //what
             return;
         }
+
         string? currentLine;
-        while ((currentLine = StreamReader.ReadLine()) != null) // go through the new lines.
+        while ((currentLine = StreamReader.ReadLine()) != null)
         {
             if (currentLine.Contains("Adding scene: VehicleHUD_Scene"))
             {
+                _isInVehicle = true;
                 Env.SetVolume(((FortniteCarRadioConfig)ConfigObject.Value).VolVeh);
             }
-            else if(currentLine.Contains("Removing scene: VehicleHUD_Scene"))
+            else if (currentLine.Contains("Removing scene: VehicleHUD_Scene"))
             {
+                _isInVehicle = false;
                 Env.SetVolume(((FortniteCarRadioConfig)ConfigObject.Value).VolDef);
             }
         }
     }
 
-   
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
         if (!File.Exists(FortniteLog)) return;
         Env = listener;
         _IsStarted = true;
+        _isInVehicle = false;
         Watcher = new FileSystemWatcher
         {
             Filter = "FortniteGame.log",
@@ -152,6 +192,7 @@ public class FortnitePlayTracker : IMusicStatusInterface, IAmConfigurable, IAmOn
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
         _IsStarted = false;
+        Env = null;
 
         Watcher?.Dispose();
         StreamReader?.Dispose();

@@ -10,7 +10,7 @@
 		Icon="/icon.ico">
 	<Grid  Name="MainGrid">
 	<ScrollViewer >
-		<Grid RowDefinitions="200,30,30,*,*,*,36,*" ColumnDefinitions="*,*">
+		<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*" ColumnDefinitions="*,*">
 			<Grid Grid.Row="0" Grid.ColumnSpan="2" ColumnDefinitions="200,*,80" RowDefinitions="*,*,*" Margin="5" >
 				<SelectableTextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" Grid.RowSpan="2" Text="{Binding ProductName}" FontSize="75" Margin="5" />
 				<SelectableTextBlock Grid.Column="1"  Grid.Row="2" Text="{Binding ProductDescription}" FontSize="35" Margin="15,5,5,5" />
@@ -22,9 +22,9 @@
 				<Button Grid.Row="0" Grid.Column="2" Click="LicenseInfo">License</Button>
 			</Grid>
 			
-			<Button Grid.Row="1" Grid.Column="0" Click="RegisterClick">Add or remove file associations</Button>
-			<Button Grid.Row="2" Click="ToggleTransparency" Grid.Column="1">Toggle transparency</Button>
-			<TextBox Name="TransparencyText" Grid.Row="2" Grid.Column="0" />
+			<Button Grid.Row="1" Grid.Column="0" Margin="5" Click="RegisterClick">Add or remove file associations</Button>
+			<Button Grid.Row="2" Grid.Column="1" Margin="5" Click="ToggleTransparency">Toggle transparency</Button>
+			<TextBox Name="TransparencyText" Grid.Row="2" Grid.Column="0" Margin="5" />
 			<Expander Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" >
     			<Expander.Header>
         		<Label>Colours</Label>

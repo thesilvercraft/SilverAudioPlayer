@@ -13,7 +13,9 @@ namespace SilverAudioPlayer.NAudio;
 public interface INaudioWaveStreamWrapper
 {
     bool SupportedOnPlatform { get; }
+
     IReadOnlyList<MimeType> SupportedMimeTypes { get; }
+
     IWaveProvider GetStream(Stream stream);
 }
 
@@ -28,55 +30,136 @@ public static class NaudioWaveStreamWrapperTypeHolder
 }
 
 [Export(typeof(IPlayProvider))]
-public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin
+public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYourMemory, IConfigurableUiPlugin,
+    IAmConfigurable
 {
     IMediator _mediator;
+
     public NaudioWaveStreamWrapper(IMediator mediator)
     {
         _mediator = mediator;
         player = new(_mediator);
     }
-    public ObjectToRemember ConfigObject =
-    new(Guid.Parse("2374197d-6fad-4285-a7f9-5b349debc4be"), new WaveConfig());
 
+    public ObjectToRemember ConfigObject =
+        new(Guid.Parse("2374197d-6fad-4285-a7f9-5b349debc4be"), new WaveConfig());
     public IEnumerable<ObjectToRemember> ObjectsToRememberForMe => [ConfigObject];
 
     public void ConfigureUi(IConfigurableListener env)
     {
-        var window = env.TryGetWindow(
+        var window = env.TryGetWindow(GetElements());
+        window?.SetTitle($"Configuring {Name}");
+        window?.Show();
+    }
+
+    public IEnumerable<IConfigurableElement> GetElements()
+    {
+        void ApplyConfig(WaveConfig x)
+        {
+            player.Config = x;
+            player.RecalculateReplayGain();
+        }
+
+        return
         [
             new SimpleCheckBox
             {
-                GetContent = () => "Prefer album ReplayGain", Checked = c =>
-                {
-                    if (ConfigObject.Value is not WaveConfig x) return;
-                    x.PreferAlbumReplayGain = c;
-                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreferAlbumReplayGain"));
-                },
-                GetChecked = ()=> ConfigObject.Value is not WaveConfig x || x.PreferAlbumReplayGain
-            },
-            new SimpleCheckBox
-            {
-                GetContent = () => "Enable ReplayGain", Checked = c =>
+                GetContent = () => "Enable ReplayGain",
+                Checked = c =>
                 {
                     if (ConfigObject.Value is not WaveConfig x) return;
                     x.EnableReplayGain = c;
                     ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("EnableReplayGain"));
+                    ApplyConfig(x);
                 },
-                GetChecked = ()=> ConfigObject.Value is not WaveConfig x || x.EnableReplayGain
-            }
-        ]);
-        window?.SetTitle($"Configuring {Name}");
-        window?.Show();
+                GetChecked = () => ConfigObject.Value is not WaveConfig x || x.EnableReplayGain
+            },
+            new SimpleCheckBox
+            {
+                GetContent = () => "Prefer album ReplayGain",
+                Checked = c =>
+                {
+                    if (ConfigObject.Value is not WaveConfig x) return;
+                    x.PreferAlbumReplayGain = c;
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreferAlbumReplayGain"));
+                    ApplyConfig(x);
+                },
+                GetChecked = () => ConfigObject.Value is not WaveConfig x || x.PreferAlbumReplayGain
+            },
+            new SimpleCheckBox
+            {
+                GetContent = () => "Prevent clipping with ReplayGain peak (TrySafeReplayGain)",
+                Checked = c =>
+                {
+                    if (ConfigObject.Value is not WaveConfig x) return;
+                    x.TrySafeReplayGain = c;
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("TrySafeReplayGain"));
+                    ApplyConfig(x);
+                },
+                GetChecked = () => ConfigObject.Value is not WaveConfig x || x.TrySafeReplayGain
+            },
+            new SimpleRow(
+                new SimpleLabel("Preamp without ReplayGain (dB):"),
+                new SimpleNumericUpDown
+                {
+                    Minimum = -30,
+                    Maximum = 30,
+                    Increment = 0.5m,
+                    DecimalPlaces = 1,
+                    GetValue = () =>
+                    {
+                        if (ConfigObject.Value is WaveConfig x)
+                        {
+                            return (decimal)x.PreampNoReplayGain;
+                        }
+
+                        return 0;
+                    },
+                    ValueChanged = val =>
+                    {
+                        if (ConfigObject.Value is not WaveConfig x) return;
+                        x.PreampNoReplayGain = (float)val;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreampNoReplayGain"));
+                        ApplyConfig(x);
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Preamp with ReplayGain (dB):"),
+                new SimpleNumericUpDown
+                {
+                    Minimum = -30,
+                    Maximum = 30,
+                    Increment = 0.5m,
+                    DecimalPlaces = 1,
+                    GetValue = () =>
+                    {
+                        if (ConfigObject.Value is WaveConfig x)
+                        {
+                            return (decimal)x.PreampReplayGain;
+                        }
+
+                        return 0;
+                    },
+                    ValueChanged = val =>
+                    {
+                        if (ConfigObject.Value is not WaveConfig x) return;
+                        x.PreampReplayGain = (float)val;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreampReplayGain"));
+                        ApplyConfig(x);
+                    }
+                }
+            )
+        ];
     }
 
     public string Name => "NAudio Player";
 
     public string Description =>
         "A player that wraps around NAudio (https://github.com/naudio/NAudio) and plays audio files that derive from PCM (or WAV). MP3 is provided using https://github.com/naudio/NLayer";
+
     public WrappedStream? Icon => new WrappedEmbeddedResourceStream(typeof(NaudioWaveStreamWrapper).Assembly,
         "SilverAudioPlayer.Any.PlayProvider.NAudio.cscore.svg");
-
     public Version? Version => typeof(NaudioWaveStreamWrapper).Assembly.GetName().Version;
 
     public List<Tuple<Uri, URLType>>? Links =>
@@ -89,13 +172,19 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
             URLType.PackageManager),
         new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/NAudio"), URLType.LibraryCode),
         new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/NLayer"), URLType.LibraryCode),
-        new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/Vorbis"), URLType.LibraryCode)
-        ,new(new("https://www.nuget.org/packages/SilverCraft.CSCore/"+typeof(SimpleResampler).Assembly.GetName().Version),URLType.PackageManager),
-        new(new("https://github.com/thesilvercraft/cscore"),URLType.LibraryCode),
+        new Tuple<Uri, URLType>(new Uri("https://github.com/naudio/Vorbis"), URLType.LibraryCode),
+        new(
+            new("https://www.nuget.org/packages/SilverCraft.CSCore/" +
+                typeof(SimpleResampler).Assembly.GetName().Version), URLType.PackageManager),
+        new(new("https://github.com/thesilvercraft/cscore"), URLType.LibraryCode),
         new(new("https://thesilvercraft.github.io/cscore/"), URLType.LibraryDocumentation),
-        new(new("https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),URLType.PackageManager)
+        new(
+            new(
+                "https://gitlab.com/silvercraft/SilverAudioPlayer/tree/master/SilverAudioPlayer.Any.PlayProvider.CSCore"),
+            URLType.PackageManager)
     ];
-    public string Licenses => @"NAudio - https://github.com/naudio/NAudio 
+
+    public string Licenses => @"NAudio - https://github.com/naudio/NAudio
 Copyright 2020 Mark Heath
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -179,7 +268,7 @@ A ""contributor"" is any person that distributes its contribution under this lic
 (D) If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.
 (E) The software is licensed ""as-is."" You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
 
-Portaudio is licensed under a modified MIT license 
+Portaudio is licensed under a modified MIT license
 PortAudio Portable Real-Time Audio Library
 Copyright (c) 1999-2011 Ross Bencina and Phil Burk
 
@@ -189,13 +278,13 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-The text above constitutes the entire PortAudio license; however, 
+The text above constitutes the entire PortAudio license; however,
 the PortAudio community also makes the following non-binding requests:
 
 Any person wishing to distribute modifications to the Software is
 requested to send the modifications to the original developer so that
-they can be incorporated into the canonical version. It is also 
-requested that these non-binding requests be included along with the 
+they can be incorporated into the canonical version. It is also
+requested that these non-binding requests be included along with the
 license above.
 
 If libsndfile or libopenmpt are found, they will be used,
@@ -206,7 +295,7 @@ Version 2.1, February 1999
 
     Copyright (C) 1991, 1999 Free Software Foundation, Inc.
     51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-    
+
     Everyone is permitted to copy and distribute verbatim copies
     of this license document, but changing it is not allowed.
 
@@ -731,8 +820,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ";
 
-
-
     public IReadOnlyList<MimeType>? SupportedMimes => NaudioWaveStreamWrapperTypeHolder.Get().GetWrappers()
         .SelectMany(x => x.SupportedMimeTypes).ToList();
 
@@ -742,22 +829,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     }
 
     private WaveFilePlayer player;
+
     public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment)
     {
         if (stream is WrappedHttpStream wrappedHttpStream && !wrappedHttpStream.Seekable)
         {
             return new Mp3StreamPlayer(ref player, stream.GetStream());
         }
+
         else
         {
             if (!CanPlayFile(stream)) return null;
             player.Config = (WaveConfig)ConfigObject.Value;
             player.playerEnvironment = playerEnvironment;
             player.LoadStream(stream);
-
             return player;
         }
-       
     }
 
     public Task OnStartup()
@@ -777,7 +864,6 @@ public class NaudioWaveStreamWrapperTypes
         Debug.Assert(wrapper.Count != 0);
     }
 
-
     public List<INaudioWaveStreamWrapper> GetWrappers()
     {
         return wrapper;
@@ -787,6 +873,7 @@ public class NaudioWaveStreamWrapperTypes
     {
         return GetWrappers().First(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
     }
+
     public IEnumerable<INaudioWaveStreamWrapper> GetWrappers(WrappedStream stream)
     {
         return GetWrappers().Where(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
@@ -794,10 +881,7 @@ public class NaudioWaveStreamWrapperTypes
 
     public bool HasWrapper(WrappedStream stream)
     {
-      
         var res = GetWrappers().Any(x => x.SupportedOnPlatform && x.SupportedMimeTypes.Contains(stream.MimeType));
         return res;
     }
-
-
 }

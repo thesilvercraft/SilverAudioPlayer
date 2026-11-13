@@ -105,16 +105,7 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
 
     public event EventHandler? CurrentProviderChanged;
 
-    public IWaveProvider CurrentProvider
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _currentProvider;
-            }
-        }
-    }
+    public IWaveProvider CurrentProvider => Volatile.Read(ref _currentProvider);
 
     public bool Enqueue(IWaveProvider nextProvider)
     {
@@ -215,10 +206,11 @@ public class GaplessWaveProvider : IWaveStream, IDisposable
             _positionBase += currentLength;
         }
 
-        _currentProvider = _queuedProviders.Dequeue();
+        Volatile.Write(ref _currentProvider, _queuedProviders.Dequeue());
         changed = true;
         return true;
     }
+
     private static long GetLength(IWaveProvider provider)
     {
         return provider switch

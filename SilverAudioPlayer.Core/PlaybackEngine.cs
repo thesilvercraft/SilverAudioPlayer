@@ -100,11 +100,24 @@ public class PlaybackEngine
         if (!_changeAllowed || _playerContext.CurrentSong == null) return;
         var queue = _queueManager.GetQueueCopy();
         var a = queue.IndexOf(_playerContext.CurrentSong);
-        if (a == -1 || a + 1 >= queue.Count) return;
+        if (a == -1) return;
+
+        Song? targetSong = null;
+        if (a + 1 < queue.Count)
+        {
+            targetSong = queue[a + 1];
+        }
+        else if (_playerContext.LoopType == RepeatState.Queue && queue.Count > 0)
+        {
+            targetSong = queue[0];
+        }
+
+        if (targetSong == null) return;
+
         _changeAllowed = false;
         try
         {
-            HandleSongChanging(queue[a + 1]);
+            HandleSongChanging(targetSong);
         }
         finally
         {
@@ -203,6 +216,7 @@ public class PlaybackEngine
             if (Player != null)
             {
                 Player.PositionChanged -= OnPositionChanged;
+                Player.TrackEnd -= OutputDevice_PlaybackStopped;
                 if (Player is IPlayLancer oldLancer)
                 {
                     oldLancer.NextStreamStarted -= OnNextStreamStarted;
@@ -218,6 +232,7 @@ public class PlaybackEngine
                 if (Player != null)
                 {
                     Player.PositionChanged += OnPositionChanged;
+                    Player.TrackEnd += OutputDevice_PlaybackStopped;
                     if (Player is IPlayLancer newLancer)
                     {
                         newLancer.NextStreamStarted += OnNextStreamStarted;
@@ -242,11 +257,8 @@ public class PlaybackEngine
         _musicStatusCoordinator.TrackChangedNotification(_playerContext.CurrentSong);
         _queueManager.UpdateNextSongReference();
 
-        if (Player is IPlayLancer lancer)
+        if (Player is IPlayLancer)
         {
-            lancer.NextStreamStarted -= OnNextStreamStarted;
-            lancer.NextStreamStarted += OnNextStreamStarted;
-
             // Opening the next decoder can block on HTTP. Prepare it away from
             // the UI and playback callback threads.
             TryEnqueueNextSongForGaplessPlayback();
@@ -257,10 +269,11 @@ public class PlaybackEngine
             Player.SetVolume(_playerContext.Volume);
             _log?.Debug("Calling Player.Play()");
             Player.Play();
+            var currentPlayer = Player;
             _ = Task.Run(async () =>
             {
                 await Task.Delay(600);
-                if (Player is ILoop loop)
+                if (ReferenceEquals(Player, currentPlayer) && currentPlayer is ILoop loop)
                 {
                     if (_playerContext.LoopType == RepeatState.One)
                     {
@@ -274,11 +287,6 @@ public class PlaybackEngine
             });
 
             SendIfStateIsNotNull();
-            if (newPlayerRequired)
-            {
-                _log?.Debug("Attaching OutputDevice_PlaybackStopped to Player.TrackEnd");
-                Player.TrackEnd += OutputDevice_PlaybackStopped;
-            }
 
             _uiBridge.ResetUiScrollBar();
             if (Player?.Length() is { } total)

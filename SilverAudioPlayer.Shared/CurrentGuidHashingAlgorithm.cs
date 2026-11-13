@@ -1,5 +1,4 @@
-using System;
-using System.IO;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,20 +17,18 @@ public static partial class CurrentGuidHashingAlgorithm
         var artist = CleanString(metadata?.Artist);
         var album = CleanString(metadata?.Album);
 
-        // Standardize file paths: normalize separators to '/' and strip absolute roots if possible
-        var normalizedPath = NormalizeFilePath(filePath);
-
-        // 1. If metadata is missing or sparse, fall back to relative path hashing.
+        // 1. If metadata is missing or sparse, fall back to path hashing.
         if (string.IsNullOrWhiteSpace(title) || (string.IsNullOrWhiteSpace(artist) && string.IsNullOrWhiteSpace(album)))
         {
+            var normalizedPath = NormalizeFilePath(filePath);
             return GetIdFromString($"filepath:{normalizedPath}");
         }
 
-        // 2. Multi-disc / track collision prevention.
+        // 2. Multi-disc / track collision prevention using InvariantCulture.
         var trackNum = metadata?.TrackNumber ?? 0;
         var discNum = metadata?.DiscNumber ?? 1;
 
-        var raw = $"{artist}\0{album}\0{discNum}\0{trackNum}\0{title}";
+        var raw = string.Create(CultureInfo.InvariantCulture, $"{artist}\0{album}\0{discNum}\0{trackNum}\0{title}");
         return GetIdFromString(raw);
     }
 
@@ -39,14 +36,32 @@ public static partial class CurrentGuidHashingAlgorithm
     {
         ArgumentNullException.ThrowIfNull(str);
 
-        Span<byte> hash = stackalloc byte[32];
-        SHA256.HashData(Encoding.UTF8.GetBytes(str), hash);
+        int maxByteCount = Encoding.UTF8.GetMaxByteCount(str.Length);
+        byte[]? rented = null;
+        Span<byte> utf8Bytes = maxByteCount <= 512
+            ? stackalloc byte[maxByteCount]
+            : (rented = System.Buffers.ArrayPool<byte>.Shared.Rent(maxByteCount));
 
-        // Standard RFC 4122 Version 8 UUID mutation
-        hash[6] = (byte)((hash[6] & 0x0F) | 0x80); // Version 8
-        hash[8] = (byte)((hash[8] & 0x3F) | 0x80); // Variant 1
+        try
+        {
+            int actualBytes = Encoding.UTF8.GetBytes(str, utf8Bytes);
+            Span<byte> hash = stackalloc byte[32];
+            SHA256.HashData(utf8Bytes[..actualBytes], hash);
 
-        return new Guid(hash[..16]);
+            // Standard RFC 9562 Version 8 UUID mutation
+            hash[6] = (byte)((hash[6] & 0x0F) | 0x80); // Version 8 (0b1000xxxx)
+            hash[8] = (byte)((hash[8] & 0x3F) | 0x80); // Variant 1 (0b10xxxxxx)
+
+            // Use bigEndian: true so hash[6] maps to the UUID version nibble
+            return new Guid(hash[..16], bigEndian: true);
+        }
+        finally
+        {
+            if (rented is not null)
+            {
+                System.Buffers.ArrayPool<byte>.Shared.Return(rented);
+            }
+        }
     }
 
     private static string CleanString(string? input)
@@ -62,18 +77,31 @@ public static partial class CurrentGuidHashingAlgorithm
 
         var trimmed = path.Trim();
 
-        if (Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
+        // Only treat as URI if it explicitly contains a URI scheme (e.g., "http://", "file://")
+        // Avoids truncating local Windows paths containing '#' or '?'
+        if (trimmed.Contains("://", StringComparison.Ordinal) &&
+            Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
         {
             if (uri.IsFile)
             {
-                return uri.LocalPath.Replace('\\', '/').Trim().ToLowerInvariant();
+                // Unescape local file URI paths so '#' isn't lost if percent-encoded
+                return StripRoot( uri.LocalPath.Replace('\\', '/').Trim().ToLowerInvariant() );
             }
             return uri.GetLeftPart(UriPartial.Path).ToLowerInvariant();
         }
 
         var normalized = trimmed.Replace('\\', '/').ToLowerInvariant();
+        return StripRoot(normalized);
+    }
 
-        var queryIdx = normalized.IndexOfAny(['?', '#']);
-        return queryIdx != -1 ? normalized[..queryIdx] : normalized;
+    private static string StripRoot(string normalizedPath)
+    {
+        // Strip Windows drive root (e.g., "c:/music/song.mp3" -> "music/song.mp3")
+        if (normalizedPath.Length >= 2 && char.IsAsciiLetter(normalizedPath[0]) && normalizedPath[1] == ':')
+        {
+            normalizedPath = normalizedPath[2..];
+        }
+
+        return normalizedPath.TrimStart('/');
     }
 }

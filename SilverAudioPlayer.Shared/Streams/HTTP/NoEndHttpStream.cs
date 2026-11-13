@@ -9,18 +9,25 @@ public class NoEndHttpStream(HttpRequestMessage requestMessage, HttpClient clien
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
     public HttpRequestMessage RequestMessage { get; } = requestMessage;
 
     public Stream GetStream()
     {
+        var clone = HttpSeekableStream.CloneMessage(RequestMessage);
         return client
-            .Send(new HttpRequestMessage(RequestMessage.Method, RequestMessage.RequestUri),
-                HttpCompletionOption.ResponseHeadersRead).Content.ReadAsStream();
+            .Send(clone, HttpCompletionOption.ResponseHeadersRead)
+            .Content.ReadAsStream();
     }
 
     protected virtual void Dispose(bool disposing)
     {
         if (_disposedValue) return;
+        if (disposing)
+        {
+            RequestMessage.Dispose();
+        }
+
         _disposedValue = true;
     }
 }

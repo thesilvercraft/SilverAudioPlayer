@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace SilverAudioPlayer.Shared.Metadata;
 
@@ -11,17 +12,21 @@ namespace SilverAudioPlayer.Shared.Metadata;
 /// </remarks>
 public static class LrcParser
 {
+    private static readonly Regex EnhancedTagRegex = new(@"<([^>]+)>", RegexOptions.Compiled);
+
     public static LrcFile Parse(string lyrics)
     {
         LrcFile file = new();
-        var lrcLines = lyrics.Split("\n");
-        foreach (var line in lrcLines)
+        var lrcLines = lyrics.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+        foreach (var rawLine in lrcLines)
         {
+            var line = rawLine.Trim();
             if (TryParse(line, out var phrases, file))
             {
                 file.AddRange(phrases);
             }
-            else if (line.StartsWith("[offset:") && line.EndsWith(']') && int.TryParse(line[8..^1].Trim(), CultureInfo.InvariantCulture, out var offset))
+            else if (line.StartsWith("[offset:") && line.EndsWith(']') &&
+                     int.TryParse(line[8..^1].Trim(), CultureInfo.InvariantCulture, out var offset))
             {
                 file.OffsetInMs = -offset;
             }
@@ -30,6 +35,7 @@ public static class LrcParser
                 file.AdditionalData.Add(line);
             }
         }
+
         return file;
     }
 
@@ -49,6 +55,7 @@ public static class LrcParser
                 {
                     return false;
                 }
+
                 bracketL = 1;
             }
 
@@ -72,7 +79,7 @@ public static class LrcParser
             && int.TryParse(time[0..msep], CultureInfo.InvariantCulture, out var m)
             && time.IndexOf('.') is { } ssep and >= 0
             && int.TryParse(time[(msep + 1)..ssep], CultureInfo.InvariantCulture, out var s)
-            && double.TryParse('0' + time[(ssep)..], CultureInfo.InvariantCulture, out var h)) //Apparently modern day tools cannot follow the simple MM:SS.XX (where XX is centisecond, where 01 is 10ms) and some tools prefer saying .981 (instead of just rounding it up to .98) 
+            && double.TryParse('0' + time[(ssep)..], CultureInfo.InvariantCulture, out var h))
         {
             timeInMS = (int)(h * 1000) + (((m * 60) + s) * 1000);
             return true;
@@ -92,65 +99,55 @@ public static class LrcParser
     public static bool TryParse(string line, out List<LyricPhrase>? lp, LrcFile file)
     {
         line = line.Trim();
-        if (line.Length > 10 && line[0] == '[')
+        if (line.Length >= 9 && line[0] == '[')
         {
-            lp = new();
             var r = line.IndexOf(']');
-            var time = line[1..r];
-            if (TryParseTime(time, out var timeMs))
+            if (r > 1)
             {
-                var restOfLine = line[(r + 1)..];
-                if (IsBalancedAndContainsAdditional(restOfLine))
+                var time = line[1..r];
+                if (TryParseTime(time, out var timeMs))
                 {
-                    int prevleft = 0;
-                    while (restOfLine.Length != 0)
+                    lp = new List<LyricPhrase>();
+                    var restOfLine = line[(r + 1)..];
+                    if (IsBalancedAndContainsAdditional(restOfLine))
                     {
-                        int tillnextLeft = restOfLine.IndexOf('<');
-                        if (tillnextLeft == -1)
-                        {
-                            tillnextLeft = restOfLine.Length;
-                        }
+                        var matches = EnhancedTagRegex.Matches(restOfLine);
+                        var currentPhraseTime = timeMs;
+                        var lastIndex = 0;
 
-                        if (tillnextLeft == 0)
+                        foreach (Match m in matches)
                         {
-                            tillnextLeft = restOfLine.IndexOf('<', 1);
-                            if (tillnextLeft == -1)
+                            var textBefore = restOfLine[lastIndex..m.Index];
+                            if (textBefore.Length > 0 || lp.Count > 0)
                             {
-                                tillnextLeft = restOfLine.Length;
-                            }
-                            var right = restOfLine.IndexOf('>');
-                            if (right != -1)
-                            {
-                                time = restOfLine[1..right];
-                                if (TryParseTime(time, out timeMs))
-                                {
-                                }
+                                lp.Add(new LyricPhrase(currentPhraseTime + file.OffsetInMs, textBefore));
                             }
 
-                            prevleft = right + 1;
+                            if (TryParseTime(m.Groups[1].Value, out var tagTime))
+                            {
+                                currentPhraseTime = tagTime;
+                            }
+
+                            lastIndex = m.Index + m.Length;
                         }
-                        lp.Add(new(timeMs + file.OffsetInMs
-                            , restOfLine[prevleft..tillnextLeft].TrimStart()));
-                        restOfLine = restOfLine[tillnextLeft..];
+
+                        var textAfter = restOfLine[lastIndex..];
+                        lp.Add(new LyricPhrase(currentPhraseTime + file.OffsetInMs, textAfter + "\n"));
+                    }
+                    else
+                    {
+                        lp.Add(new(timeMs + file.OffsetInMs, restOfLine + "\n"));
                     }
 
-                    lp.Last().Content += '\n';
-
+                    if (lp.Count != 0)
+                    {
+                        return true;
+                    }
                 }
-                else
-                {
-                    lp.Add(new(timeMs + file.OffsetInMs
-                        , restOfLine + "\n"));
-                }
-            }
-
-            if (lp.Count != 0)
-            {
-                return true;
             }
         }
-        lp = null;
 
+        lp = null;
         return false;
     }
 }

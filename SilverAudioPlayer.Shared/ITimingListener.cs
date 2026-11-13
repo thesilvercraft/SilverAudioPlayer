@@ -1,4 +1,3 @@
-
 namespace SilverAudioPlayer.Shared;
 
 public interface ITimingListener
@@ -15,6 +14,7 @@ public interface ITimingListener
     {
         AddTimedEvent(new(time, action));
     }
+
     /// <summary>
     /// Add a new timed event to this listener
     /// <remarks>
@@ -23,18 +23,21 @@ public interface ITimingListener
     /// </summary>
     /// <param name="timedEvent">the timed event</param>
     public void AddTimedEvent(TimedEvent timedEvent);
-    void RemoveTimedEvent(TimedEvent timedEvent);
 
+    void RemoveTimedEvent(TimedEvent timedEvent);
 }
 
 public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
 {
     private ITimingListener? parent = null;
+
     /// <summary>
     /// Time in seconds
     /// </summary>
     public double Time { get; private set; }
+
     private Func<Song, double, bool> Action { get; set; }
+    public Guid Id { get; } = Guid.NewGuid();
 
     /// <summary>
     /// Creates a new timed event
@@ -58,14 +61,12 @@ public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
         if (parent is null) throw new InvalidOperationException("This object doesn't have a parent");
         parent = null;
     }
-    public void Invoke(Song song, double time)
+
+    public void Invoke(Song track, double position)
     {
         try
         {
-            if (Action?.Invoke(song, time) is true)
-            {
-                return;
-            }
+            Action.Invoke(track, position);
         }
         catch (Exception e)
         {
@@ -73,7 +74,6 @@ public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
         }
 
         parent?.RemoveTimedEvent(this);
-
     }
 
     public int Compare(TimedEvent? x, TimedEvent? y)
@@ -81,13 +81,15 @@ public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
         if (ReferenceEquals(x, y)) return 0;
         if (y is null) return 1;
         if (x is null) return -1;
-        return x.Time.CompareTo(y.Time);
+        var cmp = x.Time.CompareTo(y.Time);
+        return cmp != 0 ? cmp : x.Id.CompareTo(y.Id);
     }
 
     public int CompareTo(TimedEvent? other)
     {
         if (ReferenceEquals(this, other)) return 0;
         if (other is null) return 1;
-        return Time.CompareTo(other.Time);
+        var cmp = Time.CompareTo(other.Time);
+        return cmp != 0 ? cmp : Id.CompareTo(other.Id);
     }
 }

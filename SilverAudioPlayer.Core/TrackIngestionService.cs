@@ -33,28 +33,54 @@ public class TrackIngestionService
         return playlistReader != null && playlistReader.TryParse(playlistStream, out var playlist) ? playlist : null;
     }
 
+    private static bool IsHttpUrl(string url) =>
+        url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+        url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+
+    private bool IsPlaylistPath(string file)
+    {
+        var supportedExts = _pluginRegistry.SupportedPlaylistMimes().Item2;
+        var pathToCheck = file;
+        if (IsHttpUrl(file) && Uri.TryCreate(file, UriKind.Absolute, out var uri))
+        {
+            pathToCheck = uri.AbsolutePath;
+        }
+
+        return supportedExts.Any(ext => pathToCheck.EndsWith(ext, StringComparison.OrdinalIgnoreCase));
+    }
+
     public void ProcessFile(string file, bool oneFile)
     {
-        if (_pluginRegistry.SupportedPlaylistMimes().Item2.Any(file.EndsWith))
+        if (IsPlaylistPath(file))
         {
+            var isHttp = IsHttpUrl(file);
             var sp = _getServiceProvider();
-            using var playlistStream = file.StartsWith("http")
+            using var playlistStream = isHttp
                 ? (WrappedStream)new WrappedHttpStream(file, sp.GetRequiredService<HttpClient>())
                 : new WrappedFileStream(file);
             var playlist = TryReadPlaylist(playlistStream);
             if (playlist == null) return;
-            foreach (var song in playlist.Tracks)
+            var trackList = playlist.Tracks.ToList();
+            var totalTracks = trackList.Count;
+            for (var i = 0; i < totalTracks; i++)
             {
+                var song = trackList[i];
+                var isLast = i == totalTracks - 1;
                 foreach (var source in song.TrackLoadInfos)
                 {
-                    AddWithURLBad(source.URL, source.Source == "http", false);
+                    AddWithURLBad(source.URL, IsHttpUrl(source.URL), isLast && oneFile);
                     break;
                 }
+            }
+
+            if (oneFile)
+            {
+                _queueManager.SuggestDoingSort();
             }
         }
         else
         {
-            AddWithURLBad(file, file.StartsWith("http"), oneFile);
+            AddWithURLBad(file, IsHttpUrl(file), oneFile);
         }
     }
 
@@ -68,7 +94,10 @@ public class TrackIngestionService
         if (psps.Any())
         {
             Task.Run(async () =>
-                await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), env));
+            {
+                await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), env);
+                _queueManager.SuggestDoingSort();
+            });
         }
         else
         {
@@ -166,39 +195,26 @@ public class TrackIngestionService
 
     public IEnumerable<string> FilterFiles(IEnumerable<string> files)
     {
-        return files.Where(x => !(
-            x == null ||
-            x.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".txt", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".docx", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".pdf", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".csv", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".md", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".zip", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".7z", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".rar", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".toml", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".yaml", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".xml", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".nfo", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".xmp", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".log", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".cue", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".fpl", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".htm", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".pkf", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".db", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".webp", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".spotdl-cache", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".lrc", StringComparison.InvariantCultureIgnoreCase)
-            || x.EndsWith(".accurip", StringComparison.InvariantCultureIgnoreCase)
-        ));
+        var (mimes, extensions) = _pluginRegistry.SupportedTrackAndPlaylistMimes();
+        return files.Where(file =>
+        {
+            if (extensions.Any(x => file.EndsWith(x, StringComparison.OrdinalIgnoreCase))) return true;
+            if (File.Exists(file))
+            {
+                try
+                {
+                    using var stream = File.OpenRead(file);
+                    var matchedMime = SilverMagicBytes.MagicByteCombos.Match(stream, 0)?.MimeType;
+                    return matchedMime != null && (mimes.Contains(matchedMime.Common) ||
+                                                   matchedMime.AlternativeTypes.Any(mimes.Contains));
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        });
     }
 }

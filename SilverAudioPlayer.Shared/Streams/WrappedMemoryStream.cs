@@ -11,6 +11,7 @@ public class WrappedSharedMemoryStream : WrappedStream
 
     // Overriding the abstract property from WrappedStream
     public override MimeType MimeType { get; }
+    public override bool IsSeekable => true;
 
     /// <summary>
     /// Initializes a new instance of WrappedSharedMemoryStream from a raw byte array.
@@ -48,7 +49,8 @@ public class WrappedSharedMemoryStream : WrappedStream
     public override Stream GetStream()
     {
         if (_isDisposed || _sharedBuffer == null)
-            throw new ObjectDisposedException(nameof(WrappedSharedMemoryStream), "The wrapped memory stream has already been disposed.");
+            throw new ObjectDisposedException(nameof(WrappedSharedMemoryStream),
+                "The wrapped memory stream has already been disposed.");
 
         var instantiatedStream = new SharedMemoryStream(_sharedBuffer);
 
