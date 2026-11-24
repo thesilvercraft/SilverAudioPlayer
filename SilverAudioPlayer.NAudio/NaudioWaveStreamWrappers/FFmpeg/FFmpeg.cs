@@ -13,14 +13,25 @@ namespace SilverAudioPlayer.Any.PlayProvider.NAudio.NaudioWaveStreamWrappers;
 [Export(typeof(INaudioWaveStreamWrapper))]
 public class FFmpeg : INaudioWaveStreamWrapper
 {
+    private static int _initialized;
+    private static readonly Lock InitLock = new();
+    // Keep delegate alive for the lifetime of the process because native FFmpeg stores the function pointer.
+    private static unsafe av_log_set_callback_callback? _logCallback;
+
     public FFmpeg()
     {
         if (!SupportedOnPlatform)
         {
             Log.Error("ffmpeg not found, not supporting ffmpeg playback");
         }
-        else
+    }
+
+    private static void EnsureInitialized()
+    {
+        if (Volatile.Read(ref _initialized) == 1) return;
+        lock (InitLock)
         {
+            if (_initialized == 1) return;
             unsafe
             {
                 if (OperatingSystem.IsLinux())
@@ -35,27 +46,30 @@ public class FFmpeg : INaudioWaveStreamWrapper
                     ffmpeg.RootPath = possiblePaths.FirstOrDefault(path =>
                         File.Exists(Path.Combine(path, "libavcodec.so"))) ?? possiblePaths.Last();
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                else if (OperatingSystem.IsWindows())
                 {
                     var current = AppContext.BaseDirectory;
-                    string[] placesToCheck = [Path.Combine(current, "FFmpeg", "bin", Environment.Is64BitProcess ? "x64" : "x86"),
+                    string[] placesToCheck =
+                    [
+                        Path.Combine(current, "FFmpeg", "bin", Environment.Is64BitProcess ? "x64" : "x86"),
                         current
                     ];
                     foreach (var binaries in placesToCheck)
                     {
                         if (!Directory.Exists(binaries)) continue;
                         ffmpeg.RootPath = binaries;
-                        return;
+                        break;
                     }
                 }
+
                 Log.Information("FFmpeg version info: {AvVersionInfo}", ffmpeg.av_version_info());
                 ffmpeg.av_log_set_level(Debugger.IsAttached ? ffmpeg.AV_LOG_DEBUG : ffmpeg.AV_LOG_INFO);
 
-                av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
+                _logCallback ??= (p0, level, format, vl) =>
                 {
                     if (level > ffmpeg.av_log_get_level()) return;
 
-                    var lineSize = 1024;
+                    const int lineSize = 1024;
                     var lineBuffer = stackalloc byte[lineSize];
                     var printPrefix = 1;
                     ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
@@ -69,7 +83,6 @@ public class FFmpeg : INaudioWaveStreamWrapper
                         case ffmpeg.AV_LOG_ERROR:
                             Log.Error(line);
                             break;
-                       
                         case ffmpeg.AV_LOG_PANIC:
                         case ffmpeg.AV_LOG_FATAL:
                             Log.Fatal(line);
@@ -85,13 +98,15 @@ public class FFmpeg : INaudioWaveStreamWrapper
                         default:
                             Log.Information(line);
                             break;
-                            
                     }
                 };
-                ffmpeg.av_log_set_callback(logCallback);
+                ffmpeg.av_log_set_callback(_logCallback);
             }
+
+            Volatile.Write(ref _initialized, 1);
         }
     }
+
     // opus in mkv (webm) works with current position
     // flac crashes with null exception because framedata only has one channel that's not null???
     // mp3 freaks out with current position but plays
@@ -104,7 +119,11 @@ public class FFmpeg : INaudioWaveStreamWrapper
     "/usr/lib64/libavcodec.so",
     "libavcodec-58.dll","avcodec-59.dll"];
 
-    public IWaveProvider GetStream(Stream stream) => new CSCoreReader(new FFMpegWaveStream(stream));
+    public IWaveProvider GetStream(Stream stream)
+    {
+        EnsureInitialized();
+        return new CSCoreReader(new FFMpegWaveStream(stream));
+    }
 
 }
 #endif

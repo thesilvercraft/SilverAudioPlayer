@@ -1,8 +1,7 @@
-﻿using System.Composition;
+using System.Composition;
 using System.Globalization;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
-using System.Web;
 using Serilog;
 
 namespace SilverAudioPlayer.Any.PlayListReader.M3U;
@@ -42,9 +41,9 @@ public class M3UPlaylistParser : IPlaylistReader
         }
         else
         {
-            if (relF.StartsWith("file://"))
+            if (relF.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
-                relF = HttpUtility.UrlDecode( new Uri(relF).AbsolutePath);
+                relF = new Uri(relF).LocalPath;
             }
             return Path.GetFullPath(Path.Combine(parent, relF));
         }

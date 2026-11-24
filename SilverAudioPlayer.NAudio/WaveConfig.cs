@@ -17,6 +17,12 @@ public class WaveConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChang
     public float PreampNoReplayGain { get; set; } = 0;
     [Comment("The preamp to use for tracks with replaygain information (in dB), replaygain must be enabled")]
     public float PreampReplayGain { get; set; } = 0;
+    [Comment("PortAudio output device name (or 'Default')")]
+    public string PortAudioDevice { get; set; } = "Default";
+    [Comment("Target PortAudio stream output latency in milliseconds (higher values improve stability when sharing the device)")]
+    public int PortAudioLatencyMs { get; set; } = 50;
+    [Comment("Size of the background decode ring buffer in milliseconds")]
+    public int DecodeBufferMs { get; set; } = 100;
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {
         PropertyChanged?.Invoke(e, a);

@@ -20,7 +20,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
     {
         Task.Run(() =>
         {
-        Seeked.Invoke((long)(e.TotalSeconds*1000*1000));
+        Seeked?.Invoke((long)(e.TotalSeconds*1000*1000));
         });
     }
 
@@ -39,7 +39,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
             {
                 new("PlaybackStatus", await GetPlaybackStatusAsync())
             });
-            PropertyChanged.Invoke(propertyChanges);
+            PropertyChanged?.Invoke(propertyChanges);
         });
     }
     static string TempFolder = Path.Combine(Path.GetTempPath(), $"sap-albumart-p{Environment.ProcessId}");
@@ -77,7 +77,7 @@ public class MprisPlayer : IPlayer, IMediaPlayer2, IMprisTrackList
             [
                 new("Metadata", await GetMetadataAsync())
             ]);
-            PropertyChanged.Invoke(propertyChanges);
+            PropertyChanged?.Invoke(propertyChanges);
         });
 
     }

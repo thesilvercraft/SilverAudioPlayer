@@ -1,4 +1,4 @@
-﻿using LibVLCSharp.Shared;
+using LibVLCSharp.Shared;
 using SilverAudioPlayer.Shared;
 using SilverMagicBytes;
 using System.Composition;
@@ -6,9 +6,9 @@ using System.Composition;
 namespace SilverAudioPlayer.Any.PlayProvider.libVLC
 {
   [Export(typeof(IPlayProvider))]
-  public class VLCPlayProvider : IPlayProvider
+  public class VLCPlayProvider : IPlayProvider, IDisposable
   {
-    LibVLC libvlc = new();
+    private readonly Lazy<LibVLC> _libvlc = new(() => new LibVLC());
     public IReadOnlyList<MimeType>? SupportedMimes => new List<MimeType>() { KnownMimes.FLACMime, KnownMimes.AACMime,
           KnownMimes.AiffMime, KnownMimes.WAVMime, KnownMimes.MP3Mime, KnownMimes.MidMime, KnownMimes.Mp2Mime, KnownMimes.Mp4Mime, KnownMimes.MpegMime, KnownMimes.OGGMime };
 
@@ -540,12 +540,22 @@ That's all there is to it!";
 
     public IPlay? GetPlayer(WrappedStream stream, IPlayerEnvironment? playerEnvironment = null)
     {
-      return new VLCPlayer(new MediaPlayer(new Media(libvlc, new StreamMediaInput(stream.GetStream()))));
+      return new VLCPlayer(new MediaPlayer(new Media(_libvlc.Value, new StreamMediaInput(stream.GetStream()))));
     }
 
     public Task OnStartup()
     {
       return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+      if (_libvlc.IsValueCreated)
+      {
+        _libvlc.Value.Dispose();
+      }
+
+      GC.SuppressFinalize(this);
     }
   }
 }

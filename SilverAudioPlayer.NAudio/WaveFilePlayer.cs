@@ -36,6 +36,10 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     private IWaveProvider? _currentWaveProvider;
 
+    private string? _activePortAudioDevice;
+    private int _activePortAudioLatencyMs;
+    private int _activeDecodeBufferMs;
+
     public WaveFilePlayer(IMediator m)
     {
         Debug.WriteLine("NewInstance of WaveFilePlayer");
@@ -250,12 +254,20 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         {
             var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
 
-            return currentProvider switch
+            var pos = currentProvider switch
             {
                 WaveStream ws => ws.CurrentTime,
                 IWaveStream iws => iws.CurrentTime,
                 _ => TimeSpan.Zero
             };
+
+            if (outputDevice is CSCorePlayer csCorePlayer)
+            {
+                pos -= csCorePlayer.OutputLatency;
+                if (pos < TimeSpan.Zero) pos = TimeSpan.Zero;
+            }
+
+            return pos;
         }
 
         return TimeSpan.Zero;
@@ -266,21 +278,31 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
         if (outputDevice == null) return;
         var currentProvider = _gaplessWaveProvider?.CurrentProvider ?? audioFile;
 
-        switch (currentProvider)
+        void PerformSeek()
         {
-            case WaveStream ws:
+            switch (currentProvider)
+            {
+                case WaveStream ws:
+                    ws.SetPosition(position);
+                    break;
+                case IWaveStream iws:
+                    iws.SetPosition(position);
+                    break;
+            }
+        }
 
-                ws.SetPosition(position);
-                break;
+        if (currentProvider is not (WaveStream or IWaveStream))
+        {
+            return;
+        }
 
-            case IWaveStream iws:
-
-                iws.SetPosition(position);
-                break;
-
-            default:
-
-                return;
+        if (outputDevice is CSCorePlayer csCorePlayer)
+        {
+            csCorePlayer.ExecuteSeek(PerformSeek);
+        }
+        else
+        {
+            PerformSeek();
         }
 
         PositionChanged?.Invoke(this, position);
@@ -418,6 +440,14 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
                     }
                 }
             }
+        }
+
+        if (outputDevice != null && HasAudioBackendConfigChanged())
+        {
+            outputDevice.PlaybackStopped -= OutputDeviceOnPlaybackStopped;
+            outputDevice.Stop();
+            outputDevice.Dispose();
+            outputDevice = null;
         }
 
         if (outputDevice == null)
@@ -585,7 +615,15 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public static bool IsBackendAvaliable()
     {
-        return OperatingSystem.IsWindows() || PortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
+        return OperatingSystem.IsWindows() || SapPortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
+    }
+
+    private bool HasAudioBackendConfigChanged()
+    {
+        if (OperatingSystem.IsWindows() || Config == null) return false;
+        return !string.Equals(_activePortAudioDevice, Config.PortAudioDevice, StringComparison.OrdinalIgnoreCase)
+               || _activePortAudioLatencyMs != Config.PortAudioLatencyMs
+               || _activeDecodeBufferMs != Config.DecodeBufferMs;
     }
 
     bool? BlacklistPortAudio = null;
@@ -609,10 +647,18 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         if (!OperatingSystem.IsWindows())
         {
-            if (PortAudioSoundOut.IsSupported() && CheckForBlocklist() != true)
+            if (SapPortAudioSoundOut.IsSupported() && CheckForBlocklist() != true)
             {
-                Log.Information("initing backend CSCorePlayer PortAudioSoundOut");
-                outputDevice = new CSCorePlayer(new PortAudioSoundOut());
+                _activePortAudioDevice = Config?.PortAudioDevice ?? SapPortAudioSoundOut.DefaultDeviceLabel;
+                _activePortAudioLatencyMs = Config?.PortAudioLatencyMs ?? 50;
+                _activeDecodeBufferMs = Config?.DecodeBufferMs ?? 100;
+                Log.Information(
+                    "initing backend CSCorePlayer SapPortAudioSoundOut (Device={Device}, LatencyMs={LatencyMs}, DecodeBufferMs={DecodeBufferMs})",
+                    _activePortAudioDevice, _activePortAudioLatencyMs, _activeDecodeBufferMs);
+                outputDevice = new CSCorePlayer(new SapPortAudioSoundOut(
+                    _activePortAudioDevice,
+                    TimeSpan.FromMilliseconds(_activePortAudioLatencyMs),
+                    TimeSpan.FromMilliseconds(_activeDecodeBufferMs)));
             }
 
             else if (ALSoundOut.IsSupported)

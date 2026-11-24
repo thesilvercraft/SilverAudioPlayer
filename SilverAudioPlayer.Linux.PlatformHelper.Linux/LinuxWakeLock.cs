@@ -1,4 +1,4 @@
-﻿using System.Composition;
+using System.Composition;
 using System.Diagnostics;
 using SilverAudioPlayer.Shared;
 using Tmds.DBus;
@@ -8,14 +8,9 @@ namespace SilverAudioPlayer.Linux.PlatformHelper.Linux;
 [Export(typeof(IWakeLockProvider))]
 public class LinuxWakeLock : IWakeLockProvider
 {
-    public LinuxWakeLock()
-    {
-        var dSession = Connection.Session;
-        _screenSaver = dSession.CreateProxy<IScreenSaver>("org.freedesktop.ScreenSaver",
-            "/org/freedesktop/ScreenSaver");
-    }
+    private readonly Lazy<IScreenSaver> _screenSaver = new(() =>
+        Connection.Session.CreateProxy<IScreenSaver>("org.freedesktop.ScreenSaver", "/org/freedesktop/ScreenSaver"));
 
-    private IScreenSaver _screenSaver;
     public string Name => "Linux wakelock org.freedesktop.ScreenSaver";
 
     public string Description => "Uses Dbus";
@@ -45,7 +40,7 @@ public class LinuxWakeLock : IWakeLockProvider
     {
         Task.Run(async () =>
         {
-            Cookie = await _screenSaver.InhibitAsync(
+            Cookie = await _screenSaver.Value.InhibitAsync(
                 "Catenoid",
                 "Playing music");
             Debug.WriteLine("Obtained cookie {0}", Cookie);
@@ -60,7 +55,7 @@ public class LinuxWakeLock : IWakeLockProvider
             if (Cookie is not null)
             {
                 Debug.WriteLine("Invalidate cookie {0}", Cookie);
-                await _screenSaver.UnInhibitAsync((uint)Cookie);
+                await _screenSaver.Value.UnInhibitAsync((uint)Cookie);
             }
         });      
     }

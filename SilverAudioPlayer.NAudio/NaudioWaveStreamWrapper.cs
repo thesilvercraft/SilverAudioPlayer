@@ -1,4 +1,4 @@
-﻿using System.Composition;
+using System.Composition;
 using System.Diagnostics;
 using NAudio.Wave;
 using Silver.Composition;
@@ -21,12 +21,9 @@ public interface INaudioWaveStreamWrapper
 
 public static class NaudioWaveStreamWrapperTypeHolder
 {
-    private static NaudioWaveStreamWrapperTypes? instnc = null;
+    private static readonly Lazy<NaudioWaveStreamWrapperTypes> _instance = new(() => new NaudioWaveStreamWrapperTypes());
 
-    public static NaudioWaveStreamWrapperTypes Get()
-    {
-        return instnc ??= new();
-    }
+    public static NaudioWaveStreamWrapperTypes Get() => _instance.Value;
 }
 
 [Export(typeof(IPlayProvider))]
@@ -146,6 +143,60 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
                         if (ConfigObject.Value is not WaveConfig x) return;
                         x.PreampReplayGain = (float)val;
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PreampReplayGain"));
+                        ApplyConfig(x);
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("PortAudio output device:"),
+                new SimpleDropDown
+                {
+                    GetOptions = () => SapPortAudioSoundOut.GetOutputDeviceNames(),
+                    GetPlaceholder = () => SapPortAudioSoundOut.DefaultDeviceLabel,
+                    GetSelection = () => ConfigObject.Value is WaveConfig x && !string.IsNullOrWhiteSpace(x.PortAudioDevice)
+                        ? x.PortAudioDevice
+                        : SapPortAudioSoundOut.DefaultDeviceLabel,
+                    SetSelection = s =>
+                    {
+                        if (ConfigObject.Value is not WaveConfig x) return;
+                        x.PortAudioDevice = string.IsNullOrWhiteSpace(s) ? SapPortAudioSoundOut.DefaultDeviceLabel : s;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PortAudioDevice"));
+                        ApplyConfig(x);
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("PortAudio latency (ms):"),
+                new SimpleNumericUpDown
+                {
+                    Minimum = 10,
+                    Maximum = 500,
+                    Increment = 5,
+                    DecimalPlaces = 0,
+                    GetValue = () => ConfigObject.Value is WaveConfig x ? x.PortAudioLatencyMs : 50,
+                    ValueChanged = val =>
+                    {
+                        if (ConfigObject.Value is not WaveConfig x) return;
+                        x.PortAudioLatencyMs = (int)val;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PortAudioLatencyMs"));
+                        ApplyConfig(x);
+                    }
+                }
+            ),
+            new SimpleRow(
+                new SimpleLabel("Decode ring buffer (ms):"),
+                new SimpleNumericUpDown
+                {
+                    Minimum = 20,
+                    Maximum = 500,
+                    Increment = 10,
+                    DecimalPlaces = 0,
+                    GetValue = () => ConfigObject.Value is WaveConfig x ? x.DecodeBufferMs : 100,
+                    ValueChanged = val =>
+                    {
+                        if (ConfigObject.Value is not WaveConfig x) return;
+                        x.DecodeBufferMs = (int)val;
+                        ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("DecodeBufferMs"));
                         ApplyConfig(x);
                     }
                 }

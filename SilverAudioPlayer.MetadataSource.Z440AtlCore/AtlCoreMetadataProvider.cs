@@ -1,4 +1,4 @@
-﻿using System.Composition;
+using System.Composition;
 using ATL;
 using ATL.Logging;
 using Microsoft.Extensions.Logging;
@@ -88,8 +88,30 @@ SilverAudioPlayer.MetadataSource.Z440AtlCore
     {
         if (stream is WrappedHttpStream wrappedHttpStream && wrappedHttpStream.Url.Contains(".googlevideo.com"))
             return false;
-        using var s = stream.GetStream();
         if (!GetAllowedMidi() && stream.MimeType == KnownMimes.MidMime) return false;
+
+        var factory = ATL.AudioData.AudioDataIOFactory.GetInstance();
+        if (factory.getFormatsFromMimeType(stream.MimeType.Common) is { Count: > 0 } mimeFormats &&
+            mimeFormats.Any(f => f.ID != -1))
+        {
+            return true;
+        }
+
+        if (stream.MimeType.FileExtensions is { Length: > 0 } extensions)
+        {
+            foreach (var ext in extensions)
+            {
+                if (factory.getFormatsFromPath("dummy" + ext) is { Count: > 0 } pathFormats &&
+                    pathFormats.Any(f => f.ID != -1))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        using var s = stream.GetStream();
         return new Track(s, stream.MimeType.RealMimeTypeToFakeMimeType()).AudioFormat.ID != -1;
     }
 
