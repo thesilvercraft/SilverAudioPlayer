@@ -9,6 +9,7 @@ public class QueueManager
     private readonly PlayerContext _playerContext;
     private readonly QueueSorter _queueSorter;
     private readonly ILogger? _log;
+    private long _queueVersion;
 
     public Song? NextSong { get; set; }
 
@@ -104,7 +105,11 @@ public class QueueManager
     {
         DoQueueManipulationAction(() =>
         {
-            lock (Queue) Queue.Add(song);
+            lock (Queue)
+            {
+                Queue.Add(song);
+                _queueVersion++;
+            }
 
             QueueModified?.Invoke();
         });
@@ -134,6 +139,7 @@ public class QueueManager
             }
 
             Queue.Insert(targetIndex, song);
+            _queueVersion++;
 
             if (CurrentSong != null)
             {
@@ -171,6 +177,7 @@ public class QueueManager
             if (index == -1) return;
 
             Queue.RemoveAt(index);
+            _queueVersion++;
         }
 
         song.Dispose();
@@ -194,14 +201,24 @@ public class QueueManager
     {
         DoQueueManipulationAction(() =>
         {
+            List<Song> tracksToRemove;
             lock (Queue)
             {
-                var tracksToRemove = Queue.Where(track => !ReferenceEquals(CurrentSong, track)).ToList();
+                tracksToRemove = Queue.Where(track => !ReferenceEquals(CurrentSong, track)).ToList();
                 foreach (var track in tracksToRemove)
                 {
                     Queue.Remove(track);
-                    track.Dispose();
                 }
+
+                if (tracksToRemove.Count > 0)
+                {
+                    _queueVersion++;
+                }
+            }
+
+            foreach (var track in tracksToRemove)
+            {
+                track.Dispose();
             }
 
             UpdateNextSongReference();
@@ -219,26 +236,61 @@ public class QueueManager
         }
     }
 
+    public (long Version, List<Song> Songs) GetQueueCopyWithVersion()
+    {
+        lock (Queue)
+        {
+            var list = GetQueueSnapshot is { } snapshot ? snapshot() : Queue.ToList();
+            return (_queueVersion, list);
+        }
+    }
+
+    public bool ApplySortedQueue(long expectedVersion, List<Song> sortedSongs)
+    {
+        var applied = false;
+        DoQueueManipulationAction(() =>
+        {
+            lock (Queue)
+            {
+                if (_queueVersion != expectedVersion)
+                {
+                    _log?.Debug("Skipping stale queue sort result (expected version {Expected}, actual {Actual})",
+                        expectedVersion, _queueVersion);
+                    return;
+                }
+
+                Queue.Clear();
+                foreach (var song in sortedSongs)
+                {
+                    Queue.Add(song);
+                }
+
+                _queueVersion++;
+                applied = true;
+            }
+
+            UpdateNextSongReference();
+            QueueModified?.Invoke();
+        });
+        return applied;
+    }
+
     public void SuggestDoingSort()
     {
+        long capturedVersion = 0;
         _queueSorter.SuggestDoingSort(
-            getQueueSnapshot: GetQueueCopy,
+            getQueueSnapshot: () =>
+            {
+                var (version, songs) = GetQueueCopyWithVersion();
+                capturedVersion = version;
+                return songs;
+            },
             applySortedQueue: sortedSongs =>
             {
-                DoQueueManipulationAction(() =>
+                if (!ApplySortedQueue(capturedVersion, sortedSongs))
                 {
-                    lock (Queue)
-                    {
-                        Queue.Clear();
-                        foreach (var song in sortedSongs)
-                        {
-                            Queue.Add(song);
-                        }
-                    }
-
-                    UpdateNextSongReference();
-                    QueueModified?.Invoke();
-                });
+                    SuggestDoingSort();
+                }
             },
             log: _log
         );

@@ -10,4 +10,7 @@
         <PackageReference Include="System.Composition" Version="10.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
     </ItemGroup>
+    <ItemGroup>
+        <InternalsVisibleTo Include="SilverAudioPlayer.Tests" />
+    </ItemGroup>
 </Project>

@@ -15,8 +15,10 @@ public class PlaybackEngine
     private readonly ILogger? _log;
     private readonly Lock _gaplessEnqueueLock = new();
 
-    private bool _changeAllowed = true;
+    private int _changingTrack;
     private int _handlingPlaybackStopped;
+    private long _playbackGeneration;
+    private Song? _enqueuedGaplessSong;
     public bool StopAutoLoading { get; set; }
 
     public IPlay? Player { get; set; }
@@ -97,48 +99,49 @@ public class PlaybackEngine
 
     public void Next()
     {
-        if (!_changeAllowed || _playerContext.CurrentSong == null) return;
-        var queue = _queueManager.GetQueueCopy();
-        var a = queue.IndexOf(_playerContext.CurrentSong);
-        if (a == -1) return;
+        if (_playerContext.CurrentSong == null) return;
+        if (Interlocked.CompareExchange(ref _changingTrack, 1, 0) != 0) return;
 
-        Song? targetSong = null;
-        if (a + 1 < queue.Count)
-        {
-            targetSong = queue[a + 1];
-        }
-        else if (_playerContext.LoopType == RepeatState.Queue && queue.Count > 0)
-        {
-            targetSong = queue[0];
-        }
-
-        if (targetSong == null) return;
-
-        _changeAllowed = false;
         try
         {
+            var queue = _queueManager.GetQueueCopy();
+            var a = queue.IndexOf(_playerContext.CurrentSong);
+            if (a == -1) return;
+
+            Song? targetSong = null;
+            if (a + 1 < queue.Count)
+            {
+                targetSong = queue[a + 1];
+            }
+            else if (_playerContext.LoopType == RepeatState.Queue && queue.Count > 0)
+            {
+                targetSong = queue[0];
+            }
+
+            if (targetSong == null) return;
             HandleSongChanging(targetSong);
         }
         finally
         {
-            _changeAllowed = true;
+            Volatile.Write(ref _changingTrack, 0);
         }
     }
 
     public void Previous()
     {
-        if (!_changeAllowed || _playerContext.CurrentSong == null) return;
-        var queue = _queueManager.GetQueueCopy();
-        var a = queue.IndexOf(_playerContext.CurrentSong);
-        if (a <= 0) return;
-        _changeAllowed = false;
+        if (_playerContext.CurrentSong == null) return;
+        if (Interlocked.CompareExchange(ref _changingTrack, 1, 0) != 0) return;
+
         try
         {
+            var queue = _queueManager.GetQueueCopy();
+            var a = queue.IndexOf(_playerContext.CurrentSong);
+            if (a <= 0) return;
             HandleSongChanging(queue[a - 1]);
         }
         finally
         {
-            _changeAllowed = true;
+            Volatile.Write(ref _changingTrack, 0);
         }
     }
 
@@ -167,6 +170,12 @@ public class PlaybackEngine
     public void RemoveTrack()
     {
         _log?.Debug("PlaybackEngine.RemoveTrack() called, stopping Player");
+        Interlocked.Increment(ref _playbackGeneration);
+        lock (_gaplessEnqueueLock)
+        {
+            _enqueuedGaplessSong = null;
+        }
+
         Player?.Stop();
         SendIfStateIsNotNull();
     }
@@ -200,6 +209,12 @@ public class PlaybackEngine
             }
         }
 
+        Interlocked.Increment(ref _playbackGeneration);
+        lock (_gaplessEnqueueLock)
+        {
+            _enqueuedGaplessSong = null;
+        }
+
         _log?.Debug("PlaybackEngine.StartPlayingAsync stopping existing player before load");
         Player?.Stop();
         var newPlayerRequired = true;
@@ -208,7 +223,23 @@ public class PlaybackEngine
             newPlayerRequired = false;
             _log?.Debug("Reusing existing player ({PlayerType}) for stream mime {Mime}", Player.GetType().Name,
                 _playerContext.CurrentSong.Stream.MimeType);
-            p.LoadStream(_playerContext.CurrentSong.Stream);
+            try
+            {
+                p.LoadStream(_playerContext.CurrentSong.Stream);
+            }
+            catch (Exception e)
+            {
+                _log?.Error(e, "EXCEPTION during LoadStream on reused player");
+                Player.PositionChanged -= OnPositionChanged;
+                Player.TrackEnd -= OutputDevice_PlaybackStopped;
+                if (Player is IPlayLancer oldLancer)
+                {
+                    oldLancer.NextStreamStarted -= OnNextStreamStarted;
+                }
+
+                Player.Dispose();
+                Player = null;
+            }
         }
         else
         {
@@ -270,19 +301,32 @@ public class PlaybackEngine
             _log?.Debug("Calling Player.Play()");
             Player.Play();
             var currentPlayer = Player;
+            var startedGeneration = Volatile.Read(ref _playbackGeneration);
             _ = Task.Run(async () =>
             {
-                await Task.Delay(600);
-                if (ReferenceEquals(Player, currentPlayer) && currentPlayer is ILoop loop)
+                try
                 {
-                    if (_playerContext.LoopType == RepeatState.One)
+                    await Task.Delay(600);
+                    if (Volatile.Read(ref _playbackGeneration) == startedGeneration &&
+                        ReferenceEquals(Player, currentPlayer) &&
+                        currentPlayer is ILoop loop)
                     {
-                        loop.EnableLoop();
+                        if (_playerContext.LoopType == RepeatState.One)
+                        {
+                            loop.EnableLoop();
+                        }
+                        else
+                        {
+                            loop.DisableLoop();
+                        }
                     }
-                    else
-                    {
-                        loop.DisableLoop();
-                    }
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+                catch (Exception ex)
+                {
+                    _log?.Error(ex, "Failed configuring delayed loop state");
                 }
             });
 
@@ -304,9 +348,10 @@ public class PlaybackEngine
 
     public void HandleSongChanging(Song nextSong)
     {
+        ArgumentNullException.ThrowIfNull(nextSong);
         _log?.Information(
             "HandleSongChanging: nextSong={NextSong}, currentSong={CurrentSong}, current StopAutoLoading={StopAutoLoading}",
-            nextSong?.Name, _playerContext.CurrentSong?.Name, StopAutoLoading);
+            nextSong.Name, _playerContext.CurrentSong?.Name, StopAutoLoading);
         StopAutoLoading = true;
         _playerContext.CurrentSong = nextSong;
         Debug.Assert(_playerContext.CurrentSong.Equals(nextSong));
@@ -314,17 +359,27 @@ public class PlaybackEngine
         RemoveTrack();
         _log?.Debug("HandleSongChanging: Calling StartPlaying(resetsal: true)");
         StartPlaying(resetsal: true);
-        _log?.Information("HandleSongChanging finished for {Song}", nextSong?.Name);
+        _log?.Information("HandleSongChanging finished for {Song}", nextSong.Name);
     }
 
     public void OutputDevice_PlaybackStopped(object? sender, object o)
     {
         if (Interlocked.Exchange(ref _handlingPlaybackStopped, 1) != 0) return;
 
+        var expectedGeneration = Volatile.Read(ref _playbackGeneration);
+        var expectedPlayer = Player;
+
         _ = Task.Run(() =>
         {
             try
             {
+                if (Volatile.Read(ref _playbackGeneration) != expectedGeneration ||
+                    !ReferenceEquals(Player, expectedPlayer))
+                {
+                    _log?.Debug("Ignoring stale PlaybackStopped callback for superseded playback generation");
+                    return;
+                }
+
                 HandlePlaybackStopped(sender, o);
             }
             catch (Exception e)
@@ -389,15 +444,18 @@ public class PlaybackEngine
             else if (_queueManager.NextSong != null)
             {
                 _log?.Information("Advancing to NextSong from queue manager: {NextSong}", _queueManager.NextSong.Name);
-                _playerContext.CurrentSong?.Dispose();
+                var previousSong = _playerContext.CurrentSong;
                 HandleSongChanging(_queueManager.NextSong);
+                previousSong?.Dispose();
                 _queueManager.NextSong = null;
             }
             else
             {
                 _log?.Information("No further song to play, clearing CurrentSong");
-                _playerContext.CurrentSong?.Dispose();
+                var previousSong = _playerContext.CurrentSong;
                 _playerContext.CurrentSong = null;
+                RemoveTrack();
+                previousSong?.Dispose();
             }
         }
     }
@@ -417,23 +475,35 @@ public class PlaybackEngine
             var nextSong = _queueManager.GetNextSongInQueue();
             if (nextSong == null) return;
 
-            if (_queueManager.NextSong != null && ReferenceEquals(nextSong, _queueManager.NextSong)) return;
+            if (ReferenceEquals(nextSong, _enqueuedGaplessSong)) return;
 
             try
             {
+                if (_enqueuedGaplessSong != null)
+                {
+                    if (lancer.ReplaceNextStream(nextSong.Stream))
+                    {
+                        _enqueuedGaplessSong = nextSong;
+                        _queueManager.NextSong = nextSong;
+                        _log?.Debug("Replaced queued stream for gapless playback: {NextSong}", nextSong.URI);
+                        return;
+                    }
+                }
+
                 if (lancer.EnqueueNextStream(nextSong.Stream))
                 {
+                    _enqueuedGaplessSong = nextSong;
                     _queueManager.NextSong = nextSong;
-                    _log?.Debug("Enqueued next stream for gapless playback after add: {NextSong}", nextSong.URI);
+                    _log?.Debug("Enqueued next stream for gapless playback: {NextSong}", nextSong.URI);
                 }
                 else
                 {
-                    _log?.Debug("Player refused to enqueue next stream after add: {NextSong}", nextSong.URI);
+                    _log?.Debug("Player refused to enqueue next stream: {NextSong}", nextSong.URI);
                 }
             }
             catch (Exception ex)
             {
-                _log?.Error(ex, "Failed to enqueue next stream after add: {NextSong}", nextSong.URI);
+                _log?.Error(ex, "Failed to enqueue next stream: {NextSong}", nextSong.URI);
             }
         }
     }
@@ -441,15 +511,24 @@ public class PlaybackEngine
     public bool ReplaceNextStreamForGaplessPlayback(Song nextSong)
     {
         if (nextSong == null) return false;
-        if (Player is not IPlayLancer lancer) return false;
-        try
+        lock (_gaplessEnqueueLock)
         {
-            return lancer.ReplaceNextStream(nextSong.Stream);
-        }
-        catch (Exception e)
-        {
-            _log?.Error(e, "Failed to replace next stream for gapless playback");
-            return false;
+            if (Player is not IPlayLancer lancer) return false;
+            try
+            {
+                var replaced = lancer.ReplaceNextStream(nextSong.Stream);
+                if (replaced)
+                {
+                    _enqueuedGaplessSong = nextSong;
+                }
+
+                return replaced;
+            }
+            catch (Exception e)
+            {
+                _log?.Error(e, "Failed to replace next stream for gapless playback");
+                return false;
+            }
         }
     }
 
@@ -460,14 +539,22 @@ public class PlaybackEngine
 
     private void OnNextStreamStarted(object? sender, EventArgs e)
     {
-        var promotedSong = _queueManager.GetNextSongInQueue();
+        Song? promotedSong;
+        lock (_gaplessEnqueueLock)
+        {
+            promotedSong = _enqueuedGaplessSong ?? _queueManager.GetNextSongInQueue();
+            _enqueuedGaplessSong = null;
+        }
+
         _log?.Information(
             "PlaybackEngine.OnNextStreamStarted fired from Gapless provider. Promoted song: {PromotedSong}",
             promotedSong?.Name);
         if (promotedSong == null) return;
 
+        var expectedPlayer = sender ?? Player;
         _uiBridge.PostToUi(() =>
         {
+            if (!ReferenceEquals(Player, expectedPlayer)) return;
             _playerContext.CurrentSong = promotedSong;
             _queueManager.UpdateNextSongReference();
             _musicStatusCoordinator.TrackChangedNotification(promotedSong);

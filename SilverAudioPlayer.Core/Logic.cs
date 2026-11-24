@@ -233,8 +233,15 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
             case LoadSongMessage m:
                 _ = Task.Run(() =>
                 {
-                    if (m.AdditionalMetadata == null) LoadSong(m.Stream);
-                    else LoadSong(m.Stream, m.AdditionalMetadata);
+                    try
+                    {
+                        if (m.AdditionalMetadata == null) LoadSong(m.Stream);
+                        else LoadSong(m.Stream, m.AdditionalMetadata);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log?.Error(ex, "Failed handling LoadSongMessage");
+                    }
                 });
                 break;
             case LoadSongsMessage m: LoadSongs(m.Streams); break;
@@ -415,29 +422,17 @@ public class Logic<T> : ILogic, ILogicImportable where T : PlayerContext
 
     public Task DoSortAsync(CancellationToken cancellationToken)
     {
+        long capturedVersion = 0;
         return QueueSorter.DoSortAsync(
             () =>
             {
-                lock (QueueManager.Queue)
-                {
-                    return QueueManager.Queue.ToList();
-                }
+                var (version, songs) = QueueManager.GetQueueCopyWithVersion();
+                capturedVersion = version;
+                return songs;
             },
             sortedSongs =>
             {
-                QueueManager.DoQueueManipulationAction(() =>
-                {
-                    lock (QueueManager.Queue)
-                    {
-                        QueueManager.Queue.Clear();
-                        foreach (var song in sortedSongs)
-                        {
-                            QueueManager.Queue.Add(song);
-                        }
-                    }
-
-                    QueueManager.UpdateNextSongReference();
-                });
+                QueueManager.ApplySortedQueue(capturedVersion, sortedSongs);
             },
             cancellationToken,
             Log

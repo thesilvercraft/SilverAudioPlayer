@@ -39,10 +39,28 @@ public class ReplayGainHandler
         };
         return;
 
+        string? TryGetEntryValue(string key)
+        {
+            if (entries.TryGetValue(key, out var exact))
+            {
+                return exact;
+            }
+
+            foreach (var kvp in entries)
+            {
+                if (string.Equals(kvp.Key, key, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kvp.Value;
+                }
+            }
+
+            return null;
+        }
+
         float? TryGetReplayGainPeak(bool isAlbum)
         {
-            if (entries.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_PEAK", out var peakStr) &&
-                float.TryParse(peakStr, CultureInfo.InvariantCulture, out var peakVal))
+            var peakStr = TryGetEntryValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_PEAK");
+            if (peakStr != null && float.TryParse(peakStr, CultureInfo.InvariantCulture, out var peakVal))
             {
                 return peakVal;
             }
@@ -52,7 +70,8 @@ public class ReplayGainHandler
         bool TryGetReplayGain(bool isAlbum, out float gain)
         {
             gain = 0;
-            if (!entries.TryGetValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_GAIN", out var gainStr)) return false;
+            var gainStr = TryGetEntryValue($"REPLAYGAIN_{(isAlbum ? "ALBUM" : "TRACK")}_GAIN");
+            if (gainStr == null) return false;
             var cleanVal = gainStr.Replace("dB", "", StringComparison.OrdinalIgnoreCase).Trim();
             return float.TryParse(cleanVal, CultureInfo.InvariantCulture, out gain);
         }

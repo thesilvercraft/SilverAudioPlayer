@@ -40,7 +40,11 @@ public class MusicStatusCoordinator
     {
         lock (_lock)
         {
-            LoadedMusicStatusInterfaces.Add(statusInterface);
+            if (!LoadedMusicStatusInterfaces.Contains(statusInterface))
+            {
+                LoadedMusicStatusInterfaces.Add(statusInterface);
+            }
+
             _musicStatusInterface = logicMusicInterfaceListener;
         }
 
@@ -80,13 +84,20 @@ public class MusicStatusCoordinator
         _mediator.SendCommand(new PlaybackStateChangedMessage(s));
         if (wakeLockInterfaces == null) return;
         var wakeLocks = wakeLockInterfaces.ToList();
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
-            switch (s)
+            try
             {
-                case PlaybackState.Playing: Parallel.ForEach(wakeLocks, provider => provider.WakeLock()); break;
-                case PlaybackState.Stopped:
-                case PlaybackState.Paused: Parallel.ForEach(wakeLocks, provider => provider.UnWakeLock()); break;
+                switch (s)
+                {
+                    case PlaybackState.Playing: Parallel.ForEach(wakeLocks, provider => provider.WakeLock()); break;
+                    case PlaybackState.Stopped:
+                    case PlaybackState.Paused: Parallel.ForEach(wakeLocks, provider => provider.UnWakeLock()); break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "Error updating wake lock state");
             }
         });
     }
@@ -120,17 +131,24 @@ public class MusicStatusCoordinator
     {
         if (musicStatusInterfaces?.Any() != true) return;
 
-        Task.Run(() =>
+        _ = Task.Run(() =>
         {
-            Parallel.ForEach(musicStatusInterfaces, dangthing =>
+            try
             {
-                var fullName = dangthing.GetType().FullName ?? string.Empty;
-                Debug.WriteLine("mainwindowload loading " + fullName);
-                if (!checkIfPluginAllowed(fullName)) return;
-                GC.KeepAlive(dangthing);
-                AddMSI(dangthing, musicStatusInterface);
-                Debug.WriteLine("mainwindowload loaded " + fullName);
-            });
+                Parallel.ForEach(musicStatusInterfaces, dangthing =>
+                {
+                    var fullName = dangthing.GetType().FullName ?? string.Empty;
+                    Debug.WriteLine("mainwindowload loading " + fullName);
+                    if (!checkIfPluginAllowed(fullName)) return;
+                    GC.KeepAlive(dangthing);
+                    AddMSI(dangthing, musicStatusInterface);
+                    Debug.WriteLine("mainwindowload loaded " + fullName);
+                });
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "Error opening music status interfaces");
+            }
         });
     }
 }

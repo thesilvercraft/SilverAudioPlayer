@@ -17,11 +17,13 @@ public class QueueSorter
         if (IsDisabled) return;
         lock (_sortLock)
         {
-            _sortCancellationTokenSource?.Cancel();
+            var previousCts = _sortCancellationTokenSource;
+            previousCts?.Cancel();
+            previousCts?.Dispose();
             _sortCancellationTokenSource = new CancellationTokenSource();
 
             var token = _sortCancellationTokenSource.Token;
-            Task.Run(async () => await DoSortAsync(getQueueSnapshot, applySortedQueue, token, log), token);
+            Task.Run(() => DoSortAsync(getQueueSnapshot, applySortedQueue, token, log), token);
         }
     }
 
@@ -54,11 +56,11 @@ public class QueueSorter
             }
 
             List<Song> sortedSongs = [];
-            foreach (var disc in fuzzedAlbums.Select(album => album.Item2.GroupBy(a => a?.Metadata?.DiscNumber ?? 0))
+            foreach (var disc in fuzzedAlbums.Select(album => album.Item2.GroupBy(a => a.Metadata?.DiscNumber ?? 0))
                          .SelectMany(discs => discs.OrderBy(a => a.Key)))
             {
                 if (cancellationToken.IsCancellationRequested || IsDisabled) return;
-                sortedSongs.AddRange(disc.OrderBy(a => a?.Metadata?.TrackNumber ?? int.MaxValue));
+                sortedSongs.AddRange(disc.OrderBy(a => a.Metadata?.TrackNumber ?? int.MaxValue));
             }
 
             if (cancellationToken.IsCancellationRequested || IsDisabled) return;

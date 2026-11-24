@@ -23,8 +23,8 @@ public class BootupLogic
     {
         var services = new ServiceCollection();
         IConfiguration _configuration = new ConfigurationBuilder()
-            .SetBasePath(Path.GetDirectoryName(typeof(BootupLogic).Assembly.Location))
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
             .AddEnvironmentVariables()
             .Build();
         services.AddSingleton(_configuration);
@@ -53,9 +53,11 @@ public class BootupLogic
         {
             if (OperatingSystem.IsLinux())
             {
-                confdir = Path.Combine(
-                    Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ??
-                    Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".config"), "SilverAudioPlayer");
+                var configBase = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                if (!string.IsNullOrEmpty(configBase))
+                {
+                    confdir = Path.Combine(configBase, "SilverAudioPlayer");
+                }
             }
             else if (OperatingSystem.IsWindows())
             {
@@ -93,10 +95,9 @@ public class BootupLogic
         };
         TaskScheduler.UnobservedTaskException += (x, y) =>
         {
-            Log.Fatal(y.Exception,
-                "Unhandled exception caught by TaskScheduler.UnobservedTaskException, Terminating!!!");
+            Log.Error(y.Exception,
+                "Unhandled exception caught by TaskScheduler.UnobservedTaskException");
             y.SetObserved();
-            onFatalError(y.Exception);
         };
         RxApp.DefaultExceptionHandler = new RxObservableExceptionHandler();
     }
@@ -114,15 +115,24 @@ public class BootupLogic
             case IConfigurableUiPlugin configurableUiPlugin:
                 commandPalette.AddItem(new CommandPaletteItem("Configure " + item.Name,
                     "configure " + item.GetType().Name,
-                    (x) => { configurableUiPlugin.ConfigureUi((IConfigurableListener)x); }));
+                    (x) =>
+                    {
+                        if (x is IConfigurableListener listener) configurableUiPlugin.ConfigureUi(listener);
+                    }));
                 break;
             case IPlayStreamProvider streamProvider:
                 commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name,
-                    (x) => { streamProvider.Use((IPlayStreamProviderListener)x); }));
+                    (x) =>
+                    {
+                        if (x is IPlayStreamProviderListener listener) streamProvider.Use(listener);
+                    }));
                 break;
             case ISyncPlugin syncPlugin:
                 commandPalette.AddItem(new CommandPaletteItem("Use " + item.Name, "use " + item.GetType().Name,
-                    (x) => { syncPlugin.Use((ISyncEnvironmentListener)x); }));
+                    (x) =>
+                    {
+                        if (x is ISyncEnvironmentListener listener) syncPlugin.Use(listener);
+                    }));
                 break;
         }
 
@@ -139,13 +149,14 @@ public class BootupLogic
         {
             commandPalette.AddItem(new CommandPaletteItem("Toggle " + item.Name, "toggle " + item.GetType().Name, (x) =>
             {
+                if (x is not IMusicStatusInterfaceListener listener) return;
                 if (musicStatusInterface.IsStarted)
                 {
-                    musicStatusInterface.StopIPC((IMusicStatusInterfaceListener)x);
+                    musicStatusInterface.StopIPC(listener);
                 }
                 else
                 {
-                    musicStatusInterface.StartIPC((IMusicStatusInterfaceListener)x);
+                    musicStatusInterface.StartIPC(listener);
                 }
             }));
         }

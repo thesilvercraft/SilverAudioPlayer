@@ -14,39 +14,47 @@ public class PlayerContext : ReactiveObject
     public Action? ResetUIScrollBar = null;
     public Action<RepeatState>? SetLoopType;
     public Action<string, string>? ShowMessageBox;
-    public Action<TimeSpan> SetScrollBarTextTo = null;
+    public Action<TimeSpan>? SetScrollBarTextTo = null;
     public Action<byte>? VolumeChanged;
     public Func<IList<Song>>? GetQueue;
     public Action<IList<Song>>? SetQueue;
-    public IServiceProvider ServiceProvider { get; init; }
+    public IServiceProvider ServiceProvider { get; init; } = null!;
 
     public byte Volume
     {
-        get => GetVolume();
-        set => VolumeChanged(value);
+        get => GetVolume != null ? GetVolume() : _Volume;
+        set
+        {
+            if (VolumeChanged != null)
+                VolumeChanged(value);
+            else
+                this.RaiseAndSetIfChanged(ref _Volume, value);
+        }
     }
     /// <summary>
     /// The player's queue, please don't add or remove from here but use the Logic's AddSong or RemoveSong
     /// </summary>
     public IList<Song> Queue
     {
-        get => GetQueue();
-        set => SetQueue(value);
+        get => GetQueue != null ? GetQueue() : [];
+        set => SetQueue?.Invoke(value);
     }
 
     public Song? CurrentSong
     {
         get => _CurrentSong;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _CurrentSong, value); // Somehow does not work with ProcessFiles
-            _CurrentSong = value;
-        }
+        set => this.RaiseAndSetIfChanged(ref _CurrentSong, value);
     }
 
     public RepeatState LoopType
     {
-        get => GetLoopType();
-        set => SetLoopType(value);
+        get => GetLoopType != null ? GetLoopType() : _LoopType;
+        set
+        {
+            if (SetLoopType != null)
+                SetLoopType(value);
+            else
+                this.RaiseAndSetIfChanged(ref _LoopType, value);
+        }
     }
 }

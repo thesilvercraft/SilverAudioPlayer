@@ -9,15 +9,14 @@ namespace SilverAudioPlayer.Core;
 public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, IFullPlayerEnvironment, IDisposable
     where T : PlayerContext
 {
-    public event EventHandler<Song>? TrackChangedNotification;
-    public event EventHandler<PlaybackState> PlayerStateChanged;
+    public event EventHandler<Song?>? TrackChangedNotification;
+    public event EventHandler<PlaybackState>? PlayerStateChanged;
     public event EventHandler<TimeSpan>? PositionChanged;
-    private SortedSet<TimedEvent> _timedEvents = new();
-    private readonly object _timeEventsLock = new();
+    private readonly SortedSet<TimedEvent> _timedEvents = new();
+    private readonly Lock _timeEventsLock = new();
     Logic<T> Logic;
-    private bool _timerEnabled = false;
     private bool _isDisposed = false;
-    private Timer? _timer = null; // TODO: DISPOSE
+    private Timer? _timer = null;
     protected internal IConfigPathProvider _configPathProvider;
 
     public BaseEnvironment(Logic<T> Logic, IConfigPathProvider configPathProvider)
@@ -45,6 +44,12 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         return Logic.Mediator.RequestQuery<IEnumerable<string>>(new FilterFilesQuery(files)) ?? [];
     }
 
+    public bool AutoSortEnabled
+    {
+        get => Logic.AutoSortEnabled;
+        set => Logic.AutoSortEnabled = value;
+    }
+
     public virtual string Name => "SilverAudioPlayer Base Implementation";
 
     public virtual string Description => "The base implementation on which other player environments are based on";
@@ -63,10 +68,10 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         return Logic.GetMetadataFromStream(stream);
     }
 
-    public virtual async Task<List<Song>?> GetQueue()
+    public virtual Task<List<Song>?> GetQueue()
     {
         //TODO ASK USER BEFORE GIVING OVER QUEUE
-        return Logic.Mediator.RequestQuery<List<Song>>(new GetQueueQuery());
+        return Task.FromResult(Logic.Mediator.RequestQuery<List<Song>>(new GetQueueQuery()));
     }
 
     public IPicture? GetBestRepresentation(IReadOnlyList<IPicture>? pictures, PictureType type = PictureType.Front)
@@ -76,8 +81,7 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
             return null;
         }
 
-        var res = pictures?.Where(x => x.PicType == type);
-        return res?.Any() == true ? res?.First() : pictures[0];
+        return pictures.FirstOrDefault(x => x.PicType == type) ?? pictures[0];
     }
 
     public void Play() => Logic.Play();
@@ -107,12 +111,12 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     }
 
     public double GetDuration() => Logic.Player?.Length()?.TotalSeconds ??
-                                   (Logic.PlayerContext.CurrentSong?.Metadata?.Duration / 1000) ?? 2;
+                                   (Logic.PlayerContext.CurrentSong?.Metadata?.Duration / 1000.0) ?? 0;
 
 
     public void SetPosition(double position) => Logic.Player?.SetPosition(TimeSpan.FromSeconds(position));
 
-    public double GetPosition() => Logic.Player?.GetPosition().TotalSeconds ?? 1;
+    public double GetPosition() => Logic.Player?.GetPosition().TotalSeconds ?? 0;
 
     public PlaybackState GetState()
     {
@@ -152,7 +156,17 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     public void FireTrackChangedNotification(Song? currentSong)
     {
         ClearTimedEvents();
-        Task.Run(() => { TrackChangedNotification?.Invoke(this, currentSong); });
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                TrackChangedNotification?.Invoke(this, currentSong);
+            }
+            catch (Exception ex)
+            {
+                Logic.Log?.Error(ex, "Error in TrackChangedNotification listener");
+            }
+        });
     }
 
     void ClearTimedEvents()
@@ -172,18 +186,38 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
 
     public void FirePositionChanged(TimeSpan position)
     {
-        Task.Run(() => { PositionChanged?.Invoke(this, position); });
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                PositionChanged?.Invoke(this, position);
+            }
+            catch (Exception ex)
+            {
+                Logic.Log?.Error(ex, "Error in PositionChanged listener");
+            }
+        });
         TimerLogicOnPositionChanged(position.TotalSeconds);
     }
 
     public void FirePlayerStateChanged(PlaybackState state)
     {
-        Task.Run(() => { PlayerStateChanged?.Invoke(this, state); });
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                PlayerStateChanged?.Invoke(this, state);
+            }
+            catch (Exception ex)
+            {
+                Logic.Log?.Error(ex, "Error in PlayerStateChanged listener");
+            }
+        });
         TimerLogicOnStateChanged(state);
     }
 
 
-    public virtual string Licenses { get; }
+    public virtual string Licenses => string.Empty;
 
 
     public virtual string[] KnownConfigFileLocations =>
@@ -226,7 +260,6 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
     {
         lock (_timeEventsLock)
         {
-            _timerEnabled = false;
             _timer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
     }
@@ -237,23 +270,20 @@ public abstract class BaseEnvironment<T> : IHaveConfigFilesWithKnownLocations, I
         {
             if (_isDisposed || _timedEvents.Count == 0)
             {
-                _timerEnabled = false;
                 _timer?.Change(Timeout.Infinite, Timeout.Infinite);
                 return;
             }
 
             var currentPos = GetPosition();
-            var next = _timedEvents.FirstOrDefault(x => x.Time > currentPos);
+            var next = _timedEvents.Min;
 
             if (next != null)
             {
-                _timerEnabled = true;
                 var delay = Math.Max(next.Time - currentPos - 0.01, 0.0);
                 _timer?.Change(TimeSpan.FromSeconds(delay), Timeout.InfiniteTimeSpan);
             }
             else
             {
-                _timerEnabled = false;
                 _timer?.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }

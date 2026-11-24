@@ -68,7 +68,13 @@ public class TrackIngestionService
                 var isLast = i == totalTracks - 1;
                 foreach (var source in song.TrackLoadInfos)
                 {
-                    AddWithURLBad(source.URL, IsHttpUrl(source.URL), isLast && oneFile);
+                    var sourceIsHttp = IsHttpUrl(source.URL);
+                    if (!sourceIsHttp && !File.Exists(source.URL))
+                    {
+                        continue;
+                    }
+
+                    AddWithURLBad(source.URL, sourceIsHttp, isLast && oneFile);
                     break;
                 }
             }
@@ -93,10 +99,18 @@ public class TrackIngestionService
 
         if (psps.Any())
         {
-            Task.Run(async () =>
+            var provider = (IPlayStreamProviderThatSupportsUrls)psps.First();
+            _ = Task.Run(async () =>
             {
-                await ((IPlayStreamProviderThatSupportsUrls)psps.First()).LoadUrlAsync(new(f), env);
-                _queueManager.SuggestDoingSort();
+                try
+                {
+                    await provider.LoadUrlAsync(new(f), env);
+                    _queueManager.SuggestDoingSort();
+                }
+                catch (Exception ex)
+                {
+                    Serilog.Log.Error(ex, "Failed loading URL {Url} via {Provider}", f, provider.GetType().Name);
+                }
             });
         }
         else
@@ -119,34 +133,37 @@ public class TrackIngestionService
 
     public void ProcessFiles(IEnumerable<string> files)
     {
-        var enumerable = files?.ToList();
-        if (enumerable == null || enumerable.Count == 0) return;
+        var inputPaths = files?.ToList();
+        if (inputPaths == null || inputPaths.Count == 0) return;
 
-        var oneFile = enumerable.Count == 1;
-        if (oneFile && Directory.Exists(enumerable.First()))
-        {
-            enumerable = FilterFiles(Directory.GetFiles(enumerable.First(), "*", SearchOption.AllDirectories)).ToList();
-            oneFile = false;
-        }
-
-        enumerable = FilterFiles(enumerable).ToList();
-        foreach (var path in enumerable)
+        var expandedFiles = new List<string>();
+        var containsDirectory = false;
+        foreach (var path in inputPaths)
         {
             if (Directory.Exists(path))
             {
-                var files2 = FilterFiles(Directory.GetFiles(path, "*", SearchOption.AllDirectories));
-                foreach (var file in files2)
-                {
-                    ProcessFile(file, oneFile);
-                }
+                containsDirectory = true;
+                expandedFiles.AddRange(Directory.GetFiles(path, "*", SearchOption.AllDirectories));
             }
             else
             {
-                ProcessFile(path, oneFile);
+                expandedFiles.Add(path);
             }
         }
 
-        _queueManager.SuggestDoingSort();
+        var filtered = FilterFiles(expandedFiles).ToList();
+        if (filtered.Count == 0) return;
+
+        var oneFile = !containsDirectory && inputPaths.Count == 1 && filtered.Count == 1;
+        foreach (var file in filtered)
+        {
+            ProcessFile(file, oneFile);
+        }
+
+        if (!oneFile)
+        {
+            _queueManager.SuggestDoingSort();
+        }
     }
 
     public void LoadSongs(IEnumerable<WrappedStream> streams)
