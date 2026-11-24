@@ -615,7 +615,7 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
 
     public static bool IsBackendAvaliable()
     {
-        return OperatingSystem.IsWindows() || SapPortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
+        return OperatingSystem.IsWindows() || BufferedPortAudioSoundOut.IsSupported() || ALSoundOut.IsSupported;
     }
 
     private bool HasAudioBackendConfigChanged()
@@ -647,15 +647,15 @@ public class WaveFilePlayer : IDisposable, IPlayStreams, IPlayWithSelector, IPla
     {
         if (!OperatingSystem.IsWindows())
         {
-            if (SapPortAudioSoundOut.IsSupported() && CheckForBlocklist() != true)
+            if (BufferedPortAudioSoundOut.IsSupported() && CheckForBlocklist() != true)
             {
-                _activePortAudioDevice = Config?.PortAudioDevice ?? SapPortAudioSoundOut.DefaultDeviceLabel;
+                _activePortAudioDevice = Config?.PortAudioDevice ?? BufferedPortAudioSoundOut.DefaultDeviceLabel;
                 _activePortAudioLatencyMs = Config?.PortAudioLatencyMs ?? 50;
                 _activeDecodeBufferMs = Config?.DecodeBufferMs ?? 100;
                 Log.Information(
-                    "initing backend CSCorePlayer SapPortAudioSoundOut (Device={Device}, LatencyMs={LatencyMs}, DecodeBufferMs={DecodeBufferMs})",
+                    "initing backend CSCorePlayer BufferedPortAudioSoundOut (Device={Device}, LatencyMs={LatencyMs}, DecodeBufferMs={DecodeBufferMs})",
                     _activePortAudioDevice, _activePortAudioLatencyMs, _activeDecodeBufferMs);
-                outputDevice = new CSCorePlayer(new SapPortAudioSoundOut(
+                outputDevice = new CSCorePlayer(new BufferedPortAudioSoundOut(
                     _activePortAudioDevice,
                     TimeSpan.FromMilliseconds(_activePortAudioLatencyMs),
                     TimeSpan.FromMilliseconds(_activeDecodeBufferMs)));

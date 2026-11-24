@@ -5,6 +5,7 @@ using Silver.Composition;
 using SilverAudioPlayer.Any.PlayProvider.NAudio;
 using SilverAudioPlayer.Shared;
 using SilverCraft.CSCore.DSP.Resampler;
+using SilverCraft.CSCore.SoundOut;
 using SilverCraft.Ekorensis;
 using SilverMagicBytes;
 
@@ -151,15 +152,15 @@ public class NaudioWaveStreamWrapper : IPlayProvider, IAmOnceAgainAskingYouForYo
                 new SimpleLabel("PortAudio output device:"),
                 new SimpleDropDown
                 {
-                    GetOptions = () => SapPortAudioSoundOut.GetOutputDeviceNames(),
-                    GetPlaceholder = () => SapPortAudioSoundOut.DefaultDeviceLabel,
+                    GetOptions = () => BufferedPortAudioSoundOut.GetOutputDeviceNames(),
+                    GetPlaceholder = () => BufferedPortAudioSoundOut.DefaultDeviceLabel,
                     GetSelection = () => ConfigObject.Value is WaveConfig x && !string.IsNullOrWhiteSpace(x.PortAudioDevice)
                         ? x.PortAudioDevice
-                        : SapPortAudioSoundOut.DefaultDeviceLabel,
+                        : BufferedPortAudioSoundOut.DefaultDeviceLabel,
                     SetSelection = s =>
                     {
                         if (ConfigObject.Value is not WaveConfig x) return;
-                        x.PortAudioDevice = string.IsNullOrWhiteSpace(s) ? SapPortAudioSoundOut.DefaultDeviceLabel : s;
+                        x.PortAudioDevice = string.IsNullOrWhiteSpace(s) ? BufferedPortAudioSoundOut.DefaultDeviceLabel : s;
                         ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("PortAudioDevice"));
                         ApplyConfig(x);
                     }

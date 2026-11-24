@@ -20,11 +20,11 @@ public class CSCorePlayer : IWavePlayer, IWavePosition
 
     private ISoundOut _soundOut;
 
-    public TimeSpan OutputLatency => _soundOut is SapPortAudioSoundOut sap ? sap.OutputLatency : TimeSpan.Zero;
+    public TimeSpan OutputLatency => _soundOut is BufferedPortAudioSoundOut sap ? sap.OutputLatency : TimeSpan.Zero;
 
     public void ExecuteSeek(Action seekAction)
     {
-        if (_soundOut is SapPortAudioSoundOut sap)
+        if (_soundOut is BufferedPortAudioSoundOut sap)
         {
             sap.ExecuteSeek(seekAction);
         }
