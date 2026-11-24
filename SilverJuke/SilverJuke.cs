@@ -1,16 +1,14 @@
-using SilverCraft.Ekorensis;
 using System.ComponentModel;
 using System.Composition;
+using System.Net;
+using System.Net.Sockets;
 using System.Xml.Serialization;
+using GenHTTP.Api.Infrastructure;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using SilverAudioPlayer.Shared;
 using SilverConfig;
+using SilverCraft.Ekorensis;
 
 namespace SilverAudioPlayer.Any.SilverJuke;
 
@@ -24,6 +22,11 @@ public class JukeConfig : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChang
 
     [Comment("Should the web interface show a basic html/js interface")]
     public bool UseSlopUI { get; set; } = true;
+
+    [Comment("Use ASP.NET Core Kestrel instead of the lightweight GenHTTP server (requires restart)")]
+    public bool UseKestrel { get; set; } = false;
+
+    [XmlIgnore] public int Port { get; set; } = 36169;
 
     void ICanBeToldThatAPartOfMeIsChanged.PropertyChanged(object e, PropertyChangedEventArgs a)
     {
@@ -100,6 +103,17 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
                     x.UseSwaggerUI = c;
                     ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("UseSwaggerUI"));
                 }
+            },
+            new SimpleCheckBox
+            {
+                GetContent = () => "Use Kestrel instead of GenHTTP (requires restart)",
+                GetChecked = () => ConfigObject.Value is JukeConfig { UseKestrel: true },
+                Checked = c =>
+                {
+                    if (ConfigObject.Value is not JukeConfig x) return;
+                    x.UseKestrel = c;
+                    ((ICanBeToldThatAPartOfMeIsChanged)x).PropertyChanged(x, new("UseKestrel"));
+                }
             }
         ];
     }
@@ -115,218 +129,104 @@ public class SilverJuke : IMusicStatusInterface, IAmOnceAgainAskingYouForYourMem
 
     public string Licenses => "SilverJuke is licensed under the GPL 3.0 license.\n";
 
-    public List<Tuple<Uri, URLType>>? Links => [];
+    private readonly List<Tuple<Uri, URLType>> _links = [];
+    public List<Tuple<Uri, URLType>>? Links => _links;
 
     public bool IsStarted => _IsStarted;
 
     private bool _IsStarted;
+    private readonly Lock _serverLock = new();
+    private WebApplication? _kestrelApp;
+    private IServerHost? _genHttpHost;
+    private JukeConfig? jukeConfig;
 
-    public void Dispose()
+    internal static bool IsLocalOrLan(IPAddress? ip)
     {
-        app?.DisposeAsync();
+        if (ip == null) return false;
+        if (ip.IsIPv6LinkLocal || ip.IsIPv6SiteLocal) return true;
+        if (ip.IsIPv4MappedToIPv6) ip = ip.MapToIPv4();
+
+        if (IPAddress.IsLoopback(ip))
+            return true;
+
+        if (ip.AddressFamily == AddressFamily.InterNetwork)
+        {
+            var bytes = ip.GetAddressBytes();
+            if (bytes[0] == 127) return true;
+            if (bytes[0] == 10) return true;
+            if (bytes[0] == 192 && bytes[1] == 168) return true;
+            if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) return true;
+        }
+
+        return false;
     }
-
-    WebApplication? app;
-
-    IMusicStatusInterfaceListener listener;
-
-    private ILogger _logger;
-
-    JukeConfig jukeConfig;
 
     public void StartIPC(IMusicStatusInterfaceListener listener)
     {
-        jukeConfig = (JukeConfig)ConfigObject.Value;
-        _IsStarted = true;
-        this.listener = listener;
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.AddSingleton<IHostLifetime, NotAHostLifeTime>();
-        builder.Host.UseSerilog();
-        builder.WebHost.UseUrls("http://localhost:36169");
-        builder.Services.AddEndpointsApiExplorer();
-
-        if (jukeConfig.UseSwagger)
+        lock (_serverLock)
         {
-            builder.Services.AddSwaggerGen();
-        }
+            if (_IsStarted) return;
+            jukeConfig = ConfigObject.Value as JukeConfig ?? new JukeConfig();
+            _links.Clear();
+            _IsStarted = true;
 
-        app = builder.Build();
-        Links.Add(new(new("http://localhost:36169/state"), URLType.Unknown));
-
-        if (jukeConfig.UseSwagger)
-        {
-            app.UseSwagger();
-
-            if (jukeConfig.UseSwaggerUI)
+            if (jukeConfig.UseKestrel)
             {
-                app.UseSwaggerUI();
-                Links.Add(new(new("http://localhost:36169/swagger/index.html"), URLType.Unknown));
+                _kestrelApp = SilverJukeKestrelHost.Start(jukeConfig, listener, _links, jukeConfig.Port);
+            }
+            else
+            {
+                _genHttpHost = SilverJukeGenHttpHost.Start(jukeConfig, listener, _links, jukeConfig.Port);
             }
         }
-
-        IResult GuardReadOnly(Action action)
-        {
-            if (jukeConfig.ReadOnly) return Results.StatusCode(StatusCodes.Status403Forbidden);
-            action();
-            return Results.Ok();
-        }
-
-        app.MapPost("/position", ([FromBody] double position) =>
-        {
-            if (jukeConfig.ReadOnly) return Results.StatusCode(StatusCodes.Status403Forbidden);
-            listener.SetPosition(position);
-            return Results.Ok();
-        }).WithName("SetPosition");
-        app.MapGet("/play", () => GuardReadOnly(listener.Play)).WithName("Play");
-        app.MapGet("/pause", () => GuardReadOnly(listener.Pause)).WithName("Pause");
-        app.MapGet("/playpause", () => GuardReadOnly(listener.PlayPause)).WithName("PlayPause");
-        app.MapGet("/next", () => GuardReadOnly(listener.Next)).WithName("Next");
-        app.MapGet("/previous", () => GuardReadOnly(listener.Previous)).WithName("Previous");
-        app.MapGet("/stop", () => GuardReadOnly(listener.Stop)).WithName("Stop");
-
-        app.MapGet("/", () =>
-        {
-            var asm = typeof(SilverJuke).Assembly;
-            var stream = asm.GetManifestResourceStream("SilverAudioPlayer.Any.SilverJuke.SilverJukeWebUi.html");
-            return stream == null ? Results.NotFound() : Results.File(stream, "text/html");
-        }).WithName("Index");
-
-        if (jukeConfig.UseSlopUI)
-        {
-            Links.Add(new(new("http://localhost:36169/"), URLType.Unknown));
-            Links.Add(new(new("http://localhost:36169/inline-remote"), URLType.Unknown));
-
-            app.MapGet("/inline-remote", () =>
-            {
-                var asm = typeof(SilverJuke).Assembly;
-                var stream = asm.GetManifestResourceStream("SilverAudioPlayer.Any.SilverJuke.SilverJukeWebInline.html");
-                return stream == null ? Results.NotFound() : Results.File(stream, "text/html");
-            }).WithName("InlineRemote");
-            app.MapGet("/checkifreadonly", () => jukeConfig.ReadOnly).WithName("CheckIfReadonly");
-
-            app.MapGet("/SilverJukeWebUi.js", () =>
-            {
-                var asm = typeof(SilverJuke).Assembly;
-                var stream = asm.GetManifestResourceStream("SilverAudioPlayer.Any.SilverJuke.SilverJukeWebUi.js");
-                return stream == null ? Results.NotFound() : Results.File(stream, "application/javascript");
-            }).WithName("IndexJS");
-
-            app.MapGet("/inline-remote-inkscape.svg", () =>
-            {
-                var asm = typeof(SilverJuke).Assembly;
-
-                var stream =
-                    asm.GetManifestResourceStream("SilverAudioPlayer.Any.SilverJuke.inline-remote-inkscape.svg");
-                return stream == null ? Results.NotFound() : Results.File(stream, "image/svg+xml");
-            }).WithName("InlineRemoteSVG");
-
-            app.MapGet("/DSEG14Classic-Regular.woff2", () =>
-            {
-                var asm = typeof(SilverJuke).Assembly;
-
-                var stream =
-                    asm.GetManifestResourceStream("SilverAudioPlayer.Any.SilverJuke.DSEG14Classic-Regular.woff2");
-                return stream == null ? Results.NotFound() : Results.File(stream, "font/woff2");
-            }).WithName("DSEG14FontWoff2");
-        }
-
-        app.MapGet("/state", listener.GetState).WithName("GetState");
-        app.MapGet("/track", listener.GetCurrentTrack).WithName("GetCurrentTrack");
-        app.MapGet("/duration", listener.GetDuration).WithName("GetDuration");
-        app.MapGet("/position", listener.GetPosition).WithName("GetPosition");
-        app.MapGet("/lyrics", listener.GetLyrics).WithName("GetLyrics");
-
-        app.MapGet("/albumart", () =>
-        {
-            var currentTrack = listener.GetCurrentTrack();
-
-            if (currentTrack?.Metadata == null || currentTrack?.Metadata?.Pictures?.Count == 0)
-            {
-                return Results.NoContent();
-            }
-
-            var x = listener.GetBestRepresentation(currentTrack?.Metadata?.Pictures);
-
-            return x == null
-                ? Results.NoContent()
-                : Results.Stream(x.Data.GetStream(), x.Data.MimeType.Common, enableRangeProcessing: true);
-        }).WithName("GetBestRepresentation");
-
-        if (jukeConfig.AllowLoading && listener is IPlayStreamProviderListener streamProviderListener)
-        {
-            bool IsLocalOrLan(HttpContext ctx)
-            {
-                var ip = ctx.Connection.RemoteIpAddress;
-                if (ip == null) return false;
-                if (ip.IsIPv6LinkLocal || ip.IsIPv6SiteLocal) return true;
-                if (ip.IsIPv4MappedToIPv6) ip = ip.MapToIPv4();
-
-                // localhost
-
-                if (ip.Equals(System.Net.IPAddress.Loopback) || ip.Equals(System.Net.IPAddress.IPv6Loopback))
-                    return true;
-
-                // 127.0.0.0/8
-
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
-                    ip.ToString().StartsWith("127.")) return true;
-
-                // LAN: 10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12
-
-                var s = ip.ToString();
-                if (s.StartsWith("10.")) return true;
-                if (s.StartsWith("192.168.")) return true;
-
-                if (s.StartsWith("172."))
-                {
-                    var parts = s.Split('.');
-                    if (parts.Length > 1 && int.TryParse(parts[1], out int b) && b >= 16 && b <= 31) return true;
-                }
-
-                return false;
-            }
-
-            app.MapPost("/loadfile", (HttpContext ctx, string file) =>
-            {
-                if (!jukeConfig.AllowLoading || !IsLocalOrLan(ctx)) return Results.StatusCode(403);
-                streamProviderListener.ProcessFiles(new List<string> { file });
-                return Results.Ok();
-            }).WithName("ProcessFile");
-
-            app.MapPost("/loadfiles", (HttpContext ctx, [FromBody] string[] files) =>
-            {
-                if (!jukeConfig.AllowLoading || !IsLocalOrLan(ctx)) return Results.StatusCode(403);
-                streamProviderListener.ProcessFiles(files.ToList());
-                return Results.Ok();
-            }).WithName("ProcessFiles");
-        }
-
-        app.Start();
     }
 
     public void StopIPC(IMusicStatusInterfaceListener listener)
     {
-        _IsStarted = false;
+        StopServer();
+    }
 
-        Task.Run(async () =>
+    private void StopServer()
+    {
+        WebApplication? kestrelToStop;
+        IServerHost? genHttpToStop;
+        lock (_serverLock)
         {
-            if (app != null)
+            _IsStarted = false;
+            kestrelToStop = _kestrelApp;
+            genHttpToStop = _genHttpHost;
+            _kestrelApp = null;
+            _genHttpHost = null;
+        }
+
+        if (genHttpToStop is not null)
+        {
+            try
             {
-                await app.StopAsync();
+                SilverJukeGenHttpHost.Stop(genHttpToStop);
             }
-        });
-    }
-}
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Error stopping GenHTTP SilverJuke server");
+            }
+        }
 
-public class NotAHostLifeTime : IHostLifetime
-{
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
+        if (kestrelToStop is not null)
+        {
+            try
+            {
+                SilverJukeKestrelHost.Stop(kestrelToStop);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Error stopping Kestrel SilverJuke server");
+            }
+        }
     }
 
-    public Task WaitForStartAsync(CancellationToken cancellationToken)
+    public void Dispose()
     {
-        return Task.CompletedTask;
+        StopServer();
+        GC.SuppressFinalize(this);
     }
 }
