@@ -4,29 +4,47 @@ using SilverAudioPlayer.Shared;
 namespace SilverAudioPlayer.Any.PlayStreamProvider.SLibIndex;
 
 [Export(typeof(IPlayStreamProvider))]
-public sealed class SLibIndexPlayStreamProvider : IPlayStreamProvider
+[Export(typeof(IMusicStatusInterface))]
+public sealed class SLibIndexPlayStreamProvider : IPlayStreamProvider, IMusicStatusInterface
 {
-    private readonly HttpClient _httpClient = new();
+    private static readonly SLibIndexAutoPlayController SharedController = new();
     private SLibIndexWindow? _window;
-    private string _serverUrl = "http://192.168.1.173:32542/api";
 
     public string Name => "SLibIndex Provider";
-    public string Description => "Provides music from an SLibIndex server";
+    public string Description => "Provides music from an SLibIndex server with persistent Auto-Play recommendations";
     public WrappedStream? Icon => null;
     public Version? Version => typeof(SLibIndexPlayStreamProvider).Assembly.GetName().Version;
     public string Licenses => "GPL-3.0-only";
     public List<Tuple<Uri, URLType>>? Links => null;
 
+    public bool IsStarted => SharedController.IsStarted;
+
+    public void StartIPC(IMusicStatusInterfaceListener listener)
+    {
+        SharedController.AttachStatusListener(listener);
+    }
+
+    public void StopIPC(IMusicStatusInterfaceListener listener)
+    {
+        SharedController.DetachStatusListener(listener);
+    }
+
     public void Use(IPlayStreamProviderListener env)
     {
+        SharedController.AttachPlayListener(env);
+
         if (_window is { IsVisible: true })
         {
             _window.Activate();
             return;
         }
 
-        _window = new SLibIndexWindow(_httpClient, env, _serverUrl, url => _serverUrl = url);
+        _window = new SLibIndexWindow(SharedController);
         _window.Closed += (_, _) => _window = null;
         _window.Show();
+    }
+
+    public void Dispose()
+    {
     }
 }

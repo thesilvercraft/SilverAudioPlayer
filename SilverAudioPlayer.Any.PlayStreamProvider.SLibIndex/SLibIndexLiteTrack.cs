@@ -23,7 +23,7 @@ public sealed class SLibIndexLiteTrack : IMetadata
     public bool HasLyrics { get; init; }
     public bool HasSyncedLyrics { get; init; }
     public string[]? Comments => null;
-    public IDictionary<string, string>? Entries => null;
+    public IDictionary<string, string>? Entries { get; set; }
     public string? Lyrics { get; set; }
     public IList<LyricPhrase>? SyncedLyrics { get; set; }
     public IReadOnlyList<IPicture>? Pictures => null;
