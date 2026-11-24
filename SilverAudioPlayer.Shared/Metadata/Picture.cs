@@ -4,8 +4,7 @@ public class Picture : IPicture
 {
     public Picture(WrappedStream stream, PictureType? type = null, string? description = null)
     {
-        Cached = SharedMemoryStreamPoolInstance.Instance.GetFromWrappedStream(stream);
-        Reliance = new(Cached);
+        (Cached, Reliance) = SharedMemoryStreamPoolInstance.Instance.AcquireFromWrappedStream(stream);
         Hash ??= Cached.Hash;
         PicType = type;
         Description = description;
@@ -21,6 +20,8 @@ public class Picture : IPicture
     public void Dispose()
     {
         Reliance?.Dispose();
+        Reliance = null;
+        Cached = null;
         GC.SuppressFinalize(this);
     }
 }

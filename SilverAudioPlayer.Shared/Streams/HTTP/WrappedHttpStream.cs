@@ -34,7 +34,13 @@ public class WrappedHttpStream : WrappedStream, IDisposable
         }
 
         using var s = inside.GetStream();
-        _MimeType = MagicByteCombos.Match(s, 0)?.MimeType;
+        var mt = MagicByteCombos.Match(s, 0)?.MimeType;
+        if (mt == null && requestMessage.RequestUri?.AbsolutePath is { } absPath)
+        {
+            mt = KnownMimes.GetKnownMimeByExtension(Path.GetExtension(absPath));
+        }
+
+        _MimeType = mt ?? KnownMimes.OctetMime;
     }
 
     public bool Seekable { get; }

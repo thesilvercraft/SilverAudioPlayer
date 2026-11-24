@@ -21,23 +21,24 @@ public static class LevenshteinDistance
 
         int n = s.Length;
         int m = t.Length;
-        int[,] d = new int[n + 1, m + 1];
+        int[] prev = new int[m + 1];
+        int[] curr = new int[m + 1];
 
-        // initialize the top and right of the table to 0, 1, 2, ...
-        for (int i = 0; i <= n; d[i, 0] = i++) ;
-        for (int j = 1; j <= m; d[0, j] = j++) ;
+        for (int j = 0; j <= m; j++)
+            prev[j] = j;
 
         for (int i = 1; i <= n; i++)
         {
+            curr[0] = i;
             for (int j = 1; j <= m; j++)
             {
-                int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
-                int min1 = d[i - 1, j] + 1;
-                int min2 = d[i, j - 1] + 1;
-                int min3 = d[i - 1, j - 1] + cost;
-                d[i, j] = Math.Min(Math.Min(min1, min2), min3);
+                int cost = t[j - 1] == s[i - 1] ? 0 : 1;
+                curr[j] = Math.Min(Math.Min(prev[j] + 1, curr[j - 1] + 1), prev[j - 1] + cost);
             }
+
+            (prev, curr) = (curr, prev);
         }
-        return d[n, m];
+
+        return prev[m];
     }
 }

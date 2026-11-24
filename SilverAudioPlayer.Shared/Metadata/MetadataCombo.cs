@@ -23,7 +23,8 @@ public class MetadataCombo : IMetadataCombo
         OriginalMetadata.AddRange(metadataGatherers.Select(x => x.GatherAdditionalMetadata(this))
             .Where(x => x is not null).Cast<IMetadata>());
         SyncedLyrics = OriginalMetadata.Select(x => x.SyncedLyrics).Where(x => x is not null).MaxBy(x => x!.Count);
-        if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrEmpty(Lyrics) && (Lyrics[0] == '['))
+        if ((SyncedLyrics is null or { Count: 0 }) && !string.IsNullOrWhiteSpace(Lyrics) &&
+            Lyrics.AsSpan().TrimStart().StartsWith('['))
         {
             //There is a chance that the unsynced lyrics are actually synced, lets try and read them
             try

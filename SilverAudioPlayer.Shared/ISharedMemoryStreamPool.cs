@@ -7,8 +7,18 @@ namespace SilverAudioPlayer.Shared;
 /// </summary>
 public interface ISharedMemoryStreamPool
 {
-    public SharedStream GetFromByteArray(byte[] bytes);
+    public SharedStream GetFromByteArray(byte[] bytes, bool copy = true);
     public SharedStream GetFromWrappedStream(WrappedStream ws);
+    public (SharedStream Stream, RelianceOnSharedStream Reliance) AcquireFromByteArray(byte[] bytes, bool copy = true)
+    {
+        var shared = GetFromByteArray(bytes, copy);
+        return (shared, new RelianceOnSharedStream(shared, this));
+    }
+    public (SharedStream Stream, RelianceOnSharedStream Reliance) AcquireFromWrappedStream(WrappedStream ws)
+    {
+        var shared = GetFromWrappedStream(ws);
+        return (shared, new RelianceOnSharedStream(shared, this));
+    }
     Dictionary<Guid, List<RelianceOnSharedStream>> Reliances { get; }
     public void AddReliance(RelianceOnSharedStream reliance);
     public void RemoveReliance(RelianceOnSharedStream reliance);
@@ -16,40 +26,85 @@ public interface ISharedMemoryStreamPool
 
 public class SharedMemoryStreamPool : ISharedMemoryStreamPool
 {
-    private Dictionary<Guid, List<RelianceOnSharedStream>> _reliances = new();
-    private readonly object _reliancesLock = new object();
+    private readonly Dictionary<Guid, List<RelianceOnSharedStream>> _reliances = new();
+    private readonly Dictionary<string, SharedStream> _streamsByHash = new(StringComparer.Ordinal);
+    private readonly Dictionary<Guid, SharedStream> _streamsById = new();
+    private readonly Lock _reliancesLock = new();
 
-    public SharedStream GetFromByteArray(byte[] bytes)
+    public SharedStream GetFromByteArray(byte[] bytes, bool copy = true)
     {
         var hash = HashHelper.HashByteArray(bytes);
         lock (_reliancesLock)
         {
-            if (SharedStreams.FirstOrDefault(x => x.Hash == hash) is { } sharedStream)
+            if (_streamsByHash.TryGetValue(hash, out var sharedStream))
                 return sharedStream;
 
-            var memoryStream = new WrappedSharedMemoryStream(bytes);
+            var memoryStream = new WrappedSharedMemoryStream(bytes, copy: copy);
             var sharedStream2 = new SharedStream(memoryStream, hash);
-
-            SharedStreams.Add(sharedStream2);
+            AddStreamLocked(sharedStream2);
             return sharedStream2;
         }
     }
 
     public SharedStream GetFromWrappedStream(WrappedStream ws) //TODO: group by path if wrappedfilestream
     {
+        var hash = HashHelper.Hash(ws);
         lock (_reliancesLock)
         {
-            var hash = HashHelper.Hash(ws);
-            if (SharedStreams.FirstOrDefault(x => x.Hash == hash) is { } sharedStream)
+            if (_streamsByHash.TryGetValue(hash, out var sharedStream))
             {
                 ws.Dispose();
                 return sharedStream;
             }
 
             var sharedStream2 = new SharedStream(ws, hash);
-            SharedStreams.Add(sharedStream2);
+            AddStreamLocked(sharedStream2);
             return sharedStream2;
         }
+    }
+
+    public (SharedStream Stream, RelianceOnSharedStream Reliance) AcquireFromByteArray(byte[] bytes, bool copy = true)
+    {
+        var hash = HashHelper.HashByteArray(bytes);
+        lock (_reliancesLock)
+        {
+            if (!_streamsByHash.TryGetValue(hash, out var sharedStream))
+            {
+                var memoryStream = new WrappedSharedMemoryStream(bytes, copy: copy);
+                sharedStream = new SharedStream(memoryStream, hash);
+                AddStreamLocked(sharedStream);
+            }
+
+            var reliance = new RelianceOnSharedStream(sharedStream, this);
+            return (sharedStream, reliance);
+        }
+    }
+
+    public (SharedStream Stream, RelianceOnSharedStream Reliance) AcquireFromWrappedStream(WrappedStream ws)
+    {
+        var hash = HashHelper.Hash(ws);
+        lock (_reliancesLock)
+        {
+            if (_streamsByHash.TryGetValue(hash, out var sharedStream))
+            {
+                ws.Dispose();
+            }
+            else
+            {
+                sharedStream = new SharedStream(ws, hash);
+                AddStreamLocked(sharedStream);
+            }
+
+            var reliance = new RelianceOnSharedStream(sharedStream, this);
+            return (sharedStream, reliance);
+        }
+    }
+
+    private void AddStreamLocked(SharedStream sharedStream)
+    {
+        _streamsByHash[sharedStream.Hash] = sharedStream;
+        _streamsById[sharedStream.SharedStreamId] = sharedStream;
+        SharedStreams.Add(sharedStream);
     }
 
     public List<SharedStream> SharedStreams { get; set; } = new();
@@ -59,28 +114,32 @@ public class SharedMemoryStreamPool : ISharedMemoryStreamPool
     {
         lock (_reliancesLock)
         {
-            if (!Reliances.ContainsKey(reliance.SharedStreamId))
+            if (!Reliances.TryGetValue(reliance.SharedStreamId, out var list))
             {
-                Reliances[reliance.SharedStreamId] = new List<RelianceOnSharedStream>();
+                list = [];
+                Reliances[reliance.SharedStreamId] = list;
             }
 
-            Reliances[reliance.SharedStreamId].Add(reliance);
+            list.Add(reliance);
         }
     }
 
     public void RemoveReliance(RelianceOnSharedStream reliance)
     {
+        SharedStream? toDispose = null;
         lock (_reliancesLock)
         {
             if (!Reliances.TryGetValue(reliance.SharedStreamId, out var reliance1)) return;
             reliance1.Remove(reliance);
             if (reliance1.Count != 0) return;
             Reliances.Remove(reliance.SharedStreamId);
-            if (SharedStreams.FirstOrDefault(x => x.SharedStreamId == reliance.SharedStreamId) is not
-                { } sharedStream) return;
+            if (!_streamsById.Remove(reliance.SharedStreamId, out var sharedStream)) return;
+            _streamsByHash.Remove(sharedStream.Hash);
             SharedStreams.Remove(sharedStream);
-            sharedStream.Stream.Dispose();
+            toDispose = sharedStream;
         }
+
+        toDispose?.Stream.Dispose();
     }
 }
 
@@ -113,9 +172,8 @@ public static class HashHelper
     /// </summary>
     public static string HashByteArray(byte[] bytes)
     {
-        var sha = SHA256.Create();
-        var checksum = sha.ComputeHash(bytes);
-        return BitConverter.ToString(checksum).Replace("-", string.Empty);
+        var checksum = SHA256.HashData(bytes);
+        return Convert.ToHexString(checksum);
     }
 
     /// <summary>
@@ -123,15 +181,15 @@ public static class HashHelper
     /// </summary>
     public static string Hash(WrappedStream ws)
     {
-        var sha = SHA256.Create();
-        byte[]? checksum = null;
-        ws.Use(x => checksum = sha.ComputeHash(x));
-        return BitConverter.ToString(checksum).Replace("-", string.Empty);
+        byte[] checksum = [];
+        ws.Use(x => checksum = SHA256.HashData(x));
+        return Convert.ToHexString(checksum);
     }
 }
 
 public class RelianceOnSharedStream : IDisposable
 {
+    private int _disposed;
     public Guid SharedStreamId { get; set; }
     public ISharedMemoryStreamPool Pool { get; set; }
 
@@ -151,6 +209,11 @@ public class RelianceOnSharedStream : IDisposable
 
     public void Dispose()
     {
-        Pool.RemoveReliance(this);
+        if (Interlocked.Exchange(ref _disposed, 1) == 0)
+        {
+            Pool.RemoveReliance(this);
+        }
+
+        GC.SuppressFinalize(this);
     }
 }

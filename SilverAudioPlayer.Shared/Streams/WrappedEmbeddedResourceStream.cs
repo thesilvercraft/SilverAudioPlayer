@@ -13,14 +13,26 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 
     public WrappedEmbeddedResourceStream(Assembly assembly, string resourceLoc)
     {
-        Assembly = assembly;
-        URL = resourceLoc;
+        Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+        URL = resourceLoc ?? throw new ArgumentNullException(nameof(resourceLoc));
+
+        MimeType? mt = null;
+        using (var probeStream = Assembly.GetManifestResourceStream(URL))
+        {
+            if (probeStream != null)
+            {
+                mt = MagicByteCombos.Match(probeStream, 0)?.MimeType;
+            }
+        }
+
+        mt ??= KnownMimes.GetKnownMimeByExtension(Path.GetExtension(URL));
+        _MimeType = mt ?? KnownMimes.OctetMime;
     }
 
     public string URL { get; set; }
     public List<Stream> Streams { get; set; } = new();
-    public override MimeType MimeType => _MimeType!;
-    private MimeType? _MimeType { get; set; } = null;
+    public override MimeType MimeType => _MimeType;
+    private MimeType _MimeType { get; }
 
     public override void Dispose()
     {
@@ -30,6 +42,7 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 
     private Stream InternalGetStream()
     {
+        ObjectDisposedException.ThrowIf(disposedValue, this);
         var stream = Assembly.GetManifestResourceStream(URL);
         if (stream == null)
         {
@@ -39,6 +52,8 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 
         lock (_lock)
         {
+            ObjectDisposedException.ThrowIf(disposedValue, this);
+            Streams.RemoveAll(s => !s.CanRead);
             Streams.Add(stream);
         }
 
@@ -47,20 +62,7 @@ public class WrappedEmbeddedResourceStream : WrappedStream
 
     public override Stream GetStream()
     {
-        var stream = InternalGetStream();
-        if (_MimeType != null) return stream;
-        MimeType? mt;
-        using (var stream2 = InternalGetStream())
-        {
-            mt = MagicByteCombos.Match(stream2, 0)?.MimeType;
-            lock (_lock)
-            {
-                Streams.Remove(stream2);
-            }
-        }
-
-        _MimeType = mt;
-        return stream;
+        return InternalGetStream();
     }
 
     protected virtual void Dispose(bool disposing)
@@ -70,12 +72,15 @@ public class WrappedEmbeddedResourceStream : WrappedStream
         {
             lock (_lock)
             {
-                foreach (var stream in Streams.Where(x => x.CanRead))
+                disposedValue = true;
+                foreach (var stream in Streams)
                     stream.Dispose();
                 Streams.Clear();
             }
         }
-
-        disposedValue = true;
+        else
+        {
+            disposedValue = true;
+        }
     }
 }

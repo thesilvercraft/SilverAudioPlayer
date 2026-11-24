@@ -62,15 +62,18 @@ public class TimedEvent : IComparer<TimedEvent>, IComparable<TimedEvent>
         parent = null;
     }
 
-    public void Invoke(Song track, double position)
+    public void Invoke(Song? track, double position)
     {
-        try
+        if (track is not null)
         {
-            Action.Invoke(track, position);
-        }
-        catch (Exception e)
-        {
-            Serilog.Log.Error(e, "Error in TimedEvent Invoke");
+            try
+            {
+                Action.Invoke(track, position);
+            }
+            catch (Exception e)
+            {
+                Serilog.Log.Error(e, "Error in TimedEvent Invoke");
+            }
         }
 
         parent?.RemoveTimedEvent(this);

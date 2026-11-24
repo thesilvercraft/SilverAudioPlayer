@@ -6,7 +6,8 @@ namespace SilverAudioPlayer.Shared;
 public class WrappedSharedMemoryStream : WrappedStream
 {
     private SharedBuffer? _sharedBuffer;
-    private readonly ConcurrentBag<Stream> _activeStreams = new();
+    private readonly List<WeakReference<Stream>> _activeStreams = [];
+    private readonly Lock _streamsLock = new();
     private bool _isDisposed;
 
     // Overriding the abstract property from WrappedStream
@@ -48,15 +49,18 @@ public class WrappedSharedMemoryStream : WrappedStream
     // Overriding the abstract factory method from WrappedStream
     public override Stream GetStream()
     {
-        if (_isDisposed || _sharedBuffer == null)
-            throw new ObjectDisposedException(nameof(WrappedSharedMemoryStream),
-                "The wrapped memory stream has already been disposed.");
+        lock (_streamsLock)
+        {
+            if (_isDisposed || _sharedBuffer == null)
+                throw new ObjectDisposedException(nameof(WrappedSharedMemoryStream),
+                    "The wrapped memory stream has already been disposed.");
 
-        var instantiatedStream = new SharedMemoryStream(_sharedBuffer);
+            var instantiatedStream = new SharedMemoryStream(_sharedBuffer);
 
-        // Track the stream in case it is invoked outside of the .Use() block helper
-        _activeStreams.Add(instantiatedStream);
-        return instantiatedStream;
+            _activeStreams.RemoveAll(wr => !wr.TryGetTarget(out var target) || !target.CanRead);
+            _activeStreams.Add(new WeakReference<Stream>(instantiatedStream));
+            return instantiatedStream;
+        }
     }
 
     // Overriding the abstract Dispose method from WrappedStream
@@ -68,28 +72,42 @@ public class WrappedSharedMemoryStream : WrappedStream
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!_isDisposed)
+        List<Stream> toDispose = [];
+        lock (_streamsLock)
         {
+            if (_isDisposed) return;
+            _isDisposed = true;
             if (disposing)
             {
-                // Safely clear out outstanding streams across concurrent decoder threads
-                while (_activeStreams.TryTake(out var trackedStream))
+                foreach (var wr in _activeStreams)
                 {
-                    try
+                    if (wr.TryGetTarget(out var trackedStream))
                     {
-                        trackedStream.Dispose();
-                    }
-                    catch
-                    {
-                        /* Intentionally absorbed to prevent failures during cascading teardowns */
+                        toDispose.Add(trackedStream);
                     }
                 }
+
+                _activeStreams.Clear();
             }
 
             // Invalidate the backing byte array reference completely
             _sharedBuffer?.Release();
             _sharedBuffer = null;
-            _isDisposed = true;
+        }
+
+        if (disposing)
+        {
+            foreach (var trackedStream in toDispose)
+            {
+                try
+                {
+                    trackedStream.Dispose();
+                }
+                catch
+                {
+                    /* Intentionally absorbed to prevent failures during cascading teardowns */
+                }
+            }
         }
     }
 

@@ -18,14 +18,15 @@ public static class LrcParser
     {
         LrcFile file = new();
         var lrcLines = lyrics.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
+        var rawPhrases = new List<LyricPhrase>();
         foreach (var rawLine in lrcLines)
         {
             var line = rawLine.Trim();
-            if (TryParse(line, out var phrases, file))
+            if (TryParseRaw(line, out var phrases))
             {
-                file.AddRange(phrases);
+                rawPhrases.AddRange(phrases!);
             }
-            else if (line.StartsWith("[offset:") && line.EndsWith(']') &&
+            else if (line.StartsWith("[offset:", StringComparison.OrdinalIgnoreCase) && line.EndsWith(']') &&
                      int.TryParse(line[8..^1].Trim(), CultureInfo.InvariantCulture, out var offset))
             {
                 file.OffsetInMs = -offset;
@@ -34,6 +35,17 @@ public static class LrcParser
             {
                 file.AdditionalData.Add(line);
             }
+        }
+
+        foreach (var phrase in rawPhrases)
+        {
+            phrase.TimeStampInMilliSeconds += file.OffsetInMs;
+            file.Add(phrase);
+        }
+
+        if (rawPhrases.Count > 1)
+        {
+            file.Sort((a, b) => a.TimeStampInMilliSeconds.CompareTo(b.TimeStampInMilliSeconds));
         }
 
         return file;
@@ -76,12 +88,12 @@ public static class LrcParser
     private static bool TryParseTime(string time, out long timeInMS)
     {
         if (time.IndexOf(':') is { } msep and >= 0
-            && int.TryParse(time[0..msep], CultureInfo.InvariantCulture, out var m)
-            && time.IndexOf('.') is { } ssep and >= 0
-            && int.TryParse(time[(msep + 1)..ssep], CultureInfo.InvariantCulture, out var s)
-            && double.TryParse('0' + time[(ssep)..], CultureInfo.InvariantCulture, out var h))
+            && int.TryParse(time[0..msep], CultureInfo.InvariantCulture, out var m) && m >= 0
+            && time.IndexOf('.') is { } ssep and >= 0 && ssep > msep
+            && int.TryParse(time[(msep + 1)..ssep], CultureInfo.InvariantCulture, out var s) && s >= 0
+            && double.TryParse('0' + time[ssep..], CultureInfo.InvariantCulture, out var h) && h >= 0)
         {
-            timeInMS = (int)(h * 1000) + (((m * 60) + s) * 1000);
+            timeInMS = (long)Math.Round(h * 1000) + (((long)m * 60 + s) * 1000);
             return true;
         }
 
@@ -98,52 +110,85 @@ public static class LrcParser
     /// <returns>Returns true if the line was successfully identified and parsed as a structured lyric phrase marker; otherwise, returns false.</returns>
     public static bool TryParse(string line, out List<LyricPhrase>? lp, LrcFile file)
     {
-        line = line.Trim();
-        if (line.Length >= 9 && line[0] == '[')
+        if (TryParseRaw(line, out lp) && lp != null)
         {
-            var r = line.IndexOf(']');
-            if (r > 1)
+            foreach (var phrase in lp)
             {
-                var time = line[1..r];
-                if (TryParseTime(time, out var timeMs))
+                phrase.TimeStampInMilliSeconds += file.OffsetInMs;
+            }
+
+            return true;
+        }
+
+        lp = null;
+        return false;
+    }
+
+    private static bool TryParseRaw(string line, out List<LyricPhrase>? lp)
+    {
+        line = line.Trim();
+        var leadingTimestamps = new List<long>();
+        var pos = 0;
+
+        while (pos < line.Length && line[pos] == '[')
+        {
+            var closeIdx = line.IndexOf(']', pos + 1);
+            if (closeIdx <= pos + 1) break;
+            var candidate = line[(pos + 1)..closeIdx];
+            if (!TryParseTime(candidate, out var ts)) break;
+            leadingTimestamps.Add(ts);
+            pos = closeIdx + 1;
+        }
+
+        if (leadingTimestamps.Count > 0)
+        {
+            lp = new List<LyricPhrase>();
+            var restOfLine = line[pos..];
+
+            if (leadingTimestamps.Count == 1 && IsBalancedAndContainsAdditional(restOfLine))
+            {
+                var matches = EnhancedTagRegex.Matches(restOfLine);
+                if (matches.Cast<Match>().Any(m => TryParseTime(m.Groups[1].Value, out _)))
                 {
-                    lp = new List<LyricPhrase>();
-                    var restOfLine = line[(r + 1)..];
-                    if (IsBalancedAndContainsAdditional(restOfLine))
+                    var currentPhraseTime = leadingTimestamps[0];
+                    var lastIndex = 0;
+
+                    foreach (Match m in matches)
                     {
-                        var matches = EnhancedTagRegex.Matches(restOfLine);
-                        var currentPhraseTime = timeMs;
-                        var lastIndex = 0;
-
-                        foreach (Match m in matches)
+                        if (!TryParseTime(m.Groups[1].Value, out var tagTime))
                         {
-                            var textBefore = restOfLine[lastIndex..m.Index];
-                            if (textBefore.Length > 0 || lp.Count > 0)
-                            {
-                                lp.Add(new LyricPhrase(currentPhraseTime + file.OffsetInMs, textBefore));
-                            }
-
-                            if (TryParseTime(m.Groups[1].Value, out var tagTime))
-                            {
-                                currentPhraseTime = tagTime;
-                            }
-
-                            lastIndex = m.Index + m.Length;
+                            continue;
                         }
 
-                        var textAfter = restOfLine[lastIndex..];
-                        lp.Add(new LyricPhrase(currentPhraseTime + file.OffsetInMs, textAfter + "\n"));
-                    }
-                    else
-                    {
-                        lp.Add(new(timeMs + file.OffsetInMs, restOfLine + "\n"));
+                        var textBefore = restOfLine[lastIndex..m.Index];
+                        if (textBefore.Length > 0 || lp.Count > 0)
+                        {
+                            lp.Add(new LyricPhrase(currentPhraseTime, textBefore));
+                        }
+
+                        currentPhraseTime = tagTime;
+                        lastIndex = m.Index + m.Length;
                     }
 
-                    if (lp.Count != 0)
-                    {
-                        return true;
-                    }
+                    var textAfter = restOfLine[lastIndex..];
+                    lp.Add(new LyricPhrase(currentPhraseTime, textAfter + "\n"));
                 }
+                else
+                {
+                    lp.Add(new(leadingTimestamps[0], restOfLine + "\n"));
+                }
+            }
+            else
+            {
+                foreach (var ts in leadingTimestamps)
+                {
+                    lp.Add(new(ts, restOfLine + "\n"));
+                }
+            }
+
+            if (lp.Count != 0)
+            {
+                return true;
             }
         }
 

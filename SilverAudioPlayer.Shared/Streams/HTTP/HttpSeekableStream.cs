@@ -21,18 +21,25 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     // Multi-chunk prefetch depth to avoid network latency underruns.
     public const int MaxChunksToBufferAhead = 8;
 
+    // Cap cached chunks at 4096 (~256 MiB) to prevent unbounded RAM growth on huge streams
+    // while keeping typical tracks fully cached for IsFullyDownloaded.
+    public const int MaxCachedChunks = 4096;
+
     private readonly ConcurrentDictionary<long, Task<Memory<byte>>> _chunkCache;
+    private readonly LinkedList<long> _lruOrder = [];
+    private readonly Dictionary<long, LinkedListNode<long>> _lruNodes = [];
+    private readonly Lock _lruLock = new();
     private readonly bool _rangeSupport;
     private readonly bool _hasKnownLength;
     private long _currentPos;
-    private bool _isDisposed;
+    private volatile bool _isDisposed;
     private readonly CancellationTokenSource _cts;
     private readonly bool _ownsCts;
 
     private HttpResponseMessage? _iMessage;
     private Stream? _internalStream;
     public bool IsParent { get; set; }
-    private HttpClient _client;
+    private readonly HttpClient _client;
 
     public HttpSeekableStream(HttpRequestMessage requestMessage, HttpClient client)
         : this(requestMessage, client, GetLengthAndRangeSupport(requestMessage, client))
@@ -61,6 +68,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             if (probeResult.InitialChunk.HasValue)
             {
                 _chunkCache[0] = Task.FromResult(probeResult.InitialChunk.Value);
+                TouchChunkLru(0);
             }
         }
     }
@@ -74,6 +82,9 @@ public class HttpSeekableStream : Stream, IRefreshableStream
     {
         _client = parent._client;
         _chunkCache = parent._chunkCache;
+        _lruOrder = parent._lruOrder;
+        _lruNodes = parent._lruNodes;
+        _lruLock = parent._lruLock;
         _cts = parent._cts;
         _ownsCts = false;
         RequestMessage = parent.RequestMessage;
@@ -130,12 +141,61 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         for (long chunk = 0; chunk < chunkCount; chunk++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var data = await _chunkCache[chunk].ConfigureAwait(false);
+            if (!_chunkCache.TryGetValue(chunk, out var chunkTask) || !chunkTask.IsCompletedSuccessfully)
+                throw new InvalidOperationException($"Chunk {chunk} is no longer available in cache.");
+            var data = await chunkTask.ConfigureAwait(false);
             await output.WriteAsync(data, cancellationToken).ConfigureAwait(false);
         }
     }
 
     public Stream GetStream() => new HttpSeekableStream(this);
+
+    private void TouchChunkLru(long chunkNum)
+    {
+        List<long>? evicted = null;
+        lock (_lruLock)
+        {
+            if (_lruNodes.TryGetValue(chunkNum, out var existing))
+            {
+                _lruOrder.Remove(existing);
+                _lruOrder.AddLast(existing);
+                return;
+            }
+
+            var node = _lruOrder.AddLast(chunkNum);
+            _lruNodes[chunkNum] = node;
+
+            while (_lruNodes.Count > MaxCachedChunks && _lruOrder.First is { } oldest)
+            {
+                var victim = oldest.Value;
+                _lruOrder.RemoveFirst();
+                _lruNodes.Remove(victim);
+                evicted ??= [];
+                evicted.Add(victim);
+            }
+        }
+
+        if (evicted != null)
+        {
+            foreach (var victim in evicted)
+            {
+                _chunkCache.TryRemove(victim, out _);
+            }
+        }
+    }
+
+    private CancellationToken GetCancellationTokenSafe()
+    {
+        if (_isDisposed) return new CancellationToken(canceled: true);
+        try
+        {
+            return _cts.Token;
+        }
+        catch (ObjectDisposedException)
+        {
+            return new CancellationToken(canceled: true);
+        }
+    }
 
     public static HttpRequestMessage CloneMessage(HttpRequestMessage req)
     {
@@ -225,7 +285,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
             }
         }
 
-        using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
 
         var buffer = new byte[BuffLength];
         var totalRead = 0;
@@ -253,8 +313,10 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     private Memory<byte> GetOrDownloadChunk(long chunkNum)
     {
-        var token = _cts.Token;
+        var token = GetCancellationTokenSafe();
+        token.ThrowIfCancellationRequested();
         var downloadTask = _chunkCache.GetOrAdd(chunkNum, id => CreateMonitoredChunkTask(id, token));
+        TouchChunkLru(chunkNum);
 
         TriggerPrefetch(chunkNum);
 
@@ -285,21 +347,27 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     private void TriggerPrefetch(long currentChunkNum)
     {
-        if (Length <= 0) return;
+        if (Length <= 0 || _isDisposed) return;
         var maxChunk = (Length + BuffLength - 1) / BuffLength;
-        var token = _cts.Token;
+        var token = GetCancellationTokenSafe();
+        if (token.IsCancellationRequested) return;
 
         for (var i = 1; i <= MaxChunksToBufferAhead; i++)
         {
             var nextChunk = currentChunkNum + i;
             if (nextChunk >= maxChunk) break;
 
-            _ = _chunkCache.GetOrAdd(nextChunk, id => CreateMonitoredChunkTask(id, token));
+            _ = _chunkCache.GetOrAdd(nextChunk, id =>
+            {
+                TouchChunkLru(id);
+                return CreateMonitoredChunkTask(id, token);
+            });
         }
     }
 
     public override int Read(byte[] buffer, int offset, int count)
     {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
         ArgumentNullException.ThrowIfNull(buffer);
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
@@ -340,7 +408,13 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         if (_internalStream == null)
         {
             using var clone = CloneMessage(RequestMessage);
-            var r = _client.Send(clone, HttpCompletionOption.ResponseContentRead);
+            var r = _client.Send(clone, HttpCompletionOption.ResponseHeadersRead);
+            if (!r.IsSuccessStatusCode)
+            {
+                r.Dispose();
+                throw new HttpRequestException($"HTTP Status code {r.StatusCode}");
+            }
+
             _iMessage = r;
             _internalStream = r.Content.ReadAsStream();
         }
@@ -352,6 +426,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
 
     public override long Seek(long offset, SeekOrigin origin)
     {
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
         if (!_rangeSupport)
         {
             throw new NotSupportedException(
@@ -381,6 +456,7 @@ public class HttpSeekableStream : Stream, IRefreshableStream
         Debug.WriteLine("Disposing HTTP stream");
         if (!_isDisposed && disposing)
         {
+            _isDisposed = true;
             if (_ownsCts || IsParent)
             {
                 try
@@ -399,14 +475,19 @@ public class HttpSeekableStream : Stream, IRefreshableStream
                 Debug.WriteLine("Disposing Parent http stream");
                 RequestMessage.Dispose();
                 _chunkCache.Clear();
+                lock (_lruLock)
+                {
+                    _lruOrder.Clear();
+                    _lruNodes.Clear();
+                }
             }
 
             _internalStream?.Dispose();
             _internalStream = null;
             _iMessage?.Dispose();
+            _iMessage = null;
         }
 
-        _isDisposed = true;
         base.Dispose(disposing);
     }
 

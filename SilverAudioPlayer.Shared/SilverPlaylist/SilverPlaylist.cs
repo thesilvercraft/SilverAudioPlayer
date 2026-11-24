@@ -8,7 +8,7 @@ namespace SilverAudioPlayer.Shared.SilverPlaylist;
 [XmlRoot(ElementName = "Album")]
 public class Album
 {
-    [XmlAttribute(AttributeName = "Name")] public string Name { get; set; }
+    [XmlAttribute(AttributeName = "Name")] public string Name { get; set; } = string.Empty;
     [XmlAttribute(AttributeName = "Year")] public string? Year { get; set; }
 
     [XmlAttribute(AttributeName = "MusicBrainz")]
@@ -18,7 +18,7 @@ public class Album
 [XmlRoot(ElementName = "Artist")]
 public class Artist
 {
-    [XmlAttribute(AttributeName = "Name")] public string Name { get; set; }
+    [XmlAttribute(AttributeName = "Name")] public string Name { get; set; } = string.Empty;
 
     [XmlAttribute(AttributeName = "MusicBrainz")]
     public string? MusicBrainz { get; set; }
@@ -34,21 +34,21 @@ public class SharedMetadata
 [XmlRoot(ElementName = "Source")]
 public class Source
 {
-    [XmlAttribute(AttributeName = "type")] public string Type { get; set; }
-    [XmlText] public string Text { get; set; }
+    [XmlAttribute(AttributeName = "type")] public string Type { get; set; } = string.Empty;
+    [XmlText] public string Text { get; set; } = string.Empty;
 }
 
 [XmlRoot(ElementName = "Sources")]
 public class Sources
 {
-    [XmlElement(ElementName = "Source")] public List<Source> Source { get; set; }
+    [XmlElement(ElementName = "Source")] public List<Source> Source { get; set; } = [];
 }
 
 [XmlRoot(ElementName = "Song")]
 public class SerializedSong
 {
     [XmlAttribute(AttributeName = "Id")] public Guid Id { get; set; }
-    [XmlElement(ElementName = "Sources")] public Sources Sources { get; set; }
+    [XmlElement(ElementName = "Sources")] public Sources Sources { get; set; } = new();
     [XmlAttribute(AttributeName = "Name")] public string? Name { get; set; }
 
     [XmlAttribute(AttributeName = "Artist")]
@@ -73,10 +73,10 @@ public class SilverPlayList
     [XmlElement(ElementName = "SharedMetadata")]
     public SharedMetadata? SharedMetadata { get; set; }
 
-    [XmlElement(ElementName = "Song")] public List<SerializedSong> Song { get; set; }
+    [XmlElement(ElementName = "Song")] public List<SerializedSong> Song { get; set; } = [];
 
     [XmlAttribute(AttributeName = "Version")]
-    public string Version { get; set; }
+    public string Version { get; set; } = string.Empty;
 
     [XmlAttribute(AttributeName = "Name")] public string? Name { get; set; }
 
@@ -89,25 +89,31 @@ public class SilverPlayList
 
 public static class SilverPlaylistHelper
 {
-    public static readonly byte[] MagicBytes = "Spl"u8.ToArray();
-    static XmlSerializer serializer = new(typeof(SilverPlayList));
+    private static readonly byte[] MagicBytes = [.. "Spl"u8];
+    static readonly XmlSerializer serializer = new(typeof(SilverPlayList));
 
     public static void SerialiseBrotli(SilverPlayList playList, Stream streamToWriteTo, bool leaveOpen = true)
     {
         streamToWriteTo.Write(MagicBytes);
-        using (BrotliStream stream = new(streamToWriteTo, CompressionLevel.SmallestSize, leaveOpen))
-        using (StreamWriter stringWriter = new(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true))
-        {
-            serializer.Serialize(stringWriter, playList);
-            stringWriter.Flush();
-        }
+        using BrotliStream stream = new(streamToWriteTo, CompressionLevel.SmallestSize, leaveOpen);
+        using StreamWriter stringWriter = new(stream, Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
+        serializer.Serialize(stringWriter, playList);
+        stringWriter.Flush();
     }
 
     public static SilverPlayList DeserializeBrotli(Stream streamToReadFrom, bool leaveOpen = false)
     {
         var check = new byte[3];
-        if (streamToReadFrom.Read(check, 0, 3) != 3 || check[0] != MagicBytes[0] || check[1] != MagicBytes[1] ||
-            check[2] != MagicBytes[2])
+        try
+        {
+            streamToReadFrom.ReadExactly(check, 0, 3);
+        }
+        catch (EndOfStreamException ex)
+        {
+            throw new InvalidOperationException("This is not a valid silver playlist file", ex);
+        }
+
+        if (!check.AsSpan().SequenceEqual(MagicBytes))
         {
             throw new InvalidOperationException("This is not a valid silver playlist file");
         }
@@ -118,7 +124,7 @@ public static class SilverPlaylistHelper
                    "The XML decoder returned an object that could not be cast to a SilverPlaylist");
     }
 
-    public const string CurrentPlaylistVersion = "elephant";
+    private const string CurrentPlaylistVersion = "elephant";
 
     public static SilverPlayList FromQueueCopy(IEnumerable<Song> songs,
         IMusicStatusInterfaceListener? msiInterface = null)
@@ -132,7 +138,7 @@ public static class SilverPlaylistHelper
         var songscopy = songs.ToList();
         foreach (var song in songscopy)
         {
-            var source = new Source { Type = "url", Text = song.URI };
+            var source = new Source { Type = "url", Text = song.URI ?? string.Empty };
             switch (song.Stream)
             {
                 case WrappedFileStream wrappedFileStream:
@@ -141,7 +147,7 @@ public static class SilverPlaylistHelper
                     break;
                 case WrappedHttpStream wrappedHttpStream:
                     source.Type = "http";
-                    source.Text = wrappedHttpStream.Url;
+                    source.Text = wrappedHttpStream.Url ?? string.Empty;
                     break;
             }
 
@@ -158,16 +164,13 @@ public static class SilverPlaylistHelper
             playList.Song.Add(s);
         }
 
-        if (msiInterface != null && msiInterface.GetState() != PlaybackState.Stopped)
-        {
-            var currentSong = msiInterface.GetCurrentTrack();
-            if (currentSong != null && songscopy.Select((v, i) => new { s = v, i = i })
-                    .FirstOrDefault(x => x.s.Guid == currentSong?.Guid)?.i is { } i)
-            {
-                playList.CurrentIndex = i.ToString();
-                playList.CurrentIndexPosition = msiInterface.GetPosition().ToString(CultureInfo.InvariantCulture);
-            }
-        }
+        if (msiInterface == null || msiInterface.GetState() == PlaybackState.Stopped) return playList;
+        var currentSong = msiInterface.GetCurrentTrack();
+        if (currentSong == null) return playList;
+        var idx = songscopy.FindIndex(x => x.Guid == currentSong.Guid);
+        if (idx < 0) return playList;
+        playList.CurrentIndex = idx.ToString(CultureInfo.InvariantCulture);
+        playList.CurrentIndexPosition = msiInterface.GetPosition().ToString(CultureInfo.InvariantCulture);
 
         return playList;
     }

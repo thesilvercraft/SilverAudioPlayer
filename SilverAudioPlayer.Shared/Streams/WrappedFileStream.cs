@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Serilog;
 using SilverMagicBytes;
 
@@ -7,7 +7,8 @@ namespace SilverAudioPlayer.Shared;
 public class WrappedFileStream : WrappedStream, IDisposable
 {
     private bool _disposedValue;
-    private readonly ConcurrentBag<Stream> _streams = [];
+    private readonly List<WeakReference<Stream>> _streams = [];
+    private readonly Lock _streamsLock = new();
 
     public override bool IsSeekable => true;
     public string URL { get; }
@@ -29,8 +30,14 @@ public class WrappedFileStream : WrappedStream, IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposedValue, this);
         var stream = new FileStream(URL, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-        _streams.Add(stream);
-        Log.Debug("Opened FileStream for {URL}, active stream count: {Count}", URL, _streams.Count);
+        lock (_streamsLock)
+        {
+            ObjectDisposedException.ThrowIf(_disposedValue, this);
+            _streams.RemoveAll(wr => !wr.TryGetTarget(out var target) || !target.CanRead);
+            _streams.Add(new WeakReference<Stream>(stream));
+            Log.Debug("Opened FileStream for {URL}, active stream count: {Count}", URL, _streams.Count);
+        }
+
         return stream;
     }
 
@@ -48,10 +55,28 @@ public class WrappedFileStream : WrappedStream, IDisposable
     protected virtual void Dispose(bool disposing)
     {
         if (_disposedValue) return;
-        _disposedValue = true;
+        List<Stream> toDispose = [];
+        lock (_streamsLock)
+        {
+            if (_disposedValue) return;
+            _disposedValue = true;
+            if (disposing)
+            {
+                foreach (var wr in _streams)
+                {
+                    if (wr.TryGetTarget(out var stream))
+                    {
+                        toDispose.Add(stream);
+                    }
+                }
+
+                _streams.Clear();
+            }
+        }
+
         if (!disposing) return;
-        Log.Debug("Disposing WrappedFileStream for {URL} ({Count} underlying streams)", URL, _streams.Count);
-        while (_streams.TryTake(out var stream))
+        Log.Debug("Disposing WrappedFileStream for {URL} ({Count} underlying streams)", URL, toDispose.Count);
+        foreach (var stream in toDispose)
         {
             try
             {

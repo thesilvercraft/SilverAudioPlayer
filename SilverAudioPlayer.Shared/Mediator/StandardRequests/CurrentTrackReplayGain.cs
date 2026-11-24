@@ -8,7 +8,7 @@ public record ReplayGainInfo
 {
     public bool Success;
     /// <summary>
-    /// In decibels
+    /// Linear sample peak amplitude ratio (typically 0.0 to 1.0+)
     /// </summary>
     public float? Peak;
     /// <summary>

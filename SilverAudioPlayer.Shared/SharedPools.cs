@@ -8,6 +8,11 @@ namespace SilverAudioPlayer.Shared
         public void RemoveReliance(RelianceOnShared<T> reliance);
         public Shared<T>? GetWithHash(string hash);
         public Shared<T> AddT(T ws, string hash);
+        public (Shared<T> Shared, RelianceOnShared<T> Reliance) AcquireOrAdd(T ws, string hash)
+        {
+            var shared = AddT(ws, hash);
+            return (shared, new RelianceOnShared<T>(shared, this));
+        }
     }
 
     public static class SharedMemoryTPoolInstance<T> where T : IDisposable
@@ -24,7 +29,8 @@ namespace SilverAudioPlayer.Shared
     public class SharedPool<T> : ISharedPool<T> where T : IDisposable
     {
         private readonly Dictionary<string, List<RelianceOnShared<T>>> _reliances = [];
-        private readonly object _reliancesLock = new();
+        private readonly Dictionary<string, Shared<T>> _sharedById = new(StringComparer.Ordinal);
+        private readonly Lock _reliancesLock = new();
         public Dictionary<string, List<RelianceOnShared<T>>> Reliances => _reliances;
         public List<Shared<T>> Shared { get; set; } = [];
 
@@ -44,24 +50,26 @@ namespace SilverAudioPlayer.Shared
 
         public void RemoveReliance(RelianceOnShared<T> reliance)
         {
+            Shared<T>? toDispose = null;
             lock (_reliancesLock)
             {
                 if (!Reliances.TryGetValue(reliance.SharedId, out var reliance1)) return;
                 reliance1.Remove(reliance);
                 if (reliance1.Count != 0) return;
                 Reliances.Remove(reliance.SharedId);
-                if (Shared.FirstOrDefault(x => x.SharedId == reliance.SharedId) is not
-                    { } sharedStream) return;
+                if (!_sharedById.Remove(reliance.SharedId, out var sharedStream)) return;
                 Shared.Remove(sharedStream);
-                sharedStream.Object.Dispose();
+                toDispose = sharedStream;
             }
+
+            toDispose?.Object.Dispose();
         }
 
         public bool ContainsHash(string hash)
         {
             lock (_reliancesLock)
             {
-                return Shared.Any(x => x.SharedId == hash);
+                return _sharedById.ContainsKey(hash);
             }
         }
 
@@ -69,14 +77,31 @@ namespace SilverAudioPlayer.Shared
         {
             lock (_reliancesLock)
             {
-                if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
+                if (_sharedById.TryGetValue(hash, out var s))
                 {
                     return s;
                 }
 
                 Shared<T> shared = new(ws, hash);
+                _sharedById[hash] = shared;
                 Shared.Add(shared);
                 return shared;
+            }
+        }
+
+        public (Shared<T> Shared, RelianceOnShared<T> Reliance) AcquireOrAdd(T ws, string hash)
+        {
+            lock (_reliancesLock)
+            {
+                if (!_sharedById.TryGetValue(hash, out var s))
+                {
+                    s = new Shared<T>(ws, hash);
+                    _sharedById[hash] = s;
+                    Shared.Add(s);
+                }
+
+                var reliance = new RelianceOnShared<T>(s, this);
+                return (s, reliance);
             }
         }
 
@@ -84,18 +109,14 @@ namespace SilverAudioPlayer.Shared
         {
             lock (_reliancesLock)
             {
-                if (Shared.FirstOrDefault(x => x.SharedId == hash) is { } s)
-                {
-                    return s;
-                }
-
-                return null;
+                return _sharedById.GetValueOrDefault(hash);
             }
         }
     }
 
     public class RelianceOnShared<T> : IDisposable where T : IDisposable
     {
+        private int _disposed;
         public ISharedPool<T> Pool { get; }
 
         public RelianceOnShared(Shared<T> shared, ISharedPool<T>? pool = null)
@@ -109,7 +130,11 @@ namespace SilverAudioPlayer.Shared
 
         public void Dispose()
         {
-            Pool.RemoveReliance(this);
+            if (Interlocked.Exchange(ref _disposed, 1) == 0)
+            {
+                Pool.RemoveReliance(this);
+            }
+
             GC.SuppressFinalize(this);
         }
     }

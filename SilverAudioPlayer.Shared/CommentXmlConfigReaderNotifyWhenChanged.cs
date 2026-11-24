@@ -5,16 +5,146 @@ using System.Diagnostics;
 
 namespace SilverAudioPlayer.Shared;
 
+internal static class SharedConfigDirectoryWatchers
+{
+    private static readonly StringComparer PathComparer =
+        OperatingSystem.IsLinux() ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
+
+    private static readonly Lock RegistryLock = new();
+    private static readonly Dictionary<string, DirectoryWatcherEntry> Watchers = new(PathComparer);
+    public static readonly ConcurrentDictionary<string, long> LastSelfWriteTicks = new(PathComparer);
+
+    internal sealed class DirectoryWatcherEntry(string directoryPath, FileSystemWatcher watcher)
+    {
+        public string DirectoryPath { get; } = directoryPath;
+        public FileSystemWatcher Watcher { get; } = watcher;
+        public Dictionary<string, List<Subscription>> SubscribersByFile { get; } = new(PathComparer);
+        public int TotalSubscribers;
+    }
+
+    internal sealed class Subscription : IDisposable
+    {
+        private readonly DirectoryWatcherEntry _entry;
+        private readonly string _fullFilePath;
+        private readonly Action _onChanged;
+        private int _disposed;
+
+        internal Subscription(DirectoryWatcherEntry entry, string fullFilePath, Action onChanged)
+        {
+            _entry = entry;
+            _fullFilePath = fullFilePath;
+            _onChanged = onChanged;
+        }
+
+        internal void Invoke() => _onChanged();
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+
+            FileSystemWatcher? watcherToDispose = null;
+            lock (RegistryLock)
+            {
+                if (_entry.SubscribersByFile.TryGetValue(_fullFilePath, out var list) && list.Remove(this))
+                {
+                    _entry.TotalSubscribers--;
+                    if (list.Count == 0)
+                    {
+                        _entry.SubscribersByFile.Remove(_fullFilePath);
+                    }
+
+                    if (_entry.TotalSubscribers <= 0 &&
+                        Watchers.TryGetValue(_entry.DirectoryPath, out var current) &&
+                        ReferenceEquals(current, _entry))
+                    {
+                        Watchers.Remove(_entry.DirectoryPath);
+                        watcherToDispose = _entry.Watcher;
+                    }
+                }
+            }
+
+            watcherToDispose?.Dispose();
+        }
+    }
+
+    public static IDisposable? Subscribe(string fullFilePath, Action onChanged)
+    {
+        var dir = Path.GetDirectoryName(fullFilePath);
+        if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return null;
+        var fullDir = Path.GetFullPath(dir);
+
+        lock (RegistryLock)
+        {
+            if (!Watchers.TryGetValue(fullDir, out var entry))
+            {
+                var fsw = new FileSystemWatcher
+                {
+                    Path = fullDir,
+                    Filter = "*",
+                    NotifyFilter = NotifyFilters.CreationTime
+                                   | NotifyFilters.DirectoryName
+                                   | NotifyFilters.LastWrite
+                                   | NotifyFilters.Size,
+                    EnableRaisingEvents = true
+                };
+                entry = new DirectoryWatcherEntry(fullDir, fsw);
+                fsw.Changed += (_, args) => OnFileChanged(entry, args);
+                Watchers[fullDir] = entry;
+            }
+
+            if (!entry.SubscribersByFile.TryGetValue(fullFilePath, out var list))
+            {
+                list = [];
+                entry.SubscribersByFile[fullFilePath] = list;
+            }
+
+            var sub = new Subscription(entry, fullFilePath, onChanged);
+            list.Add(sub);
+            entry.TotalSubscribers++;
+            return sub;
+        }
+    }
+
+    private static void OnFileChanged(DirectoryWatcherEntry entry, FileSystemEventArgs args)
+    {
+        if (args.ChangeType != WatcherChangeTypes.Changed) return;
+        string changedPath;
+        try
+        {
+            changedPath = Path.GetFullPath(args.FullPath);
+        }
+        catch
+        {
+            return;
+        }
+
+        List<Subscription>? snapshot = null;
+        lock (RegistryLock)
+        {
+            if (entry.SubscribersByFile.TryGetValue(changedPath, out var list) && list.Count > 0)
+            {
+                snapshot = [.. list];
+            }
+        }
+
+        if (snapshot == null) return;
+        foreach (var sub in snapshot)
+        {
+            sub.Invoke();
+        }
+    }
+}
+
 public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader<T>, IDisposable
     where T : INotifyPropertyChanged, ICanBeToldThatAPartOfMeIsChanged
 {
-    private readonly ConcurrentDictionary<string, FileSystemWatcher> _fileSystemWatchers =
+    private readonly ConcurrentDictionary<string, IDisposable> _subscriptions =
         new(StringComparer.OrdinalIgnoreCase);
 
     public void Dispose()
     {
-        foreach (var fsw in _fileSystemWatchers.Values) fsw.Dispose();
-        _fileSystemWatchers.Clear();
+        foreach (var sub in _subscriptions.Values) sub.Dispose();
+        _subscriptions.Clear();
         GC.SuppressFinalize(this);
     }
 
@@ -41,7 +171,9 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                 {
                     lock (lockObj)
                     {
+                        SharedConfigDirectoryWatchers.LastSelfWriteTicks[fullPath] = Stopwatch.GetTimestamp();
                         base.Write(config, fullPath);
+                        SharedConfigDirectoryWatchers.LastSelfWriteTicks[fullPath] = Stopwatch.GetTimestamp();
                     }
 
                     return;
@@ -103,27 +235,17 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
 
         if (c == null) return default;
 
-        var fpDir = Path.GetDirectoryName(fullPath) ?? "";
-        var fpNm = Path.GetFileName(fullPath);
-
-        if (Directory.Exists(fpDir) && !_fileSystemWatchers.ContainsKey(fullPath))
+        if (!_subscriptions.ContainsKey(fullPath))
         {
-            FileSystemWatcher j = new()
+            var subscription = SharedConfigDirectoryWatchers.Subscribe(fullPath, () =>
             {
-                Path = fpDir,
-                EnableRaisingEvents = true,
-                Filter = fpNm,
-                NotifyFilter = NotifyFilters.CreationTime
-                               | NotifyFilters.DirectoryName
-                               | NotifyFilters.LastWrite
-                               | NotifyFilters.Size
-            };
+                if (!c.AllowedToRead) return;
 
-            j.Changed += (x, y) =>
-            {
-                if (y.ChangeType != WatcherChangeTypes.Changed) return;
-                if (!string.Equals(y.FullPath, fullPath, StringComparison.OrdinalIgnoreCase) ||
-                    !c.AllowedToRead) return;
+                if (SharedConfigDirectoryWatchers.LastSelfWriteTicks.TryGetValue(fullPath, out var lastWrite) &&
+                    Stopwatch.GetElapsedTime(lastWrite) < TimeSpan.FromMilliseconds(250))
+                {
+                    return;
+                }
 
                 try
                 {
@@ -166,11 +288,11 @@ public class CommentXmlConfigReaderNotifyWhenChanged<T> : CommentXmlConfigReader
                 {
                     Debug.WriteLine($"[CommentXmlConfigReader] Error handling file change: {e}");
                 }
-            };
+            });
 
-            if (!_fileSystemWatchers.TryAdd(fullPath, j))
+            if (subscription != null && !_subscriptions.TryAdd(fullPath, subscription))
             {
-                j.Dispose();
+                subscription.Dispose();
             }
         }
 

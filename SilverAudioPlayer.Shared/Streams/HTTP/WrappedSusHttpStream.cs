@@ -12,21 +12,11 @@ public class WrappedSusHttpStream : IRefreshableStream, IDisposable
         RequestMessage = requestMessage;
 
         using var clone = HttpSeekableStream.CloneMessage(requestMessage);
-        using var response = client.Send(clone, HttpCompletionOption.ResponseContentRead);
+        using var response = client.SendAsync(clone, HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();
         response.EnsureSuccessStatusCode();
 
-        using var responseStream = response.Content.ReadAsStream();
-
-        if (responseStream is MemoryStream standardMemoryStream)
-        {
-            _sharedBuffer = new SharedBuffer(standardMemoryStream.ToArray());
-        }
-        else
-        {
-            using var targetMemoryStream = new MemoryStream();
-            responseStream.CopyTo(targetMemoryStream);
-            _sharedBuffer = new SharedBuffer(targetMemoryStream.ToArray());
-        }
+        var bytes = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+        _sharedBuffer = new SharedBuffer(bytes);
     }
 
     public Stream GetStream()

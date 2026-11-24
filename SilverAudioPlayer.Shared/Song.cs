@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using ReactiveUI;
 using Serilog;
 using SilverAudioPlayer.Core;
@@ -27,8 +28,10 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         {
             try
             {
-                var fetchedMetadata = Task.Run(async () => await logic.GetMetadataFromStream(Stream, [metadata])!)
-                    .GetAwaiter().GetResult();
+                var metadataTask = logic.GetMetadataFromStream(Stream, metadata is null ? null : [metadata]);
+                var fetchedMetadata = metadataTask is not null
+                    ? Task.Run(async () => await metadataTask).GetAwaiter().GetResult()
+                    : null;
                 if (fetchedMetadata is not null)
                 {
                     Metadata = fetchedMetadata;
@@ -65,7 +68,14 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
         get => _Metadata;
         set
         {
+            var previous = _Metadata;
             this.RaiseAndSetIfChanged(ref _Metadata, value);
+            if (previous is not null && !ReferenceEquals(previous, value) &&
+                (value is not IMetadataCombo combo || !combo.OriginalMetadata.Contains(previous)))
+            {
+                previous.Dispose();
+            }
+
             this.RaisePropertyChanged(nameof(TrackNoF));
             this.RaisePropertyChanged(nameof(TitleOrURLF));
         }
@@ -82,17 +92,17 @@ public sealed class Song : ReactiveObject, IEquatable<Song>, IEquatable<Guid>, I
 
     public bool Equals(Song? other)
     {
-        return other?.Guid == Guid;
+        return ReferenceEquals(this, other);
     }
 
     public override bool Equals(object? obj)
     {
-        return Equals(obj as Song);
+        return ReferenceEquals(this, obj);
     }
 
     public override int GetHashCode()
     {
-        return Guid.GetHashCode();
+        return RuntimeHelpers.GetHashCode(this);
     }
 
     public string TrackNo()
