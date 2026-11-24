@@ -10,7 +10,7 @@ using Avalonia;
 using Avalonia.Dialogs;
 using Avalonia.Svg.Skia;
 using SilverCraft.AvaloniaUtils;
-
+using System.Runtime.Versioning;
 namespace Catenoid;
 
 internal static class Program
@@ -21,7 +21,19 @@ internal static class Program
         Console.Error.WriteLine(ex.ToString());
         if (File.Exists(KDialogLocation))
         {
-            Process.Start(KDialogLocation, $"--desktopfile silveraudioplayer.desktop --title \"Error\" --detailederror \"{ex.ToString()}\".\r\n");
+            var psi = new ProcessStartInfo
+            {
+                FileName = KDialogLocation,
+                UseShellExecute = false
+            };
+            psi.ArgumentList.Add("--desktopfile");
+            psi.ArgumentList.Add("silveraudioplayer.desktop");
+            psi.ArgumentList.Add("--title");
+            psi.ArgumentList.Add("Error");
+            psi.ArgumentList.Add("--detailederror");
+            psi.ArgumentList.Add("An unexpected error occurred.");
+            psi.ArgumentList.Add(ex.ToString());
+            using var proc = Process.Start(psi);
         }
     }
     // Initialization code. Don't use any Avalonia, third-party APIs or any
@@ -38,9 +50,19 @@ internal static class Program
             {
                 if (WindowExtensions.envBackend.GetString("SAPIgnoreMutex") == null)
                 {
-                    var shortLivedHttpClient = new HttpClient();
-                    if (!mutex.WaitOne(0, false))
+                    bool acquired;
+                    try
                     {
+                        acquired = mutex.WaitOne(0, false);
+                    }
+                    catch (AbandonedMutexException)
+                    {
+                        acquired = true;
+                    }
+
+                    if (!acquired)
+                    {
+                        using var shortLivedHttpClient = new HttpClient();
                         if (args is { Length: > 0 })
                         {
                             try
@@ -74,7 +96,11 @@ internal static class Program
                 {
                     WindowExtensions.envBackend.SetString("SAPTransparency", "Mica,AcrylicBlur,Blur,None");
                 }
-                if (Environment.GetEnvironmentVariable("SAPUseNativeDialog") == "yes") app = app.UseManagedSystemDialogs();
+                if (Environment.GetEnvironmentVariable("SAPUseNativeDialog") == "yes" &&
+                    (OperatingSystem.IsWindows() || OperatingSystem.IsLinux() || OperatingSystem.IsMacOS()))
+                {
+                    app = app.UseManagedSystemDialogs();
+                }
                 app.StartWithClassicDesktopLifetime(args);
             }
             finally
@@ -92,22 +118,31 @@ internal static class Program
     {
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
-        return AppBuilder.Configure<App>()
-            .UsePlatformDetect()
-            .LogToTrace();
+        var builder = AppBuilder.Configure<App>();
+           // builder = builder.UseWayland().UseSkia().UseHarfBuzz();
+            builder = builder.UsePlatformDetect();
+#if DEBUG
+        return builder.LogToTrace();
+#else
+        return builder;
+#endif
     }
 }
 
-public static class WindowsAppInitializer
+public static partial class WindowsAppInitializer
 {
-    [DllImport("shell32.dll", SetLastError = true)]
-    private static extern int SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+    [SupportedOSPlatform("windows")]
+    [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    internal static partial int SetCurrentProcessExplicitAppUserModelID(string AppID);
 
     public static void InitializeAppId()
     {
         if (OperatingSystem.IsWindows())
         {
-            SetCurrentProcessExplicitAppUserModelID("SilverCraft.Catenoid");
+            if(SetCurrentProcessExplicitAppUserModelID("SilverCraft.Catenoid") != 0)
+            {
+                // TODO: log
+            }
         }
     }
 }

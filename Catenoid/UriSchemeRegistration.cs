@@ -42,8 +42,8 @@ public static class RegistryRegistration
 
         if (OperatingSystem.IsLinux())
         {
-            return File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".local/share/applications", DesktopFileName));
+            return File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "applications", DesktopFileName));
         }
 
         return false;
@@ -52,8 +52,8 @@ public static class RegistryRegistration
     [SupportedOSPlatform("linux")]
     public static void RegisterURLSchemeLinux(MainWindow mainWindow)
     {
-        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        var appsDir = Path.Combine(userProfile, ".local/share/applications");
+        var dataHome = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var appsDir = Path.Combine(dataHome, "applications");
         var desktopFilePath = Path.Combine(appsDir, DesktopFileName);
 
         Directory.CreateDirectory(appsDir);
@@ -88,10 +88,10 @@ public static class RegistryRegistration
         var mimeXmlPath = Path.Combine(AppContext.BaseDirectory, "custom-mime", "silvercraft-spl.xml");
         if (File.Exists(mimeXmlPath))
         {
-            RunProcess("xdg-mime", $"install \"{mimeXmlPath}\"");
+            RunProcess("xdg-mime", "install", mimeXmlPath);
         }
 
-        var iconsDir = Path.Combine(userProfile, ".local/share/icons");
+        var iconsDir = Path.Combine(dataHome, "icons");
         Directory.CreateDirectory(iconsDir);
         var localIconPath = Path.Combine(iconsDir, "catenoid.svg");
 
@@ -105,21 +105,21 @@ public static class RegistryRegistration
     [SupportedOSPlatform("linux")]
     private static void UnRegisterUrlSchemeLinux(MainWindow _)
     {
-        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var dataHome = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var mimeXmlPath = Path.Combine(AppContext.BaseDirectory, "custom-mime", "silvercraft-spl.xml");
 
         if (File.Exists(mimeXmlPath))
         {
-            RunProcess("xdg-mime", $"uninstall \"{mimeXmlPath}\"");
+            RunProcess("xdg-mime", "uninstall", mimeXmlPath);
         }
 
-        var desktopPath = Path.Combine(userProfile, ".local/share/applications", DesktopFileName);
+        var desktopPath = Path.Combine(dataHome, "applications", DesktopFileName);
         if (File.Exists(desktopPath))
         {
             File.Delete(desktopPath);
         }
 
-        var iconPath = Path.Combine(userProfile, ".local/share/icons", "catenoid.svg");
+        var iconPath = Path.Combine(dataHome, "icons", "catenoid.svg");
         if (File.Exists(iconPath))
         {
             File.Delete(iconPath);
@@ -139,9 +139,7 @@ public static class RegistryRegistration
         Registry.SetValue(baseKeyPath, "FriendlyTypeName", "Audio File");
         Registry.SetValue($@"{baseKeyPath}\shell\open\command", string.Empty, $"\"{Environment.ProcessPath}\" \"%1\"");
 
-        var extensions = mainWindow.Logic.PlayableMimes
-            .Where(x => x.FileExtensions.Length > 0)
-            .SelectMany(x => x.FileExtensions);
+        var extensions = mainWindow.Logic.SupportedTrackAndPlaylistMimes().Item2;
 
         foreach (var ext in extensions)
         {
@@ -173,9 +171,7 @@ public static class RegistryRegistration
 
         DeleteRegistryFolder(RegistryHive.CurrentUser, $@"Software\Classes\{WinProgId}");
 
-        var extensions = mainWindow.Logic.PlayableMimes
-            .Where(x => x.FileExtensions.Length > 0)
-            .SelectMany(x => x.FileExtensions);
+        var extensions = mainWindow.Logic.SupportedTrackAndPlaylistMimes().Item2;
 
         foreach (var ext in extensions)
         {
@@ -215,9 +211,6 @@ public static class RegistryRegistration
             shell.SetDescription("Catenoid");
             shell.SetIconLocation(executablePath, 0);
 
-            var persistFile = (IPersistFile)shell;
-            persistFile.Save(shortcutPath, true);
-
             var propertyStore = (IPropertyStore)shell;
             var key = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
             var value = PropVariant.FromString(AppUserModelId);
@@ -231,6 +224,7 @@ public static class RegistryRegistration
                 value.Clear();
             }
 
+            var persistFile = (IPersistFile)shell;
             persistFile.Save(shortcutPath, true);
         }
         finally
@@ -322,15 +316,19 @@ public static class RegistryRegistration
         baseKey.DeleteSubKeyTree(fullPathKeyToDelete, throwOnMissingSubKey: false);
     }
 
-    private static void RunProcess(string fileName, string arguments)
+    private static void RunProcess(string fileName, params string[] arguments)
     {
-        using var proc = Process.Start(new ProcessStartInfo
+        var psi = new ProcessStartInfo
         {
             FileName = fileName,
-            Arguments = arguments,
             UseShellExecute = false,
             CreateNoWindow = true
-        });
+        };
+        foreach (var arg in arguments)
+        {
+            psi.ArgumentList.Add(arg);
+        }
+        using var proc = Process.Start(psi);
         proc?.WaitForExit();
     }
 }

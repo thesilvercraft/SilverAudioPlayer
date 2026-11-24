@@ -8,8 +8,8 @@ namespace Catenoid;
 
 public class SAction
 {
-    public string ActionName { get; set; }
-    public Action ActionToInvoke { get; set; }
+    public string ActionName { get; set; } = string.Empty;
+    public Action? ActionToInvoke { get; set; }
 
     public void Invoke()
     {
@@ -40,7 +40,7 @@ public partial class LaunchActionsWindow : Window
 
     public void ElementDoubleTapped(object _, global::Avalonia.Input.TappedEventArgs args)
     {
-        ((SAction?)LB.SelectedItem)?.Invoke();
+        ((SAction?)LB?.SelectedItem)?.Invoke();
     }
 
    

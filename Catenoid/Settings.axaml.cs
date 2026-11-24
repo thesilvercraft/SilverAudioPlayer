@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -54,7 +54,9 @@ public static class ConstStrings
 
 public partial class Settings : Window
 {
-    internal MainWindow mainWindow;
+    internal MainWindow? mainWindow;
+    private SettingsDC? _settingsDc;
+    private string Legalese = string.Empty;
 
     public Settings()
     {
@@ -73,14 +75,16 @@ public partial class Settings : Window
         ProductIconButton = this.FindControl<Button>("ProductIconButton");
         AutoSaveCheckBox = this.FindControl<CheckBox>("AutoSaveCheckBox");
 
-        ProductIconButton.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
+        ProductIconButton?.AddHandler(InputElement.PointerReleasedEvent, PointerReleasedProductIcon,
             RoutingStrategies.Tunnel, true);
         this.mainWindow = mainWindow;
-        TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
-        TransparencyText.TextChanged += TransparencyTextChanged;
+        if (TransparencyText != null)
+        {
+            TransparencyText.Text = WindowExtensions.envBackend.GetString(ConstStrings.TransparencyC);
+            TransparencyText.TextChanged += TransparencyTextChanged;
+        }
 
         List<ICodeInformation> info =
-
         [
             mainWindow.Env, .. (mainWindow.Logic as ILogicImportable).PluginCodeInformation
         ];
@@ -101,6 +105,7 @@ public partial class Settings : Window
 
         Dispatcher.UIThread.Post(() =>
         {
+            if (_settingsDc == null) return;
             foreach (var record in rawRecords)
             {
                 var uiIcon = record.RawIcon switch
@@ -117,9 +122,30 @@ public partial class Settings : Window
         });
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        if (TransparencyText != null)
+        {
+            TransparencyText.TextChanged -= TransparencyTextChanged;
+        }
+        if (_settingsDc != null)
+        {
+            foreach (var item in _settingsDc.Items)
+            {
+                if (item.Icon is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+            _settingsDc.Items.Clear();
+            _settingsDc.ProductIcon = null;
+        }
+        base.OnClosed(e);
+    }
+
     private void TransparencyTextChanged(object? sender, TextChangedEventArgs e)
     {
-        var text = TransparencyText.Text;
+        var text = TransparencyText?.Text;
 
         Task.Run(() => WindowExtensions.envBackend.SetString(ConstStrings.TransparencyC,
             text ??
@@ -127,32 +153,31 @@ public partial class Settings : Window
 
         if (text is not null)
         {
-            WindowExtensions.OnStyleChange.Invoke(this,
+            WindowExtensions.OnStyleChange?.Invoke(this,
                 new(null, WindowExtensions.GetTransparencyLevelsFromString(text), null, null, null));
         }
     }
 
-    private SettingsDC _settingsDc;
-
     private void EnableMSI(object? sender, RoutedEventArgs e)
     {
+        if (mainWindow == null) return;
         var y = (CheckBox?)sender;
         if (y is not { IsFocused: true }) return;
         if (y is not { DataContext: IMusicStatusInterface msi }) return;
         if (y.IsChecked == msi.IsStarted) return;
+        if (msi.GetType().FullName is not { } fullName) return;
 
         if (y.IsChecked == true)
         {
-            mainWindow.config.BlockedPlugins.Remove(msi.GetType().FullName);
+            mainWindow.config.BlockedPlugins.Remove(fullName);
 
             ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config,
                 new PropertyChangedEventArgs("BlockedPlugins"));
             msi.StartIPC(mainWindow.Env);
         }
-
         else
         {
-            mainWindow.config.BlockedPlugins.Add(msi.GetType().FullName);
+            mainWindow.config.BlockedPlugins.Add(fullName);
 
             ((ICanBeToldThatAPartOfMeIsChanged)mainWindow.config).PropertyChanged(mainWindow.config,
                 new PropertyChangedEventArgs("BlockedPlugins"));
@@ -160,14 +185,13 @@ public partial class Settings : Window
         }
     }
 
-    string Legalese;
-
     public static async Task<(List<InfoPRecord> Records, string Legalese)> GetInfoRecordsAsync(
         List<ICodeInformation> info)
     {
         var recordsTasks = info.Select(item => Task.Run(() =>
         {
-            var icon = DecodeImage(item.Icon);
+            using var iconStream = item.Icon;
+            var icon = DecodeImage(iconStream);
 
             return new InfoPRecord(
                 item.Name,
@@ -202,12 +226,14 @@ public partial class Settings : Window
 
         if (stream.MimeType == KnownMimes.JPGMime || stream.MimeType == KnownMimes.PngMime)
         {
-            return Bitmap.DecodeToWidth(stream.GetStream(), width);
+            using var imgStream = stream.GetStream();
+            return Bitmap.DecodeToWidth(imgStream, width);
         }
 
         if (stream.MimeType == KnownMimes.SVGMime)
         {
-            return SvgSource.LoadFromStream(stream.GetStream());
+            using var svgStream = stream.GetStream();
+            return SvgSource.LoadFromStream(svgStream);
         }
 
         return null;
@@ -215,12 +241,14 @@ public partial class Settings : Window
 
     public void ElementDoubleTapped(object _, TappedEventArgs args)
     {
-        var y = (InfoPRecord?)CapBox.SelectedItem;
+        if (mainWindow == null) return;
+        var y = (InfoPRecord?)CapBox?.SelectedItem;
         ShowElementActionWindow(y, mainWindow);
     }
 
     public void ConfigureClick(object button, RoutedEventArgs args)
     {
+        if (mainWindow == null) return;
         var y = (Button?)button;
         if (y is not { DataContext: InfoPRecord { Configurable: true } record }) return;
 
@@ -241,6 +269,7 @@ public partial class Settings : Window
 
     public void OpenConfigFileClick(object button, RoutedEventArgs args)
     {
+        if (mainWindow == null) return;
         var y = (Button?)button;
 
         if (y is
@@ -299,6 +328,7 @@ public partial class Settings : Window
 
     public void PlayProviderClick(object button, RoutedEventArgs args)
     {
+        if (mainWindow == null) return;
         var y = (Button?)button;
 
         if (y is not { DataContext: InfoPRecord record } ||
@@ -413,11 +443,11 @@ public partial class Settings : Window
 
     private void RegisterClick(object? sender, RoutedEventArgs e)
     {
+        if (mainWindow == null) return;
         if (RegistryRegistration.IsReg())
         {
             RegistryRegistration.UnRegisterUrlScheme(mainWindow);
         }
-
         else
         {
             RegistryRegistration.RegisterUrlScheme(mainWindow);
@@ -445,8 +475,8 @@ public partial class Settings : Window
         Dispatcher.UIThread.Post(() =>
         {
             var SapTransparency = WindowExtensions.envBackend.GetBool(ConstStrings.DisableTransparency) != true;
-            WindowExtensions.OnStyleChange(this, new(null, null, null, null, null));
             WindowExtensions.envBackend.SetBool(ConstStrings.DisableTransparency, SapTransparency);
+            WindowExtensions.OnStyleChange?.Invoke(this, new(null, null, null, null, null));
         }, DispatcherPriority.Normal);
     }
 
@@ -466,22 +496,28 @@ public partial class Settings : Window
 
     private void ProductIconClicked()
     {
-        if ((mainWindow.Env.Icon is not { MimeType: SVGMime }) || mainWindow.Env.Icon?.MimeType == null)
+        if (mainWindow == null || _settingsDc == null) return;
+        using var icon = mainWindow.Env.Icon;
+        if (icon == null)
         {
-            var instance = mainWindow.Env.Icon;
-            instance?.Use(x => { });
+            Log.Error("mainWindow.Env.Icon is null");
+            return;
+        }
 
-            if (instance?.MimeType is not SVGMime)
+        if (icon.MimeType is not SVGMime)
+        {
+            icon.Use(_ => { });
+            if (icon.MimeType is not SVGMime)
             {
                 Log.Error("An instance of mainWindow.Env.Icon's mime is not an SVGMime, it is a {@MimeType}",
-                    instance?.MimeType);
+                    icon.MimeType);
                 return;
             }
         }
 
         if (IconTemplate == null)
         {
-            mainWindow.Env.Icon?.Use(s =>
+            icon.Use(s =>
             {
                 using var textreader = new StreamReader(s);
                 IconTemplate = textreader.ReadToEnd();
@@ -510,11 +546,11 @@ public partial class Settings : Window
         }
     }
 
-    private void PointerReleasedProductIcon(object? sender, PointerReleasedEventArgs e)
+    private async void PointerReleasedProductIcon(object? sender, PointerReleasedEventArgs e)
     {
-        if (e.InitialPressMouseButton == MouseButton.Right)
+        if (e.InitialPressMouseButton == MouseButton.Right && CurrentSource != null && Clipboard != null)
         {
-            Clipboard?.SetTextAsync(CurrentSource);
+            await Clipboard.SetTextAsync(CurrentSource);
             SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
         }
     }
@@ -576,7 +612,7 @@ public class SettingsDC(Settings settings) : ReactiveObject
 
             Dispatcher.UIThread.Post(() =>
             {
-                settings.mainWindow.SetProgressBarColour(_progressBarColour.ParseBackground(new LinearGradientBrush()
+                settings.mainWindow?.SetProgressBarColour(_progressBarColour.ParseBackground(new LinearGradientBrush()
                     { GradientStops = Settings.defPBStops }));
             }, DispatcherPriority.Normal);
         }
@@ -604,7 +640,7 @@ public class SettingsDC(Settings settings) : ReactiveObject
 
                 if (brush is SolidColorBrush scb)
                 {
-                    scb.Opacity = 1;
+                    brush = new SolidColorBrush(scb.Color, 1);
                 }
 
                 LyricsView.NotifyColorChanged(brush);
@@ -651,11 +687,11 @@ public class SettingsDC(Settings settings) : ReactiveObject
 
     public ObservableCollection<InfoPRecord> Items { get; set; } = [];
 
-    public string ProductName { get; internal set; }
+    public string ProductName { get; internal set; } = string.Empty;
 
-    public string ProductDescription { get; internal set; }
+    public string ProductDescription { get; internal set; } = string.Empty;
 
-    public Config Config { get; set; }
+    public Config Config { get; set; } = new();
 
     private IImage? _productIcon;
 

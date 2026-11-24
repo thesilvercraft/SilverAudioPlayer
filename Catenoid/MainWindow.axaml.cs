@@ -92,7 +92,6 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
     public IFullPlayerEnvironment Env => Logic.PlayerEnvironment;
     private MetadataView? metadataView;
     private DispatcherTimer? _seekBarTimer;
-    private bool AlbumArtTransparencyChanged = false;
     public Config config => App.mwconfig;
     public CommentXmlConfigReaderNotifyWhenChanged<Config> reader => App.mwconfreader;
     private string? CurrentAlbumArtHash = null;
@@ -238,6 +237,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             SetTransparency = true,
             SetFontFamily = true,
         }, followOptionsOnCall: false);
+        BlurredBackgroundImage.Opacity = config.AlbumArtTransparency;
     }
 
     private void HandleMediatorMessage(object? sender, IMessage message)
@@ -305,9 +305,8 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
 
             var skip = Dispatcher.UIThread.Invoke(() =>
             {
-                if (Image.Source != null && newPicture.Hash == CurrentAlbumArtHash && !AlbumArtTransparencyChanged)
+                if (Image.Source != null && newPicture.Hash == CurrentAlbumArtHash)
                     return true;
-                AlbumArtTransparencyChanged = false;
                 CurrentAlbumArtHash = newPicture.Hash;
                 return false;
             });
@@ -337,13 +336,6 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     var canvas = surface.Canvas;
                     using var paint = new SKPaint();
                     paint.ImageFilter = SKImageFilter.CreateBlur(4, 4);
-                    paint.ColorFilter = SKColorFilter.CreateColorMatrix(
-                    [
-                        1, 0, 0, 0, 0,
-                        0, 1, 0, 0, 0,
-                        0, 0, 1, 0, 0,
-                        0, 0, 0, config.AlbumArtTransparency, 0
-                    ]);
                     canvas.DrawBitmap(writableBitmap, SKPoint.Empty, paint: paint);
 
                     using var snapshot = surface.Snapshot();
@@ -371,13 +363,17 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                     using (blurredStream)
                     {
                         var blurBmp = new Bitmap(blurredStream);
-                        var newBrush = new ImageBrush(blurBmp)
+                        var oldBlurSource = BlurredBackgroundImage.Source;
+                        BlurredBackgroundImage.Opacity = config.AlbumArtTransparency;
+                        BlurredBackgroundImage.Source = blurBmp;
+
+                        if (oldBlurSource is IDisposable disposableBlurSource)
                         {
-                            Stretch = Stretch.UniformToFill
-                        };
+                            disposableBlurSource.Dispose();
+                        }
 
                         var oldBackground = Background;
-                        Background = newBrush;
+                        Background = Brushes.Transparent;
 
                         if (oldBackground is IDisposable disposableBackground)
                         {
@@ -397,6 +393,13 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
             {
                 Image.Source = null;
                 CurrentAlbumArtHash = null;
+
+                var oldBlurSource = BlurredBackgroundImage.Source;
+                BlurredBackgroundImage.Source = null;
+                if (oldBlurSource is IDisposable disposableBlurSource)
+                {
+                    disposableBlurSource.Dispose();
+                }
 
                 if (config.DisableAlbumArtBlur) return;
 
@@ -482,7 +485,7 @@ public partial class MainWindow : Window, IWindowSuggestVisualChange
                 dc?.VolumeChanged?.Invoke(config.Volume);
                 break;
             case "AlbumArtTransparency":
-                AlbumArtTransparencyChanged = true;
+                Dispatcher.UIThread.Post(() => BlurredBackgroundImage.Opacity = config.AlbumArtTransparency);
                 break;
             case "AutoSaveInterval":
                 ChangeAutoSaveInterval(config.AutoSaveInterval);

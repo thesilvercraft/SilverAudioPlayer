@@ -16,7 +16,7 @@
                 </ListBox>
                 <Grid Grid.Row="2" ColumnDefinitions="*, 100">
                         <TextBox Name="PlaylistFileName"></TextBox>
-                        <Button Grid.Column="1">Save</Button>
+                        <Button Grid.Column="1" Click="SavePlaylistClick">Save</Button>
                 </Grid>
         </Grid>
 </Window>

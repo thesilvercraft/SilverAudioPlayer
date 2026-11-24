@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -41,14 +42,22 @@ public class ProvidersReturnedNullException : Exception
 
 public class GuiSink : ILogEventSink
 {
+    private const int MaxBufferChars = 50_000;
+    private const int TrimTargetChars = 40_000;
+    private readonly Lock _lock = new();
     public StringBuilder writer = new();
     public event Action<string>? New;
+
+    public string GetText()
+    {
+        lock (_lock)
+        {
+            return writer.ToString();
+        }
+    }
+
     public void Emit(LogEvent logEvent)
     {
-        if (writer.Length > 25 * 1000)
-        {
-            writer.Clear();
-        }
         StringBuilder stringBuilder = new();
         switch (logEvent.Level)
         {
@@ -104,7 +113,14 @@ public class GuiSink : ILogEventSink
             stringBuilder.AppendLine(string.Join('\n', included.Select(x => x.Name + ": " + x.Value)));
         }
         var render = stringBuilder.ToString();
-        writer.AppendLine(render);
+        lock (_lock)
+        {
+            writer.AppendLine(render);
+            if (writer.Length > MaxBufferChars)
+            {
+                writer.Remove(0, writer.Length - TrimTargetChars);
+            }
+        }
         New?.Invoke(render);
     }
     static bool TemplateContainsPropertyName(MessageTemplate template, string propertyName)
@@ -129,13 +145,33 @@ public class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
-    public static Config mwconfig;
-    public static CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader;
-    public static string _configPath;
+    public static Config mwconfig = new();
+    public static CommentXmlConfigReaderNotifyWhenChanged<Config> mwconfreader = new();
+    public static string _configPath = string.Empty;
     public static SilverAudioPlayer.Shared.CommandPalette CommandPalette = new();
-    public static MainWindow mainWindow;
+    public static MainWindow? mainWindow;
     public static GuiSink sink = new();
-    private static BootupLogic BootupLogic = new();
+    private static readonly BootupLogic BootupLogic = new();
+    private static readonly Lock ConfigWriteLock = new();
+
+    private static void ShowFatalKDialog(string detailedError)
+    {
+        if (!File.Exists(Program.KDialogLocation)) return;
+        var psi = new ProcessStartInfo
+        {
+            FileName = Program.KDialogLocation,
+            UseShellExecute = false
+        };
+        psi.ArgumentList.Add("--desktopfile");
+        psi.ArgumentList.Add("silveraudioplayer.desktop");
+        psi.ArgumentList.Add("--title");
+        psi.ArgumentList.Add("Fatal error");
+        psi.ArgumentList.Add("--detailederror");
+        psi.ArgumentList.Add("An unexpected error occured \nPlease report this issue on gitlab.");
+        psi.ArgumentList.Add(detailedError);
+        using var proc = Process.Start(psi);
+    }
+
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -150,10 +186,20 @@ public class App : Application
             {
                 y.PropertyChanged += (x, _) =>
                 {
-                    if (x != mwconfig || mwconfig is not ICanBeToldThatAPartOfMeIsChanged { AllowedToRead: true } L) return;
-                    L.AllowedToRead = false;
-                    mwconfreader.Write(mwconfig, _configPath);
-                    L.AllowedToRead = true;
+                    if (x != mwconfig || mwconfig is not ICanBeToldThatAPartOfMeIsChanged L) return;
+                    lock (ConfigWriteLock)
+                    {
+                        if (!L.AllowedToRead) return;
+                        L.AllowedToRead = false;
+                        try
+                        {
+                            mwconfreader.Write(mwconfig, _configPath);
+                        }
+                        finally
+                        {
+                            L.AllowedToRead = true;
+                        }
+                    }
                 };
             }
             if (mwconfig.UserLogPreferences == ConfigStyle.LogWindow)
@@ -163,21 +209,15 @@ public class App : Application
                 BootupLogic.SetupCrashFallNets(exception =>
                 {
                     var randomPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-                    File.WriteAllText(randomPath, sink.writer.ToString());
-                    if (File.Exists(Program.KDialogLocation))
-                    {
-                        Process.Start(Program.KDialogLocation, $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"A more detailed account on what happened may be saved in {randomPath}\n{exception}\"");
-                    }
+                    File.WriteAllText(randomPath, sink.GetText());
+                    ShowFatalKDialog($"A more detailed account on what happened may be saved in {randomPath}\n{exception}");
                 });
             }
             else
             {
                 BootupLogic.SetupCrashFallNets(exception =>
                 {
-                    if (File.Exists(Program.KDialogLocation))
-                    {
-                        Process.Start(Program.KDialogLocation, $"--desktopfile silveraudioplayer.desktop --title \"Fatal error\" --detailederror \"An unexpected error occured \nPlease report this issue on gitlab.\" \"{exception}\"");
-                    }
+                    ShowFatalKDialog(exception.ToString());
                 });
             }
             var logger = services.GetRequiredService<ILogger>();
@@ -202,16 +242,18 @@ public class App : Application
                 logger.Warning("Failed to find a memory provider, proceeding anyways");
             }
 
-            foreach (var mimes in mw.Logic.PlayProviders.Select(provider=>provider.SupportedMimes).Where(mimes=>mimes!=null))
+            foreach (var mimes in mw.Logic.PlayProviders.Select(provider => provider.SupportedMimes))
             {
-                mw.Logic.PlayableMimes.AddRange(mimes);
+                if (mimes != null)
+                {
+                    mw.Logic.PlayableMimes.AddRange(mimes);
+                }
             }
 
-            var playproviderloadtask = Task.Run(async () =>
-            {
-                foreach (var playprovider in mw.Logic.PlayProviders.Where(provider=>provider!=null))
-                        await playprovider.OnStartup();
-            });
+            var playproviderloadtask = Task.Run(() => Task.WhenAll(
+                mw.Logic.PlayProviders
+                    .Where(provider => provider != null)
+                    .Select(provider => provider.OnStartup())));
             if (canProvideMemory && mw is IAmOnceAgainAskingYouForYourMemory mainwindowMemory)
             {
                 mw.Logic.MemoryProvider?.RegisterObjectsToRemember(mainwindowMemory.ObjectsToRememberForMe);
@@ -229,9 +271,30 @@ public class App : Application
                 LaunchActionsWindow launchActionsWindow = new(actions);
                 launchActionsWindow.Show();
             }, EkorensisUtils.LaunchConfigurableWindow);
-            playproviderloadtask.Wait();
-            mw.Logic.ProcessFiles(desktop.Args);
-            mw.Startup();
+
+            if (desktop.Args is { Length: > 0 } args)
+            {
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await playproviderloadtask.ConfigureAwait(false);
+                        mw.Logic.ProcessFiles(args);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, "Failed to process startup files");
+                    }
+                    finally
+                    {
+                        mw.Startup();
+                    }
+                });
+            }
+            else
+            {
+                mw.Startup();
+            }
         }
         base.OnFrameworkInitializationCompleted();
     }

@@ -23,7 +23,10 @@ namespace Catenoid
             dc = new();
             DataContext = dc;
             CapBox = this.FindControl<ListBox>("CapBox");
-            CapBox.SelectionChanged += CapBox_SelectionChanged;
+            if (CapBox != null)
+            {
+                CapBox.SelectionChanged += CapBox_SelectionChanged;
+            }
         }
 
         private void CapBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)

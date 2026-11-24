@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -32,7 +33,7 @@ public partial class PictureViewer : Window
             return;
         }
         this.pictures = pictures;
-        if (pictures?.Count < 0)
+        if (pictures.Count == 0)
         {
             Close();
             Log.Error("The pictureviewer was initialised with no pictures???????");
@@ -42,12 +43,32 @@ public partial class PictureViewer : Window
     }
     void ChangePicture()
     {
-        using var data = pictures[pos].Data?.GetStream();
-        if (data != null)
+        if (pos < 0 || pos >= pictures.Count) return;
+        try
         {
-            x.Picture = new Bitmap(data);
+            using var data = pictures[pos].Data?.GetStream();
+            if (data != null)
+            {
+                var next = new Bitmap(data);
+                var prev = x.Picture;
+                x.Picture = next;
+                prev?.Dispose();
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to decode picture at index {Index}", pos);
         }
     }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        var prev = x.Picture;
+        x.Picture = null;
+        prev?.Dispose();
+        base.OnClosed(e);
+    }
+
     private void Left(object? sender, RoutedEventArgs e)
     {
         if (pos <= 0) return;
@@ -57,17 +78,20 @@ public partial class PictureViewer : Window
 
     private void Right(object? sender, RoutedEventArgs e)
     {
-        if (pos >= pictures?.Count - 1) return;
+        if (pos >= pictures.Count - 1) return;
         pos++;
         ChangePicture();
     }
 
     private async void Copy(object? sender, RoutedEventArgs e)
     {
+        if (pos < 0 || pos >= pictures.Count) return;
         var wrappedStream = pictures[pos].Data;
         if (wrappedStream == null) return;
-        await this.SetClipboardImage(wrappedStream, Log.Logger);
-        SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
+        if (await this.SetClipboardImage(wrappedStream, Log.Logger))
+        {
+            SAPAWindowExtensions.Toast(SAPAWindowExtensions.CopiedToClipboard);
+        }
     }
 }
 public class DContext : ReactiveObject

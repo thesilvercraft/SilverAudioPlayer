@@ -63,39 +63,50 @@
 			<Setter Property="FontSize" Value="20" />
 		</Style>
 	</Window.Styles>
-	<Grid RowDefinitions="260,*" Margin="5" Name="MainGrid">
+	<Panel Background="#38000000">
+		<Image Name="BlurredBackgroundImage" Stretch="UniformToFill" IsHitTestVisible="False" />
+		<Grid RowDefinitions="260,*" Margin="5" Name="MainGrid">
 		<Border Grid.Row="0">
 			<Grid ColumnDefinitions="256,*">
-				<Border Grid.Column="0" Background="#28000000" PointerPressed="Metadata_Click">
+				<Border Grid.Column="0" Background="#28000000" Cursor="Hand"
+						PointerPressed="Metadata_Click"
+						AutomationProperties.Name="Album art"
+						AutomationProperties.HelpText="Click to view metadata, right-click for raw metadata">
 					<Image Height="256" Width="256" Name="Image" />
 				</Border>
 				<Grid Margin="10,10,0,10" Grid.Column="1" RowDefinitions="50,25,75,50">
 					<ProgressBar Name="PB" Grid.Row="0" Height="50"
-                                 Margin="0,0,10,10" />
+                                 Margin="0,0,10,10" Focusable="True" Cursor="Hand"
+                                 AutomationProperties.Name="Seek bar"
+                                 AutomationProperties.HelpText="Click, drag, or use Left and Right arrow keys to seek" />
 					<Grid Margin="1,0,10,0" Grid.Row="1">
-						<TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00" />
-						<TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00" />
+						<TextBlock HorizontalAlignment="Left" Name="LT" Text="00:00:00"
+                                   AutomationProperties.Name="Elapsed time" />
+						<TextBlock HorizontalAlignment="Right" Name="RT" Text="00:00:00"
+                                   AutomationProperties.Name="Track duration" />
 					</Grid>
 					<Grid ColumnDefinitions="*,*,*,*,*,*,*" Grid.Row="2" Margin="0,1,1,1">
-						<Button Name="PlayButton" Grid.Column="0">Play</Button>
-						<Button Name="PauseButton" Grid.Column="1">Pause</Button>
-						<Button Name="StopButton" Grid.Column="2" HotKey="Ctrl+Right">Stop/Skip</Button>
-						<Button Name="RepeatButton" Grid.Column="3" HotKey="Ctrl+R">
+						<Button Name="PlayButton" Grid.Column="0" AutomationProperties.Name="Play">Play</Button>
+						<Button Name="PauseButton" Grid.Column="1" AutomationProperties.Name="Pause">Pause</Button>
+						<Button Name="StopButton" Grid.Column="2" HotKey="Ctrl+Right" AutomationProperties.Name="Stop or skip">Stop/Skip</Button>
+						<Button Name="RepeatButton" Grid.Column="3" HotKey="Ctrl+R" AutomationProperties.Name="Repeat mode">
 							<TextBlock Text="{Binding LoopType}" />
 						</Button>
-						<Button Grid.Column="4" Name="LyricsButton" Click="LyricsButton_Click" HotKey="W">Lyrics</Button>
-						<Button Name="Settings" Grid.Column="5" HotKey="Ctrl+,">Settings</Button>
-						<Button Name="CommandMenu" Grid.Column="6" HotKey="Ctrl+Shift+P">Commands</Button>
+						<Button Grid.Column="4" Name="LyricsButton" Click="LyricsButton_Click" HotKey="W" AutomationProperties.Name="Lyrics">Lyrics</Button>
+						<Button Name="Settings" Grid.Column="5" HotKey="Ctrl+," AutomationProperties.Name="Settings">Settings</Button>
+						<Button Name="CommandMenu" Grid.Column="6" HotKey="Ctrl+Shift+P" AutomationProperties.Name="Commands">Commands</Button>
 
 					</Grid>
 					<Slider Name="VolumeBar" Grid.Row="3" Minimum="0" Maximum="100" Value="{Binding Volume, Mode=TwoWay}"
-                            Padding="20,0,20,0" />
+                            Padding="20,0,20,0"
+                            AutomationProperties.Name="Volume" />
 				</Grid>
 			</Grid>
 		</Border>
 			<ListBox ItemsSource="{Binding Queue}" Selection="{Binding Selection}"  Name="mainListBox"
                  DragDrop.AllowDrop="True" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionMode="Multiple"
-                 Background="Transparent" Grid.IsSharedSizeScope="True" Grid.Row="1" >
+                 Background="Transparent" Grid.IsSharedSizeScope="True" Grid.Row="1"
+                 AutomationProperties.Name="Playback queue" >
 				<ListBox.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="Remove Selected" Click="RemoveSelected" />
@@ -135,7 +146,8 @@
 				</ListBox.DataTemplates>
 			</ListBox>
 		
-	</Grid>
+		</Grid>
+	</Panel>
 
 
 </Window>

@@ -11,32 +11,30 @@
     </Design.DataContext>
     <Window.Styles>
         <Style Selector="TextBlock">
-            <Setter Property="FontSize" Value="24" />
-            <Setter Property="Padding" Value="5,10,5,10" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Padding" Value="4,6,4,6" />
         </Style>
     </Window.Styles>
-    <Grid Margin="5 30 5 5">
-        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <Grid ColumnDefinitions="*,256">
-                <TreeView Name="mainTreeView" ItemsSource="{Binding ValuePairs}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                    <TreeView.ItemTemplate>
-                        <TreeDataTemplate ItemsSource="{Binding SubFields}">
-                            <Grid ColumnDefinitions="Auto,*">
-                                <TextBlock Grid.Column="0" Text="{Binding FieldName}"
-                                           MaxWidth="300" TextTrimming="CharacterEllipsis"
-                                           ToolTip.Tip="{Binding FieldName}" />
-                                <TextBox Grid.Column="1" Text="{Binding FieldValue}"
-                                         IsReadOnly="True" Margin="5,0,0,0" />
-                            </Grid>
-                        </TreeDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
-                <Image Grid.Column="1" Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top"
-                       Source="{Binding Bitmaps[0]}"
-                       Width="256" Height="256" Tapped="IMG_DoubleTapped" />
-            </Grid>
-        </ScrollViewer>
+    <Grid Margin="5 30 5 5" ColumnDefinitions="*,256">
+        <TreeView Grid.Column="0" Name="mainTreeView" ItemsSource="{Binding ValuePairs}"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding SubFields}">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0" Text="{Binding FieldName}"
+                                   VerticalAlignment="Center"
+                                   ToolTip.Tip="{Binding FieldName}" />
+                        <TextBox Grid.Column="1" Text="{Binding FieldValue}"
+                                 IsReadOnly="True" Margin="5,0,0,0"
+                                 TextWrapping="Wrap" MaxHeight="150"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    </Grid>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <Image Grid.Column="1" Name="IMG" HorizontalAlignment="Right" VerticalAlignment="Top"
+               Source="{Binding Bitmaps[0]}"
+               Width="256" Height="256" Tapped="IMG_DoubleTapped" />
     </Grid>
 </Window>

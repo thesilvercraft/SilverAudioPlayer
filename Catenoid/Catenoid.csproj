@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="../SilverAudioPlayer.targets" />
 
 	<PropertyGroup>
@@ -7,6 +7,7 @@
 		<Nullable>enable</Nullable>
 		<TrimMode>link</TrimMode>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove=".gitignore" />
@@ -135,8 +136,8 @@
 	</ItemGroup>
 	<Import Project="../SilverAudioPlayer.Avalonia.targets" />
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.14" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.14" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
